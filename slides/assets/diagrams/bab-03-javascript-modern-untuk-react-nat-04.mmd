@@ -1,0 +1,5 @@
+graph LR
+  A["async dipanggil"] --> B["try: jalankan await"]
+  B --> C{"Promise selesai?"}
+  C -->|"resolve"| D["lanjutkan: data tampil di layar"]
+  C -->|"reject"| E["catch: tampilkan pesan gagal"]

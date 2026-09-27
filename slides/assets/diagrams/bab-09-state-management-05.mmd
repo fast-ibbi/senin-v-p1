@@ -1,0 +1,5 @@
+graph LR
+  A["onPress: tambahItem(item)<br/>app/index.js"] --> B["setItems(sekarang => ...)<br/>CartProvider"]
+  B --> C["nilai context berubah"]
+  C --> D["React render ulang<br/>semua konsumen"]
+  D --> E["badge Keranjang (n)<br/>daftar keranjang ikut berubah"]

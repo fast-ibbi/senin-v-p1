@@ -1,0 +1,18 @@
+{
+  "name": "senin-v-p1",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Slide kuliah Pemrograman Mobile (React Native + Expo) — 15 bab, dipublikasikan via GitHub Pages",
+  "scripts": {
+    "clean": "rm -rf dist",
+    "build": "npm run clean && marp -I slides -o dist && node scripts/build-pages.mjs",
+    "serve": "marp -s slides"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@marp-team/marp-cli": "^4.2.3"
+  }
+}

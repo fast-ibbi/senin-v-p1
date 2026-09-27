@@ -1,0 +1,6 @@
+graph LR
+  subgraph Perangkat["Di dalam aplikasi berjalan dua dunia"]
+    J["Dunia JavaScript<br/>logika aplikasi · Hermes"] <--> B["Bridge<br/>lapisan komunikasi JS ↔ native"]
+    B <--> N["Dunia native<br/>menggambar antarmuka asli"]
+  end
+  M["Metro<br/>bundler saat pengembangan"] --> J

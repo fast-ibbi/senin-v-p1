@@ -1,0 +1,4 @@
+graph LR
+  A["Promise dibuat"] --> B["pending: menunggu"]
+  B -->|"resolve(hasil)"| C["fulfilled: berhasil membawa nilai"]
+  B -->|"reject(alasan)"| D["rejected: gagal membawa error"]

@@ -1,0 +1,15 @@
+graph LR
+  subgraph P["Persiapan dan build"]
+    A["Development vs production build<br/>15.1"]
+    B["EAS Build dan 3 profil<br/>15.2"]
+    C["app.json dan env variable<br/>15.5-15.6"]
+  end
+  subgraph K["Keaslian"]
+    D["Signing:<br/>keystore dan sertifikat<br/>15.7"]
+  end
+  subgraph S["Distribusi"]
+    E["Google Play dan tracks<br/>15.3, 15.8"]
+    F["App Store<br/>15.4, 15.9"]
+    G["Tiga lingkungan<br/>15.10"]
+  end
+  P --> K --> S

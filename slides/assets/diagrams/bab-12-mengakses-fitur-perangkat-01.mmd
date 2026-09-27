@@ -1,0 +1,11 @@
+graph TD
+  A["API perangkat (device API)"] --> B["Izin (permission)<br/>inti bab ini"]
+  B --> C["Kamera dan Galeri<br/>expo-image-picker"]
+  B --> D["Lokasi<br/>expo-location"]
+  B --> E["Notifikasi<br/>expo-notifications"]
+  B --> F["Berkas dan Info Perangkat<br/>expo-file-system · expo-device"]
+  C --> G["Prinsip privasi: consent · minimasi data<br/>tanpa unggah diam-diam"]
+  D --> G
+  E --> G
+  F --> G
+  G --> H["Mini Project: Aplikasi Profil Mahasiswa<br/>+ AsyncStorage (Bab 11)"]

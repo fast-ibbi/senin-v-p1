@@ -1,0 +1,5 @@
+graph TB
+  subgraph Klien["Perangkat (klien) — tiga lapisan logis"]
+    P["Presentasi<br/>komponen, layout, navigasi"] --> BI["Bisnis<br/>validasi, state"] --> DA["Data<br/>REST client, penyimpanan lokal"]
+  end
+  DA -->|"HTTP + JSON"| S["Server<br/>REST API, basis data, autentikasi"]

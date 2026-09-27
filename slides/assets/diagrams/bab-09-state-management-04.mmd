@@ -1,0 +1,6 @@
+graph LR
+  A["app/_layout.js<br/>CartProvider di akar"] --> B["app/index.js<br/>Daftar Produk"]
+  A --> C["app/keranjang.js<br/>Keranjang"]
+  B --> D["useCart()"]
+  C --> D
+  D --> E["CartContext<br/>satu sumber kebenaran"]

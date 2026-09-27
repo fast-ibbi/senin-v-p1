@@ -1,0 +1,4 @@
+graph TD
+  APP["App.js<br/>data baku dan state"] -->|"props ke bawah"| LAYAR["Layar<br/>DaftarMahasiswa, DetailMahasiswa"]
+  LAYAR -->|"props ke bawah"| KOMP["Komponen<br/>CardMahasiswa, Tombol"]
+  KOMP -->|"peristiwa ke atas"| APP

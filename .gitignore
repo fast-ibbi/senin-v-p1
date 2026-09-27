@@ -1,0 +1,9 @@
+# dependensi & artefak build
+node_modules/
+dist/
+
+# hasil render slide di folder slides/
+slides/out/
+
+# sistem
+.DS_Store

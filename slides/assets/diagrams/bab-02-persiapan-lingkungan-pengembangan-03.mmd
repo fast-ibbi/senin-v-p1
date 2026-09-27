@@ -1,0 +1,10 @@
+graph TB
+  subgraph A["Menyiapkan project"]
+    direction LR
+    V["1. Verifikasi<br/>node dan npm"] --> C["2. Buat project<br/>create-expo-app --template blank"] --> F["3. Masuk ke folder<br/>cd aplikasi-pertama"]
+  end
+  subgraph B["Menjalankan dan menguji"]
+    direction LR
+    O["4. Buka di VS Code<br/>code ."] --> S["5. Nyalakan server<br/>npx expo start"] --> J["6. Pilih jalur<br/>Expo Go · emulator · perangkat"]
+  end
+  A --> B

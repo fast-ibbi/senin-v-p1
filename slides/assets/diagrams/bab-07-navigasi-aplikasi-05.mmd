@@ -1,0 +1,5 @@
+graph TD
+  A["Buka layar di dalam grup (app)"] --> B["Layout (app) memeriksa status masuk"]
+  B --> C{"Sudah masuk?"}
+  C -->|"Ya"| D["Render Tabs — layar tampil"]
+  C -->|"Tidak"| E["Redirect ke halaman login"]

@@ -1,0 +1,4 @@
+graph LR
+  A["Data aplikasi"] --> B{"Sensitif?"}
+  B -->|"Tidak: preferensi, cache, catatan"| C["AsyncStorage"]
+  B -->|"Ya: token, kata sandi, kunci API"| D["Secure storage: Keychain atau Keystore"]

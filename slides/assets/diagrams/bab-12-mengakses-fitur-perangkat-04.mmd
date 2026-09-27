@@ -1,0 +1,10 @@
+graph TD
+  A["Layar ProfilMahasiswa"] --> B["useEffect: muat profil tersimpan<br/>AsyncStorage (Bab 11)"]
+  A --> C["Ambil foto:<br/>izin + launchCameraAsync"]
+  A --> D["Ambil lokasi:<br/>izin + getCurrentPositionAsync"]
+  A --> E["Info perangkat:<br/>expo-device"]
+  C --> F["Simpan Profil"]
+  D --> F
+  E --> F
+  F --> G["simpanProfil() ke AsyncStorage"]
+  F --> H["Notifikasi uji:<br/>scheduleNotificationAsync"]

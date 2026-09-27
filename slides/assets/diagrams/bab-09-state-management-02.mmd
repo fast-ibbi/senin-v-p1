@@ -1,0 +1,5 @@
+graph TD
+  L["LayarPesan<br/>(state ukuran disimpan di sini)"]
+  L -- "props: ukuran" --> P["PilihUkuran"]
+  L -- "props: ukuran" --> R["RingkasanPesanan"]
+  P -- "panggil onPilihUkuran('L')" --> L

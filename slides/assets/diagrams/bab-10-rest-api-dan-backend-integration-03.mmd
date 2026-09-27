@@ -1,0 +1,6 @@
+graph TD
+  A["Permintaan ke server"] --> B["Loading state<br/>ActivityIndicator: Memuat data…"]
+  B --> C{"Permintaan berhasil?"}
+  C -->|"Ya, ada data"| D["Daftar tampil<br/>FlatList"]
+  C -->|"Ya, tetapi kosong"| E["Empty state<br/>Belum ada data mahasiswa"]
+  C -->|"Tidak: jaringan, 4xx, 5xx"| F["Error state<br/>pesan ramah + tombol Coba Lagi"]

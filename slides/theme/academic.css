@@ -1,0 +1,418 @@
+/*
+ * @theme academic
+ * @auto-scaling fittingHeader,code,math
+ * @size 16:9 1280px 720px
+ * @size 4:3 960px 720px
+ *
+ * Academic lecture theme for Marp / Marp Core.
+ *
+ * Design rules encoded here (see references/lint-rules.md for the matching budgets):
+ *   - 16:9, light, high contrast, projected-legible at the back of a room
+ *   - system font stack: identical rendering offline, no font fetch, no failed export
+ *   - one accent colour, one hairline under h1, no other decoration
+ *   - utility classes: lead (title/section), center, compact (dense slide),
+ *     cols (two-column lists)
+ *
+ * Usage (theme registration):
+ *   marp.config.mjs ->  export default { themeSet: ['./theme'] }
+ *   deck front-matter -> theme: academic
+ */
+
+:root {
+  --accent: #1d4ed8;
+  --accent-soft: #eef2ff;
+  --ink: #111827;
+  --muted: #6b7280;
+  --surface: #f8fafc;
+  --border: #e5e7eb;
+  --code-bg: #f6f8fa;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+}
+
+section {
+  font-family: var(--sans);
+  font-size: 26px;
+  line-height: 1.45;
+  color: var(--ink);
+  background: #ffffff;
+  padding: 54px 64px 62px;
+  justify-content: flex-start;
+  letter-spacing: 0.002em;
+}
+
+/* ---------------------------------------------------------------- headings */
+
+h1 {
+  font-size: 40px;
+  line-height: 1.2;
+  font-weight: 700;
+  color: var(--ink);
+  border-bottom: 3px solid var(--accent);
+  padding-bottom: 0.18em;
+  margin: 0 0 0.7em;
+}
+
+h2 {
+  font-size: 34px;
+  line-height: 1.25;
+  font-weight: 650;
+  margin: 0 0 0.55em;
+}
+
+h3 {
+  font-size: 27px;
+  font-weight: 650;
+  color: var(--accent);
+  margin: 0.6em 0 0.3em;
+}
+
+/* Keep the hairline only for the slide's own title (first heading). */
+h1 ~ h1,
+h2 + h1 {
+  border-bottom: none;
+}
+
+/* ------------------------------------------------------------------- lists */
+
+ul,
+ol {
+  margin: 0 0 0.6em;
+  padding-left: 1.25em;
+}
+
+li {
+  margin: 0.28em 0;
+}
+
+li > ul,
+li > ol {
+  margin-top: 0.15em;
+  font-size: 0.94em;
+  color: #374151;
+}
+
+ul li::marker {
+  color: var(--accent);
+}
+
+ol li::marker {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* Fragmented list items (`*` bullets / `1)` numbers) are revealed one by one
+   by the bespoke presenter; they are plain items in PDF/PPTX export. */
+li[data-marpit-fragment] {
+  /* no visual difference — the fragment state is handled by the app */
+}
+
+/* ------------------------------------------------------------ inline & code */
+
+strong {
+  font-weight: 700;
+  color: var(--ink);
+}
+
+em {
+  font-style: italic;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(29, 78, 216, 0.35);
+}
+
+code {
+  font-family: var(--mono);
+  font-size: 0.88em;
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.06em 0.32em;
+}
+
+pre {
+  font-family: var(--mono);
+  font-size: 19px;
+  line-height: 1.4;
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent);
+  border-radius: 6px;
+  padding: 0.65em 0.9em;
+  margin: 0.5em 0 0.6em;
+  overflow: visible;
+}
+
+pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 1em;
+}
+
+/* Caption line for code slides: a paragraph starting with a path in inline code. */
+pre + p > code:only-child {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 0.8em;
+  padding: 0;
+}
+
+/* ------------------------------------------------------------------- tables */
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 22px;
+  margin: 0.4em 0 0.7em;
+}
+
+thead th {
+  text-align: left;
+  font-weight: 650;
+  color: var(--ink);
+  background: var(--accent-soft);
+  border-bottom: 2px solid var(--accent);
+}
+
+th,
+td {
+  padding: 7px 12px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+
+tbody tr:last-child td {
+  border-bottom: 1px solid var(--border);
+}
+
+/* ------------------------------------------------------------------ extras */
+
+blockquote {
+  margin: 0.5em 0 0.6em;
+  padding: 0.35em 0 0.35em 0.9em;
+  border-left: 4px solid var(--border);
+  color: #374151;
+  font-size: 0.95em;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 0.7em 0;
+}
+
+img {
+  display: block;
+  margin: 0.4em auto;
+  max-height: 100%;
+}
+
+/* Baked Mermaid diagrams are images; keep them on the surface colour. */
+img[src$='.svg'],
+img[src$='.png'] {
+  background: transparent;
+}
+
+/* -------------------------------------------------- header, footer, numbers */
+
+header,
+footer {
+  position: absolute;
+  left: 64px;
+  right: 64px;
+  color: var(--muted);
+  font-size: 15px;
+  letter-spacing: 0.01em;
+}
+
+header {
+  top: 20px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 6px;
+}
+
+footer {
+  bottom: 18px;
+}
+
+section::after {
+  content: attr(data-marpit-pagination) ' / ' attr(data-marpit-pagination-total);
+  position: absolute;
+  right: 64px;
+  bottom: 18px;
+  color: var(--muted);
+  font-size: 15px;
+  font-family: var(--sans);
+}
+
+/* --------------------------------------------------------- utility classes */
+
+/* Title slide and section dividers: `<!-- _class: lead -->` */
+section.lead {
+  justify-content: center;
+  text-align: center;
+  padding: 72px 84px;
+  background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%);
+}
+
+section.lead h1 {
+  font-size: 52px;
+  border-bottom: none;
+  margin-bottom: 0.35em;
+}
+
+section.lead h2 {
+  font-size: 30px;
+  font-weight: 450;
+  color: #374151;
+}
+
+section.lead p,
+section.lead ul,
+section.lead blockquote {
+  font-size: 0.85em;
+}
+
+section.lead ul {
+  display: inline-block;
+  text-align: left;
+}
+
+/* Vertically centred body content: `<!-- _class: center -->` */
+section.center {
+  justify-content: center;
+}
+
+/* Dense slide: `<!-- _class: compact -->` — use with the lint's budget in mind */
+section.compact {
+  font-size: 21px;
+  padding: 40px 56px 54px;
+}
+
+section.compact h1 {
+  font-size: 32px;
+  margin-bottom: 0.5em;
+}
+
+section.compact h2 {
+  font-size: 27px;
+}
+
+section.compact table {
+  font-size: 18px;
+}
+
+section.compact pre {
+  font-size: 16px;
+}
+
+section.compact header,
+section.compact footer,
+section.compact::after {
+  font-size: 13px;
+}
+
+/* Two-column bullet lists: `<!-- _class: cols -->` */
+section.cols ul,
+section.cols ol {
+  columns: 2;
+  column-gap: 2.2em;
+}
+
+section.cols li {
+  break-inside: avoid;
+}
+
+/* Explicit 2-column grid for HTML-authored comparisons:
+   <div class="grid2"><div>…</div><div>…</div></div> */
+section .grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 2.2em;
+  align-items: start;
+}
+
+/* ------------------------------------------------------- 4:3 preset tweaks */
+
+section[data-size='4:3'] {
+  font-size: 24px;
+  padding: 46px 54px 54px;
+}
+
+section[data-size='4:3'] h1 {
+  font-size: 36px;
+}
+
+section[data-size='4:3'] pre {
+  font-size: 17px;
+}
+
+/* ------------------------------------------- syntax highlighting (Core v4) */
+
+.hljs-comment,
+.hljs-quote {
+  color: #6a737d;
+  font-style: italic;
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-literal,
+.hljs-section,
+.hljs-doctag,
+.hljs-type,
+.hljs-name,
+.hljs-strong {
+  color: #a626a4;
+}
+
+.hljs-string,
+.hljs-regexp,
+.hljs-addition,
+.hljs-attribute,
+.hljs-meta .hljs-string {
+  color: #50a14f;
+}
+
+.hljs-number,
+.hljs-variable,
+.hljs-template-variable,
+.hljs-class .hljs-title,
+.hljs-title.class_ {
+  color: #986801;
+}
+
+.hljs-title,
+.hljs-title.function_,
+.hljs-built_in,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-link {
+  color: #4078f2;
+}
+
+.hljs-attr,
+.hljs-property,
+.hljs-selector-attr,
+.hljs-selector-class,
+.hljs-selector-id {
+  color: #e45649;
+}
+
+.hljs-deletion {
+  color: #b31d28;
+}
+
+.hljs-emphasis {
+  font-style: italic;
+}
+
+.hljs-meta,
+.hljs-params {
+  color: #383a42;
+}

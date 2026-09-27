@@ -1,0 +1,5 @@
+graph LR
+  A["Bug ditemukan saat pengujian"] --> B["Perbaiki lalu uji ulang"]
+  B --> C["Bug menjadi kasus uji permanen"]
+  C --> D["Checklist dijalankan ulang tiap rilis"]
+  D -->|"menangkap regression"| A

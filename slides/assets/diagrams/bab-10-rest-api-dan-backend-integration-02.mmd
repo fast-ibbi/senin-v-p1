@@ -1,0 +1,4 @@
+graph LR
+  A["Client<br/>aplikasi mobile"] -->|"request: method + URL + headers + body"| B["Server<br/>Express :3000"]
+  B -->|"response: status code + body JSON"| A
+  A --> C["Menampilkan data<br/>atau pesan error"]

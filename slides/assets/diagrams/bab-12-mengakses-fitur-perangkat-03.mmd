@@ -1,0 +1,9 @@
+graph LR
+  A["Fitur dipanggil"] --> B["getPermissionsAsync()"]
+  B --> C{"granted?"}
+  C -->|"ya"| D["Pakai fitur"]
+  C -->|"tidak"| E{"canAskAgain?"}
+  E -->|"true"| F["requestPermissionsAsync()"]
+  E -->|"false"| G["Tolak permanen:<br/>arahkan ke Pengaturan"]
+  F -->|"disetujui"| D
+  F -->|"ditolak"| H["Tampilkan pesan<br/>dan jelaskan alasan"]

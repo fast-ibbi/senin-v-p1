@@ -1,0 +1,4 @@
+graph LR
+  A["App<br/>pemilik data &amp; state"] -->|"data"| B["DaftarMahasiswa"]
+  B -->|"mahasiswa"| C["KartuMahasiswa"]
+  C --> S["detailTampil<br/>state lokal tiap kartu"]

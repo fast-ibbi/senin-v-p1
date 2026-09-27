@@ -1,0 +1,7 @@
+graph LR
+  A["fetch ke API"] --> B{"Berhasil?"}
+  B -->|"Ya"| C["Simpan snapshot + timestamp"]
+  B -->|"Tidak"| D{"Ada cache dan belum lewat TTL?"}
+  D -->|"Ya"| E["Tampilkan cache + penanda offline"]
+  D -->|"Tidak"| F["Tampilkan pesan error"]
+  C --> G["Tampilkan data segar"]

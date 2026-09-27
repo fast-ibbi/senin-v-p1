@@ -1,0 +1,6 @@
+graph LR
+  A["Layar tab: terpasang (mounted)"] --> B["Mendapat fokus"]
+  B --> C["useFocusEffect berjalan"]
+  C --> D["Kehilangan fokus"]
+  D --> E["Fungsi pembersihan berjalan"]
+  E --> B

@@ -1,0 +1,6 @@
+graph TD
+  A["Aplikasi mobile<br/>React Native Expo (client)"] -->|"request HTTP: method + URL + headers + body"| B["Server API Express<br/>folder backend/ · port 3000"]
+  B -->|"respons: status code + body JSON"| A
+  B --> C["Data mahasiswa<br/>5 data baku buku"]
+  A --> D["fetch: GET · POST · PUT · DELETE"]
+  D --> E["Tiga keadaan UI<br/>loading · error · empty"]

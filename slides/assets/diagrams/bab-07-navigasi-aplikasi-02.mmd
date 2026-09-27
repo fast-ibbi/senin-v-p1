@@ -1,0 +1,17 @@
+graph LR
+  subgraph Berkas["Berkas di folder app/"]
+    B1["index.js"]
+    B2["login.js"]
+    B3["(app)/mahasiswa/index.js"]
+    B4["(app)/mahasiswa/[id].js"]
+  end
+  subgraph Alamat["Alamat rute"]
+    A1["/"]
+    A2["/login"]
+    A3["/mahasiswa"]
+    A4["/mahasiswa/2201001"]
+  end
+  B1 --> A1
+  B2 --> A2
+  B3 --> A3
+  B4 --> A4

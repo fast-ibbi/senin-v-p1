@@ -1,0 +1,5 @@
+graph LR
+  A["1. Pasang eas-cli<br/>global atau via npx"] --> B["2. eas login<br/>lalu eas whoami"]
+  B --> C["3. build:configure<br/>menghasilkan eas.json"]
+  C --> D["4. eas build<br/>--profile preview"]
+  D --> E["APK atau AAB<br/>dan tautan unduhan"]

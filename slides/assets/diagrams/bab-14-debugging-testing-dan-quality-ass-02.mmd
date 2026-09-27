@@ -1,0 +1,4 @@
+graph TD
+  A["Uji endpoint dengan curl atau fetch Node"] --> B{"Respons berhasil?"}
+  B -->|"Ya, status 200 tetapi aplikasi gagal"| C["Masalah di sisi aplikasi<br/>kode, konfigurasi, atau alamat"]
+  B -->|"Tidak"| D["Masalah di sisi server<br/>belum berjalan, port salah, 404/500"]

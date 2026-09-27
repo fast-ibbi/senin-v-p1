@@ -1,0 +1,5 @@
+graph LR
+  Data["data/mahasiswa.js"] --> App["App.js<br/>state: terpilih"]
+  App -->|"props: mahasiswa"| Kartu["ProfilMahasiswa<br/>kartu identitas"]
+  App -->|"props: aktif + padaPilih"| Baris["BarisMahasiswa<br/>satu baris daftar"]
+  Baris -->|"sentuhan memanggil padaPilih"| App
