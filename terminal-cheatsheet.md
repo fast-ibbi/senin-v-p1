@@ -18,60 +18,13 @@ cd nama_folder
 
 Contoh penggunaan:
 
-|
-Perintah
-
-|
-
-Fungsi
-
-|
+| Perintah | Fungsi |
 | --- | --- |
-|
-
-`cd Documents`
-
-|
-
-Masuk ke folder Documents
-
-|
-|
-
-`cd ..`
-
-|
-
-Kembali ke folder sebelumnya (parent directory)
-
-|
-|
-
-`cd /`
-
-|
-
-Masuk ke direktori root
-
-|
-|
-
-`cd ~`
-
-|
-
-Kembali ke home directory
-
-|
-|
-
-`cd Documents/project`
-
-|
-
-Masuk ke folder project di dalam Documents
-
-|
+| `cd Documents` | Masuk ke folder Documents |
+| `cd ..` | Kembali ke folder sebelumnya (parent directory) |
+| `cd /` | Masuk ke direktori root |
+| `cd ~` | Kembali ke home directory |
+| `cd Documents/project` | Masuk ke folder project di dalam Documents |
 
 Contoh praktik:
 
@@ -204,60 +157,13 @@ Artinya, pada direktori aktif terdapat tiga folder dan satu file.
 
 Beberapa variasi yang sering digunakan:
 
-|
-Perintah
-
-|
-
-Fungsi
-
-|
+| Perintah | Fungsi |
 | --- | --- |
-|
-
-`ls`
-
-|
-
-Menampilkan nama file dan folder
-
-|
-|
-
-`ls -l`
-
-|
-
-Menampilkan daftar dalam format panjang, termasuk izin akses, pemilik, ukuran, dan tanggal
-
-|
-|
-
-`ls -a`
-
-|
-
-Menampilkan file tersembunyi, termasuk yang diawali titik (`.`)
-
-|
-|
-
-`ls -la`
-
-|
-
-Menampilkan semua file dalam format panjang
-
-|
-|
-
-`ls Documents`
-
-|
-
-Menampilkan isi folder Documents
-
-|
+| `ls` | Menampilkan nama file dan folder |
+| `ls -l` | Menampilkan daftar dalam format panjang, termasuk izin akses, pemilik, ukuran, dan tanggal |
+| `ls -a` | Menampilkan file tersembunyi, termasuk yang diawali titik (`.`) |
+| `ls -la` | Menampilkan semua file dalam format panjang |
+| `ls Documents` | Menampilkan isi folder Documents |
 
 Contoh:
 
@@ -408,33 +314,10 @@ rm -rf project
 
 Penjelasan opsi:
 
-|
-Opsi
-
-|
-
-Arti
-
-|
+| Opsi | Arti |
 | --- | --- |
-|
-
-`-r`
-
-|
-
-Recursive, menghapus folder beserta seluruh isi di dalamnya
-
-|
-|
-
-`-f`
-
-|
-
-Force, tidak meminta konfirmasi dan mengabaikan file yang tidak ditemukan
-
-|
+| `-r` | Recursive, menghapus folder beserta seluruh isi di dalamnya |
+| `-f` | Force, tidak meminta konfirmasi dan mengabaikan file yang tidak ditemukan |
 
 Contoh struktur sebelum dihapus:
 
@@ -542,136 +425,17 @@ Perintah `code` berfungsi membuka file di Visual Studio Code jika command line V
 
 Tabel berikut bisa digunakan sebagai contekan saat belajar terminal.
 
-|
-Perintah
-
-|
-
-Fungsi
-
-|
-
-Contoh
-
-|
+| Perintah | Fungsi | Contoh |
 | --- | --- | --- |
-|
-
-`cd`
-
-|
-
-Berpindah direktori
-
-|
-
-`cd Documents`
-
-|
-|
-
-`mkdir`
-
-|
-
-Membuat folder
-
-|
-
-`mkdir project`
-
-|
-|
-
-`ls`
-
-|
-
-Melihat isi direktori
-
-|
-
-`ls -la`
-
-|
-|
-
-`ll`
-
-|
-
-Alias daftar panjang, jika tersedia
-
-|
-
-`ll`
-
-|
-|
-
-`clear`
-
-|
-
-Membersihkan tampilan terminal
-
-|
-
-`clear`
-
-|
-|
-
-`rm`
-
-|
-
-Menghapus file
-
-|
-
-`rm app.js`
-
-|
-|
-
-`rm -r`
-
-|
-
-Menghapus folder dan isinya
-
-|
-
-`rm -r project`
-
-|
-|
-
-`rm -rf`
-
-|
-
-Menghapus folder secara paksa
-
-|
-
-`rm -rf project`
-
-|
-|
-
-`touch`
-
-|
-
-Membuat file kosong
-
-|
-
-`touch app.js`
-
-|
+| `cd` | Berpindah direktori | `cd Documents` |
+| `mkdir` | Membuat folder | `mkdir project` |
+| `ls` | Melihat isi direktori | `ls -la` |
+| `ll` | Alias daftar panjang, jika tersedia | `ll` |
+| `clear` | Membersihkan tampilan terminal | `clear` |
+| `rm` | Menghapus file | `rm app.js` |
+| `rm -r` | Menghapus folder dan isinya | `rm -r project` |
+| `rm -rf` | Menghapus folder secara paksa | `rm -rf project` |
+| `touch` | Membuat file kosong | `touch app.js` |
 
 ## Latihan praktik
 
