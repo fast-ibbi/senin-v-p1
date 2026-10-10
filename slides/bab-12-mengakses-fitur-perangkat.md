@@ -29,11 +29,11 @@ kampus di ponsel Anda?" Tampung dua sampai tiga jawaban sebagai bahan Subbab 12.
 
 ## Tujuan Pembelajaran
 
-* Menjelaskan API perangkat dan model izin runtime Android dan iOS
-* Mengidentifikasi peran enam paket Expo untuk fitur perangkat
-* Mengimplementasikan permintaan izin dan penanganan penolakannya
-* Mengambil foto serta membaca koordinat beserta nilai akurasinya
-* Menganalisis privasi data perangkat dan membangun Aplikasi Profil Mahasiswa
+- Menjelaskan API perangkat dan model izin runtime Android dan iOS
+- Mengidentifikasi peran enam paket Expo untuk fitur perangkat
+- Mengimplementasikan permintaan izin dan penanganan penolakannya
+- Mengambil foto serta membaca koordinat beserta nilai akurasinya
+- Menganalisis privasi data perangkat dan membangun Aplikasi Profil Mahasiswa
 
 <!--
 Bacakan kata kerjanya saja. Tekankan bahwa tujuan ke-5 adalah yang dinilai pada
@@ -41,43 +41,6 @@ praktikum: aplikasi harus tetap berfungsi saat izin ditolak, bukan hanya saat di
 
 Kaitkan dengan RPS: pertemuan ini memetakan Sub-CPMK 6.2 dengan luaran Aplikasi Profil
 Mahasiswa, dan penilaiannya mengikuti rubrik praktikum (Lampiran A).
--->
-
----
-
-## Peta Konsep Bab 12
-
-![w:720](assets/diagrams/bab-12-mengakses-fitur-perangkat-01.svg)
-
-<!--
-Bacakan peta dari atas ke bawah: semua fitur perangkat lewat satu gerbang yang sama,
-yaitu izin. Inilah sebabnya Subbab 12.1 dibahas paling awal.
-
-Perhatikan bahwa keempat cabang fitur bertemu kembali di satu simpul privasi — pesan
-bab ini: kemampuan teknis tidak pernah terpisah dari tanggung jawab etis.
-
-Pertanyaan cepat: "Bab 11 muncul di mana pada peta ini?" (Jawaban: di ujung, sebagai
-tempat menyimpan hasil agar data bertahan setelah aplikasi dibuka ulang.)
--->
-
----
-
-<!-- _class: center -->
-
-## Tiga Pertanyaan Pembuka
-
-* Aplikasi peta tahu posisi Anda — dari mana angka itu datang?
-* Kalau kamera bisa dinyalakan aplikasi mana pun, apa risikonya?
-* Mengapa foto profil hilang setelah aplikasi ditutup?
-
-Jawabannya tersebar di Subbab 12.1 (izin), 12.2–12.5 (fitur), dan 12.6–12.7 (privasi dan mini project).
-
-<!--
-Think-pair-share: 2 menit berpikir sendiri, 2 menit berpasangan, lalu 2 sampai 3
-pasangan menyampaikan jawaban singkat. Jangan dijawab sekarang.
-
-Pemicu bila kelas pasif: "Siapa yang pernah menolak permintaan izin sebuah aplikasi?
-Apa yang membuat Anda menolak?" Ini pintu masuk paling cepat ke Subbab 12.6.
 -->
 
 ---
@@ -122,11 +85,11 @@ seluruh keputusan tampilan dan penyimpanan ada di kode JavaScript kita.)
 
 ## Sandbox: Mengapa Izin Ada
 
-* Tanpa izin, aplikasi mana pun dapat memotret Anda tanpa diketahui
-* **Sandbox** mengurung tiap aplikasi di ruang terpisah miliknya
-* **Izin runtime (runtime permission)** diminta saat aplikasi berjalan
-* Model ini dipakai Android sejak versi 6 (Marshmallow) dan iOS
-* iOS mewajibkan **deskripsi penggunaan** di `Info.plist`; tanpa itu aplikasi berhenti
+- Tanpa izin, aplikasi mana pun dapat memotret Anda tanpa diketahui
+- **Sandbox** mengurung tiap aplikasi di ruang terpisah miliknya
+- **Izin runtime (runtime permission)** diminta saat aplikasi berjalan
+- Model ini dipakai Android sejak versi 6 (Marshmallow) dan iOS
+- iOS mewajibkan **deskripsi penggunaan** di `Info.plist`; tanpa itu aplikasi berhenti
 
 <!--
 Tekankan bedanya Android dan iOS di sini: Android menampilkan dialog sistem, sedangkan
@@ -280,9 +243,9 @@ langsung mengembalikan status ditolak.)
 
 **Apa yang terjadi jika** aplikasi meminta lima izin sekaligus saat pertama kali dibuka, lalu pengguna memilih "jangan tanyakan lagi" untuk kamera?
 
-* Apa yang dilihat pengguna pada detik pertama memakai aplikasi?
-* Apa yang masih bisa dilakukan aplikasi setelah itu?
-* Bagaimana seharusnya permintaan izin disusun ulang?
+- Apa yang dilihat pengguna pada detik pertama memakai aplikasi?
+- Apa yang masih bisa dilakukan aplikasi setelah itu?
+- Bagaimana seharusnya permintaan izin disusun ulang?
 
 <!--
 Beri 3 menit berpasangan. Jawaban yang diharapkan: pengguna kebingungan karena tidak
@@ -303,9 +266,9 @@ yang dinilai pada Soal Analisis Subbab 12.6.
 | Ditolak sementara | Dialog sistem satu kali | Jelaskan alasan, minta lagi saat dibutuhkan |
 | Ditolak permanen | Dialog tidak muncul lagi | Tampilkan penjelasan dan tombol "Buka Pengaturan" |
 
-* Izin tidak bersifat permanen — pengguna dapat mencabutnya kapan saja
-* Mintalah izin saat dibutuhkan, bukan serentak saat aplikasi dibuka
-* Periksa ulang izin sebelum memakai fitur sensitif
+- Izin tidak bersifat permanen — pengguna dapat mencabutnya kapan saja
+- Mintalah izin saat dibutuhkan, bukan serentak saat aplikasi dibuka
+- Periksa ulang izin sebelum memakai fitur sensitif
 
 <!--
 Slide ini jawaban dari pertanyaan di slide sebelumnya. Tekankan baris terakhir tabel:
@@ -365,9 +328,9 @@ tidak disarankan; periksa dokumentasi resmi expo-camera terbaru.
 
 ## Think-Pair-Share: Memilih Paket
 
-* Foto profil mahasiswa untuk aplikasi kampus
-* Pemindai kode QR pada kartu ujian
-* Filter kamera yang harus terlihat real-time
+- Foto profil mahasiswa untuk aplikasi kampus
+- Pemindai kode QR pada kartu ujian
+- Filter kamera yang harus terlihat real-time
 
 **Tugas:** tentukan paket untuk setiap skenario dan sebutkan alasannya.
 
@@ -439,9 +402,9 @@ async function ambilFotoDariKamera() {
 }
 ```
 
-* Hasilnya objek: `canceled` menandai pembatalan, `assets[0].uri` berisi alamat gambar
-* `allowsEditing: true` dengan `aspect: [1, 1]` memotong foto menjadi persegi
-* `uri` menunjuk berkas sementara di cache sistem, bukan berkas permanen
+- Hasilnya objek: `canceled` menandai pembatalan, `assets[0].uri` berisi alamat gambar
+- `allowsEditing: true` dengan `aspect: [1, 1]` memotong foto menjadi persegi
+- `uri` menunjuk berkas sementara di cache sistem, bukan berkas permanen
 
 <!--
 Bandingkan panjang kode ini dengan expo-camera di slide sebelumnya — perbedaannya
@@ -458,10 +421,10 @@ string, misalnya ['images'], menggantikan konstanta MediaTypeOptions yang lama.
 
 ## Lokasi: Dua Sumber Posisi
 
-* **GPS (Global Positioning System)** menghitung posisi dari sinyal satelit
-* Paling akurat di area terbuka; di dalam gedung sering meleset ratusan meter
-* Posisi berbasis jaringan (Wi-Fi dan menara seluler) lebih cepat, kurang presisi
-* `expo-location` menyatukan kedua sumber dan mengembalikan koordinat
+- **GPS (Global Positioning System)** menghitung posisi dari sinyal satelit
+- Paling akurat di area terbuka; di dalam gedung sering meleset ratusan meter
+- Posisi berbasis jaringan (Wi-Fi dan menara seluler) lebih cepat, kurang presisi
+- `expo-location` menyatukan kedua sumber dan mengembalikan koordinat
 
 Aplikasi cukup memilih tingkat akurasi yang dibutuhkan, lalu menerima koordinatnya.
 
@@ -521,8 +484,8 @@ Tanyakan: "Mengapa fungsi ini mengembalikan null, bukan menampilkan pesan galat?
 | `Balanced` | Sekitar 100 meter | Menampilkan koordinat profil |
 | `High` | Sekitar 10 meter | Presensi yang butuh ketelitian |
 
-* `accuracy` adalah perkiraan radius ketidakpastian dalam meter, bukan titik pasti
-* Tampilkan nilai akurasi bersama koordinat — koordinat tanpa akurasi menyesatkan
+- `accuracy` adalah perkiraan radius ketidakpastian dalam meter, bukan titik pasti
+- Tampilkan nilai akurasi bersama koordinat — koordinat tanpa akurasi menyesatkan
 
 <!--
 Tekankan angka 35 pada pesan "+/- 35 meter": artinya posisi sebenarnya berada di suatu
@@ -575,10 +538,10 @@ await Notifications.setNotificationChannelAsync('pengingat-kuliah', {
 });
 ```
 
-* **Kanal notifikasi (notification channel)** mengelompokkan notifikasi per jenis
-* Pengguna mengatur bunyi dan tingkat gangguan per kanal
-* Tanpa kanal, notifikasi dapat diabaikan sistem di Android
-* Di Android 13 ke atas izin notifikasi ditanyakan eksplisit; versi lama langsung disetujui
+- **Kanal notifikasi (notification channel)** mengelompokkan notifikasi per jenis
+- Pengguna mengatur bunyi dan tingkat gangguan per kanal
+- Tanpa kanal, notifikasi dapat diabaikan sistem di Android
+- Di Android 13 ke atas izin notifikasi ditanyakan eksplisit; versi lama langsung disetujui
 
 <!--
 Analogi kanal: seperti folder surel masuk — pengguna dapat membisukan satu folder tanpa
@@ -651,9 +614,9 @@ export async function bacaCatatan() {
 }
 ```
 
-* `Paths.document` untuk berkas permanen; direktori cache boleh dibersihkan sistem
-* Operasi ini tidak memerlukan izin karena direktorinya privat milik aplikasi
-* Salin `uri` image picker ke `Paths.document` agar foto bertahan
+- `Paths.document` untuk berkas permanen; direktori cache boleh dibersihkan sistem
+- Operasi ini tidak memerlukan izin karena direktorinya privat milik aplikasi
+- Salin `uri` image picker ke `Paths.document` agar foto bertahan
 
 <!--
 Analogi sandbox berkas: seperti lemari pribadi berkunci di rumah sendiri — aplikasi
@@ -677,9 +640,9 @@ periksa dokumentasi resmi expo-file-system untuk bentuk terkini.
 | `osName` dan `osVersion` | Sistem operasi beserta versinya |
 | `isDevice` | Membedakan perangkat fisik dari emulator |
 
-* Berguna untuk menyesuaikan tampilan dan menolak fitur tertentu di emulator
-* ⚠ Kombinasi data ini dapat dipakai untuk **fingerprinting** (identifikasi unik pengguna)
-* Praktiknya tunduk pada prinsip minimasi data pada Subbab 12.6
+- Berguna untuk menyesuaikan tampilan dan menolak fitur tertentu di emulator
+- ⚠ Kombinasi data ini dapat dipakai untuk **fingerprinting** (identifikasi unik pengguna)
+- Praktiknya tunduk pada prinsip minimasi data pada Subbab 12.6
 
 <!--
 Hubungkan isDevice dengan aplikasi presensi: server dapat menolak presensi dari
@@ -717,7 +680,7 @@ praktikum mandiri dengan laporan.
 2. **Jangan mengunggah tanpa persetujuan** — hanya atas tindakan eksplisit pengguna
 3. **Minimalkan data (data minimization)** — ambil sesedikit mungkin yang masih berfungsi
 
-* AsyncStorage bukan tempat data sensitif; token disimpan di `expo-secure-store` (Bab 13)
+- AsyncStorage bukan tempat data sensitif; token disimpan di `expo-secure-store` (Bab 13)
 
 > "Data yang tidak pernah dikumpulkan adalah data yang tidak bisa bocor."
 
@@ -738,9 +701,9 @@ Tanyakan: "Mengapa aplikasi yang dipublikasikan wajib punya kebijakan privasi?"
 
 ![w:720](assets/diagrams/bab-12-mengakses-fitur-perangkat-04.svg)
 
-* Empat kelompok data: akademik, foto, lokasi, dan informasi perangkat
-* Struktur berkas: `App.js`, `screens/ProfilMahasiswa.js`, `utils/profilStorage.js`
-* Bukti keberhasilan: tutup aplikasi, buka kembali, seluruh data masih tampil
+- Empat kelompok data: akademik, foto, lokasi, dan informasi perangkat
+- Struktur berkas: `App.js`, `screens/ProfilMahasiswa.js`, `utils/profilStorage.js`
+- Bukti keberhasilan: tutup aplikasi, buka kembali, seluruh data masih tampil
 
 <!--
 Tunjukkan pola yang berulang di setiap cabang: minta izin, pakai fitur, simpan hasil.
@@ -795,11 +758,11 @@ nilai bawaan itu penting.
 
 ## Mini Kuis
 
-* Apa dua lapis pengelolaan izin pada project Expo?
-* Paket mana yang tepat untuk memindai kode QR?
-* Apa arti `accuracy: 35` pada hasil pembacaan lokasi?
-* Mengapa `uri` image picker tidak aman untuk penyimpanan jangka panjang?
-* Apa bedanya notifikasi lokal dan notifikasi push jarak jauh?
+- Apa dua lapis pengelolaan izin pada project Expo?
+- Paket mana yang tepat untuk memindai kode QR?
+- Apa arti `accuracy: 35` pada hasil pembacaan lokasi?
+- Mengapa `uri` image picker tidak aman untuk penyimpanan jangka panjang?
+- Apa bedanya notifikasi lokal dan notifikasi push jarak jauh?
 
 <!--
 Kuis lisan 5 menit: tampilkan pertanyaan, minta kelas menjawab serentak atau angkat
@@ -815,11 +778,11 @@ ketidakpastian sebelum menutup pertemuan.
 
 ## Jawaban
 
-* Deklarasi lewat `plugins` di `app.json`, dan permintaan saat aplikasi berjalan
-* `expo-camera` — aplikasi harus menampilkan dan mengolah bidikan langsung
-* Perkiraan radius ketidakpastian lebih kurang 35 meter dari posisi sebenarnya
-* Berkasnya sementara di cache sistem dan dapat dibersihkan kapan saja
-* Push dikirim server pengirim; lokal dijadwalkan sendiri oleh perangkat
+- Deklarasi lewat `plugins` di `app.json`, dan permintaan saat aplikasi berjalan
+- `expo-camera` — aplikasi harus menampilkan dan mengolah bidikan langsung
+- Perkiraan radius ketidakpastian lebih kurang 35 meter dari posisi sebenarnya
+- Berkasnya sementara di cache sistem dan dapat dibersihkan kapan saja
+- Push dikirim server pengirim; lokal dijadwalkan sendiri oleh perangkat
 
 <!--
 Ulangi pembeda yang paling sering tertukar: akurasi adalah radius ketidakpastian, bukan
@@ -839,8 +802,8 @@ menutup pertemuan.
 | Koordinat berada dalam radius 100 meter dari gedung | Lokasi berakurasi `High` (Subbab 12.3) |
 | Tidak ada dua presensi dari perangkat yang sama | Info perangkat (Subbab 12.5) |
 
-* Pengingat sesi kuliah dikirim lewat notifikasi lokal (Subbab 12.4)
-* Akibatnya, praktik titip tanda tangan secara fisik menjadi jauh lebih sulit
+- Pengingat sesi kuliah dikirim lewat notifikasi lokal (Subbab 12.4)
+- Akibatnya, praktik titip tanda tangan secara fisik menjadi jauh lebih sulit
 
 <!--
 Ceritakan sebagai masalah nyata: daftar hadir bertanda tangan dapat dititipkan, sehingga
@@ -857,11 +820,11 @@ Informasi Akademik Mobile di Project Akhir.
 
 ## Sisi Lain: Dilema Privasi Data Presensi
 
-* Data presensi menggabungkan wajah, lokasi, dan waktu keberadaan mahasiswa
-* Dari tiga titik itu, gambaran "di mana dan kapan" seseorang dapat direkonstruksi
-* Praktik penahan risikonya: izin jujur, minimasi data, unggah atas tindakan pengguna
-* Cukup koordinat titik cek-in, bukan jejak lokasi yang dicatat terus-menerus
-* Batasi masa simpan data sesuai kebijakan kampus
+- Data presensi menggabungkan wajah, lokasi, dan waktu keberadaan mahasiswa
+- Dari tiga titik itu, gambaran "di mana dan kapan" seseorang dapat direkonstruksi
+- Praktik penahan risikonya: izin jujur, minimasi data, unggah atas tindakan pengguna
+- Cukup koordinat titik cek-in, bukan jejak lokasi yang dicatat terus-menerus
+- Batasi masa simpan data sesuai kebijakan kampus
 
 > Tanpa praktik ini, solusi untuk melindungi integritas akademik berubah menjadi alat pengawasan yang menimbulkan masalah baru.
 

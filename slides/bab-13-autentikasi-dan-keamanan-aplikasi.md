@@ -32,11 +32,11 @@ Project Akhir.
 
 ## Tujuan Pembelajaran
 
-* Menjelaskan perbedaan autentikasi dan otorisasi pada aplikasi sistem informasi
-* Membandingkan mekanisme session dan token beserta konsekuensi skalabilitasnya
-* Menganalisis struktur JWT (*JSON Web Token*): header, payload, dan signature
-* Menerapkan protected route serta penyimpanan token dengan SecureStore
-* Mengevaluasi prinsip keamanan API: validasi server, HTTPS, least privilege
+- Menjelaskan perbedaan autentikasi dan otorisasi pada aplikasi sistem informasi
+- Membandingkan mekanisme session dan token beserta konsekuensi skalabilitasnya
+- Menganalisis struktur JWT (*JSON Web Token*): header, payload, dan signature
+- Menerapkan protected route serta penyimpanan token dengan SecureStore
+- Mengevaluasi prinsip keamanan API: validasi server, HTTPS, least privilege
 
 <!--
 Bacakan kata kerjanya saja, bukan seluruh kalimatnya. Tujuan ke-3 dan ke-5 adalah inti
@@ -45,46 +45,6 @@ kebijakan hak akses.
 
 Kaitkan dengan penilaian: pertemuan ini dinilai dari praktikum Bab 13 sekaligus menjadi
 milestone autentikasi Project Akhir dengan bobot security 5% (Lampiran B).
--->
-
----
-
-## Peta Konsep Bab 13
-
-![w:500](assets/diagrams/bab-13-autentikasi-dan-keamanan-aplikasi-01.svg)
-
-<!--
-Bacakan peta ini sebagai urutan subbab, bukan sebagai pohon: 13.1 membedakan autentikasi
-dan otorisasi, 13.2 memasukkan mekanisme login dan session, lalu 13.3 berhenti pada token
-dan JWT.
-
-Setelah 13.3, bab berpindah dari konsep ke praktik: 13.4 melindungi halaman, 13.5
-menyimpan token dengan aman, 13.6 menetapkan prinsip keamanan API, dan 13.7 menyatukan
-semuanya menjadi alur login → token → akses API → logout.
-
-Tanyakan: "Subbab mana yang menjawab pertanyaan di mana token sebaiknya disimpan?"
-(Jawaban: 13.5, SecureStore.)
--->
-
----
-
-<!-- _class: center -->
-
-## Tiga Pertanyaan Pembuka
-
-* Apa bedanya "siapa Anda" dan "apa yang boleh Anda lakukan"?
-* Kalau token itu kunci, di mana sebaiknya kunci itu disimpan?
-* Apa yang terjadi bila lalu lintas aplikasi dibaca orang di Wi-Fi kampus?
-
-Jawabannya tersebar di Subbab 13.1, 13.5, dan 13.6.
-
-<!--
-Think-pair-share: 2 menit berpikir sendiri, 2 menit berpasangan, lalu tampung 2–3
-pasangan. Jangan menjawab sekarang.
-
-Pemicu bila kelas pasif: "Aplikasi bank Anda meminta sidik jari saat dibuka, tetapi
-tidak pernah meminta password lagi. Mengapa itu bisa aman?" (Karena token disimpan di
-penyimpanan terenkripsi perangkat.)
 -->
 
 ---
@@ -112,16 +72,16 @@ Subbab 13.3 paling sering salah dipahami — sediakan waktu paling banyak di sin
 
 **Authentication (autentikasi)**
 
-* Membuktikan identitas: "siapa kamu?"
-* Kredensial dicocokkan dengan data yang tersimpan
+- Membuktikan identitas: "siapa kamu?"
+- Kredensial dicocokkan dengan data yang tersimpan
 
 </div>
 <div>
 
 **Authorization (otorisasi)**
 
-* Menentukan hak akses: "apa yang boleh kamu lakukan?"
-* Dibaca dari peran (*role*) pengguna yang sudah terbukti
+- Menentukan hak akses: "apa yang boleh kamu lakukan?"
+- Dibaca dari peran (*role*) pengguna yang sudah terbukti
 
 </div>
 </div>
@@ -148,8 +108,8 @@ bukan login yang melarangnya, melainkan otorisasi di server.)
 | `dosen` | Menginput nilai mata kuliah yang diampunya |
 | `admin` | Mengelola data seluruh pengguna |
 
-* Autentikasi sama untuk semua peran; yang berbeda adalah hasil otorisasinya
-* Pemeriksaan `role` di klien hanya kenyamanan; server yang memutuskan otorisasi
+- Autentikasi sama untuk semua peran; yang berbeda adalah hasil otorisasinya
+- Pemeriksaan `role` di klien hanya kenyamanan; server yang memutuskan otorisasi
 
 <!--
 Tekankan baris terakhir: itu kalimat yang paling sering dilanggar mahasiswa saat membuat
@@ -170,8 +130,8 @@ Peringatkan bahwa keputusan otorisasi yang mengikat selalu ada di server.
 | `POST /api/auth/register` | Membuat akun baru | `201 Created` |
 | `POST /api/auth/login` | Mencocokkan kredensial, menjawab token | `200 OK` |
 
-* Kredensial yang salah dijawab server dengan `401 Unauthorized`
-* Server buku dijalankan dengan `cd backend && npm install && npm start`
+- Kredensial yang salah dijawab server dengan `401 Unauthorized`
+- Server buku dijalankan dengan `cd backend && npm install && npm start`
 
 <!--
 Tunjukkan bahwa dua endpoint ini adalah pintu masuk; semua endpoint data setelahnya baru
@@ -189,11 +149,11 @@ belum terbukti, sehingga aplikasi harus mengembalikan pengguna ke halaman login 
 
 ## Kata Sandi Tidak Pernah Disimpan Polos
 
-* **Kredensial** adalah identitas pengguna: biasanya email dan kata sandi
-* Server menyimpan hasil **hashing** satu arah (misalnya bcrypt), bukan teks asli
-* *Salt* membuat dua kata sandi yang sama menghasilkan nilai hash berbeda
-* Di buku ini kata sandi selalu ditulis sebagai placeholder `••••••••`
-* Kata sandi tidak pernah dicetak ke layar, disimpan, atau dimasukkan ke log
+- **Kredensial** adalah identitas pengguna: biasanya email dan kata sandi
+- Server menyimpan hasil **hashing** satu arah (misalnya bcrypt), bukan teks asli
+- *Salt* membuat dua kata sandi yang sama menghasilkan nilai hash berbeda
+- Di buku ini kata sandi selalu ditulis sebagai placeholder `••••••••`
+- Kata sandi tidak pernah dicetak ke layar, disimpan, atau dimasukkan ke log
 
 <!--
 Tekankan sifat satu arah: dari nilai hash tidak dapat diperoleh kembali kata sandi aslinya,
@@ -213,9 +173,9 @@ mengirim kata sandi saya?" (Karena server sendiri tidak menyimpannya.)
 
 ## Apa yang Terjadi Jika…?
 
-* …kata sandi disimpan sebagai teks polos di basis data server?
-* …token disimpan di AsyncStorage lalu perangkat di-*root*?
-* …login sudah aman, tetapi endpoint daftar mahasiswa tanpa proteksi?
+- …kata sandi disimpan sebagai teks polos di basis data server?
+- …token disimpan di AsyncStorage lalu perangkat di-*root*?
+- …login sudah aman, tetapi endpoint daftar mahasiswa tanpa proteksi?
 
 <!--
 Jangan segera menjelaskan; minta tiga mahasiswa menjawab satu skenario masing-masing,
@@ -239,7 +199,7 @@ Catat jawaban yang salah untuk dikoreksi pada Subbab 13.5 dan 13.6.
 | Skalabilitas | Perlu berbagi sesi antar server | Server dapat ditambah bebas |
 | Cocok untuk | Aplikasi web tradisional | REST API dan aplikasi mobile |
 
-* Aplikasi mobile dan REST API memilih token karena tidak bergantung pada *cookie* peramban
+- Aplikasi mobile dan REST API memilih token karena tidak bergantung pada *cookie* peramban
 
 <!--
 Bandingkan dua kolom kontras, jangan dibaca baris per baris: session menang di pencabutan,
@@ -277,9 +237,9 @@ yang cukup diperiksa keasliannya tanpa membuka buku catatan.
 
 ![w:260](assets/diagrams/bab-13-autentikasi-dan-keamanan-aplikasi-03.svg)
 
-* **JWT** (*JSON Web Token*) adalah tanda akses berbentuk JSON yang ditandatangani
-* Header dan payload di-*encode* dengan **base64url** (penyandian agar karakter JSON aman)
-* Signature dihitung memakai **secret key** yang hanya diketahui server
+- **JWT** (*JSON Web Token*) adalah tanda akses berbentuk JSON yang ditandatangani
+- Header dan payload di-*encode* dengan **base64url** (penyandian agar karakter JSON aman)
+- Signature dihitung memakai **secret key** yang hanya diketahui server
 
 <!--
 Tuliskan bentuknya di papan sebagai tiga blok berurutan supaya mahasiswa melihat bahwa
@@ -331,10 +291,10 @@ bahwa isi payload terbaca sebagai teks biasa.
 
 ## JWT Bukan Enkripsi
 
-* Header dan payload hanya di-*encode*: siapa pun dapat mendekode dan membacanya
-* Tanda tangan menjaga **keutuhan** dan **keaslian**, bukan **kerahasiaan** isinya
-* Mengubah satu huruf pada header atau payload membuat tanda tangan tidak cocok
-* Jangan pernah menaruh kata sandi atau data rahasia di dalam payload
+- Header dan payload hanya di-*encode*: siapa pun dapat mendekode dan membacanya
+- Tanda tangan menjaga **keutuhan** dan **keaslian**, bukan **kerahasiaan** isinya
+- Mengubah satu huruf pada header atau payload membuat tanda tangan tidak cocok
+- Jangan pernah menaruh kata sandi atau data rahasia di dalam payload
 
 <!--
 Ini miskonsepsi nomor satu pada bab ini: mahasiswa mengira JWT "terenkripsi" sehingga aman
@@ -351,10 +311,10 @@ dibahas lagi di Subbab 13.6 dan studi kasus.
 
 ## Mengapa JWT Membuat Server Stateless
 
-* Server menghitung ulang tanda tangan dari header dan payload yang diterima
-* Tidak ada pencarian ke basis data untuk memeriksa daftar token yang sah
-* Verifikasi hanya butuh secret key, aritmetika, dan pemeriksaan klaim `exp`
-* Server mana pun yang memegang secret key dapat memverifikasi token yang sama
+- Server menghitung ulang tanda tangan dari header dan payload yang diterima
+- Tidak ada pencarian ke basis data untuk memeriksa daftar token yang sah
+- Verifikasi hanya butuh secret key, aritmetika, dan pemeriksaan klaim `exp`
+- Server mana pun yang memegang secret key dapat memverifikasi token yang sama
 
 <!--
 Tekankan bahwa tidak ada langkah "mencari token ini di basis data". Yang ada hanyalah
@@ -372,10 +332,10 @@ token di sisi klien.)
 
 ## Harga Stateless: Pencabutan Sulit
 
-* Server tidak punya daftar token tercabut: token curian berlaku sampai `exp`
-* Pola umum: token akses berumur pendek, misalnya 15 menit sampai 1 jam
-* **Refresh token** berumur panjang menerbitkan token akses baru tanpa login ulang
-* Refresh token cukup dipahami sebagai gambaran umum; implementasinya ada di Tantangan
+- Server tidak punya daftar token tercabut: token curian berlaku sampai `exp`
+- Pola umum: token akses berumur pendek, misalnya 15 menit sampai 1 jam
+- **Refresh token** berumur panjang menerbitkan token akses baru tanpa login ulang
+- Refresh token cukup dipahami sebagai gambaran umum; implementasinya ada di Tantangan
 
 <!--
 Sampaikan ini sebagai trade-off, bukan cacat desain: setiap pilihan punya harga, dan harga
@@ -409,11 +369,11 @@ Sisakan waktu paling sedikit 20 menit untuk praktikum pada bagian akhir.
 
 ## Protected Route: Definisi dan Batasnya
 
-* **Protected route** adalah halaman yang hanya boleh diakses pengguna yang sudah login
-* Proteksi di klien adalah lapis pengalaman pengguna (UX), bukan pengamanan data
-* Keamanan data ditentukan **middleware** (*perantara*) server pada header `Authorization`
-* Halaman pengarah `app/index.js` memutuskan arah berdasarkan status autentikasi
-* Selama status `memuat`, tampilkan indikator pemuatan agar layar tidak berkedip
+- **Protected route** adalah halaman yang hanya boleh diakses pengguna yang sudah login
+- Proteksi di klien adalah lapis pengalaman pengguna (UX), bukan pengamanan data
+- Keamanan data ditentukan **middleware** (*perantara*) server pada header `Authorization`
+- Halaman pengarah `app/index.js` memutuskan arah berdasarkan status autentikasi
+- Selama status `memuat`, tampilkan indikator pemuatan agar layar tidak berkedip
 
 <!--
 Ulangi pola dari Bab 7, lalu jelaskan apa yang baru di bab ini: pemeriksaan tidak lagi
@@ -527,7 +487,7 @@ menghitung sendiri umur token?" (Karena server yang berwenang memutuskan kesahih
 | Ukuran nilai | Besar (bebas) | ±2 KB per nilai |
 | Cocok untuk | Data non-sensitif, cache | Token, PIN, rahasia kecil |
 
-* Token seperti uang tunai digital: tempat menyimpannya menentukan keamanan
+- Token seperti uang tunai digital: tempat menyimpannya menentukan keamanan
 
 <!--
 Rangkum pembagian tugas penyimpanan: data besar dan tidak sensitif tetap di AsyncStorage
@@ -564,7 +524,7 @@ export async function hapusToken() {
 }
 ```
 
-* Pasang dengan `npx expo install expo-secure-store` agar versinya cocok dengan SDK
+- Pasang dengan `npx expo install expo-secure-store` agar versinya cocok dengan SDK
 
 <!--
 Tunjukkan manfaat pembungkusan: hanya file ini yang mengenal nama kunci, sehingga salah
@@ -584,10 +544,10 @@ solusinya npx expo install expo-secure-store lalu npx expo start -c.
 
 ## Mini Kuis
 
-* Apa yang menjamin keaslian sebuah JWT?
-* Mengapa server tetap disebut stateless walau memakai token?
-* Kapan keunggulan session justru paling dibutuhkan?
-* Fungsi `expo-secure-store` mana yang menghapus token saat logout?
+- Apa yang menjamin keaslian sebuah JWT?
+- Mengapa server tetap disebut stateless walau memakai token?
+- Kapan keunggulan session justru paling dibutuhkan?
+- Fungsi `expo-secure-store` mana yang menghapus token saat logout?
 
 <!--
 Kuis lisan 4 menit: tampilkan pertanyaan, minta kelas menjawab serentak atau angkat tangan,
@@ -603,10 +563,10 @@ sebelum menutup pertemuan.
 
 ## Jawaban
 
-* Signature yang dihitung dengan secret key milik server
-* Verifikasi cukup memakai secret key, aritmetika, dan klaim `exp`
-* Saat pencabutan akses harus segera berlaku: hapus sesi di server
-* `deleteItemAsync`
+- Signature yang dihitung dengan secret key milik server
+- Verifikasi cukup memakai secret key, aritmetika, dan klaim `exp`
+- Saat pencabutan akses harus segera berlaku: hapus sesi di server
+- `deleteItemAsync`
 
 <!--
 Ulangi pembeda yang paling sering tertukar: stateless bukan berarti tanpa verifikasi, dan
@@ -621,11 +581,11 @@ internal.)
 
 ## Prinsip 1: Validasi Input di Sisi Server
 
-* Validasi form (Bab 8) hanya memberi umpan balik cepat bagi pengguna
-* Pengirim permintaan tidak selalu aplikasi Anda: endpoint dapat dipanggil curl
-* Server memvalidasi ulang tipe data, panjang, format email, dan field wajib
-* Data klien tidak pernah dirangkai langsung menjadi perintah SQL (**SQL injection**)
-* Pegangannya satu kalimat: klien adalah lingkungan yang tidak dapat dipercaya
+- Validasi form (Bab 8) hanya memberi umpan balik cepat bagi pengguna
+- Pengirim permintaan tidak selalu aplikasi Anda: endpoint dapat dipanggil curl
+- Server memvalidasi ulang tipe data, panjang, format email, dan field wajib
+- Data klien tidak pernah dirangkai langsung menjadi perintah SQL (**SQL injection**)
+- Pegangannya satu kalimat: klien adalah lingkungan yang tidak dapat dipercaya
 
 <!--
 Tekankan bahwa validasi klien tidak pernah dihapus, hanya saja perannya berubah: ia untuk
@@ -643,10 +603,10 @@ rubrik Project Akhir ini termasuk aspek security.
 
 ## Prinsip 2: Tanpa Secret Key di Aplikasi
 
-* Kode JavaScript dibundel menjadi berkas dan dapat dibongkar dari APK
-* Kunci penandatangan JWT dan kunci API pihak ketiga hanya hidup di server
-* Sekali satu pengguna membongkar aplikasi, seluruh pengguna terancam
-* Di klien hanya boleh disimpan hasil otentikasi, dan hanya lewat SecureStore
+- Kode JavaScript dibundel menjadi berkas dan dapat dibongkar dari APK
+- Kunci penandatangan JWT dan kunci API pihak ketiga hanya hidup di server
+- Sekali satu pengguna membongkar aplikasi, seluruh pengguna terancam
+- Di klien hanya boleh disimpan hasil otentikasi, dan hanya lewat SecureStore
 
 <!--
 Tekankan asimetri risikonya: satu kebocoran di klien menimpa semua pengguna, bukan hanya
@@ -663,11 +623,11 @@ Soal uraian 2 pada bab memakai skenario ini; pakai sebagai latihan lanjutan.
 
 ## Prinsip 3: HTTPS Wajib di Produksi
 
-* Tanpa HTTPS, email, kata sandi, dan token dikirim **cleartext** (teks polos)
-* Penyadap di jaringan yang sama dapat membacanya: **man-in-the-middle** (MITM)
-* **TLS** (*Transport Layer Security*) mengenkripsi permintaan dan respons
-* Android 9 (API 28) memblokir lalu lintas *cleartext* pada build produksi
-* HTTP ke `localhost` hanya pengecualian pengembangan lokal, bukan untuk produksi
+- Tanpa HTTPS, email, kata sandi, dan token dikirim **cleartext** (teks polos)
+- Penyadap di jaringan yang sama dapat membacanya: **man-in-the-middle** (MITM)
+- **TLS** (*Transport Layer Security*) mengenkripsi permintaan dan respons
+- Android 9 (API 28) memblokir lalu lintas *cleartext* pada build produksi
+- HTTP ke `localhost` hanya pengecualian pengembangan lokal, bukan untuk produksi
 
 <!--
 Skenario yang membuatnya konkret: Wi-Fi kampus yang sama, seorang mahasiswa menjalankan
@@ -687,11 +647,11 @@ hal lain.
 
 ## Prinsip 4: Least Privilege (Hak Akses Paling Kecil)
 
-* Beri pengguna, fungsi, dan aplikasi hanya hak yang benar-benar diperlukan
-* Izin perangkat diminta saat fitur dipakai, bukan sekaligus saat aplikasi dibuka
-* Klaim token dibuat sesedikit mungkin; akses API dibatasi per peran
-* Aplikasi mahasiswa tidak menerima hak admin hanya karena berhasil login
-* Least privilege mempersempit luas permukaan serangan
+- Beri pengguna, fungsi, dan aplikasi hanya hak yang benar-benar diperlukan
+- Izin perangkat diminta saat fitur dipakai, bukan sekaligus saat aplikasi dibuka
+- Klaim token dibuat sesedikit mungkin; akses API dibatasi per peran
+- Aplikasi mahasiswa tidak menerima hak admin hanya karena berhasil login
+- Least privilege mempersempit luas permukaan serangan
 
 <!--
 Kaitkan ke Bab 12 untuk izin perangkat: kamera diminta ketika pengguna menekan tombol foto,
@@ -709,11 +669,11 @@ kasus setelah ini.)
 
 ## Alur Lengkap: Login → Token → Akses API → Logout
 
-1) Pengguna mengirim email dan kata sandi lewat layar Login
-2) Server auth membalas token JWT bila kredensial sah
-3) Aplikasi menyimpan token di SecureStore (terenkripsi, bukan AsyncStorage)
-4) Setiap panggilan API menyertakan header `Authorization: Bearer <token>`
-5) Logout menghapus token dari SecureStore lalu `Redirect` ke `/login`
+1. Pengguna mengirim email dan kata sandi lewat layar Login
+2. Server auth membalas token JWT bila kredensial sah
+3. Aplikasi menyimpan token di SecureStore (terenkripsi, bukan AsyncStorage)
+4. Setiap panggilan API menyertakan header `Authorization: Bearer <token>`
+5. Logout menghapus token dari SecureStore lalu `Redirect` ke `/login`
 
 > Logout pada arsitektur token berarti membuang kunci di klien; server tidak punya sesi untuk ditutup.
 
@@ -734,11 +694,11 @@ halaman login.
 
 ## Praktikum Bab 13: Yang Dibangun
 
-* Melanjutkan aplikasi Manajemen Data Mahasiswa dari praktikum Bab 10
-* Daftar akun lewat `/api/auth/register`, masuk lewat `/api/auth/login`
-* Token disimpan di SecureStore; daftar mahasiswa hanya tampil dengan token
-* Uji pertama: aplikasi dibuka tanpa token → muncul halaman Masuk, bukan Beranda
-* Uji kedua: setelah logout, akses `/(app)/mahasiswa` ditolak dan diarahkan ke `/login`
+- Melanjutkan aplikasi Manajemen Data Mahasiswa dari praktikum Bab 10
+- Daftar akun lewat `/api/auth/register`, masuk lewat `/api/auth/login`
+- Token disimpan di SecureStore; daftar mahasiswa hanya tampil dengan token
+- Uji pertama: aplikasi dibuka tanpa token → muncul halaman Masuk, bukan Beranda
+- Uji kedua: setelah logout, akses `/(app)/mahasiswa` ditolak dan diarahkan ke `/login`
 
 <!--
 Praktikum ini adalah milestone autentikasi Project Akhir, jadi minta mahasiswa menyimpan
@@ -824,10 +784,10 @@ laporan insiden perguruan tinggi tertentu.
 
 ## Studi Kasus: Urutan Perbaikan Auditor
 
-1) Pindahkan token ke SecureStore, singkirkan data sensitif dari respons login
-2) Proteksi seluruh rute server yang membawa data pribadi, bukan sebagian
-3) Wajibkan HTTPS di produksi; batasi HTTP hanya untuk pengembangan lokal
-4) Terapkan permintaan data minimal: hanya field yang benar-benar akan ditampilkan
+1. Pindahkan token ke SecureStore, singkirkan data sensitif dari respons login
+2. Proteksi seluruh rute server yang membawa data pribadi, bukan sebagian
+3. Wajibkan HTTPS di produksi; batasi HTTP hanya untuk pengembangan lokal
+4. Terapkan permintaan data minimal: hanya field yang benar-benar akan ditampilkan
 
 > Keamanan adalah sistem, bukan fitur tunggal.
 
@@ -854,7 +814,7 @@ Kaitkan dengan pola pikir Project Akhir: setiap keputusan desain diuji dengan pe
 | Transportasi | Apakah server produksi masih menerima HTTP polos? |
 | Least privilege | Data dan klaim apa yang sebenarnya tidak diperlukan aplikasi? |
 
-* Empat pertanyaan ini menjadi bagian checklist QA pada Bab 14
+- Empat pertanyaan ini menjadi bagian checklist QA pada Bab 14
 
 <!--
 Tunjukkan bahwa keempat pertanyaan ini dapat dipakai sebagai daftar periksa pada Project
@@ -876,17 +836,17 @@ aplikasi mereka sendiri.
 
 **Diskusi kelompok (5 menit)**
 
-* Prinsip mana yang paling mudah Anda lupakan saat membangun aplikasi sendiri?
-* Keputusan apa yang akan Anda perjuangkan di tim kampus: penyimpanan token atau HTTPS?
+- Prinsip mana yang paling mudah Anda lupakan saat membangun aplikasi sendiri?
+- Keputusan apa yang akan Anda perjuangkan di tim kampus: penyimpanan token atau HTTPS?
 
 </div>
 <div>
 
 **Latihan terpilih**
 
-* Soal pemahaman 4: mengapa proteksi klien saja tidak cukup?
-* Soal praktik 1: keluar otomatis saat server menjawab 401
-* Soal analisis 1: menilai kata sandi yang disimpan di payload JWT
+- Soal pemahaman 4: mengapa proteksi klien saja tidak cukup?
+- Soal praktik 1: keluar otomatis saat server menjawab 401
+- Soal analisis 1: menilai kata sandi yang disimpan di payload JWT
 
 </div>
 </div>

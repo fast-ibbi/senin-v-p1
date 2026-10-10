@@ -29,11 +29,11 @@ JavaScript, bukan Kotlin atau Swift — keduanya bahasa native yang tidak kita p
 
 ## Tujuan Pembelajaran
 
-* Menjelaskan `const` dan `let` beserta konsekuensi *scope*-nya
-* Menerapkan tipe data, operator, percabangan, dan perulangan
-* Menganalisis fungsi biasa dan arrow function, termasuk perilaku `this`
-* Mengimplementasikan *destructuring*, *spread*, `map`, `filter`, `reduce`
-* Mengevaluasi module `import`/`export` dan pola asinkron `async`/`await`
+- Menjelaskan `const` dan `let` beserta konsekuensi *scope*-nya
+- Menerapkan tipe data, operator, percabangan, dan perulangan
+- Menganalisis fungsi biasa dan arrow function, termasuk perilaku `this`
+- Mengimplementasikan *destructuring*, *spread*, `map`, `filter`, `reduce`
+- Mengevaluasi module `import`/`export` dan pola asinkron `async`/`await`
 
 <!--
 Bacakan kata kerjanya saja, jangan seluruh kalimatnya. Tekankan bahwa tujuan ke-1 sampai ke-4
@@ -42,40 +42,6 @@ terpakai penuh ketika kita memanggil server di Bab 10.
 
 Kaitkan dengan janji bab: seluruh kode bab ini dijalankan dengan Node.js, belum ada antarmuka —
 tujuannya mengasah logika sebelum menulis komponen di Bab 4.
--->
-
----
-
-<!-- _class: center -->
-
-## Tiga Pertanyaan Pembuka
-
-* Mengapa `'3' == 3` bernilai benar, sedangkan `'3' === 3` bernilai salah?
-* Apa yang terjadi pada aplikasi ketika data dari server belum selesai dimuat?
-* Kalau satu berkas JavaScript sudah mencapai 500 baris, bagaimana kita memecahnya?
-
-<!--
-Think-pair-share: 2 menit berpikir sendiri, 2 menit berpasangan, lalu tampung 2–3 jawaban singkat.
-Jangan mengoreksi dulu; ketiga jawabannya akan muncul di Subbab 3.2, 3.9–3.10, dan 3.8.
-
-Pemicu bila kelas pasif: "Pernah tidak aplikasi ponsel Anda diam saja lalu muncul pesan gagal
-memuat? Itulah salah satu topik hari ini."
--->
-
----
-
-## Peta Konsep Bab 3
-
-![w:720](assets/diagrams/bab-03-javascript-modern-untuk-react-nat-01.svg)
-
-> Pertemuan 3: Dasar Bahasa, Struktur Data, dan Sistem Modul (Subbab 3.1–3.8); pertemuan 4: Pemrograman Asinkron (3.9–3.10) + Praktikum 3 — sesuai RPS Mg-3/Mg-4.
-
-<!--
-Bacakan peta dari akar ke daun: satu bahasa, tiga kemampuan, satu praktikum sebagai titik temu.
-Tegaskan bahwa cabang Struktur Data, Modul, dan Asinkron semuanya mengalir ke Praktikum 3.
-
-Tanyakan: "Cabang mana yang menurut Anda paling sering dipakai nanti saat aplikasi memanggil
-server?" (Jawaban: Pemrograman Asinkron, karena fetch di Bab 10 mengembalikan Promise.)
 -->
 
 ---
@@ -101,10 +67,10 @@ Semua contoh di bagian ini disimpan di folder praktik-js dan dijalankan dengan n
 
 **Variabel** adalah tempat menyimpan nilai di dalam program, dideklarasikan dengan `const` atau `let`.
 
-* Keduanya ber-*block scope* — hanya berlaku di dalam `{ }` terdekat
-* `const` untuk nilai yang diisi sekali; ia disiplin, bukan sekadar gaya penulisan
-* `let` untuk nilai yang memang berubah, misalnya penghitung perulangan
-* `var` ditinggalkan: ber-*function scope* dan nilainya mudah berubah tanpa disadari
+- Keduanya ber-*block scope* — hanya berlaku di dalam `{ }` terdekat
+- `const` untuk nilai yang diisi sekali; ia disiplin, bukan sekadar gaya penulisan
+- `let` untuk nilai yang memang berubah, misalnya penghitung perulangan
+- `var` ditinggalkan: ber-*function scope* dan nilainya mudah berubah tanpa disadari
 
 <!--
 Analogi: const seperti nilai yang sudah ditulis dengan tinta, let seperti tulisan pensil.
@@ -210,8 +176,8 @@ console.log(mahasiswa.alamat ?? 'Alamat tidak tercatat');
 // Alamat tidak tercatat
 ```
 
-* `?.` mengamankan akses properti yang mungkin bernilai `null` atau `undefined`
-* `??` menyediakan nilai bawaan hanya ketika nilainya `null` atau `undefined`
+- `?.` mengamankan akses properti yang mungkin bernilai `null` atau `undefined`
+- `??` menyediakan nilai bawaan hanya ketika nilainya `null` atau `undefined`
 
 <!--
 Analogi: `?.` seperti bertanya sekaligus "benda ini ada dan punya properti itu?" tanpa menulis
@@ -258,10 +224,10 @@ ternary akan sering mereka lihat di kode React pada Bab 4 saat kondisi di dalam 
 
 ## Falsy dan Truthy
 
-* Nilai *falsy* hanya: `false`, `0`, `''`, `null`, `undefined`, dan `NaN`
-* Semua nilai lain *truthy* — termasuk array kosong `[]` dan objek kosong `{}`
-* Akibatnya `if ([])` selalu masuk cabang benar
-* Karena itu tulis kondisi eksplisit: `if (daftarMahasiswa.length > 0)`
+- Nilai *falsy* hanya: `false`, `0`, `''`, `null`, `undefined`, dan `NaN`
+- Semua nilai lain *truthy* — termasuk array kosong `[]` dan objek kosong `{}`
+- Akibatnya `if ([])` selalu masuk cabang benar
+- Karena itu tulis kondisi eksplisit: `if (daftarMahasiswa.length > 0)`
 
 <!--
 Ini miskonsepsi paling mahal di bagian ini: "kosong berarti salah". Buktikan langsung di Node.js
@@ -310,9 +276,9 @@ Sebutkan bahwa for...of adalah dasar pemahaman iterasi yang dipakai React untuk 
 
 ## Apa yang Terjadi Jika…?
 
-* `for (let i = 1; i <= 5; i--)` dijalankan — apa yang terjadi?
-* Rantai `if` diurutkan dari kondisi paling longgar — cabang mana yang salah?
-* `for (const nilai in daftarNilai)` dipakai untuk array — apa yang tercetak?
+- `for (let i = 1; i <= 5; i--)` dijalankan — apa yang terjadi?
+- Rantai `if` diurutkan dari kondisi paling longgar — cabang mana yang salah?
+- `for (const nilai in daftarNilai)` dipakai untuk array — apa yang tercetak?
 
 <!--
 Berikan 3 menit berpikir berpasangan. Minta alasan, bukan hanya jawaban; jawaban lengkap ada di
@@ -328,9 +294,9 @@ di papan — itu latihan berikutnya.
 
 ## Jawaban
 
-* Perulangan tidak pernah berhenti: `i` makin kecil, syarat `i <= 5` selalu benar
-* IPK 3.45 salah dikategorikan; urutan kondisi harus dari ketat ke longgar
-* Yang tercetak adalah indeks `0, 1, 2, …`, bukan nilai IPK — gunakan `for...of`
+- Perulangan tidak pernah berhenti: `i` makin kecil, syarat `i <= 5` selalu benar
+- IPK 3.45 salah dikategorikan; urutan kondisi harus dari ketat ke longgar
+- Yang tercetak adalah indeks `0, 1, 2, …`, bukan nilai IPK — gunakan `for...of`
 
 <!--
 Ulangi penyebabnya, bukan hasilnya: ketiga kesalahan ini adalah kesalahan "alat yang salah",
@@ -493,8 +459,8 @@ console.log(dataBaru.ipk); // 3.35 (objek baru)
 const prodiUnik = [...new Set(daftarMahasiswa.map((m) => m.prodi))];
 ```
 
-* Simbol `...` sama, tugas berbeda: *spread* menyebarkan isi, *rest* mengumpulkan sisa
-* Pola `{ ...dataLama, ipk: 3.35 }` adalah dasar pembaruan *immutable* di React
+- Simbol `...` sama, tugas berbeda: *spread* menyebarkan isi, *rest* mengumpulkan sisa
+- Pola `{ ...dataLama, ipk: 3.35 }` adalah dasar pembaruan *immutable* di React
 
 <!--
 Tekankan pola "salin dulu, baru perbarui": objek asli tetap utuh, dan kita memperoleh objek baru
@@ -517,8 +483,8 @@ Pertanyaan pemandu: "Mengapa React lebih suka membuat objek baru daripada mengub
 | `filter` | memilih elemen yang memenuhi kondisi | array baru, lebih pendek atau sama |
 | `reduce` | menggabungkan seluruh elemen | satu nilai, misalnya total IPK |
 
-* Ketiganya mengembalikan nilai baru tanpa mengubah array asli
-* Kawan pendampingnya: `find` mencari satu data, `some` dan `every` memeriksa kondisi
+- Ketiganya mengembalikan nilai baru tanpa mengubah array asli
+- Kawan pendampingnya: `find` mencari satu data, `some` dan `every` memeriksa kondisi
 
 <!--
 Bacakan kolom tengah saja, lalu minta mahasiswa menebak nama metode untuk tiga tugas: "ambil nama
@@ -620,8 +586,8 @@ node --check cetak-data.mjs
 }
 ```
 
-* Tanpa `.mjs` atau `"type": "module"`, Node menolak `import` dengan `SyntaxError`
-* `node --check` berhasil bila terminal tidak menampilkan apa pun (kode keluar 0)
+- Tanpa `.mjs` atau `"type": "module"`, Node menolak `import` dengan `SyntaxError`
+- `node --check` berhasil bila terminal tidak menampilkan apa pun (kode keluar 0)
 
 <!--
 Tunjukkan dua cara mengaktifkan ESM, lalu tegaskan pilihan praktis untuk bab ini: pakai ekstensi
@@ -712,8 +678,8 @@ async function tampilkanData() {
 tampilkanData();
 ```
 
-* Fungsi `async` selalu mengembalikan *promise*
-* `await` menunggu satu Promise tanpa membekukan seluruh aplikasi
+- Fungsi `async` selalu mengembalikan *promise*
+- `await` menunggu satu Promise tanpa membekukan seluruh aplikasi
 
 <!--
 Tunjukkan bahwa satu-satunya baris yang berbeda dari kode sinkron hanyalah `await` di depan
@@ -750,11 +716,11 @@ atau catat pesan kegagalannya.
 
 ## Praktikum 3: Pengolah Nilai Mahasiswa
 
-* Siapkan folder `praktik-js`; `node --version` menampilkan 22 atau lebih
-* `pengolah-nilai.mjs` memuat enam fungsi, satu teknik per fungsi
-* Ringkas (`map`) · saring (`filter`) · rata-rata (`filter`+`reduce`)
-* Cari (`find`) · prodi unik (`Set`+`spread`) · simpan (`async`/`await` + `try`/`catch`)
-* Periksa `node --check`, jalankan `node pengolah-nilai.mjs`, hasilnya `hasil-rekap.json`
+- Siapkan folder `praktik-js`; `node --version` menampilkan 22 atau lebih
+- `pengolah-nilai.mjs` memuat enam fungsi, satu teknik per fungsi
+- Ringkas (`map`) · saring (`filter`) · rata-rata (`filter`+`reduce`)
+- Cari (`find`) · prodi unik (`Set`+`spread`) · simpan (`async`/`await` + `try`/`catch`)
+- Periksa `node --check`, jalankan `node pengolah-nilai.mjs`, hasilnya `hasil-rekap.json`
 
 > Berkas lengkap tersedia di `kode/bab-03/`: `data-mahasiswa.mjs` mengekspor `daftarMahasiswa` (lima data baku) dengan `export`; `pengolah-nilai.mjs` adalah program utama yang memanggil `main()` — tanpa `export`.
 
@@ -780,8 +746,8 @@ berkas atau folder kerja yang salah, bukan dari paket yang belum dipasang.
 | Informatika | 3.20 |
 | Rekayasa Perangkat Lunak | 3.61 |
 
-* Mahasiswa berprestasi (IPK minimal 3.5): Siti Aminah 3.82 dan Dewi Lestari 3.61
-* Lulus bila terminal tanpa error, angka sesuai, dan `hasil-rekap.json` terbentuk
+- Mahasiswa berprestasi (IPK minimal 3.5): Siti Aminah 3.82 dan Dewi Lestari 3.61
+- Lulus bila terminal tanpa error, angka sesuai, dan `hasil-rekap.json` terbentuk
 
 <!--
 Tekankan tiga penanda keberhasilan, bukan hanya "tidak error": keluaran sesuai, berkas terbentuk,
@@ -825,10 +791,10 @@ ditampilkan di layar perangkat dengan teknik yang sama.
 
 ## Mini Kuis
 
-* Hasil `[5, 8, 3, 9].filter((x) => x > 4)` adalah…
-* Hasil `[1, 2, 3, 4].reduce((total, x) => total + x, 0)` adalah…
-* Agar `import` berjalan di Node.js tanpa konfigurasi tambahan, ekstensi berkasnya…
-* Pernyataan yang benar tentang arrow function adalah…
+- Hasil `[5, 8, 3, 9].filter((x) => x > 4)` adalah…
+- Hasil `[1, 2, 3, 4].reduce((total, x) => total + x, 0)` adalah…
+- Agar `import` berjalan di Node.js tanpa konfigurasi tambahan, ekstensi berkasnya…
+- Pernyataan yang benar tentang arrow function adalah…
 
 <!--
 Kuis lisan 5 menit: tampilkan pertanyaan, minta seluruh kelas menjawab serentak atau mengangkat
@@ -844,10 +810,10 @@ menutup pertemuan. Pertanyaan ini juga menjadi pemanasan untuk Kuis 1 pada perte
 
 ## Jawaban
 
-* `[5, 8, 9]` — `filter` menyisakan elemen yang memenuhi kondisi
-* `10` — `reduce` menjumlahkan seluruh elemen dengan nilai awal `0`
-* `.mjs` — alternatifnya `"type": "module"` pada `package.json`
-* Arrow function tidak memiliki `this` sendiri — sebabnya ia dominan di React
+- `[5, 8, 9]` — `filter` menyisakan elemen yang memenuhi kondisi
+- `10` — `reduce` menjumlahkan seluruh elemen dengan nilai awal `0`
+- `.mjs` — alternatifnya `"type": "module"` pada `package.json`
+- Arrow function tidak memiliki `this` sendiri — sebabnya ia dominan di React
 
 <!--
 Ulangi dua pembeda yang paling sering tertukar: `filter` mengembalikan array, sedangkan `find`

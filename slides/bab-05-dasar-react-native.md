@@ -30,11 +30,11 @@ Subbab 5.1 pada slide berikutnya.
 
 ## Tujuan Pembelajaran
 
-* Menjelaskan perbedaan React untuk web dan React Native
-* Mengidentifikasi fungsi komponen inti React Native
-* Menerapkan StyleSheet, array style, dan style bersyarat
-* Menyusun tata letak responsif dengan Flexbox dan `useWindowDimensions`
-* Memilih penggulir yang tepat serta menangani perbedaan platform
+- Menjelaskan perbedaan React untuk web dan React Native
+- Mengidentifikasi fungsi komponen inti React Native
+- Menerapkan StyleSheet, array style, dan style bersyarat
+- Menyusun tata letak responsif dengan Flexbox dan `useWindowDimensions`
+- Memilih penggulir yang tepat serta menangani perbedaan platform
 
 <!--
 Bacakan kata kerjanya saja, jangan seluruh tujuan. Butir ketiga dan keempat adalah
@@ -45,47 +45,6 @@ Kaitkan dengan penilaian: hasil praktikum bab ini menjadi fondasi antarmuka Bab 
 
 Miskonsepsi yang perlu dicegah: "belajar komponen" bukan kegiatan menghafal nama
 properti, melainkan tahu kapan memakai komponen mana.
--->
-
----
-
-## Peta Konsep Bab 5
-
-![w:720](assets/diagrams/bab-05-dasar-react-native-01.svg)
-
-<!--
-Bacakan alur peta dari atas: React di Bab 4 bercabang menjadi jalur web (DOM) dan
-jalur native. Jalur native itulah yang dibedah bab ini melalui tiga pintu: komponen
-inti, tata letak dan gaya, serta perbedaan platform.
-
-Titik temunya satu: layout Profil Mahasiswa pada praktikum. Katakan bahwa slide ini
-boleh difoto, karena seluruh isi pertemuan mengalir dari sini.
-
-Pertanyaan pemandu: "Pintu mana yang paling baru bagi Anda?" (Jawaban yang
-diharapkan: tata letak dan gaya, karena CSS tidak ada lagi di React Native.)
--->
-
----
-
-<!-- _class: center -->
-
-## Tiga Pertanyaan Pembuka
-
-* Mengapa teks wajib dibungkus `Text`, tidak boleh langsung di dalam `View`?
-* Kapan daftar panjang tetap mulus: `ScrollView` atau `FlatList`?
-* Mengapa dua `View` yang ditumpuk otomatis tersusun ke bawah?
-
-Jawabannya ada di Subbab 5.2, 5.6, dan 5.9.
-
-<!--
-Think-pair-share: 2 menit berpikir sendiri, 2 menit berpasangan, lalu 2–3 pasangan
-menyampaikan jawaban singkat. Jangan dijawab dulu di slide ini.
-
-Pemicu bila kelas pasif: "Coba ingat satu aplikasi yang daftarnya tersendat saat
-digulir. Menurut Anda apa penyebabnya dari sisi kode?"
-
-Ketiga pertanyaan ini sengaja dipilih karena jawabannya adalah tiga miskonsepsi
-tersering mahasiswa yang baru pindah dari web.
 -->
 
 ---
@@ -109,11 +68,11 @@ Analogi yang bisa dipakai: bahasa Indonesia yang sama, tetapi dua penerbit berbe
 
 ## React Web vs React Native
 
-* React lahir 2013: JSX dirender `react-dom` menjadi elemen DOM
-* Facebook meluncurkan React Native pada 2015 dengan ide yang sama
-* Yang tetap: komponen, props, state, dan hook (Bab 4)
-* Yang berganti: mediumnya, dari halaman web ke komponen native
-* Harganya: fitur platform tertentu butuh modul native tambahan
+- React lahir 2013: JSX dirender `react-dom` menjadi elemen DOM
+- Facebook meluncurkan React Native pada 2015 dengan ide yang sama
+- Yang tetap: komponen, props, state, dan hook (Bab 4)
+- Yang berganti: mediumnya, dari halaman web ke komponen native
+- Harganya: fitur platform tertentu butuh modul native tambahan
 
 <!--
 Tekankan bahwa yang berubah hanya target render, bukan cara berpikir. Mahasiswa yang
@@ -203,17 +162,17 @@ praktikum layout.
 
 **`View` — wadah universal**
 
-* Padanan `div`: tempat menyusun dan menyarangkan layout
-* Anaknya komponen lain, bukan teks mentah
+- Padanan `div`: tempat menyusun dan menyarangkan layout
+- Anaknya komponen lain, bukan teks mentah
 
 </div>
 <div>
 
 **`Text` — satu-satunya pembawa teks**
 
-* Semua tulisan, judul, label, dan angka wajib di dalam `Text`
-* Boleh disarangkan untuk mencampur gaya dalam satu kalimat
-* `numberOfLines` memotong teks panjang dengan elipsis
+- Semua tulisan, judul, label, dan angka wajib di dalam `Text`
+- Boleh disarangkan untuk mencampur gaya dalam satu kalimat
+- `numberOfLines` memotong teks panjang dengan elipsis
 
 </div>
 </div>
@@ -271,11 +230,11 @@ bertambah tinggi mengikuti panjang teks, dan layout di bawahnya bergeser.)
 
 ## Image: Dua Sumber Gambar
 
-* Aset lokal: `source={require('./assets/icon.png')}` dibundel saat build
-* Gambar jarak jauh: `source={{ uri: 'https://…' }}` dimuat saat aplikasi berjalan
-* Gambar jarak jauh wajib diberi `width` dan `height` eksplisit di style
-* `resizeMode="cover"` memenuhi kotak dengan memotong bagian yang meluap
-* Bila foto belum ada, tampilkan placeholder inisial, bukan kotak kosong
+- Aset lokal: `source={require('./assets/icon.png')}` dibundel saat build
+- Gambar jarak jauh: `source={{ uri: 'https://…' }}` dimuat saat aplikasi berjalan
+- Gambar jarak jauh wajib diberi `width` dan `height` eksplisit di style
+- `resizeMode="cover"` memenuhi kotak dengan memotong bagian yang meluap
+- Bila foto belum ada, tampilkan placeholder inisial, bukan kotak kosong
 
 <!--
 Alasan dimensi wajib: React Native tidak dapat menebak ukuran piksel gambar yang
@@ -340,17 +299,17 @@ gambarnya bisa dibundel, tetapi dimensinya tetap perlu ditulis di style.
 
 **`Button` — siap pakai, terbatas**
 
-* Gaya bawaan platform: teks biru di iOS, tombol berwarna di Android
-* Hanya `title`, `onPress`, `color`, `disabled`; isinya tidak bisa ditata
+- Gaya bawaan platform: teks biru di iOS, tombol berwarna di Android
+- Hanya `title`, `onPress`, `color`, `disabled`; isinya tidak bisa ditata
 
 </div>
 <div>
 
 **`Pressable` — pilihan utama**
 
-* Anak bebas: tombol disusun dari `View` dan `Text`
-* `style` berupa fungsi yang menerima status `pressed`
-* `android_ripple`, `hitSlop`, `disabled`, `onLongPress`
+- Anak bebas: tombol disusun dari `View` dan `Text`
+- `style` berupa fungsi yang menerima status `pressed`
+- `android_ripple`, `hitSlop`, `disabled`, `onLongPress`
 
 </div>
 </div>
@@ -412,11 +371,11 @@ Android.
 
 ## TextInput: Controlled Component
 
-* Satu `state` menampung nilai; `onChangeText` memperbarui tiap ketikan
-* `value={nama}` membuat kotak selalu mencerminkan state
-* Tanpa `value`, komponen tidak terkendali dan tidak sinkron dengan state
-* Properti dasar: `keyboardType`, `secureTextEntry`, `multiline`, `maxLength`
-* Seluk-beluk keyboard dan validasi tuntas di Bab 8
+- Satu `state` menampung nilai; `onChangeText` memperbarui tiap ketikan
+- `value={nama}` membuat kotak selalu mencerminkan state
+- Tanpa `value`, komponen tidak terkendali dan tidak sinkron dengan state
+- Properti dasar: `keyboardType`, `secureTextEntry`, `multiline`, `maxLength`
+- Seluk-beluk keyboard dan validasi tuntas di Bab 8
 
 <!--
 Hubungkan dengan Bab 4: ini penerapan langsung pola state. Setiap ketikan memicu
@@ -500,9 +459,9 @@ untuk lima kartu statis.
 
 ## Apa yang Terjadi Jika…?
 
-* Dua `View` ditumpuk tanpa menulis `flexDirection` sama sekali?
-* Satu halaman menampung penggulir di dalam penggulir dengan arah sama?
-* `keyExtractor` pada `FlatList` dibiarkan kosong?
+- Dua `View` ditumpuk tanpa menulis `flexDirection` sama sekali?
+- Satu halaman menampung penggulir di dalam penggulir dengan arah sama?
+- `keyExtractor` pada `FlatList` dibiarkan kosong?
 
 Jawaban skenario 2 dan 3 ada di dua slide berikutnya; skenario 1 di Subbab 5.9.
 
@@ -560,11 +519,11 @@ membuat daftar selalu dibangun ulang.
 
 ## Satu Halaman, Satu Penggulir Utama
 
-* `FlatList` di dalam `ScrollView` searah memicu peringatan VirtualizedLists
-* Keduanya berebut kontrol gulir, sehingga virtualisasi FlatList rusak
-* Solusinya: `FlatList` menjadi penggulir luar, konten tetap masuk `ListHeaderComponent`
-* Alternatifnya: satu `ScrollView` bila seluruh halaman berstruktur tetap
-* Peringatan ini nyata muncul di konsol Metro, bacalah (Bab 14)
+- `FlatList` di dalam `ScrollView` searah memicu peringatan VirtualizedLists
+- Keduanya berebut kontrol gulir, sehingga virtualisasi FlatList rusak
+- Solusinya: `FlatList` menjadi penggulir luar, konten tetap masuk `ListHeaderComponent`
+- Alternatifnya: satu `ScrollView` bila seluruh halaman berstruktur tetap
+- Peringatan ini nyata muncul di konsol Metro, bacalah (Bab 14)
 
 <!--
 Aturan ini diambil dari bagian troubleshooting bab dan menjadi inti jawaban soal
@@ -586,11 +545,11 @@ berjalan.
 
 ## SafeAreaView dan Area Aman Layar
 
-* Layar ponsel punya notch, status bar, dan home indicator
-* Safe area: area yang masih aman untuk konten, jaraknya disebut inset
-* `SafeAreaView` bawaan hanya bekerja di iOS, di Android tidak berefek
-* Pilihan modern: `react-native-safe-area-context` dan hook `useSafeAreaInsets`
-* Sejak Android 15 konten dirender edge-to-edge, dan RN 0.86 mengikutinya
+- Layar ponsel punya notch, status bar, dan home indicator
+- Safe area: area yang masih aman untuk konten, jaraknya disebut inset
+- `SafeAreaView` bawaan hanya bekerja di iOS, di Android tidak berefek
+- Pilihan modern: `react-native-safe-area-context` dan hook `useSafeAreaInsets`
+- Sejak Android 15 konten dirender edge-to-edge, dan RN 0.86 mengikutinya
 
 > Pemasangan: `npx expo install react-native-safe-area-context`, lalu `SafeAreaProvider` di akar dan `edges={['top', 'bottom']}`.
 
@@ -630,10 +589,10 @@ bergantung padanya.
 
 ## StyleSheet, Bukan CSS
 
-* Tidak ada file CSS: gaya ditulis sebagai objek JavaScript
-* `StyleSheet.create` memvalidasi properti gaya saat aplikasi dimuat
-* Definisi gaya dipusatkan ke luar JSX sehingga komponen mudah dibaca
-* Tidak ada cascade, kecuali pewarisan teks tertentu di iOS
+- Tidak ada file CSS: gaya ditulis sebagai objek JavaScript
+- `StyleSheet.create` memvalidasi properti gaya saat aplikasi dimuat
+- Definisi gaya dipusatkan ke luar JSX sehingga komponen mudah dibaca
+- Tidak ada cascade, kecuali pewarisan teks tertentu di iOS
 
 ```jsx
 const styles = StyleSheet.create({
@@ -666,11 +625,11 @@ ditulis sebagai objek JavaScript.
 
 ## Array Style dan Style Bersyarat
 
-* Array style menggabungkan objek berurutan; gaya belakangan menimpa
-* Contoh: `style={[styles.kartu, styles.kartuBesar]}`
-* Style bersyarat memilih gaya dengan `&&` atau ternary di dalam array
-* Contoh: `style={[styles.baris, aktif && styles.barisAktif]}`
-* Nilai `false` dan `null` di dalam array gaya diabaikan React Native
+- Array style menggabungkan objek berurutan; gaya belakangan menimpa
+- Contoh: `style={[styles.kartu, styles.kartuBesar]}`
+- Style bersyarat memilih gaya dengan `&&` atau ternary di dalam array
+- Contoh: `style={[styles.baris, aktif && styles.barisAktif]}`
+- Nilai `false` dan `null` di dalam array gaya diabaikan React Native
 
 <!--
 Dua pola ini akan dipakai terus sampai akhir buku, jadi tuliskan keduanya di papan
@@ -691,11 +650,11 @@ lebih ringkas dan tidak menggandakan definisi gaya.
 
 ## Flexbox: Arah Default `column`
 
-* Di web, Flexbox default `row` sehingga elemen berjajar mendatar
-* Di React Native, mesin layout Yoga: default `column`, menumpuk ke bawah
-* Alasannya: layar ponsel lebih natural dibaca dari atas ke bawah
-* Dua `View` yang ditumpuk karena itu tersusun vertikal secara otomatis
-* Titik inilah yang paling sering menjebak pengembang web
+- Di web, Flexbox default `row` sehingga elemen berjajar mendatar
+- Di React Native, mesin layout Yoga: default `column`, menumpuk ke bawah
+- Alasannya: layar ponsel lebih natural dibaca dari atas ke bawah
+- Dua `View` yang ditumpuk karena itu tersusun vertikal secara otomatis
+- Titik inilah yang paling sering menjebak pengembang web
 
 <!--
 Slide ini menuntaskan pertanyaan pertama pada slide pemantik di Bagian 2: arah default
@@ -779,9 +738,9 @@ mencukupi.
 
 ## Layout Responsif dengan `useWindowDimensions`
 
-* Hook ini mengembalikan `{ width, height, scale, fontScale }`
-* Nilainya berubah dan memicu render ulang saat ponsel diputar
-* Pola: `const jumlahKolom = width >= 600 ? 3 : 2`, lalu dipakai `numColumns`
+- Hook ini mengembalikan `{ width, height, scale, fontScale }`
+- Nilainya berubah dan memicu render ulang saat ponsel diputar
+- Pola: `const jumlahKolom = width >= 600 ? 3 : 2`, lalu dipakai `numColumns`
 
 ```jsx
 const { width } = useWindowDimensions();
@@ -874,11 +833,11 @@ gaya tidak bekerja.
 
 **Kasus fiktif dengan pola nyata.** Sistem Informasi Akademik sebuah universitas.
 
-* Bagian Akademik menampilkan ratusan hingga ribuan baris per dosen wali
-* Tabel web menyusut tak terbaca di ponsel, dan gulirannya tersendat
-* Keputusan 1: `FlatList` agar hanya baris yang terlihat yang dirender
-* Keputusan 2: layout kartu dengan `useWindowDimensions`, satu sampai dua kolom
-* Keputusan 3: `Platform.select` dan safe area untuk iOS maupun Android
+- Bagian Akademik menampilkan ratusan hingga ribuan baris per dosen wali
+- Tabel web menyusut tak terbaca di ponsel, dan gulirannya tersendat
+- Keputusan 1: `FlatList` agar hanya baris yang terlihat yang dirender
+- Keputusan 2: layout kartu dengan `useWindowDimensions`, satu sampai dua kolom
+- Keputusan 3: `Platform.select` dan safe area untuk iOS maupun Android
 
 > Praktikum bab ini adalah miniatur kasus tersebut — dan tumbuh menjadi Project Akhir.
 
@@ -886,8 +845,8 @@ gaya tidak bekerja.
 Bacakan sebagai cerita, bukan daftar: dosen wali mengeluh, rektorat memutuskan
 membangun versi mobile, tim menghadapi tiga keputusan.
 
-Tekankan bahwa ketiga keputusan itu persis tiga pintu pada peta konsep di awal
-pertemuan, sehingga bab ini bukan kumpulan komponen tanpa kaitan.
+Tekankan bahwa ketiga keputusan itu persis tiga pokok bab: komponen inti, tata letak,
+dan perbedaan platform; bab ini bukan kumpulan komponen tanpa kaitan.
 
 Pertanyaan pemandu: "Alternatif (b) pada soal analisis bab adalah ScrollView berisi
 kartu dan FlatList. Apa risiko utamanya?" (Jawaban: virtualisasi rusak karena
@@ -1011,9 +970,9 @@ Sampaikan bahwa rangkuman ini menjadi daftar periksa saat mengerjakan tantangan 
 
 ## Diskusi Kelas dan Latihan
 
-* Konsep React mana yang tetap sama, dan mana yang berubah wujud? Mengapa?
-* Bagaimana Anda menjelaskan kepada rekan tim alasan memilih `FlatList`?
-* Skenario: `ScrollView` berisi kartu statistik dan `FlatList` di bawahnya
+- Konsep React mana yang tetap sama, dan mana yang berubah wujud? Mengapa?
+- Bagaimana Anda menjelaskan kepada rekan tim alasan memilih `FlatList`?
+- Skenario: `ScrollView` berisi kartu statistik dan `FlatList` di bawahnya
 
 **Pertanyaan:** alternatif mana yang Anda rekomendasikan untuk halaman 2.000 data dengan kartu ringkasan di atas, dan apa risikonya?
 

@@ -31,10 +31,10 @@ pertemuan, saat tiga keadaan antarmuka dibahas.
 
 ## Tujuan Pembelajaran (1/2)
 
-* Menjelaskan arsitektur client–server dan peran API di dalamnya
-* Mengidentifikasi peran HTTP, REST, dan JSON dalam pertukaran data
-* Menganalisis pemilihan metode HTTP untuk setiap operasi data
-* Menafsirkan status code respons server, baik sukses maupun gagal
+- Menjelaskan arsitektur client–server dan peran API di dalamnya
+- Mengidentifikasi peran HTTP, REST, dan JSON dalam pertukaran data
+- Menganalisis pemilihan metode HTTP untuk setiap operasi data
+- Menafsirkan status code respons server, baik sukses maupun gagal
 
 > **API** (Application Programming Interface) — antarmuka pemrograman aplikasi: perantara antara aplikasi dan server.
 
@@ -50,9 +50,9 @@ adalah bekal mengurus token autentikasi.
 
 ## Tujuan Pembelajaran (2/2)
 
-* Mengimplementasikan permintaan API dengan fetch dan header `Content-Type`
-* Merancang tiga keadaan antarmuka: loading, error, dan empty state
-* Mengintegrasikan aplikasi dengan server backend buku (`backend/`)
+- Mengimplementasikan permintaan API dengan fetch dan header `Content-Type`
+- Merancang tiga keadaan antarmuka: loading, error, dan empty state
+- Mengintegrasikan aplikasi dengan server backend buku (`backend/`)
 
 > Tiga tujuan ini adalah inti praktikum pertemuan 11: CRUD penuh dengan pengalaman pengguna yang jujur.
 
@@ -63,42 +63,6 @@ mulai membaca data dari `backend/` buku.
 Tanyakan: "Apa bedanya aplikasi yang datanya statis dengan yang datanya dari server?"
 (Jawaban yang diharapkan: data berubah tanpa membangun ulang aplikasi, dan sama untuk
 semua pengguna.)
--->
-
----
-
-## Peta Konsep Bab 10
-
-![w:720](assets/diagrams/bab-10-rest-api-dan-backend-integration-01.svg)
-
-<!--
-Bacakan peta ini dari atas ke bawah, jangan menyebut istilah yang belum
-dijelaskan satu per satu. Cukup tunjukkan bahwa panah pertama adalah pertanyaan dan
-panah kedua adalah jawaban.
-
-Kaitkan dengan pengalaman: "Nomor 3000 di kotak server akan Anda ketik sendiri saat
-praktikum, dan salah menulis alamatnya adalah penyebab error nomor satu di bab ini."
--->
-
----
-
-<!-- _class: center -->
-
-## Tiga Pertanyaan Pembuka
-
-* Mengapa daftar mahasiswa harus bisa berubah tanpa aplikasi dibangun ulang?
-* Kalau aplikasi dan server ada di dua mesin berbeda, bagaimana keduanya bicara?
-* Apa yang sebaiknya dilihat pengguna ketika data belum selesai dimuat?
-
-Jawabannya tersebar di Subbab 10.1 (client–server), 10.2 (HTTP), dan 10.6 (tiga keadaan UI).
-
-<!--
-Think-pair-share: 2 menit berpikir sendiri, 2 menit berpasangan, lalu 2–3 pasangan
-menyampaikan jawaban singkat. Jangan dikoreksi dulu, cukup dicatat di papan.
-
-Pemicu bila kelas pasif: "Mengapa kampus tidak sekadar membagikan file Excel daftar
-mahasiswa ke setiap ponsel?" (Jawaban: tidak ada satu sumber kebenaran, file cepat
-usang, dan tidak ada kontrol akses.)
 -->
 
 ---
@@ -128,16 +92,16 @@ dasar integrasi API pada UAS Project Akhir.
 
 **Data statis (Bab 6–8)**
 
-* Ditulis di dalam kode, sama untuk semua pengguna
-* Berubah hanya bila kode diubah dan aplikasi dibangun ulang
+- Ditulis di dalam kode, sama untuk semua pengguna
+- Berubah hanya bila kode diubah dan aplikasi dibangun ulang
 
 </div>
 <div>
 
 **Data dinamis (kebutuhan SI)**
 
-* Mahasiswa baru ditambahkan, IPK diperbarui, data dihapus
-* Harus sama di semua perangkat, sepanjang waktu
+- Mahasiswa baru ditambahkan, IPK diperbarui, data dihapus
+- Harus sama di semua perangkat, sepanjang waktu
 
 </div>
 </div>
@@ -165,16 +129,16 @@ salinannya sendiri.)
 
 **Client**
 
-* Aplikasi React Native Expo yang berjalan di ponsel
-* Menyusun permintaan dan menampilkan hasil
+- Aplikasi React Native Expo yang berjalan di ponsel
+- Menyusun permintaan dan menampilkan hasil
 
 </div>
 <div>
 
 **Server**
 
-* Program Express di folder `backend/`, port 3000
-* Menyimpan, mengelola, dan menjaga data
+- Program Express di folder `backend/`, port 3000
+- Menyimpan, mengelola, dan menjaga data
 
 </div>
 </div>
@@ -233,10 +197,10 @@ Tanyakan: "Pada contoh di bab, dari mana kita tahu isi pesan berformat JSON?"
 
 **REST** (Representational State Transfer) — pemindahan keadaan melalui representasi; gaya arsitektur API paling umum untuk aplikasi mobile.
 
-* **Resource** — data dipandang sebagai sumber daya: mahasiswa, mata kuliah, prodi
-* **Endpoint** — alamat unik setiap resource, mis. `GET /api/mahasiswa`
-* **Stateless** — tiap permintaan berdiri sendiri, membawa semua informasi
-* Metode memetakan operasi: baca GET, tambah POST, ubah PUT/PATCH, hapus DELETE
+- **Resource** — data dipandang sebagai sumber daya: mahasiswa, mata kuliah, prodi
+- **Endpoint** — alamat unik setiap resource, mis. `GET /api/mahasiswa`
+- **Stateless** — tiap permintaan berdiri sendiri, membawa semua informasi
+- Metode memetakan operasi: baca GET, tambah POST, ubah PUT/PATCH, hapus DELETE
 
 > Stateless membuat server mudah ditambah kapasitasnya dan tiap permintaan bisa disimpan sementara (cache).
 
@@ -389,9 +353,9 @@ penting adalah `id` yang diterbitkan server. Itu bukti data benar-benar tersimpa
 
 ## Apa yang Terjadi Jika…?
 
-* Tombol **Simpan** ditekan dua kali sebelum respons datang?
-* Data dihapus melalui permintaan `GET`?
-* Permintaan POST dikirim tanpa header `Content-Type: application/json`?
+- Tombol **Simpan** ditekan dua kali sebelum respons datang?
+- Data dihapus melalui permintaan `GET`?
+- Permintaan POST dikirim tanpa header `Content-Type: application/json`?
 
 <!--
 Bahas berurutan, satu jawaban per pertanyaan, dan tampung lebih dulu dugaan mahasiswa:
@@ -515,16 +479,16 @@ paling masuk akal?" (Jawaban: nilai boolean, sesuai kode buku.)
 
 **Yang tidak dilakukan fetch**
 
-* Status 4xx dan 5xx tetap dianggap permintaan berhasil
-* Tidak ada error otomatis saat server menjawab 500
+- Status 4xx dan 5xx tetap dianggap permintaan berhasil
+- Tidak ada error otomatis saat server menjawab 500
 
 </div>
 <div>
 
 **Yang harus Anda lakukan**
 
-* Periksa `response.ok` lalu lempar `Error` sendiri
-* Tangkap kegagalan jaringan dengan `try/catch` di pemanggil
+- Periksa `response.ok` lalu lempar `Error` sendiri
+- Tangkap kegagalan jaringan dengan `try/catch` di pemanggil
 
 </div>
 </div>
@@ -546,10 +510,10 @@ kegagalan yang paling sering muncul di praktikum.
 
 ## Mini Kuis
 
-* Metode HTTP apa yang tepat untuk operasi CRUD "Create"?
-* Status code apa yang menandakan resource baru berhasil dibuat?
-* Mengapa tombol Simpan perlu dinonaktifkan selama permintaan berjalan?
-* Base URL mana yang dipakai emulator Android untuk menjangkau komputer host?
+- Metode HTTP apa yang tepat untuk operasi CRUD "Create"?
+- Status code apa yang menandakan resource baru berhasil dibuat?
+- Mengapa tombol Simpan perlu dinonaktifkan selama permintaan berjalan?
+- Base URL mana yang dipakai emulator Android untuk menjangkau komputer host?
 
 <!--
 Kuis lisan 5 menit: tampilkan pertanyaan, minta kelas menjawab serentak atau angkat
@@ -565,10 +529,10 @@ akhir pertemuan.
 
 ## Jawaban Mini Kuis
 
-* `POST` — menciptakan resource baru pada alamat koleksi
-* `201 Created` — data tersimpan dan respons memuat `id` baru
-* Karena POST tidak idempoten: dua permintaan berarti dua data
-* `http://10.0.2.2:3000` — `localhost` menunjuk emulator itu sendiri
+- `POST` — menciptakan resource baru pada alamat koleksi
+- `201 Created` — data tersimpan dan respons memuat `id` baru
+- Karena POST tidak idempoten: dua permintaan berarti dua data
+- `http://10.0.2.2:3000` — `localhost` menunjuk emulator itu sendiri
 
 <!--
 Perkuat jawaban ketiga dengan kebiasaan praktis: tombol dinonaktifkan dan teksnya
@@ -630,10 +594,10 @@ panik. Pesan untuk pengguna ditulis ramah, detail teknis tetap dicatat ke konsol
 
 ## Empty State dan Pull-to-Refresh
 
-* **Empty state** tampil saat permintaan sukses, tetapi daftar benar-benar kosong
-* Beri ajakan bertindak, misalnya "Belum ada data mahasiswa. Tambahkan lewat tombol Tambah."
-* **Pull-to-refresh** memakai `RefreshControl` pada `FlatList`: tarik ke bawah untuk memuat ulang
-* Layar kosong bukan berarti aplikasi rusak: beri jalan keluar, bukan layar buntu
+- **Empty state** tampil saat permintaan sukses, tetapi daftar benar-benar kosong
+- Beri ajakan bertindak, misalnya "Belum ada data mahasiswa. Tambahkan lewat tombol Tambah."
+- **Pull-to-refresh** memakai `RefreshControl` pada `FlatList`: tarik ke bawah untuk memuat ulang
+- Layar kosong bukan berarti aplikasi rusak: beri jalan keluar, bukan layar buntu
 
 > Pesan untuk pengguna ditulis dalam bahasa manusia; detail teknis dicatat lewat `console.error`.
 
@@ -716,11 +680,11 @@ diperbaiki di dua puluh tempat.)
 
 ## Alur Integrasi: Form → Server → Daftar
 
-1) Form mengisi state, lalu tombol Simpan ditekan dan dinonaktifkan
-2) `POST /api/mahasiswa` mengirim hasil `JSON.stringify(form)`
-3) Server menyimpan dan membalas `201 Created` beserta `id` baru
-4) `router.back()` mengembalikan pengguna ke layar daftar
-5) `useFocusEffect` memuat ulang daftar, lalu `FlatList` menampilkan data terbaru
+1. Form mengisi state, lalu tombol Simpan ditekan dan dinonaktifkan
+2. `POST /api/mahasiswa` mengirim hasil `JSON.stringify(form)`
+3. Server menyimpan dan membalas `201 Created` beserta `id` baru
+4. `router.back()` mengembalikan pengguna ke layar daftar
+5. `useFocusEffect` memuat ulang daftar, lalu `FlatList` menampilkan data terbaru
 
 <!--
 Bacakan sebagai cerita satu transaksi: isi form, simpan, kembali, dan daftar menyegarkan
@@ -755,16 +719,16 @@ ditambah cache lokal.)
 
 **Gejala**
 
-* Web akademik, aplikasi mobile, dan kepegawaian menyimpan salinan data
-* IPK berbeda di setiap sistem: tidak ada satu sumber kebenaran
+- Web akademik, aplikasi mobile, dan kepegawaian menyimpan salinan data
+- IPK berbeda di setiap sistem: tidak ada satu sumber kebenaran
 
 </div>
 <div>
 
 **Keputusan**
 
-* Satu REST API pusat menjadi satu-satunya pintu data
-* Tiga client berbeda teknologi bicara dalam satu bahasa HTTP/JSON
+- Satu REST API pusat menjadi satu-satunya pintu data
+- Tiga client berbeda teknologi bicara dalam satu bahasa HTTP/JSON
 
 </div>
 </div>
@@ -784,10 +748,10 @@ server dan tiga keadaan UI di sisi aplikasi.)
 
 ## Pengantar API Authentication
 
-* Server praktikum bab ini terbuka; API produksi hampir selalu terlindungi
-* Alurnya: login → server menerbitkan **token** → token disertakan tiap permintaan
-* Token dikirim melalui header `Authorization: Bearer <token>`
-* Tanpa token, salah, atau kadaluarsa → server menjawab `401 Unauthorized`
+- Server praktikum bab ini terbuka; API produksi hampir selalu terlindungi
+- Alurnya: login → server menerbitkan **token** → token disertakan tiap permintaan
+- Token dikirim melalui header `Authorization: Bearer <token>`
+- Tanpa token, salah, atau kadaluarsa → server menjawab `401 Unauthorized`
 
 > Siklus login → token → permintaan terlindungi → logout dibahas lengkap di Bab 13.
 
@@ -805,9 +769,9 @@ Pertanyaan pemandu: "Mengapa nilai IPK tidak boleh dibiarkan bisa dibaca siapa s
 
 ## Diskusi Kelas: Klien API yang Baik
 
-* Kapan pemisahan `api/mahasiswa.js` menguntungkan, dan kapan justru merepotkan?
-* Data mana di aplikasi favorit Anda yang dinamis (dari API) dan mana yang statis?
-* Apa yang Anda rancang sebagai pengembang saat server mati pada jam sibuk?
+- Kapan pemisahan `api/mahasiswa.js` menguntungkan, dan kapan justru merepotkan?
+- Data mana di aplikasi favorit Anda yang dinamis (dari API) dan mana yang statis?
+- Apa yang Anda rancang sebagai pengembang saat server mati pada jam sibuk?
 
 Setiap kelompok menyampaikan **satu** klaim dan **satu** bukti dari pengalaman memakai aplikasi.
 
@@ -823,11 +787,11 @@ perangkat, sementara saldo selalu diambil dari server.
 
 ## Rangkuman (1/2)
 
-1) Arsitektur client–server memisahkan aplikasi dari data: satu sumber kebenaran
-2) REST memandang data sebagai resource dengan endpoint unik dan bersifat stateless
-3) Metode HTTP memetakan CRUD: GET, POST, PUT/PATCH, dan DELETE
-4) GET aman dan idempoten; POST tidak, sehingga tombol Simpan perlu dinonaktifkan
-5) Status code adalah bahasa bersama: 2xx sukses, 4xx kesalahan client, 5xx server
+1. Arsitektur client–server memisahkan aplikasi dari data: satu sumber kebenaran
+2. REST memandang data sebagai resource dengan endpoint unik dan bersifat stateless
+3. Metode HTTP memetakan CRUD: GET, POST, PUT/PATCH, dan DELETE
+4. GET aman dan idempoten; POST tidak, sehingga tombol Simpan perlu dinonaktifkan
+5. Status code adalah bahasa bersama: 2xx sukses, 4xx kesalahan client, 5xx server
 
 <!--
 Jangan dibacakan. Minta mahasiswa memilih satu nomor dan menjelaskannya dengan kalimat
@@ -840,11 +804,11 @@ Bila kelas tampak ragu pada nomor 4, ulangi contoh tombol Simpan yang ditekan du
 
 ## Rangkuman (2/2)
 
-1) JSON adalah format pertukaran utama: `JSON.stringify` dan `response.json()`
-2) `fetch` hanya melempar error pada kegagalan jaringan — periksa `response.ok`
-3) Tiga keadaan UI: loading, error dengan aksi, dan empty yang menjelaskan
-4) Base URL menyesuaikan tempat aplikasi berjalan: emulator, device, simulator
-5) API produksi memakai token pada header `Authorization: Bearer`
+1. JSON adalah format pertukaran utama: `JSON.stringify` dan `response.json()`
+2. `fetch` hanya melempar error pada kegagalan jaringan — periksa `response.ok`
+3. Tiga keadaan UI: loading, error dengan aksi, dan empty yang menjelaskan
+4. Base URL menyesuaikan tempat aplikasi berjalan: emulator, device, simulator
+5. API produksi memakai token pada header `Authorization: Bearer`
 
 <!--
 Tutup rangkuman dengan mengaitkan ke bab berikutnya: pola fetch dan tiga keadaan UI ini
@@ -858,11 +822,11 @@ integration (10%).
 
 ## Latihan, Tantangan, dan Praktikum
 
-* **Praktikum 10** — daftar mahasiswa dari API dengan tiga keadaan UI
-* **Latihan** — ubah `ubahMahasiswa` memakai `PATCH` yang hanya mengirim field `ipk`
-* **Latihan** — buat `screens/DetailMahasiswa.js` yang memanggil `ambilMahasiswaById`
-* **Tantangan** — simpan daftar terakhir dengan AsyncStorage sebagai cadangan (lihat Bab 11)
-* **Tantangan** — pindahkan data mahasiswa ke Context agar dibagi antar layar (lihat Bab 9)
+- **Praktikum 10** — daftar mahasiswa dari API dengan tiga keadaan UI
+- **Latihan** — ubah `ubahMahasiswa` memakai `PATCH` yang hanya mengirim field `ipk`
+- **Latihan** — buat `screens/DetailMahasiswa.js` yang memanggil `ambilMahasiswaById`
+- **Tantangan** — simpan daftar terakhir dengan AsyncStorage sebagai cadangan (lihat Bab 11)
+- **Tantangan** — pindahkan data mahasiswa ke Context agar dibagi antar layar (lihat Bab 9)
 
 > Milestone Project Akhir: integrasi API pada aplikasi kelompok Anda.
 

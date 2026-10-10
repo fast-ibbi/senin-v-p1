@@ -31,10 +31,10 @@ menjawabnya.
 
 ## Tujuan Pembelajaran (1/2)
 
-* Menjelaskan konsep UI deklaratif dan `UI = f(state)`
-* Mengidentifikasi aturan penulisan JSX dan membedakan komponen dengan elemen
-* Mengimplementasikan komponen reusable dengan props dan nilai default
-* Menganalisis perbedaan props dan state serta memperbarui state secara immutable
+- Menjelaskan konsep UI deklaratif dan `UI = f(state)`
+- Mengidentifikasi aturan penulisan JSX dan membedakan komponen dengan elemen
+- Mengimplementasikan komponen reusable dengan props dan nilai default
+- Menganalisis perbedaan props dan state serta memperbarui state secara immutable
 
 <!--
 Bacakan kata kerjanya saja, lalu tekankan bahwa tujuan ke-4 adalah yang paling sering
@@ -49,10 +49,10 @@ Bab 3, bukan materi bab ini.
 
 ## Tujuan Pembelajaran (2/2)
 
-* Menerapkan event handling dengan referensi fungsi pada prop `on`
-* Menerapkan conditional rendering dan list rendering dengan `key` yang benar
-* Mengimplementasikan lifecycle sederhana dengan `useEffect` termasuk cleanup
-* Mengevaluasi kapan `useMemo` dan `useCallback` benar-benar diperlukan
+- Menerapkan event handling dengan referensi fungsi pada prop `on`
+- Menerapkan conditional rendering dan list rendering dengan `key` yang benar
+- Mengimplementasikan lifecycle sederhana dengan `useEffect` termasuk cleanup
+- Mengevaluasi kapan `useMemo` dan `useCallback` benar-benar diperlukan
 
 <!--
 Tujuan terakhir (mengevaluasi useMemo dan useCallback) adalah yang paling sering
@@ -65,43 +65,6 @@ dan list rendering) menjadi dua butir, sehingga tujuan useMemo menjadi butir ke-
 Pertanyaan pemandu: "Tujuan ke-4 soal apa, dan tujuan terakhir soal apa?"
 (Jawaban: ke-4 soal memperbarui state tanpa mutasi, terakhir soal menahan diri agar
 tidak mengoptimasi tanpa alasan.)
--->
-
----
-
-<!-- _class: center -->
-
-## Tiga Pertanyaan Pembuka
-
-* Siapa yang harus memperbarui layar: kode kita atau React?
-* Kalau satu komponen dipakai di lima tempat, siapa pemilik datanya?
-* Apa risiko kalau penanda identitas elemen daftar berubah setiap render?
-
-Jawabannya tersebar di Subbab 4.1 (konsep), 4.3–4.4 (props & state), dan 4.6 (list rendering).
-
-<!--
-Think-pair-share: 2 menit berpikir sendiri, 2 menit berpasangan, lalu 2–3 pasangan
-menyampaikan jawaban singkat. Jangan menjawab sekarang.
-
-Pemicu bila kelas pasif: "Bayangkan lima kartu mahasiswa di satu layar; kalau data
-Budi berubah, berapa tempat yang harus Anda perbarui?"
--->
-
----
-
-## Peta Konsep Bab 4
-
-![w:680](assets/diagrams/bab-04-dasar-react-01.svg)
-
-> Satu peta: konsep deklaratif di puncak, komponen sebagai unit, hooks sebagai pintu masuk fitur React.
-
-<!--
-Jelaskan alur membacanya dari atas ke bawah: semua berpangkal pada satu gagasan
-UI = f(state); komponen adalah unitnya; props dan state adalah dua jenis datanya;
-hooks adalah cara komponen memakai fitur React.
-
-Ingatkan bahwa peta ini juga menjadi kerangka seluruh bab, sehingga mahasiswa tahu
-sedang berada di bagian mana ketika kita berpindah subbab.
 -->
 
 ---
@@ -129,9 +92,9 @@ Sisa bagian bab ini dipindahkan ke pertemuan ke-5.
 
 **Deklaratif** — kode mendeskripsikan *apa yang tampil* dari data; React yang memperbarui layar.
 
-* Makin besar aplikasi, perintah imperatif makin tersebar dan sulit dilacak
-* Satu data berubah, lima bagian layar bisa tertinggal karena perintahnya terlewat
-* React (2013, dikembangkan Meta) hadir justru untuk menutup celah itu
+- Makin besar aplikasi, perintah imperatif makin tersebar dan sulit dilacak
+- Satu data berubah, lima bagian layar bisa tertinggal karena perintahnya terlewat
+- React (2013, dikembangkan Meta) hadir justru untuk menutup celah itu
 
 <!--
 Analogi: imperatif seperti memberi sopir daftar belokan satu per satu, sedangkan
@@ -151,10 +114,10 @@ Yang berpindah hanyalah tempat logikanya, bukan jumlahnya.
 
 Tampilan adalah **fungsi dari state**: setiap kali state berubah, React menghitung tampilan baru dan memperbarui bagian yang benar-benar berubah.
 
-* Mekanismenya disebut **reconciliation** (rekonsiliasi/pencocokan)
-* React membandingkan gambaran tampilan lama dengan yang baru
-* Selisih (diff) minimal itulah yang diterapkan ke layar
-* Di React Native, "layar" adalah pohon komponen native, bukan elemen HTML
+- Mekanismenya disebut **reconciliation** (rekonsiliasi/pencocokan)
+- React membandingkan gambaran tampilan lama dengan yang baru
+- Selisih (diff) minimal itulah yang diterapkan ke layar
+- Di React Native, "layar" adalah pohon komponen native, bukan elemen HTML
 
 > Anda tidak lagi menulis perintah "perbarui teks ini" satu per satu — ubah state, layar mengikuti.
 
@@ -176,9 +139,9 @@ isi array.)
 
 **Komponen** adalah fungsi JavaScript yang menerima data (props) dan mengembalikan deskripsi tampilan.
 
-* Aplikasi besar tersusun dari puluhan komponen kecil yang saling disusun
-* `App.js` di akar project adalah **komponen akar**: pintu masuk seluruh tampilan (Bab 2)
-* React modern hanya mengenal **functional component**, bukan class component
+- Aplikasi besar tersusun dari puluhan komponen kecil yang saling disusun
+- `App.js` di akar project adalah **komponen akar**: pintu masuk seluruh tampilan (Bab 2)
+- React modern hanya mengenal **functional component**, bukan class component
 
 `components/Sapaan.jsx`
 
@@ -275,9 +238,9 @@ satu arah dari induk ke anak.
 
 ## Props: Read-only, Nilai Default, dan `children`
 
-* **Read-only:** komponen anak dilarang mengubah props yang diterimanya
-* **Nilai default:** pakai parameter fungsi, bukan `defaultProps` yang tidak diperlukan lagi
-* **`children`:** isi di antara tag pembuka dan penutup otomatis menjadi prop
+- **Read-only:** komponen anak dilarang mengubah props yang diterimanya
+- **Nilai default:** pakai parameter fungsi, bukan `defaultProps` yang tidak diperlukan lagi
+- **`children`:** isi di antara tag pembuka dan penutup otomatis menjadi prop
 
 `components/KartuMahasiswa.jsx`
 
@@ -308,10 +271,10 @@ materi lifting state up yang baru muncul di Bab 9.
 
 **State** adalah data internal komponen yang boleh berubah seiring waktu; perubahannya memicu re-render.
 
-* `useState('Semua')` menerima nilai awal dan mengembalikan sepasang nilai
-* Pasangan itu: state `kategoriProdi` dan fungsi pengubahnya, yaitu **setter**
-* Konvensi penamaannya `const [x, setX] = useState(...)` — destructuring array (Bab 3)
-* Memanggil setter membuat React menjalankan ulang komponen dan menyesuaikan JSX
+- `useState('Semua')` menerima nilai awal dan mengembalikan sepasang nilai
+- Pasangan itu: state `kategoriProdi` dan fungsi pengubahnya, yaitu **setter**
+- Konvensi penamaannya `const [x, setX] = useState(...)` — destructuring array (Bab 3)
+- Memanggil setter membuat React menjalankan ulang komponen dan menyesuaikan JSX
 
 > Ubah state, layar mengikuti — inilah wujud nyata `UI = f(state)`.
 
@@ -441,9 +404,9 @@ sebutkan sekali agar tidak mengalihkan perhatian.
 
 ## Conditional Rendering: Tiga Pola
 
-* **Ternary `? :`** — memilih salah satu dari dua tampilan
-* **Operator `&&`** — menampilkan elemen hanya jika kondisi benar
-* **`null` eksplisit** — cara paling jelas untuk "jangan tampilkan apa pun"
+- **Ternary `? :`** — memilih salah satu dari dua tampilan
+- **Operator `&&`** — menampilkan elemen hanya jika kondisi benar
+- **`null` eksplisit** — cara paling jelas untuk "jangan tampilkan apa pun"
 
 `App.jsx`
 
@@ -481,9 +444,9 @@ bahwa yang diperlukan hanya ekspresi.
 
 ## List Rendering dengan `map`
 
-* `map` mengubah array data menjadi array elemen JSX (Bab 3 Subbab 3.7)
-* Data tidak pernah dimutasi, karena `map` mengembalikan array baru
-* Setiap elemen daftar wajib diberi **key**: identitas unik di antara saudara kandungnya
+- `map` mengubah array data menjadi array elemen JSX (Bab 3 Subbab 3.7)
+- Data tidak pernah dimutasi, karena `map` mengembalikan array baru
+- Setiap elemen daftar wajib diberi **key**: identitas unik di antara saudara kandungnya
 
 `components/DaftarMahasiswa.jsx`
 
@@ -512,17 +475,17 @@ diperkenalkan pada Bab 5.
 
 ## `key`: Unik, Stabil, Bukan Indeks
 
-* Hilang key memunculkan peringatan: "Each child in a list should have a unique key prop"
-* Key yang berubah membuat React salah mencocokkan elemen antar render
-* Pakai identitas data yang memang unik, misalnya `mahasiswa.id`
-* Hindari `key={index}` bila urutan daftar dapat berubah: tambah, urut, atau hapus
-* Indeks baru dapat ditoleransi untuk daftar statis yang tidak pernah berubah
+- Hilang key memunculkan peringatan: "Each child in a list should have a unique key prop"
+- Key yang berubah membuat React salah mencocokkan elemen antar render
+- Pakai identitas data yang memang unik, misalnya `mahasiswa.id`
+- Hindari `key={index}` bila urutan daftar dapat berubah: tambah, urut, atau hapus
+- Indeks baru dapat ditoleransi untuk daftar statis yang tidak pernah berubah
 
 > Daftar ribuan item ditangani `FlatList` pada Bab 5; untuk data kecil, `View` + `map` sudah memadai.
 
 <!--
-Ini slide yang menjawab pertanyaan pembuka ketiga. Tekankan kata stabil: key bukan
-sekadar unik, tetapi juga tidak berubah antar render.
+Slide penutup rangkaian list rendering: tekankan kata stabil. Key bukan sekadar unik,
+tetapi juga tidak berubah antar render.
 
 Contoh yang paling meyakinkan: kartu yang sedang terbuka detailnya ikut berpindah ke
 kartu lain setelah daftar disaring, karena React mengira elemen indeks 2 yang lama
@@ -542,9 +505,9 @@ justru karena aplikasi tetap berjalan. Bug-nya muncul belakangan dan sulit dilac
 
 ## Apa yang terjadi jika…?
 
-* Daftar lima mahasiswa memakai `key={index}`, lalu Anda menyaring per program studi?
-* Sebuah kartu sedang terbuka detailnya, lalu daftar diurutkan ulang berdasarkan nama?
-* React memberi tahu lewat apa ketika daftar bermasalah?
+- Daftar lima mahasiswa memakai `key={index}`, lalu Anda menyaring per program studi?
+- Sebuah kartu sedang terbuka detailnya, lalu daftar diurutkan ulang berdasarkan nama?
+- React memberi tahu lewat apa ketika daftar bermasalah?
 
 <!--
 Skenario ini diambil dari praktikum bab ini. Minta mahasiswa menuliskan dugaan
@@ -562,9 +525,9 @@ Bila kelas ragu, beri petunjuk: "React mencocokkan elemen berdasarkan apa?"
 
 ## Jawaban: Detail Tersangkut ke Kartu Lain
 
-* Indeks bergeser, sehingga React mencocokkan elemen lama dengan elemen yang salah
-* State `detailTampil` milik kartu lain ikut terbuka — datanya benar, tampilannya salah
-* Peringatan di konsol: *"Each child in a list should have a unique key prop"*
+- Indeks bergeser, sehingga React mencocokkan elemen lama dengan elemen yang salah
+- State `detailTampil` milik kartu lain ikut terbuka — datanya benar, tampilannya salah
+- Peringatan di konsol: *"Each child in a list should have a unique key prop"*
 
 > Perbaikan: `key={mahasiswa.id}` — unik dan tidak berubah antar render.
 
@@ -589,8 +552,8 @@ bukan menghilangkannya.
 
 ![w:900](assets/diagrams/bab-04-dasar-react-02.svg)
 
-* Data mengalir ke bawah lewat props; state tinggal di tempat ia dideklarasikan
-* `KartuMahasiswa` menyimpan `detailTampil` sendiri, jadi setiap kartu berdiri sendiri
+- Data mengalir ke bawah lewat props; state tinggal di tempat ia dideklarasikan
+- `KartuMahasiswa` menyimpan `detailTampil` sendiri, jadi setiap kartu berdiri sendiri
 
 > Satu komponen `KartuMahasiswa` yang sama dapat muncul di daftar, di layar detail, bahkan di layar lain pada project akhir.
 
@@ -614,10 +577,10 @@ dipahami sekilas.
 
 ## Dua Aturan Hooks yang Tidak Boleh Dilanggar
 
-* Hooks hanya dipanggil **di dalam fungsi komponen** atau custom hook (Bab 9)
-* Selalu di **tingkat atas**: bukan di dalam `if`, perulangan, atau fungsi bersarang
-* React mengandalkan urutan pemanggilan hooks yang sama di setiap render
-* Melanggar aturan ini membuat React kehilangan jejak state
+- Hooks hanya dipanggil **di dalam fungsi komponen** atau custom hook (Bab 9)
+- Selalu di **tingkat atas**: bukan di dalam `if`, perulangan, atau fungsi bersarang
+- React mengandalkan urutan pemanggilan hooks yang sama di setiap render
+- Melanggar aturan ini membuat React kehilangan jejak state
 
 > Aturan yang sama berlaku untuk `useState`, `useEffect`, `useMemo`, dan `useCallback`.
 
@@ -675,9 +638,9 @@ Loading state yang sebenarnya dibahas pada Bab 10.
 
 ![w:900](assets/diagrams/bab-04-dasar-react-03.svg)
 
-* **Mount** — render pertama selesai; efek dengan `[]` berjalan sekali
-* **Update** — ada dependency yang berubah; efek dijalankan ulang
-* **Unmount** — komponen dihapus dari layar; fungsi cleanup dipanggil
+- **Mount** — render pertama selesai; efek dengan `[]` berjalan sekali
+- **Update** — ada dependency yang berubah; efek dijalankan ulang
+- **Unmount** — komponen dihapus dari layar; fungsi cleanup dipanggil
 
 <!--
 Ingatkan bahwa istilah mount dan unmount akan muncul lagi pada navigation lifecycle di
@@ -703,9 +666,9 @@ modern semuanya dikelola lewat efek.
 | `useMemo` | hasil perhitungan | komputasi terukur mahal: filter, agregasi, transformasi data besar |
 | `useCallback` | referensi fungsi | fungsi diteruskan ke anak yang dibungkus `React.memo` |
 
-* Tanpa `useMemo`, `filter` dijalankan ulang pada setiap render
-* Keduanya menyimpan data di memori dan menambah kerumitan membaca kode
-* Optimasi prematur, yaitu menebak tanpa data kinerja, membuat kode lebih sulit dipelihara
+- Tanpa `useMemo`, `filter` dijalankan ulang pada setiap render
+- Keduanya menyimpan data di memori dan menambah kerumitan membaca kode
+- Optimasi prematur, yaitu menebak tanpa data kinerja, membuat kode lebih sulit dipelihara
 
 > Pada data lima mahasiswa manfaatnya belum terasa; pola ini menjadi penting ketika jumlah data membesar.
 
@@ -752,11 +715,11 @@ React hanya tahu state berubah jika setter dipanggil; mutasi langsung tidak terd
 
 Bagian administrasi akademik menjawab puluhan pertanyaan harian; petugas menyaring berkas spreadsheet secara manual, lambat dan rawan salah salin.
 
-* Aplikasi menampilkan data mahasiswa **secara dinamis**: filter prodi dan ringkasan agregat
-* Satu sumber kebenaran: data dipisah dari tampilan, sehingga tidak ada dua versi angka
-* Kartu berdiri sendiri, jadi kekeliruan satu kartu tidak merembet ke kartu lain
-* Rata-rata IPK dihitung otomatis dari data yang tampil, bukan diketik manual
-* Ketika data datang dari server pada Bab 10, struktur komponen tidak berubah
+- Aplikasi menampilkan data mahasiswa **secara dinamis**: filter prodi dan ringkasan agregat
+- Satu sumber kebenaran: data dipisah dari tampilan, sehingga tidak ada dua versi angka
+- Kartu berdiri sendiri, jadi kekeliruan satu kartu tidak merembet ke kartu lain
+- Rata-rata IPK dihitung otomatis dari data yang tampil, bukan diketik manual
+- Ketika data datang dari server pada Bab 10, struktur komponen tidak berubah
 
 <!--
 Bawakan sebagai cerita kebutuhan pengguna, bukan sebagai daftar fitur. Tujuannya agar
@@ -777,11 +740,11 @@ project akhir; jangan merancang fitur di luar cakupan bab.
 
 ## Praktikum: Rangkaian Langkah Kerja
 
-1) Tulis `DATA_MAHASISWA` (lima data baku) dan `PILIHAN_PRODI` di luar komponen
-2) Deklarasikan state `kategoriProdi` dan `sedangMemuat`
-3) Simulasikan pemuatan: `useEffect` 2 detik dengan cleanup `clearTimeout`
-4) Siapkan `useMemo` untuk filter prodi dan rata-rata IPK
-5) Tulis `KartuMahasiswa` dan `DaftarMahasiswa`, lalu rakit keduanya di `App.js`
+1. Tulis `DATA_MAHASISWA` (lima data baku) dan `PILIHAN_PRODI` di luar komponen
+2. Deklarasikan state `kategoriProdi` dan `sedangMemuat`
+3. Simulasikan pemuatan: `useEffect` 2 detik dengan cleanup `clearTimeout`
+4. Siapkan `useMemo` untuk filter prodi dan rata-rata IPK
+5. Tulis `KartuMahasiswa` dan `DaftarMahasiswa`, lalu rakit keduanya di `App.js`
 
 <!--
 Sebutkan struktur folder minimalnya secara lisan: App.js di akar, lalu folder
@@ -897,10 +860,10 @@ disebut sebagai kelanjutan, jangan dijelaskan lebih jauh.
 
 ## Mini Kuis
 
-* Apa perbedaan props dan state, dan mana yang memicu re-render?
-* Kita menulis `onPress={simpanData()}` — apa yang terjadi saat aplikasi berjalan?
-* `useEffect(() => {...}, [])` dijalankan kapan, dan cleanup-nya berjalan kapan?
-* Kapan `useMemo` benar-benar diperlukan?
+- Apa perbedaan props dan state, dan mana yang memicu re-render?
+- Kita menulis `onPress={simpanData()}` — apa yang terjadi saat aplikasi berjalan?
+- `useEffect(() => {...}, [])` dijalankan kapan, dan cleanup-nya berjalan kapan?
+- Kapan `useMemo` benar-benar diperlukan?
 
 <!--
 Kuis lisan lima menit: tampilkan pertanyaan, minta mahasiswa menjawab berpasangan,
@@ -916,9 +879,9 @@ onPress di editor sebelum menutup pertemuan.
 
 ## Jawaban (1/2)
 
-* Props read-only dari induk; state internal diubah lewat setter
-* Keduanya memicu re-render — bedanya siapa pemilik dan siapa yang boleh mengubah
-* `onPress={simpanData()}` menjalankan fungsi saat render, bukan saat ditekan
+- Props read-only dari induk; state internal diubah lewat setter
+- Keduanya memicu re-render — bedanya siapa pemilik dan siapa yang boleh mengubah
+- `onPress={simpanData()}` menjalankan fungsi saat render, bukan saat ditekan
 
 <!--
 Ulangi pembeda yang paling sering tertukar: onPress menerima referensi fungsi, bukan
@@ -934,9 +897,9 @@ mahasiswa tidak menyimpulkan bahwa hanya state yang mengubah layar.
 
 ## Jawaban (2/2)
 
-* `useEffect(fn, [])` berjalan sekali saat mount; cleanup saat unmount atau efek ulang
-* `useMemo` perlu bila perhitungannya terukur mahal (filter/agregasi/transformasi data besar)
-* `useCallback` perlu bila fungsi diteruskan ke anak yang dibungkus `React.memo`
+- `useEffect(fn, [])` berjalan sekali saat mount; cleanup saat unmount atau efek ulang
+- `useMemo` perlu bila perhitungannya terukur mahal (filter/agregasi/transformasi data besar)
+- `useCallback` perlu bila fungsi diteruskan ke anak yang dibungkus `React.memo`
 
 <!--
 Tekankan kata terukur pada jawaban useMemo: optimasi diambil karena ada bukti beban,

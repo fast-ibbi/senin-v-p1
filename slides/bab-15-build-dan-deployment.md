@@ -33,9 +33,9 @@ dan laporan build.
 
 ## Tujuan Pembelajaran (1/2)
 
-* Membedakan development build dan production build, lalu menentukan kapan memakainya
-* Menjelaskan peran EAS Build dan tiga profil build beserta produknya (APK/AAB)
-* Mengonfigurasi `app.json`: name, slug, application ID, versi, ikon, splash screen
+- Membedakan development build dan production build, lalu menentukan kapan memakainya
+- Menjelaskan peran EAS Build dan tiga profil build beserta produknya (APK/AAB)
+- Mengonfigurasi `app.json`: name, slug, application ID, versi, ikon, splash screen
 
 <!--
 Bacakan kata kerjanya saja, lalu tekankan tujuan ketiga: app.json adalah "akta kelahiran"
@@ -52,9 +52,9 @@ bukan hafalan.
 
 ## Tujuan Pembelajaran (2/2)
 
-* Menganalisis peran environment variable `EXPO_PUBLIC_` dan batasannya terhadap secret
-* Mengidentifikasi konsep signing dan risiko kehilangan kunci penandatanganan
-* Merancang strategi distribusi Google Play dan memahami alur App Store
+- Menganalisis peran environment variable `EXPO_PUBLIC_` dan batasannya terhadap secret
+- Mengidentifikasi konsep signing dan risiko kehilangan kunci penandatanganan
+- Merancang strategi distribusi Google Play dan memahami alur App Store
 
 <!--
 Tujuan keempat paling sering diremehkan: mahasiswa membayangkan environment variable sama
@@ -70,48 +70,6 @@ Android, sehingga alur iOS cukup dipahami urutannya.
 
 ---
 
-## Peta Konsep Bab 15
-
-![w:660](assets/diagrams/bab-15-build-dan-deployment-01.svg)
-
-<!--
-Cara membaca peta: tiga kolom adalah tiga fase, bukan tiga daftar materi. Tekankan bahwa
-signing berdiri di antara build dan distribusi — tanpa tanda tangan, hasil build tidak
-diterima toko aplikasi.
-
-Tanyakan: "Fase mana yang menjelaskan mengapa aplikasi terpasang tidak bisa diperbarui?"
-(Jawaban: fase keaslian, subbab 15.7 signing.)
-
-Jangan menghafal nomor subbab; yang perlu melekat adalah urutan fase persiapan, keaslian,
-lalu distribusi.
--->
-
----
-
-<!-- _class: center -->
-
-## Tiga Pertanyaan Pembuka
-
-* Bagaimana kode menjadi berkas yang bisa dipasang di ponsel?
-* Bagaimana berkas itu dijamin asli dan tidak diubah orang lain?
-* Lewat saluran apa berkas itu sampai ke pengguna?
-
-> Mengirim APK lewat grup percakapan terbukti berbahaya: tanpa kendali versi, tanpa jejak siapa menginstal apa, dan tanpa pembaruan terpusat.
-
-<!--
-Think-pair-share 3 menit, lalu 2-3 pasangan melapor. Jangan menjawab ketiga pertanyaan di
-slide ini.
-
-Pemicu bila kelas diam: "Pernah menerima APK di grup percakapan? Apa yang terjadi saat
-pembuatnya memperbaiki bug sebulan kemudian?"
-
-Tekankan kalimat di bawah: distribusi asal bukan sekadar tidak rapi, melainkan kehilangan
-kendali versi dan kehilangan kemampuan memperbarui. Jawaban ketiga pertanyaan tersebar di
-15.1-15.4, 15.5-15.7, dan 15.8-15.10.
--->
-
----
-
 <!-- _class: lead -->
 <!-- _paginate: skip -->
 
@@ -120,7 +78,7 @@ kendali versi dan kehilangan kemampuan memperbarui. Jawaban ketiga pertanyaan te
 Subbab 15.1 jenis build · 15.2 EAS Build · 15.3 APK & AAB · 15.4 iOS
 
 <!--
-Bagian ini menjawab pertanyaan pertama: bagaimana kode menjadi berkas yang terpasang.
+Bagian ini membahas fase pertama: bagaimana kode menjadi berkas yang terpasang.
 Perkirakan 35 menit.
 
 Subbab 15.4 (iOS) bersifat konseptual dan tidak dipraktikkan; bila waktu mepet, bagian itu
@@ -138,17 +96,17 @@ boleh dibacakan ringkas tanpa kehilangan keterampilan praktikum.
 
 **Yang terjadi saat build**
 
-* Metro membuat bundel JavaScript (Bab 2)
-* Bundel digabung dengan kerangka native Android/iOS
-* Hasilnya satu berkas yang bisa diinstal
+- Metro membuat bundel JavaScript (Bab 2)
+- Bundel digabung dengan kerangka native Android/iOS
+- Hasilnya satu berkas yang bisa diinstal
 
 </div>
 <div>
 
 **Yang bukan build**
 
-* Bukan `npx expo start`: itu server pengembangan
-* Bukan Expo Go: itu aplikasi pembungkus milik Expo
+- Bukan `npx expo start`: itu server pengembangan
+- Bukan Expo Go: itu aplikasi pembungkus milik Expo
 
 </div>
 </div>
@@ -198,11 +156,11 @@ tangan kedua jenis build — konsepnya dibahas tersendiri pada subbab 15.7 (slid
 
 ## EAS Build: Pekerjaan Berat di Cloud
 
-* **EAS** — layanan cloud Expo untuk membangun, menandatangani, dan mengirim aplikasi
-* Build Android butuh Android SDK, JDK, dan Gradle; iOS butuh macOS dan Xcode
-* Server Expo yang mengompilasi; Anda cukup mengirim kode project
-* Hasilnya tautan unduhan dan kode QR yang muncul di terminal
-* Build juga dapat dijalankan di mesin lokal, tetapi EAS yang menyiapkannya
+- **EAS** — layanan cloud Expo untuk membangun, menandatangani, dan mengirim aplikasi
+- Build Android butuh Android SDK, JDK, dan Gradle; iOS butuh macOS dan Xcode
+- Server Expo yang mengompilasi; Anda cukup mengirim kode project
+- Hasilnya tautan unduhan dan kode QR yang muncul di terminal
+- Build juga dapat dijalankan di mesin lokal, tetapi EAS yang menyiapkannya
 
 <!--
 Tekankan alasan praktisnya untuk mahasiswa: tidak semua laptop praktikan sanggup memasang
@@ -281,10 +239,10 @@ build:configure sebagai kebenaran versi Anda.
 
 ![w:660](assets/diagrams/bab-15-build-dan-deployment-02.svg)
 
-1) Pasang `eas-cli` secara global, atau panggil dengan `npx eas-cli`
-2) `eas login`, lalu `eas whoami` untuk memastikan sesi aktif
-3) `eas build:configure` membuat `eas.json` di root project
-4) `eas build --platform android --profile preview`
+1. Pasang `eas-cli` secara global, atau panggil dengan `npx eas-cli`
+2. `eas login`, lalu `eas whoami` untuk memastikan sesi aktif
+3. `eas build:configure` membuat `eas.json` di root project
+4. `eas build --platform android --profile preview`
 
 <!--
 Urutannya wajib: cek konfigurasi, autentikasi, siapkan profil, baru bangun. Perintah
@@ -343,11 +301,11 @@ arsitektur prosesor lain, grafis untuk kerapatan layar lain, dan terjemahan baha
 
 ## iOS Build: Konseptual tapi Terkunci
 
-* EAS menyediakan server macOS, sehingga build iOS bisa dijalankan dari Windows
-* Syarat mutlak: keanggotaan Apple Developer Program yang berbayar tahunan
-* Tanpa keanggotaan itu, sertifikat penandatanganan tidak dapat diterbitkan
-* EAS mengelola sertifikat dan provisioning profile secara otomatis
-* Tidak ada jalur instal langsung: hanya App Store, TestFlight, atau perangkat terdaftar
+- EAS menyediakan server macOS, sehingga build iOS bisa dijalankan dari Windows
+- Syarat mutlak: keanggotaan Apple Developer Program yang berbayar tahunan
+- Tanpa keanggotaan itu, sertifikat penandatanganan tidak dapat diterbitkan
+- EAS mengelola sertifikat dan provisioning profile secara otomatis
+- Tidak ada jalur instal langsung: hanya App Store, TestFlight, atau perangkat terdaftar
 
 <!--
 Tekankan dua syarat yang tidak bisa dilompati: keanggotaan Apple Developer Program dan
@@ -367,10 +325,10 @@ Android.
 
 ## Latihan: Memilih Saluran Rilis
 
-* APK lewat grup percakapan — murah dan cepat, tanpa kendali versi
-* Track internal testing Play — maksimal 100 penguji, tanpa proses review
-* Rilis production Play — semua pengguna, melewati review Google
-* Tugas: tentukan saluran untuk (a) uji harian tim, (b) beta 20 teman, (c) rilis kampus
+- APK lewat grup percakapan — murah dan cepat, tanpa kendali versi
+- Track internal testing Play — maksimal 100 penguji, tanpa proses review
+- Rilis production Play — semua pengguna, melewati review Google
+- Tugas: tentukan saluran untuk (a) uji harian tim, (b) beta 20 teman, (c) rilis kampus
 
 <!--
 Think-pair-share 4 menit: setiap pasangan memilih satu saluran per kebutuhan dan menyebutkan
@@ -396,7 +354,7 @@ Nilai kualitas jawaban dari alasannya, bukan dari nama salurannya.
 Subbab 15.5 app.json · 15.6 Environment variable · 15.7 Signing · 15.8–15.10
 
 <!--
-Bagian ini menjawab pertanyaan kedua dan ketiga: bagaimana aplikasi dijamin asli, dan lewat
+Bagian ini membahas fase kedua dan ketiga: bagaimana aplikasi dijamin asli, dan lewat
 saluran apa ia sampai ke pengguna.
 
 Perkirakan 45 menit. Subbab 15.5 sampai 15.7 wajib; 15.9 (App Store) dapat dipadatkan bila
@@ -407,11 +365,11 @@ waktu kurang karena seluruhnya konseptual.
 
 ## app.json: Nama, Versi, dan Nomor Versi
 
-* `expo.name` — nama di bawah ikon dan di toko aplikasi; boleh berubah kapan pun
-* `expo.slug` — identitas internal di ekosistem Expo; tanpa spasi dan huruf besar
-* `expo.version` — versi semantik `utama.tengah.tambalan` yang dibaca manusia
-* `expo.android.versionCode` — bilangan bulat yang wajib naik tiap unggahan ke Play
-* `autoIncrement: true` pada profil production menaikkan nomor versi mesin
+- `expo.name` — nama di bawah ikon dan di toko aplikasi; boleh berubah kapan pun
+- `expo.slug` — identitas internal di ekosistem Expo; tanpa spasi dan huruf besar
+- `expo.version` — versi semantik `utama.tengah.tambalan` yang dibaca manusia
+- `expo.android.versionCode` — bilangan bulat yang wajib naik tiap unggahan ke Play
+- `autoIncrement: true` pada profil production menaikkan nomor versi mesin
 
 > Contoh perjalanan versi: `1.0.0` → `1.1.0` (fitur baru) → `1.1.1` (perbaikan bug) → `2.0.0` (perombakan).
 
@@ -433,11 +391,11 @@ sedangkan name bebas diganti kapan saja.
 
 ## Application ID: Permanen Sejak Publikasi
 
-* `android.package` dan `ios.bundleIdentifier` — identitas unik global aplikasi
-* Ditulis dengan aturan kebalikan nama domain: `ac.id.univ` + `mahasiswa`
-* Aturannya: huruf kecil, angka, dan titik; setiap ruas diawali huruf
-* Sekali dipublikasikan, ID tidak boleh diubah — dianggap aplikasi baru
-* Akibatnya pengguna dan ulasan lama seolah hilang bersama ID yang lama
+- `android.package` dan `ios.bundleIdentifier` — identitas unik global aplikasi
+- Ditulis dengan aturan kebalikan nama domain: `ac.id.univ` + `mahasiswa`
+- Aturannya: huruf kecil, angka, dan titik; setiap ruas diawali huruf
+- Sekali dipublikasikan, ID tidak boleh diubah — dianggap aplikasi baru
+- Akibatnya pengguna dan ulasan lama seolah hilang bersama ID yang lama
 
 <!--
 Latih aturan kebalikan domain di papan: politeknik.ac.id ditambah siakad menjadi
@@ -457,11 +415,11 @@ build pertama yang dipublikasikan.)
 
 ## Ikon, Adaptive Icon, dan Splash Screen
 
-* **Splash screen** — layar pembuka yang tampil sesaat saat aplikasi dibuka
-* `expo.icon` — PNG persegi 1024×1024 piksel sebagai ikon aplikasi
-* `adaptiveIcon` — `foregroundImage` (area aman di tengah) + `backgroundColor`
-* Splash dikonfigurasi lewat config plugin `expo-splash-screen` di `plugins`
-* Parameter splash: `image`, `imageWidth`, `resizeMode`, `backgroundColor`
+- **Splash screen** — layar pembuka yang tampil sesaat saat aplikasi dibuka
+- `expo.icon` — PNG persegi 1024×1024 piksel sebagai ikon aplikasi
+- `adaptiveIcon` — `foregroundImage` (area aman di tengah) + `backgroundColor`
+- Splash dikonfigurasi lewat config plugin `expo-splash-screen` di `plugins`
+- Parameter splash: `image`, `imageWidth`, `resizeMode`, `backgroundColor`
 
 <!--
 Tekankan alasan adaptive icon punya dua lapis: Android modern memotong ikon sesuai bentuk
@@ -523,11 +481,11 @@ Contoh 1.
 
 ## Environment Variable: Konfigurasi di Luar Kode
 
-* Nilai konfigurasi disimpan di luar kode, lazimnya dalam berkas `.env`
-* Expo membaca `.env`, `.env.local`, `.env.development`, dan `.env.production`
-* Hanya variabel berawalan `EXPO_PUBLIC_` yang disisipkan ke kode aplikasi
-* Di dalam kode dibaca sebagai `process.env.EXPO_PUBLIC_API_URL`
-* Setelah mengubah `.env`, mulai ulang `npx expo start` agar nilai baru tersisip
+- Nilai konfigurasi disimpan di luar kode, lazimnya dalam berkas `.env`
+- Expo membaca `.env`, `.env.local`, `.env.development`, dan `.env.production`
+- Hanya variabel berawalan `EXPO_PUBLIC_` yang disisipkan ke kode aplikasi
+- Di dalam kode dibaca sebagai `process.env.EXPO_PUBLIC_API_URL`
+- Setelah mengubah `.env`, mulai ulang `npx expo start` agar nilai baru tersisip
 
 <!--
 Analogi: environment variable seperti label lokasi pada kotak peralatan. Isi kotaknya sama,
@@ -569,11 +527,11 @@ kata sandi, token, kunci API, atau nomor kartu.
 
 ## Signing: Bukti Keaslian Build
 
-* **Signing** — tanda tangan digital penanda berkas berasal dari pengembang yang sah
-* Siapa pun dapat membangun ulang aplikasi, tetapi hanya pemilik kunci bisa menandatangani
-* Android: **keystore** (`.jks` atau `.keystore`) berisi kunci dan sertifikat
-* Sistem menolak pembaruan yang ditandatangani kunci berbeda
-* EAS membuat dan menyimpan keystore di akun Anda, unduh lewat `eas credentials`
+- **Signing** — tanda tangan digital penanda berkas berasal dari pengembang yang sah
+- Siapa pun dapat membangun ulang aplikasi, tetapi hanya pemilik kunci bisa menandatangani
+- Android: **keystore** (`.jks` atau `.keystore`) berisi kunci dan sertifikat
+- Sistem menolak pembaruan yang ditandatangani kunci berbeda
+- EAS membuat dan menyimpan keystore di akun Anda, unduh lewat `eas credentials`
 
 <!--
 Analogi: tanda tangan digital seperti segel notaris. Isi dokumen boleh sama, tetapi segelnya
@@ -596,9 +554,9 @@ sintaksnya ditandai version-sensitive pada bab.
 
 ## Apa yang Terjadi Jika Keystore Hilang?
 
-* Laptop developer rusak dan keystore lokal tidak punya salinan
-* Aplikasi versi lama sudah terpasang di sejumlah perangkat pengguna
-* Anda harus merilis perbaikan bug minggu depan
+- Laptop developer rusak dan keystore lokal tidak punya salinan
+- Aplikasi versi lama sudah terpasang di sejumlah perangkat pengguna
+- Anda harus merilis perbaikan bug minggu depan
 
 **Pertanyaan:** apa yang terjadi saat build baru dipasang di perangkat lama?
 
@@ -620,11 +578,11 @@ jangan mengarang besaran angka.
 
 ## Jawaban: Menjaga Kunci Penandatanganan
 
-* Aplikasi terpasang tidak akan pernah bisa diperbarui — tanda tangan tidak cocok
-* Sistem menganggap build baru sebagai aplikasi yang berbeda
-* Mitigasi pertama: EAS menyimpan keystore di akun Expo, aman dari laptop rusak
-* Mitigasi kedua: **Play App Signing** menyimpan kunci produksi di Google
-* Dengan Play App Signing, pengembang hanya memegang **upload key**
+- Aplikasi terpasang tidak akan pernah bisa diperbarui — tanda tangan tidak cocok
+- Sistem menganggap build baru sebagai aplikasi yang berbeda
+- Mitigasi pertama: EAS menyimpan keystore di akun Expo, aman dari laptop rusak
+- Mitigasi kedua: **Play App Signing** menyimpan kunci produksi di Google
+- Dengan Play App Signing, pengembang hanya memegang **upload key**
 
 <!--
 Ulangi jawabannya dengan tegas: aplikasi terpasang kehilangan jalur pembaruan; pengguna harus
@@ -643,8 +601,8 @@ Ingatkan agar mahasiswa menyimpan salinan keystore di tempat aman sejak praktiku
 
 ## Google Play: Empat Track Rilis
 
-* **Deployment** (penerapan) — menghadirkan build ke pengguna lewat saluran resmi
-* **Track** (jalur rilis) — saluran rilis Play Console: internal, closed, open, production
+- **Deployment** (penerapan) — menghadirkan build ke pengguna lewat saluran resmi
+- **Track** (jalur rilis) — saluran rilis Play Console: internal, closed, open, production
 
 | Track | Siapa yang menerima | Catatan |
 |---|---|---|
@@ -674,11 +632,11 @@ Dua bullet di atas adalah definisi istilah pokok bab: deployment didefinisikan p
 
 ## Alur Unggah ke Play Console
 
-1) Bangun AAB: `eas build --platform android --profile production`
-2) Isi kehadiran aplikasi: deskripsi, ikon toko, tangkapan layar, data safety
-3) Pilih track, unggah AAB, dan pastikan `versionCode` sudah naik
-4) Tulis catatan rilis, lalu tekan tombol rilis
-5) Pantau statistik, laporan kerusakan, dan ulasan di dashboard Play
+1. Bangun AAB: `eas build --platform android --profile production`
+2. Isi kehadiran aplikasi: deskripsi, ikon toko, tangkapan layar, data safety
+3. Pilih track, unggah AAB, dan pastikan `versionCode` sudah naik
+4. Tulis catatan rilis, lalu tekan tombol rilis
+5. Pantau statistik, laporan kerusakan, dan ulasan di dashboard Play
 
 > Rilis production dapat dibatasi ke persentase pengguna tertentu lewat rollout bertahap.
 
@@ -702,9 +660,9 @@ Tekankan bahwa dashboard dan ulasan adalah umpan balik produk yang berharga, buk
 
 ![w:660](assets/diagrams/bab-15-build-dan-deployment-05.svg)
 
-* Tidak ada jalur publik di luar App Store: hanya review, TestFlight, atau dev build
-* Biaya keanggotaan tahunan dan review yang lebih ketat dibanding Play
-* TestFlight: ratusan penguji internal dan ribuan penguji eksternal
+- Tidak ada jalur publik di luar App Store: hanya review, TestFlight, atau dev build
+- Biaya keanggotaan tahunan dan review yang lebih ketat dibanding Play
+- TestFlight: ratusan penguji internal dan ribuan penguji eksternal
 
 <!--
 Bandingkan dengan Play pada dua hal: pola biaya (Play sekali, Apple tahunan) dan ketatnya
@@ -750,11 +708,11 @@ ditandai version-sensitive pada bab dan akan ditemui lagi di dunia kerja.
 
 ## Studi Kasus: Insiden SIAKAD Mobile 1.0
 
-* APK 1.0 dibangun seadanya lalu disebar lewat grup WhatsApp angkatan
-* Versi 1.0.1 dirilis, tetapi dua versi tetap beredar dan data bentrok di backend
-* Laptop developer rusak; keystore lokal hilang; pembaruan ditolak sistem
-* Build di Play membawa alamat API IP laptop, bukan alamat server produksi
-* Biaya perbaikan: tiga minggu kerja ulang dan kepercayaan pengguna yang turun
+- APK 1.0 dibangun seadanya lalu disebar lewat grup WhatsApp angkatan
+- Versi 1.0.1 dirilis, tetapi dua versi tetap beredar dan data bentrok di backend
+- Laptop developer rusak; keystore lokal hilang; pembaruan ditolak sistem
+- Build di Play membawa alamat API IP laptop, bukan alamat server produksi
+- Biaya perbaikan: tiga minggu kerja ulang dan kepercayaan pengguna yang turun
 
 <!--
 Bacakan sebagai cerita, bukan daftar. Lima mahasiswa penguji pada insiden ini memakai data
@@ -795,11 +753,11 @@ pertemuan memahami build dan deployment.
 
 ## Praktikum Pertemuan Ini
 
-* Lengkapi `app.json`: name, slug, version, application ID, versionCode, buildNumber
-* Verifikasi dengan `npx expo config --type public` sebelum mengirim kode ke cloud
-* Buat `eas.json` dengan tiga profil: development, preview, production
-* Pisahkan alamat API ke `.env` lalu mulai ulang `npx expo start`
-* Tanpa akun EAS: `npx expo export --platform android` menghasilkan bundel di `dist/`
+- Lengkapi `app.json`: name, slug, version, application ID, versionCode, buildNumber
+- Verifikasi dengan `npx expo config --type public` sebelum mengirim kode ke cloud
+- Buat `eas.json` dengan tiga profil: development, preview, production
+- Pisahkan alamat API ke `.env` lalu mulai ulang `npx expo start`
+- Tanpa akun EAS: `npx expo export --platform android` menghasilkan bundel di `dist/`
 
 <!--
 Ingatkan agar bekerja pada salinan project praktikum15, bukan project utama; build cloud
@@ -867,10 +825,10 @@ Pesan penutup: keputusan rilis diambil sebelum rilis pertama, bukan setelah peng
 
 ## Mini Kuis
 
-* Perbedaan utama production build dan development build adalah...
-* Alasan Google Play mewajibkan AAB untuk aplikasi baru adalah...
-* Variabel `EXPO_PUBLIC_API_URL` pada kode aplikasi...
-* Track Play tanpa review dan maksimal 100 penguji adalah...
+- Perbedaan utama production build dan development build adalah...
+- Alasan Google Play mewajibkan AAB untuk aplikasi baru adalah...
+- Variabel `EXPO_PUBLIC_API_URL` pada kode aplikasi...
+- Track Play tanpa review dan maksimal 100 penguji adalah...
 
 <!--
 Kuis lisan 5 menit: tampilkan pertanyaan, minta kelas menjawab serentak atau mengangkat jari,
@@ -889,10 +847,10 @@ pertemuan.
 
 ## Jawaban
 
-* Diminifikasi, dioptimalkan, ditandatangani, dan tanpa alat debugging
-* Play menyusun split APK per perangkat dari AAB sehingga unduhan lebih kecil
-* Nilainya disisipkan ke bundel saat build, sehingga tidak cocok untuk secret
-* Internal testing: hingga 100 penguji, rilis cepat tanpa proses review
+- Diminifikasi, dioptimalkan, ditandatangani, dan tanpa alat debugging
+- Play menyusun split APK per perangkat dari AAB sehingga unduhan lebih kecil
+- Nilainya disisipkan ke bundel saat build, sehingga tidak cocok untuk secret
+- Internal testing: hingga 100 penguji, rilis cepat tanpa proses review
 
 <!--
 Ulangi pembeda yang paling sering tertukar: production build mengorbankan kemudahan debugging
@@ -915,17 +873,17 @@ sehingga jawabannya sekaligus bahan belajar mandiri.
 
 **Diskusi kelompok (5 menit)**
 
-* Saluran apa yang Anda pakai untuk membagikan aplikasi ke teman selama ini?
-* Kebiasaan mana yang Anda wajibkan sejak hari pertama di tim Anda?
-* Apa risiko tersembunyi dari mengirim APK lewat grup percakapan?
+- Saluran apa yang Anda pakai untuk membagikan aplikasi ke teman selama ini?
+- Kebiasaan mana yang Anda wajibkan sejak hari pertama di tim Anda?
+- Apa risiko tersembunyi dari mengirim APK lewat grup percakapan?
 
 </div>
 <div>
 
 **Latihan terpilih**
 
-* Soal analisis 1: bandingkan WhatsApp, internal testing, dan production
-* Tantangan 1: susun Deployment Plan mini satu halaman
+- Soal analisis 1: bandingkan WhatsApp, internal testing, dan production
+- Tantangan 1: susun Deployment Plan mini satu halaman
 
 </div>
 </div>

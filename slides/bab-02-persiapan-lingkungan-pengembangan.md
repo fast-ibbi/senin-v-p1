@@ -33,11 +33,11 @@ demo singkat lalu langsung praktik di depan komputer.
 
 ## Tujuan Pembelajaran
 
-* Menjelaskan peran Node.js, npm, dan npx dalam ekosistem Expo
-* Mengidentifikasi komponen lingkungan pengembangan beserta fungsinya
-* Mengimplementasikan pembuatan project Expo pertama dan menjalankannya
-* Menganalisis tiga jalur pengujian dari sisi kecepatan dan kesetiaan perilaku
-* Menjelaskan struktur folder project dan mengevaluasi kendala umum
+- Menjelaskan peran Node.js, npm, dan npx dalam ekosistem Expo
+- Mengidentifikasi komponen lingkungan pengembangan beserta fungsinya
+- Mengimplementasikan pembuatan project Expo pertama dan menjalankannya
+- Menganalisis tiga jalur pengujian dari sisi kecepatan dan kesetiaan perilaku
+- Menjelaskan struktur folder project dan mengevaluasi kendala umum
 
 <!--
 Bacakan kata kerjanya saja. Tujuan keempat adalah inti cara berpikir analitis dan
@@ -48,45 +48,6 @@ troubleshooting yang dikumpulkan bersama laporan praktikum.
 
 Tegaskan bahwa tujuan kelima bersifat diagnostik: mahasiswa harus mampu memilih
 solusi, bukan sekadar menghafal pesan galat.
--->
-
----
-
-## Peta Konsep Bab 2
-
-![w:720](assets/diagrams/bab-02-persiapan-lingkungan-pengembangan-01.svg)
-
-<!--
-Bacakan peta ini sebagai tiga langkah: siapkan fondasi, pilih alat uji, lalu buat dan
-jalankan project pertama.
-
-Tekankan bahwa tiga cabang itu tidak berdiri sendiri: project pertama baru bisa
-berjalan bila fondasi terpasang dan salah satu alat uji tersedia.
-
-Tanyakan: "Cabang mana yang paling sering gagal di praktikum?" (Jawaban: fondasi,
-terutama Node.js yang belum ada di PATH.)
--->
-
----
-
-<!-- _class: center -->
-
-## Tiga Pertanyaan Pembuka
-
-* Mengapa alat disiapkan dahulu sebelum satu baris kode ditulis?
-* Apa akibatnya bila versi Node.js tiap anggota tim berbeda?
-* Mengapa aplikasi yang jalan di laptop Anda gagal di laptop rekan?
-
-Jawabannya ada di Subbab 2.1 (fondasi), 2.2 (package manager), dan Studi Kasus bab ini.
-
-<!--
-Think-pair-share: 2 menit berpikir sendiri, 2 menit berpasangan, lalu dua sampai tiga
-pasangan menyampaikan jawaban singkat. Jangan dikoreksi dulu, catat saja polanya.
-
-Pemicu bila kelas pasif: "Pernahkah Anda mendengar kalimat 'di komputer saya jalan
-kok'? Menurut Anda apa penyebab paling seringnya?"
-
-Pertanyaan ketiga adalah jembatan ke konsep reproducibility pada Studi Kasus.
 -->
 
 ---
@@ -117,17 +78,17 @@ karena semua alat Expo berjalan di atas Node.js.
 
 **Mengapa ia fondasi**
 
-* Membungkus mesin JavaScript V8, mesin yang sama dengan Chrome
-* Expo CLI dan Metro Bundler berjalan di atas Node.js
-* Satu bahasa untuk aplikasi dan alat pengembangnya
+- Membungkus mesin JavaScript V8, mesin yang sama dengan Chrome
+- Expo CLI dan Metro Bundler berjalan di atas Node.js
+- Satu bahasa untuk aplikasi dan alat pengembangnya
 
 </div>
 <div>
 
 **Yang sering disalahpahami**
 
-* Bukan bahasa pemrograman baru: JavaScript tetap JavaScript
-* Bukan peramban: tidak ada layar, hanya terminal
+- Bukan bahasa pemrograman baru: JavaScript tetap JavaScript
+- Bukan peramban: tidak ada layar, hanya terminal
 
 **Penjelasan tambahan:** istilah *runtime* di sini berarti program yang menyediakan tempat JavaScript dieksekusi.
 
@@ -157,17 +118,17 @@ Tegaskan bahwa Node.js tidak menambah sintaks, hanya menyediakan tempat menjalan
 
 **Tugasnya**
 
-* Mengunduh paket dari registry npmjs.com
-* Mengelola versi dan mencatatnya di `package.json`
-* Menyimpan seluruh paket di folder `node_modules/`
+- Mengunduh paket dari registry npmjs.com
+- Mengelola versi dan mencatatnya di `package.json`
+- Menyimpan seluruh paket di folder `node_modules/`
 
 </div>
 <div>
 
 **Bila dikerjakan manual**
 
-* Pustaka disalin tangan dan rawan salah ketik
-* Versi di tiap komputer berbeda dan sulit dilacak
+- Pustaka disalin tangan dan rawan salah ketik
+- Versi di tiap komputer berbeda dan sulit dilacak
 
 </div>
 </div>
@@ -214,9 +175,9 @@ memilih versi yang cocok dengan SDK.
 
 Sepuluh pustaka yang saling bergantung cepat menghasilkan masalah yang dikenal sebagai *dependency hell* (neraka ketergantungan).
 
-* Mencatat daftar dependensi agar project dapat dipasang ulang di komputer lain
-* Mengunduh versi yang saling kompatibel secara otomatis
-* Menyimpan paket di `node_modules/` sehingga satu perintah cukup untuk menyiapkan
+- Mencatat daftar dependensi agar project dapat dipasang ulang di komputer lain
+- Mengunduh versi yang saling kompatibel secara otomatis
+- Menyimpan paket di `node_modules/` sehingga satu perintah cukup untuk menyiapkan
 
 | Package Manager | Ciri Khas | Kapan Cocok Dipakai |
 |---|---|---|
@@ -245,17 +206,17 @@ lockfile, seperti pada Studi Kasus akhir bab ini.
 
 **VS Code** — editor kode sumber gratis buatan Microsoft
 
-* Penyorotan sintaks dan pelengkapan otomatis (IntelliSense)
-* Penelusuran lintas berkas untuk project berisi puluhan berkas
-* Terminal terintegrasi, tidak perlu berpindah aplikasi
+- Penyorotan sintaks dan pelengkapan otomatis (IntelliSense)
+- Penelusuran lintas berkas untuk project berisi puluhan berkas
+- Terminal terintegrasi, tidak perlu berpindah aplikasi
 
 </div>
 <div>
 
 **Ekstensi yang membantu**
 
-* **ESLint** memeriksa kualitas kode; **Prettier** merapikan format saat berkas disimpan
-* **Error Lens** menampilkan pesan galat di samping baris bermasalah
+- **ESLint** memeriksa kualitas kode; **Prettier** merapikan format saat berkas disimpan
+- **Error Lens** menampilkan pesan galat di samping baris bermasalah
 
 </div>
 </div>
@@ -307,11 +268,11 @@ Jawaban pertanyaan ini ada di slide berikutnya — jangan dijawab sekarang.
 
 ## Bila Perintah Tidak Dikenali
 
-* Terminal menjawab `node: command not found` atau `'node' is not recognized`
-* Penyebab: Node.js belum terpasang, atau pemasangannya tidak tercatat pada PATH
-* Solusi: pasang Node.js LTS dari nodejs.org; di Windows centang opsi "Add to PATH"
-* Setelah memasang, **buka terminal baru** — terminal lama belum membaca PATH baru
-* Pencegahan: unduh hanya dari situs resmi dan verifikasi sebelum memulai project
+- Terminal menjawab `node: command not found` atau `'node' is not recognized`
+- Penyebab: Node.js belum terpasang, atau pemasangannya tidak tercatat pada PATH
+- Solusi: pasang Node.js LTS dari nodejs.org; di Windows centang opsi "Add to PATH"
+- Setelah memasang, **buka terminal baru** — terminal lama belum membaca PATH baru
+- Pencegahan: unduh hanya dari situs resmi dan verifikasi sebelum memulai project
 
 <!--
 PATH adalah daftar folder tempat sistem operasi mencari perintah; gambarkan sebagai
@@ -349,9 +310,9 @@ struktur folder ke tugas mandiri.
 
 **Expo CLI** adalah antarmuka baris perintah untuk membuat, menjalankan, dan mengelola project Expo — tidak perlu dipasang global.
 
-* `npx create-expo-app` — membuat project baru
-* `npx expo start` — menyalakan server pengembangan
-* `npx expo install <paket>` — menambah paket bawaan SDK dengan versi yang cocok
+- `npx create-expo-app` — membuat project baru
+- `npx expo start` — menyalakan server pengembangan
+- `npx expo install <paket>` — menambah paket bawaan SDK dengan versi yang cocok
 
 <!--
 Tekankan bahwa semua perintah dijalankan lewat npx: tidak ada instalasi global yang
@@ -373,17 +334,17 @@ karena salah cara memasang adalah sumber galat versi yang sulit dilacak.
 
 **Yang Anda dapatkan**
 
-* Aplikasi di ponsel sebagai "pemutar" project: pindai kode QR
-* Tanpa proses build, hasil terlihat dalam hitungan detik
-* Ponsel cukup berada di jaringan Wi-Fi yang sama dengan komputer
+- Aplikasi di ponsel sebagai "pemutar" project: pindai kode QR
+- Tanpa proses build, hasil terlihat dalam hitungan detik
+- Ponsel cukup berada di jaringan Wi-Fi yang sama dengan komputer
 
 </div>
 <div>
 
 **Harga yang dibayar**
 
-* Hanya mendukung API yang tersedia pada paket Expo
-* Tidak memuat kode native sendiri, jadi fitur khusus butuh *development build* (Bab 15)
+- Hanya mendukung API yang tersedia pada paket Expo
+- Tidak memuat kode native sendiri, jadi fitur khusus butuh *development build* (Bab 15)
 
 </div>
 </div>
@@ -452,9 +413,9 @@ RAM 8 GB ke atas, dan emulator dinyalakan sebelum npx expo start.
 
 Ponsel dan komputer berada pada **jaringan yang berbeda** — kode QR tidak dapat dihubungkan.
 
-* Apa yang gagal: kodenya, jaringannya, atau perangkatnya?
-* Solusi apa yang tersedia tanpa mengubah pengaturan jaringan kampus?
-* Kecepatan apa yang harus dibayar dari solusi itu?
+- Apa yang gagal: kodenya, jaringannya, atau perangkatnya?
+- Solusi apa yang tersedia tanpa mengubah pengaturan jaringan kampus?
+- Kecepatan apa yang harus dibayar dari solusi itu?
 
 <!--
 Tanyakan lebih dahulu, jangan dijawab: tampung dua sampai tiga dugaan, baru lanjut ke
@@ -474,10 +435,10 @@ npx expo start --tunnel menjadi solusinya.
 
 ## Jawaban — Jaringan Berbeda
 
-* Yang gagal adalah **jaringan**, bukan kode: Metro dan ponsel tidak saling menjangkau
-* Hentikan server (**Ctrl+C**), lalu jalankan `npx expo start --tunnel`
-* Opsi `--tunnel` menjembatani koneksi lewat server publik; jaringan tidak diubah
-* Harga yang dibayar: transfer lebih lambat dan butuh koneksi internet yang stabil
+- Yang gagal adalah **jaringan**, bukan kode: Metro dan ponsel tidak saling menjangkau
+- Hentikan server (**Ctrl+C**), lalu jalankan `npx expo start --tunnel`
+- Opsi `--tunnel` menjembatani koneksi lewat server publik; jaringan tidak diubah
+- Harga yang dibayar: transfer lebih lambat dan butuh koneksi internet yang stabil
 
 <!--
 Hubungkan dengan slide troubleshooting: baris "kode QR tidak dapat dihubungkan" adalah
@@ -496,10 +457,10 @@ ketika jaringan memblokir komunikasi antarperangkat, misalnya hotspot ponsel.)
 
 **Emulator** adalah program yang menyimulasikan perilaku ponsel Android di dalam komputer.
 
-* **Android Studio** — IDE resmi Android, tempat emulator dikelola
-* **AVD Manager** — membuat perangkat virtual: pilih model ponsel dan versi Android
-* Keunggulan: menguji lintas versi Android dengan biaya hampir nol
-* Keterbatasan: lebih lambat, boros memori, sebagian sensor tidak didukung
+- **Android Studio** — IDE resmi Android, tempat emulator dikelola
+- **AVD Manager** — membuat perangkat virtual: pilih model ponsel dan versi Android
+- Keunggulan: menguji lintas versi Android dengan biaya hampir nol
+- Keterbatasan: lebih lambat, boros memori, sebagian sensor tidak didukung
 
 <!--
 Analogi: emulator seperti simulator penerbangan — cukup realistis untuk latihan dasar,
@@ -517,11 +478,11 @@ bereaksi apa pun, dan itu bukan kesalahan kode mahasiswa.
 
 ## adb dan Perangkat Fisik
 
-* **adb** — jembatan baris perintah antara komputer dan perangkat Android
-* `adb devices` menampilkan daftar perangkat yang dikenali komputer
-* Aktifkan Developer options: ketuk *Build number* tujuh kali di *About phone*
-* Aktifkan *USB debugging*, lalu izinkan autentikasi RSA saat ponsel bertanya
-* Untuk Expo Go, koneksi USB tidak wajib — cukup satu jaringan Wi-Fi
+- **adb** — jembatan baris perintah antara komputer dan perangkat Android
+- `adb devices` menampilkan daftar perangkat yang dikenali komputer
+- Aktifkan Developer options: ketuk *Build number* tujuh kali di *About phone*
+- Aktifkan *USB debugging*, lalu izinkan autentikasi RSA saat ponsel bertanya
+- Untuk Expo Go, koneksi USB tidak wajib — cukup satu jaringan Wi-Fi
 
 <!--
 Jelaskan urutan yang sering terbalik: Developer options dulu, baru USB debugging,
@@ -541,10 +502,10 @@ unauthorized berarti ponsel belum menyetujui autentikasi komputer.
 
 **iOS Simulator** adalah program simulasi iPhone atau iPad yang berjalan di komputer.
 
-* Hanya berjalan di **macOS** dan membutuhkan **Xcode** yang berukuran sangat besar
-* Windows dan Linux tidak dapat menjalankannya sama sekali
-* Alternatif: iPhone fisik dengan Expo Go, atau build cloud EAS Build (Bab 15)
-* Di komputer Mac, tekan **i** di terminal Expo untuk membukanya
+- Hanya berjalan di **macOS** dan membutuhkan **Xcode** yang berukuran sangat besar
+- Windows dan Linux tidak dapat menjalankannya sama sekali
+- Alternatif: iPhone fisik dengan Expo Go, atau build cloud EAS Build (Bab 15)
+- Di komputer Mac, tekan **i** di terminal Expo untuk membukanya
 
 <!--
 Pesan pentingnya bukan pada alatnya, melainkan pada pola pikir: pengembangan
@@ -592,9 +553,9 @@ code .
 npx expo start
 ```
 
-* `npx` menjalankan versi terbaru `create-expo-app` tanpa memasangnya global
-* `aplikasi-pertama` menjadi nama folder project: huruf kecil, tanpa spasi
-* `--template blank` memilih templat JavaScript polos tanpa TypeScript
+- `npx` menjalankan versi terbaru `create-expo-app` tanpa memasangnya global
+- `aplikasi-pertama` menjadi nama folder project: huruf kecil, tanpa spasi
+- `--template blank` memilih templat JavaScript polos tanpa TypeScript
 
 <!--
 Tekankan bacaan perintah, bukan hafalan: npx, nama project, lalu templat. Proses
@@ -645,9 +606,9 @@ create-expo-app.
 npx expo start
 ```
 
-* Muncul kode QR, alamat LAN seperti `exp://192.168.x.x:8081`, dan tombol pintas
-* **a** Android · **i** iOS Simulator (macOS) · **w** web · **r** muat ulang manual
-* **Ctrl+C** menghentikan server pengembangan
+- Muncul kode QR, alamat LAN seperti `exp://192.168.x.x:8081`, dan tombol pintas
+- **a** Android · **i** iOS Simulator (macOS) · **w** web · **r** muat ulang manual
+- **Ctrl+C** menghentikan server pengembangan
 
 > Simpan perubahan pada App.js, lalu amati layar berubah sendiri dalam 1-2 detik — itulah Fast Refresh.
 
@@ -804,11 +765,11 @@ pada Text judul dan keterangan, lalu simpan untuk melihat Fast Refresh bekerja.)
 
 ## Hasil yang Diharapkan Praktikum
 
-* Dua nomor versi tampil saat `node --version` dan `npm --version` dijalankan
-* Folder `aplikasi-pertama` terbentuk tanpa galat
-* `npx expo start` menampilkan kode QR dan alamat `exp://...:8081`
-* Teks "Halo, Dunia!" tampil di Expo Go dan/atau emulator Android
-* Menyimpan perubahan App.js mengubah layar dalam 1-2 detik (Fast Refresh)
+- Dua nomor versi tampil saat `node --version` dan `npm --version` dijalankan
+- Folder `aplikasi-pertama` terbentuk tanpa galat
+- `npx expo start` menampilkan kode QR dan alamat `exp://...:8081`
+- Teks "Halo, Dunia!" tampil di Expo Go dan/atau emulator Android
+- Menyimpan perubahan App.js mengubah layar dalam 1-2 detik (Fast Refresh)
 
 <!--
 Jadikan daftar ini lembar centang: mahasiswa mencentang setiap butir lalu melampirkan
@@ -922,11 +883,11 @@ harus dibaca, bukan musibah.
 
 ## Uji Pemahaman
 
-* Alat apa yang wajib ada sebelum menjalankan `npx create-expo-app`?
-* Apa beda `npm install <paket>` dan `npx <perintah>`?
-* Mengapa buku ini memilih `--template blank`?
-* Apa peran Metro Bundler pada `npx expo start`?
-* Port default yang dipakai Metro Bundler adalah?
+- Alat apa yang wajib ada sebelum menjalankan `npx create-expo-app`?
+- Apa beda `npm install <paket>` dan `npx <perintah>`?
+- Mengapa buku ini memilih `--template blank`?
+- Apa peran Metro Bundler pada `npx expo start`?
+- Port default yang dipakai Metro Bundler adalah?
 
 <!--
 Kuis lisan 5 menit: tampilkan pertanyaan, minta kelas menjawab serentak atau angkat
@@ -945,11 +906,11 @@ menutup pertemuan.
 
 ## Jawaban
 
-* Node.js — wajib ada sebelum alat Expo dijalankan
-* `npm install` memasang paket ke project; `npx` menjalankan tanpa memasang permanen
-* `blank` menghasilkan JavaScript polos, sementara templat default memakai TypeScript
-* Menggabungkan modul JavaScript dan mengirimkannya ke perangkat
-* Port default Metro Bundler adalah **8081**
+- Node.js — wajib ada sebelum alat Expo dijalankan
+- `npm install` memasang paket ke project; `npx` menjalankan tanpa memasang permanen
+- `blank` menghasilkan JavaScript polos, sementara templat default memakai TypeScript
+- Menggabungkan modul JavaScript dan mengirimkannya ke perangkat
+- Port default Metro Bundler adalah **8081**
 
 <!--
 Ulangi pembeda yang paling sering tertukar: npm memasang, npx menjalankan.
@@ -967,16 +928,16 @@ lalu tutup dengan mengaitkan jawaban kelima ke pesan troubleshooting port 8081.
 
 **Pertanyaan**
 
-* Siapa pernah menemui "di komputer saya jalan kok"?
-* Apa yang akan Anda bakukan lebih dahulu di project tim berikutnya?
+- Siapa pernah menemui "di komputer saya jalan kok"?
+- Apa yang akan Anda bakukan lebih dahulu di project tim berikutnya?
 
 </div>
 <div>
 
 **Yang dinilai**
 
-* Ketepatan menghubungkan versi, package manager, dan npx
-* Kemampuan menyusun kebiasaan verifikasi lingkungan
+- Ketepatan menghubungkan versi, package manager, dan npx
+- Kemampuan menyusun kebiasaan verifikasi lingkungan
 
 </div>
 </div>

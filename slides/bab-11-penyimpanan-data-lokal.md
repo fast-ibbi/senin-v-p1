@@ -48,42 +48,6 @@ bertahan setelah aplikasi ditutup — dan itu yang harus dilaporkan mahasiswa.
 
 ---
 
-## Peta Konsep Bab 11
-
-![w:720](assets/diagrams/bab-11-penyimpanan-data-lokal-01.svg)
-
-> Subbab 11.6 merakit kelima cabang ini menjadi satu aplikasi catatan yang persisten.
-
-<!--
-Bacakan peta dari atas: satu simpul akar dengan lima cabang sejajar — kebutuhan,
-AsyncStorage, serialisasi JSON, caching, dan token.
-
-Tekankan bahwa subbab token (11.5) sengaja berisi larangan, bukan praktik: bab ini
-mengajarkan batas aman AsyncStorage sebelum Bab 13 memakai secure storage.
--->
-
----
-
-<!-- _class: center -->
-
-## Tiga Pertanyaan Pembuka
-
-* Catatan yang baru dibuat hilang setelah aplikasi ditutup — ke mana datanya pergi?
-* Kalau pengguna mengatur ulang tema setiap kali membuka aplikasi, apa akarnya?
-* Mengapa aplikasi sales harus tetap mencatat pesanan di daerah tanpa sinyal?
-
-Jawabannya tersebar di Subbab 11.1 sampai 11.5.
-
-<!--
-Think-pair-share: 2 menit berpikir sendiri, 2 menit berpasangan, lalu tampung 2–3 jawaban
-singkat. Jangan dikoreksi dulu — ketiga pertanyaan ini menuntun seluruh bab.
-
-Pertanyaan ini adalah jembatan dari Bab 4 (state): minta kelas menyebutkan variabel state
-terakhir yang mereka pakai, lalu tanyakan ke mana nilainya pergi saat aplikasi ditutup.
--->
-
----
-
 <!-- _class: lead -->
 <!-- _paginate: skip -->
 
@@ -103,10 +67,10 @@ seluruh praktikum bab ini berdiri di atasnya.
 
 State React hidup di memori (RAM) perangkat, dan memori bersifat **volatil**: begitu aplikasi ditutup atau prosesnya dimatikan sistem, seluruh nilainya lenyap tanpa jejak.
 
-* Sistem operasi dapat mematikan proses aplikasi kapan saja untuk mengambil memorinya
-* Jaringan tidak selalu tersedia: sinyal buruk, kuota habis, atau server bermasalah
-* Tidak semua data perlu dikirim ke server — lokal lebih cepat dan hemat kuota
-* Menyimpan data secara lokal juga lebih menghargai privasi pengguna
+- Sistem operasi dapat mematikan proses aplikasi kapan saja untuk mengambil memorinya
+- Jaringan tidak selalu tersedia: sinyal buruk, kuota habis, atau server bermasalah
+- Tidak semua data perlu dikirim ke server — lokal lebih cepat dan hemat kuota
+- Menyimpan data secara lokal juga lebih menghargai privasi pengguna
 
 <!--
 Analogi: state itu papan tulis di kelas (cepat ditulis, cepat dihapus), penyimpanan lokal
@@ -169,9 +133,9 @@ baris transaksi yang dicari berdasarkan tanggal?" (SQLite) — jangan AsyncStora
 
 **AsyncStorage** adalah pustaka penyimpanan **kunci–nilai** (*key–value storage*) yang asinkron untuk React Native: dikelola komunitas, didukung penuh Expo, dan berjalan di Android, iOS, maupun web.
 
-* Setiap data disimpan pada sebuah kunci (key), nama unik yang dipakai untuk membacanya
-* Konsepnya seperti laci arsip: satu laci, satu label, dan isinya dibaca lewat label itu
-* Berbeda dari `npm install`: `npx expo install` memilihkan versi yang cocok dengan SDK
+- Setiap data disimpan pada sebuah kunci (key), nama unik yang dipakai untuk membacanya
+- Konsepnya seperti laci arsip: satu laci, satu label, dan isinya dibaca lewat label itu
+- Berbeda dari `npm install`: `npx expo install` memilihkan versi yang cocok dengan SDK
 
 ```bash
 npx expo install @react-native-async-storage/async-storage
@@ -201,7 +165,7 @@ Tanyakan: "Apa yang terjadi kalau nama kunci ditulis berbeda saat menyimpan dan 
 | `multiSet([[k1, v1]])` | Menyimpan beberapa pasangan sekaligus | `Promise<void>` |
 | `getAllKeys()` | Mendapatkan daftar seluruh kunci | `Promise<string[]>` |
 
-* `clear()` menghapus seluruh data aplikasi — jangan dipakai tanpa alasan yang jelas
+- `clear()` menghapus seluruh data aplikasi — jangan dipakai tanpa alasan yang jelas
 
 <!--
 Jangan dibacakan baris per baris. Kelompokkan: tiga metode satu kunci, dua metode banyak
@@ -281,8 +245,8 @@ aplikasi, atau penggantian perangkat menghapusnya tanpa peringatan.
 
 ## Think-Pair-Share: Daftar yang Kosong
 
-* Setelah restart, daftar catatan kosong — sebutkan tiga kemungkinan penyebabnya
-* Mana penyebab yang bisa Anda buktikan dari kode, dan mana yang masih dugaan?
+- Setelah restart, daftar catatan kosong — sebutkan tiga kemungkinan penyebabnya
+- Mana penyebab yang bisa Anda buktikan dari kode, dan mana yang masih dugaan?
 
 Dua menit berpasangan, lalu 2–3 pasangan menyampaikan hasilnya.
 
@@ -319,9 +283,9 @@ dilanjutkan pada Bab 13 agar tidak ada dua penjelasan yang saling bertentangan.
 
 ## Serialisasi JSON: Menjembatani Aturan String
 
-* `JSON.stringify(data)` — mengubah objek atau array menjadi string JSON
-* `JSON.parse(teks)` — mengubah string JSON kembali menjadi objek atau array
-* **Serialisasi** mengubah data menjadi string; **deserialisasi** adalah kebalikannya
+- `JSON.stringify(data)` — mengubah objek atau array menjadi string JSON
+- `JSON.parse(teks)` — mengubah string JSON kembali menjadi objek atau array
+- **Serialisasi** mengubah data menjadi string; **deserialisasi** adalah kebalikannya
 
 `storage/notesStorage.js` — menyimpan dan membaca daftar catatan
 
@@ -337,7 +301,7 @@ const tersimpan = await AsyncStorage.getItem('catatan:v1');
 const daftarLagi = tersimpan === null ? [] : JSON.parse(tersimpan);
 ```
 
-* Kunci diberi akhiran versi (`catatan:v1`) — praktik baik yang disebut versi kunci
+- Kunci diberi akhiran versi (`catatan:v1`) — praktik baik yang disebut versi kunci
 
 <!--
 Tunjukkan bahwa satu kunci menyimpan seluruh daftar: satu string JSON panjang, bukan satu
@@ -370,9 +334,9 @@ export async function muatCatatan() {
 }
 ```
 
-* Lapis 1: `null` dikembalikan sebagai array kosong `[]`
-* Lapis 2: error parsing ditangkap, dicatat, dan fungsi tetap mengembalikan `[]`
-* Lapis 3: hasil dicek dengan `Array.isArray` agar bentuk tak terduga ditolak
+- Lapis 1: `null` dikembalikan sebagai array kosong `[]`
+- Lapis 2: error parsing ditangkap, dicatat, dan fungsi tetap mengembalikan `[]`
+- Lapis 3: hasil dicek dengan `Array.isArray` agar bentuk tak terduga ditolak
 
 <!--
 Ajarkan sebagai urutan pemeriksaan, bukan sebagai blok yang dihafal: (1) ada isinya?
@@ -391,9 +355,9 @@ menangani error. Selalu catat, lalu kembalikan nilai bawaan yang aman.
 
 ## Apa yang Terjadi Jika…?
 
-* Data catatan rusak: tersimpan terpotong karena proses berhenti di tengah
-* Aplikasi dibuka dan langsung memanggil `JSON.parse` tanpa `try/catch`
-* Apa yang dialami pengguna, dan apa yang seharusnya dilakukan pengembang?
+- Data catatan rusak: tersimpan terpotong karena proses berhenti di tengah
+- Aplikasi dibuka dan langsung memanggil `JSON.parse` tanpa `try/catch`
+- Apa yang dialami pengguna, dan apa yang seharusnya dilakukan pengembang?
 
 <!--
 Beri satu menit berpikir, lalu minta dua jawaban sebelum berpindah slide. Jangan
@@ -410,10 +374,10 @@ Kaitkan dengan Think-Pair-Share sebelumnya: inilah salah satu penyebab "daftar k
 
 ## Membaca Tidak Boleh Membuat Aplikasi Crash
 
-* `JSON.parse` melempar `SyntaxError` bila teks bukan JSON yang sah
-* Tanpa penanganan, aplikasi crash tepat saat dibuka — pengguna tidak bisa masuk
-* Sumber kerusakan: penyimpanan terhenti, data terpotong, atau struktur versi lama
-* Data lokal juga ikut terhapus saat aplikasi di-uninstall atau dibersihkan
+- `JSON.parse` melempar `SyntaxError` bila teks bukan JSON yang sah
+- Tanpa penanganan, aplikasi crash tepat saat dibuka — pengguna tidak bisa masuk
+- Sumber kerusakan: penyimpanan terhenti, data terpotong, atau struktur versi lama
+- Data lokal juga ikut terhapus saat aplikasi di-uninstall atau dibersihkan
 
 > Prinsip: penyimpanan lokal adalah sumber yang tidak selalu bisa dipercaya — aplikasi harus menghadapinya dengan anggun (graceful).
 
@@ -434,9 +398,9 @@ atau sinkronisasi ke server — persoalan yang muncul lagi di studi kasus nanti.
 
 **Cache** adalah salinan data yang disimpan lebih dekat dengan pemakainya agar dapat diakses lebih cepat atau tanpa sumber aslinya.
 
-* Ketersediaan: aplikasi tetap menampilkan data saat jaringan tidak tersedia
-* Kecepatan: salinan lokal langsung tampil tanpa menunggu jawaban server
-* Penghematan kuota: data yang jarang berubah tidak diunduh berulang kali
+- Ketersediaan: aplikasi tetap menampilkan data saat jaringan tidak tersedia
+- Kecepatan: salinan lokal langsung tampil tanpa menunggu jawaban server
+- Penghematan kuota: data yang jarang berubah tidak diunduh berulang kali
 
 > Trade-off: yang dikorbankan adalah kesegaran (freshness) — data yang tampil bisa bukan yang terbaru.
 
@@ -452,10 +416,10 @@ Tanyakan: "Aplikasi apa di ponsel Anda yang masih bisa dibuka di mode pesawat?"
 
 ## Tiga Komponen Cache
 
-* **Snapshot** — salinan data hasil jawaban API yang disimpan
-* **Timestamp** — waktu penyimpanan, ditulis sebagai string ISO 8601
-* **TTL** (time to live) — batas umur cache sebelum dianggap basi (stale)
-* Larangan tegas: jangan pernah men-cache data sensitif seperti token
+- **Snapshot** — salinan data hasil jawaban API yang disimpan
+- **Timestamp** — waktu penyimpanan, ditulis sebagai string ISO 8601
+- **TTL** (time to live) — batas umur cache sebelum dianggap basi (stale)
+- Larangan tegas: jangan pernah men-cache data sensitif seperti token
 
 `storage/apiCache.js` — bentuk paket cache (dipakai `simpanCache` dan `ambilCache`)
 
@@ -538,10 +502,10 @@ Bab 10 bila perilakunya berbeda.
 
 **Token** adalah data pemberian server setelah login: semacam "kartu identitas" yang dikirim pada setiap permintaan API berikutnya (Bab 10.8).
 
-* Data AsyncStorage tidak dienkripsi: nilainya tersimpan sebagai teks polos
-* Kode apa pun yang berjalan di dalam aplikasi dapat membacanya
-* Perangkat yang di-root (Android) atau di-jailbreak (iOS) memperbesar risiko
-* Token yang dicuri: penyerang dapat memanggil API atas nama pengguna
+- Data AsyncStorage tidak dienkripsi: nilainya tersimpan sebagai teks polos
+- Kode apa pun yang berjalan di dalam aplikasi dapat membacanya
+- Perangkat yang di-root (Android) atau di-jailbreak (iOS) memperbesar risiko
+- Token yang dicuri: penyerang dapat memanggil API atas nama pengguna
 
 <!--
 Bacakan sebagai risiko, bukan sebagai aturan: siapa yang bisa membaca, bagaimana caranya,
@@ -563,8 +527,8 @@ alasan yang paling sering menyesatkan di praktikum.
 
 ![w:720](assets/diagrams/bab-11-penyimpanan-data-lokal-03.svg)
 
-* Pisahkan berdasarkan sensitivitas; saat ragu, jangan simpan sama sekali
-* Keputusan menyimpan di mana adalah keputusan keamanan, bukan sekadar teknis
+- Pisahkan berdasarkan sensitivitas; saat ragu, jangan simpan sama sekali
+- Keputusan menyimpan di mana adalah keputusan keamanan, bukan sekadar teknis
 
 <!--
 Analogi: AsyncStorage seperti lemari tanpa kunci di dalam kamar, secure storage seperti
@@ -598,10 +562,10 @@ Sebelum praktikum dimulai, pastikan pustaka AsyncStorage sudah terpasang dengan
 
 ## Aplikasi Catatan: Yang Akan Dibangun
 
-* Entitas catatan `{ id, judul, isi, createdAt }` sesuai kontrak data buku
-* Tambah, edit, dan hapus catatan dengan dialog konfirmasi
-* Cari catatan berdasarkan judul atau isi
-* Seluruh data tetap ada setelah aplikasi ditutup dan dibuka kembali
+- Entitas catatan `{ id, judul, isi, createdAt }` sesuai kontrak data buku
+- Tambah, edit, dan hapus catatan dengan dialog konfirmasi
+- Cari catatan berdasarkan judul atau isi
+- Seluruh data tetap ada setelah aplikasi ditutup dan dibuka kembali
 
 > Uji persistensi: tutup aplikasi sepenuhnya (atau tekan `r` untuk reload di Metro), buka lagi — semua catatan masih ada.
 
@@ -716,8 +680,8 @@ const daftarTersaring = daftar.filter((catatan) => {
 });
 ```
 
-* Hapus selalu lewat konfirmasi `Alert.alert` agar tidak terjadi hapus tidak sengaja
-* Mengetuk kartu membuka form edit lewat `router.push` (Bab 7)
+- Hapus selalu lewat konfirmasi `Alert.alert` agar tidak terjadi hapus tidak sengaja
+- Mengetuk kartu membuka form edit lewat `router.push` (Bab 7)
 
 <!--
 Bedah pencariannya: buang spasi tepi, samakan huruf kecil, lalu bandingkan dengan
@@ -751,8 +715,8 @@ const simpan = async () => {
 };
 ```
 
-* Judul kosong ditolak lewat `Alert.alert` sebelum data disimpan
-* `keyboardShouldPersistTaps` menjaga tombol Simpan tetap aktif saat keyboard terbuka
+- Judul kosong ditolak lewat `Alert.alert` sebelum data disimpan
+- `keyboardShouldPersistTaps` menjaga tombol Simpan tetap aktif saat keyboard terbuka
 
 <!--
 Bandingkan dua mode dalam satu komponen: `idCatatan` bernilai null pada rute
@@ -769,10 +733,10 @@ dengan `typeof params.id === 'string'` — bukan dipercaya begitu saja.
 
 ## Kapan Data Harus Dimuat Ulang?
 
-* `useEffect` dengan dependensi kosong hanya berjalan sekali saat layar terpasang
-* Layar daftar tetap terpasang saat layar form menimpanya (navigasi Stack, Bab 7)
-* Akibatnya catatan baru tidak muncul saat pengguna kembali dari form
-* `useFocusEffect` memicu ulang setiap layar mendapat fokus — persis yang diinginkan
+- `useEffect` dengan dependensi kosong hanya berjalan sekali saat layar terpasang
+- Layar daftar tetap terpasang saat layar form menimpanya (navigasi Stack, Bab 7)
+- Akibatnya catatan baru tidak muncul saat pengguna kembali dari form
+- `useFocusEffect` memicu ulang setiap layar mendapat fokus — persis yang diinginkan
 
 > `useCallback` dipakai agar efek tidak dibuat ulang pada setiap render.
 
@@ -819,17 +783,17 @@ sebenarnya berada sebelum mengubah kode.
 
 **Masalah**
 
-* Tenaga penjualan berkunjung ke daerah yang jaringannya sering hilang
-* Katalog tidak terbaca dan pesanan tidak bisa dicatat saat offline
+- Tenaga penjualan berkunjung ke daerah yang jaringannya sering hilang
+- Katalog tidak terbaca dan pesanan tidak bisa dicatat saat offline
 
 </div>
 <div>
 
 **Keputusan: offline-first**
 
-* Katalog di-cache dengan snapshot + timestamp, tetap tampil offline
-* Pesanan masuk antrean lokal, dikirim saat koneksi pulih
-* Token sales disimpan di secure storage, bukan AsyncStorage
+- Katalog di-cache dengan snapshot + timestamp, tetap tampil offline
+- Pesanan masuk antrean lokal, dikirim saat koneksi pulih
+- Token sales disimpan di secure storage, bukan AsyncStorage
 
 </div>
 </div>
@@ -879,10 +843,10 @@ ketersediaan dan kesegaran yang harus disadari pengembangnya.
 
 ## Uji Pemahaman
 
-* Jika `{ nama: 'Budi' }` dikirim langsung ke `setItem`, apa yang tersimpan?
-* Apa nilai kembalian `getItem` untuk kunci yang belum pernah disimpan?
-* Mengapa token autentikasi tidak boleh disimpan di AsyncStorage?
-* Apa fungsi TTL pada pola caching?
+- Jika `{ nama: 'Budi' }` dikirim langsung ke `setItem`, apa yang tersimpan?
+- Apa nilai kembalian `getItem` untuk kunci yang belum pernah disimpan?
+- Mengapa token autentikasi tidak boleh disimpan di AsyncStorage?
+- Apa fungsi TTL pada pola caching?
 
 <!--
 Kuis lisan lima menit: tampilkan pertanyaan, minta kelas menjawab serentak atau angkat
@@ -898,10 +862,10 @@ menutup pertemuan.
 
 ## Jawaban
 
-* `[object Object]` — nilai non-string wajib diserialisasi lebih dulu
-* `null` — bukan string kosong, sehingga diperiksa dengan `=== null`
-* Karena tidak terenkripsi; gunakan secure storage seperti di Bab 13
-* Batas umur cache sebelum datanya dianggap basi (stale)
+- `[object Object]` — nilai non-string wajib diserialisasi lebih dulu
+- `null` — bukan string kosong, sehingga diperiksa dengan `=== null`
+- Karena tidak terenkripsi; gunakan secure storage seperti di Bab 13
+- Batas umur cache sebelum datanya dianggap basi (stale)
 
 <!--
 Ulangi dua pembeda yang paling sering tertukar: `null` versus string kosong, dan TTL
@@ -915,11 +879,11 @@ menutup pertemuan.
 
 ## Rangkuman
 
-1) State React volatil; data yang harus bertahan ditaruh di penyimpanan lokal
-2) AsyncStorage: kunci–nilai, asinkron, hanya string, persisten, tidak terenkripsi
-3) Nilai non-string wajib lewat `JSON.stringify` dan `JSON.parse` dalam `try/catch`
-4) Cache = snapshot + timestamp + TTL; beri penanda saat data berasal dari cache
-5) Token ke secure storage; logika penyimpanan dipisah ke modul API kecil
+1. State React volatil; data yang harus bertahan ditaruh di penyimpanan lokal
+2. AsyncStorage: kunci–nilai, asinkron, hanya string, persisten, tidak terenkripsi
+3. Nilai non-string wajib lewat `JSON.stringify` dan `JSON.parse` dalam `try/catch`
+4. Cache = snapshot + timestamp + TTL; beri penanda saat data berasal dari cache
+5. Token ke secure storage; logika penyimpanan dipisah ke modul API kecil
 
 <!--
 Jangan dibacakan. Minta lima mahasiswa memilih satu nomor dan menjelaskannya dengan
@@ -938,17 +902,17 @@ berguna saat gagal — tidak kehilangan data, dan jujur soal kesegaran datanya.
 
 **Latihan (dari bab)**
 
-* Tambahkan penghitung catatan yang persisten
-* Tandai catatan penting dengan versi kunci `catatan:v2`
+- Tambahkan penghitung catatan yang persisten
+- Tandai catatan penting dengan versi kunci `catatan:v2`
 
 </div>
 <div>
 
 **Diskusi kelas**
 
-* Pernahkah Anda kehilangan draf karena aplikasi tertutup?
-* Fitur apa di aplikasi harian Anda yang membuktikan adanya cache?
-* Bagaimana membiasakan diri aman sejak awal, bukan setelah dipakai?
+- Pernahkah Anda kehilangan draf karena aplikasi tertutup?
+- Fitur apa di aplikasi harian Anda yang membuktikan adanya cache?
+- Bagaimana membiasakan diri aman sejak awal, bukan setelah dipakai?
 
 </div>
 </div>

@@ -47,42 +47,6 @@ Simpan pertanyaan itu untuk dibahas di slide trade-off tombol nonaktif.
 
 ---
 
-## Peta Konsep Bab 8
-
-![w:540](assets/diagrams/bab-08-form-input-dan-validasi-01.svg)
-
-> Alur bab: TextInput → state → validasi → pesan error.
-
-<!--
-Bacakan peta dari atas: TextInput melahirkan controlled component, controlled component
-melahirkan form state, dan form state itulah yang divalidasi.
-
-Tekankan bahwa dua cabang di tengah (validasi dan errors state) bertemu kembali: aturan
-menghasilkan pesan, pesan ditampilkan FormField, dan ujungnya tiga form nyata.
--->
-
----
-
-<!-- _class: center -->
-
-## Tiga Pertanyaan Pembuka
-
-* Kalau pengguna sudah mengetik panjang, mengapa isinya bisa hilang?
-* Mengapa tombol simpan kadang baru merespons pada ketukan kedua?
-* Pesan "input salah" — salah di mana, dan pengguna harus berbuat apa?
-
-Jawabannya tersebar di Subbab 8.1 (keyboard), 8.2 (controlled component), dan 8.5 (UX form).
-
-<!--
-Think-pair-share: 2 menit berpikir sendiri, 2 menit berpasangan, lalu tampung 2 sampai 3
-jawaban. Jangan dikoreksi dulu — tiga pertanyaan ini memandu seluruh bab.
-
-Pemicu bila kelas diam: "Sebutkan field mana di aplikasi kampus yang paling sering
-salah diisi, lalu tebak mengapa aplikasinya tidak mencegahnya."
--->
-
----
-
 <!-- _class: lead -->
 <!-- _paginate: skip -->
 
@@ -345,9 +309,9 @@ diam-diam, sehingga sulit dilacak saat debugging.
 
 ## Apa yang Terjadi Jika…?
 
-* …`handleChange` menulis `setForm({ [namaField]: nilai })` tanpa menyebar objek lama?
-* …`value` diberi teks tetap (`value="budi.santoso@students.univ.ac.id"`), bukan dari state?
-* …pengguna menekan simpan sebelum menyentuh satu field pun?
+- …`handleChange` menulis `setForm({ [namaField]: nilai })` tanpa menyebar objek lama?
+- …`value` diberi teks tetap (`value="budi.santoso@students.univ.ac.id"`), bukan dari state?
+- …pengguna menekan simpan sebelum menyentuh satu field pun?
 
 Diskusikan 2 menit berpasangan, lalu kaitkan dengan validasi pada Bagian 3.
 
@@ -614,9 +578,9 @@ tegaskan bahwa petunjuknya lenyap begitu pengguna mulai mengetik.
 
 ## Think-Pair-Share: Form yang Menjengkelkan
 
-* Pilih satu form aplikasi yang pernah membuat Anda frustrasi
-* Tentukan: kapan validasinya berjalan, dan bagaimana pesan errornya disajikan
-* Nilai temuan itu dengan empat prinsip yang baru saja dibahas
+- Pilih satu form aplikasi yang pernah membuat Anda frustrasi
+- Tentukan: kapan validasinya berjalan, dan bagaimana pesan errornya disajikan
+- Nilai temuan itu dengan empat prinsip yang baru saja dibahas
 
 2 menit berpasangan, lalu 2–3 pasangan melaporkan hasilnya.
 
@@ -920,10 +884,10 @@ dibersihkan secara berkala.
 
 ## Mini Kuis
 
-* Nilai yang ditampilkan `TextInput` pada controlled component berasal dari mana?
-* Kombinasi props apa yang paling tepat untuk field kata sandi?
-* Mengapa `validasiTelepon("0812-3456-7890")` dinyatakan valid?
-* Mengapa error sebuah field bisa hilang otomatis setelah submit pertama?
+- Nilai yang ditampilkan `TextInput` pada controlled component berasal dari mana?
+- Kombinasi props apa yang paling tepat untuk field kata sandi?
+- Mengapa `validasiTelepon("0812-3456-7890")` dinyatakan valid?
+- Mengapa error sebuah field bisa hilang otomatis setelah submit pertama?
 
 <!--
 Kuis lisan 5 menit: tampilkan pertanyaan, minta kelas menjawab serentak atau angkat
@@ -939,10 +903,10 @@ bukan gaya mengetik" sebelum menutup pertemuan.
 
 ## Jawaban
 
-* Dari state React yang dihubungkan lewat prop `value`
-* `secureTextEntry` dan `autoCapitalize="none"`
-* Jumlah digitnya 12 setelah tanda hubung dibuang, masuk rentang 10–13
-* `handleChange` memvalidasi ulang field yang berubah saat `sudahDikirim` bernilai `true`
+- Dari state React yang dihubungkan lewat prop `value`
+- `secureTextEntry` dan `autoCapitalize="none"`
+- Jumlah digitnya 12 setelah tanda hubung dibuang, masuk rentang 10–13
+- `handleChange` memvalidasi ulang field yang berubah saat `sudahDikirim` bernilai `true`
 
 <!--
 Ulangi pembeda yang paling sering tertukar: `value` memuat state, bukan nilai internal

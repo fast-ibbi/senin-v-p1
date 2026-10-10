@@ -30,11 +30,11 @@ ada di Subbab 14.6 dan 14.7.
 
 ## Tujuan Pembelajaran
 
-* Menjelaskan peran debugging, testing, dan QA dalam siklus hidup aplikasi
-* Mengidentifikasi fungsi console dan fitur React Native DevTools
-* Menganalisis error umum React Native beserta penyebab dan solusinya
-* Menerapkan unit test fungsi murni dengan `node:test`
-* Membedakan unit, integration, manual, dan usability testing
+- Menjelaskan peran debugging, testing, dan QA dalam siklus hidup aplikasi
+- Mengidentifikasi fungsi console dan fitur React Native DevTools
+- Menganalisis error umum React Native beserta penyebab dan solusinya
+- Menerapkan unit test fungsi murni dengan `node:test`
+- Membedakan unit, integration, manual, dan usability testing
 
 <!--
 Bacakan kata kerjanya saja. Tekankan bahwa tujuan keenam di bab (mengevaluasi hasil
@@ -47,26 +47,12 @@ Kaitkan dengan penilaian: aspek debugging 10% dan dokumentasi 20% pada rubrik pr
 
 ---
 
-## Peta Konsep Bab 14
-
-![w:720](assets/diagrams/bab-14-debugging-testing-dan-quality-ass-01.svg)
-
-<!--
-Jelaskan alur baca dari atas ke bawah: debugging dan testing adalah dua jalur kerja yang
-berbeda, dan keduanya bermuara pada satu produk di Subbab 14.7.
-
-Titik temu dua cabang itu yang penting: QA bukan kegiatan terpisah di akhir proyek,
-melainkan gabungan bukti dari kedua jalur.
--->
-
----
-
 ## Mengapa Bab Ini Ada
 
-* Setiap fitur baru menambah kemungkinan satu perubahan merusak bagian lain
-* Kondisi itu disebut **regression** (kemunduran kualitas)
-* Tanpa cara menelusuri dan menguji, tim menghabiskan waktu menebak-nebak
-* Bug yang lolos ke pengguna lebih mahal daripada yang tertangkap sebelum rilis
+- Setiap fitur baru menambah kemungkinan satu perubahan merusak bagian lain
+- Kondisi itu disebut **regression** (kemunduran kualitas)
+- Tanpa cara menelusuri dan menguji, tim menghabiskan waktu menebak-nebak
+- Bug yang lolos ke pengguna lebih mahal daripada yang tertangkap sebelum rilis
 
 <!--
 Tekankan bahwa regression bukan bug baru: fitur lama yang tadinya benar menjadi rusak
@@ -77,24 +63,6 @@ bukan lantai barunya.
 
 Pertanyaan pemandu: "Pernahkah aplikasi Anda gagal setelah Anda menambah kode di file
 lain?" (Jawaban: itu regression, dan bab ini menyediakan cara menangkapnya lebih awal.)
--->
-
----
-
-<!-- _class: center -->
-
-## Tiga Pertanyaan Pembuka
-
-* Kapan terakhir kali aplikasi di ponsel Anda menampilkan layar merah?
-* Apa yang Anda lakukan setelah menutup pesan error itu?
-* Kalau server mati, apa yang seharusnya pengguna lihat di layar?
-
-<!--
-Think-pair-share: 2 menit berpikir sendiri, 2 menit berpasangan, lalu 2–3 pasangan
-menyampaikan jawaban singkat. Jangan langsung menjawab.
-
-Pemicu bila kelas pasif: "Sebutkan satu bug yang pernah membuat Anda mengulang pekerjaan
-satu jam hanya untuk menemukan satu salah ketik."
 -->
 
 ---
@@ -225,17 +193,17 @@ terminal Expo adalah sumber kebenaran untuk versi yang Anda pakai.
 
 **Lapis 1 — log pada titik perubahan**
 
-* Tulis `console.log('state berubah:', nilai)` di dalam `useEffect`
-* Menjawab pertanyaan "kapan dan dalam urutan apa"
+- Tulis `console.log('state berubah:', nilai)` di dalam `useEffect`
+- Menjawab pertanyaan "kapan dan dalam urutan apa"
 
 </div>
 <div>
 
 **Lapis 2 — React DevTools**
 
-* Periksa pohon komponen dan nilai state setiap komponen
-* Menjawab pertanyaan "apa isinya sekarang"
-* Dapat mengubah state tanpa menulis kode
+- Periksa pohon komponen dan nilai state setiap komponen
+- Menjawab pertanyaan "apa isinya sekarang"
+- Dapat mengubah state tanpa menulis kode
 
 </div>
 </div>
@@ -338,10 +306,10 @@ state berdasarkan urutan pemanggilan hook yang sama pada setiap render.)
 
 ## Error 3 — undefined is not an object
 
-* Anda membaca properti dari nilai yang belum ada, biasanya data belum dimuat
-* Beri nilai awal `[]` atau `null` pada state, lalu tampilkan indikator pemuatan
-* Gunakan operator opsional `mahasiswa?.nama` agar akses aman saat objek belum ada
-* Periksa juga struktur respons API: buku ini memakai bentuk `{ data: [...] }` (Bab 10)
+- Anda membaca properti dari nilai yang belum ada, biasanya data belum dimuat
+- Beri nilai awal `[]` atau `null` pada state, lalu tampilkan indikator pemuatan
+- Gunakan operator opsional `mahasiswa?.nama` agar akses aman saat objek belum ada
+- Periksa juga struktur respons API: buku ini memakai bentuk `{ data: [...] }` (Bab 10)
 
 > Cetak respons API dengan `console.log` sebelum memetakannya ke tampilan.
 
@@ -384,9 +352,9 @@ kehilangan state baris saat data diperbarui.
 
 ## Apa yang Terjadi Jika…?
 
-* Apa yang terjadi jika `useState` dipanggil di dalam percabangan `if`?
-* Apa yang terjadi jika `FlatList` diletakkan di dalam `ScrollView` searah?
-* Apa yang terjadi jika hasil `map` tidak diberi properti `key`?
+- Apa yang terjadi jika `useState` dipanggil di dalam percabangan `if`?
+- Apa yang terjadi jika `FlatList` diletakkan di dalam `ScrollView` searah?
+- Apa yang terjadi jika hasil `map` tidak diberi properti `key`?
 
 <!--
 Jangan menjawab. Minta tiga mahasiswa menebak lebih dulu, lalu nyatakan bahwa jawabannya
@@ -401,9 +369,9 @@ Tujuannya melatih penalaran dari gejala ke penyebab, bukan menghafal nama error.
 
 ## Jawaban
 
-* React melaporkan "Invalid hook call" karena urutan hook berbeda pada tiap render
-* Tinggi konten tidak dapat dihitung; gulir menjadi aneh dan performa menurun
-* React sulit melacak elemen yang berubah sehingga data bisa salah dirender
+- React melaporkan "Invalid hook call" karena urutan hook berbeda pada tiap render
+- Tinggi konten tidak dapat dihitung; gulir menjadi aneh dan performa menurun
+- React sulit melacak elemen yang berubah sehingga data bisa salah dirender
 
 <!--
 Ulangi aturan emas: hook hanya di tingkat atas komponen. Bila nilai perlu kondisional,
@@ -417,9 +385,9 @@ gejalanya muncul belakangan sebagai bug yang sulit dilacak.
 
 ## Uji Endpoint Sebelum Integrasi
 
-* Periksa endpoint dari browser, `curl`, atau `fetch` bawaan Node.js 22
-* Pastikan server backend buku berjalan lebih dahulu (lihat Bab 10)
-* Hasil uji memisahkan dua kemungkinan sumber masalah: server atau aplikasi
+- Periksa endpoint dari browser, `curl`, atau `fetch` bawaan Node.js 22
+- Pastikan server backend buku berjalan lebih dahulu (lihat Bab 10)
+- Hasil uji memisahkan dua kemungkinan sumber masalah: server atau aplikasi
 
 ```bash
 curl http://localhost:3000/api/mahasiswa
@@ -503,11 +471,11 @@ dilewati karena keduanya menghasilkan produk yang dinilai pada praktikum.
 
 ## Unit Testing dan Target Termudahnya
 
-* Unit testing menguji satu unit kode, biasanya satu fungsi, secara terisolasi
-* Uji manual tidak dapat diulang konsisten: manusia lupa langkah dan terburu-buru
-* Unit test dapat dijalankan berulang dengan cepat, senjata utama melawan regression
-* Trade-off: menulis test memakan waktu di awal dan harus dirawat
-* Target termudah adalah **pure function** yang hasilnya hanya ditentukan argumennya
+- Unit testing menguji satu unit kode, biasanya satu fungsi, secara terisolasi
+- Uji manual tidak dapat diulang konsisten: manusia lupa langkah dan terburu-buru
+- Unit test dapat dijalankan berulang dengan cepat, senjata utama melawan regression
+- Trade-off: menulis test memakan waktu di awal dan harus dirawat
+- Target termudah adalah **pure function** yang hasilnya hanya ditentukan argumennya
 
 > Buku memakai `node:test`, modul bawaan Node.js. Jest dengan preset `jest-expo` adalah standar industri React Native.
 
@@ -700,11 +668,11 @@ case — terutama mematikan koneksi di tengah permintaan.)
 
 ## Usability Testing: Sekitar 5 Pengguna
 
-* Manual testing menilai kebenaran; usability testing menilai kemudahan pemakaian
-* Prinsip klasik: uji dengan sekitar 5 pengguna untuk menemukan mayoritas masalah
-* Sesi tiga bagian: 3–5 tugas nyata, berpikir keras saat mengerjakan, lalu observasi
-* Catat keberhasilan tugas, waktu, tempat pengguna ragu, dan kesalahan yang dibuat
-* Bantuan hanya bila pengguna benar-benar macet, dan catat sebagai temuan
+- Manual testing menilai kebenaran; usability testing menilai kemudahan pemakaian
+- Prinsip klasik: uji dengan sekitar 5 pengguna untuk menemukan mayoritas masalah
+- Sesi tiga bagian: 3–5 tugas nyata, berpikir keras saat mengerjakan, lalu observasi
+- Catat keberhasilan tugas, waktu, tempat pengguna ragu, dan kesalahan yang dibuat
+- Bantuan hanya bila pengguna benar-benar macet, dan catat sebagai temuan
 
 <!--
 Tekankan pembeda yang paling sering tertukar: manual testing bertanya "apakah fiturnya
@@ -767,11 +735,11 @@ diotomatisasi.
 
 ## Praktikum Pertemuan Ini
 
-* Pastikan Node.js LTS versi 22 atau lebih baru dengan `node --version`
-* Salin `utils/validators.js` dan `__tests__/validators.test.js` ke folder `praktikum14`
-* Jalankan `node --test` sampai seluruh 13 test lulus
-* Uji endpoint dari terminal, lalu matikan server dan ulangi untuk membaca kegagalan
-* Isi checklist testing minimal 5 kasus uji pada aplikasi Anda sendiri
+- Pastikan Node.js LTS versi 22 atau lebih baru dengan `node --version`
+- Salin `utils/validators.js` dan `__tests__/validators.test.js` ke folder `praktikum14`
+- Jalankan `node --test` sampai seluruh 13 test lulus
+- Uji endpoint dari terminal, lalu matikan server dan ulangi untuk membaca kegagalan
+- Isi checklist testing minimal 5 kasus uji pada aplikasi Anda sendiri
 
 <!--
 Ingatkan urutan folder yang benar: utils/ dan __tests__/ dibuat lebih dulu, dan perintah
@@ -798,17 +766,17 @@ dikenal.
 
 **Gejala di lapangan**
 
-* Form menerima NIM 6 digit sehingga data asing tersimpan
-* Banyak mahasiswa melihat layar kosong saat membuka daftar KRS
-* Pengguna iOS tidak bisa menyimpan karena tombol tertutup papan ketik
+- Form menerima NIM 6 digit sehingga data asing tersimpan
+- Banyak mahasiswa melihat layar kosong saat membuka daftar KRS
+- Pengguna iOS tidak bisa menyimpan karena tombol tertutup papan ketik
 
 </div>
 <div>
 
 **Akar masalah setelah audit**
 
-* Tim hanya menguji alur berhasil di satu emulator Android, tanpa uji perangkat nyata
-* Tidak ada unit test untuk fungsi validasi aplikasi itu
+- Tim hanya menguji alur berhasil di satu emulator Android, tanpa uji perangkat nyata
+- Tidak ada unit test untuk fungsi validasi aplikasi itu
 
 </div>
 </div>
@@ -852,10 +820,10 @@ kembali.
 
 ## Mini Kuis
 
-* Kegiatan menemukan dan memperbaiki kesalahan pada kode disebut apa?
-* Fungsi console mana yang paling tepat untuk daftar mahasiswa berkolom?
-* Sifat pure function apa yang membuatnya ideal untuk unit test?
-* Apa perbedaan utama unit testing dan integration testing?
+- Kegiatan menemukan dan memperbaiki kesalahan pada kode disebut apa?
+- Fungsi console mana yang paling tepat untuk daftar mahasiswa berkolom?
+- Sifat pure function apa yang membuatnya ideal untuk unit test?
+- Apa perbedaan utama unit testing dan integration testing?
 
 <!--
 Kuis lisan 5 menit: tampilkan pertanyaan, minta kelas menjawab serentak atau angkat
@@ -871,10 +839,10 @@ ditutup.
 
 ## Jawaban
 
-* Debugging — bukan testing, dan bukan quality assurance
-* `console.table` — menyusun array objek menjadi kolom yang rapi
-* Deterministik: hasilnya hanya ditentukan oleh argumennya
-* Tingkat cakupan: satu unit terisolasi versus kerja sama antarbagian
+- Debugging — bukan testing, dan bukan quality assurance
+- `console.table` — menyusun array objek menjadi kolom yang rapi
+- Deterministik: hasilnya hanya ditentukan oleh argumennya
+- Tingkat cakupan: satu unit terisolasi versus kerja sama antarbagian
 
 <!--
 Ulangi kalimat kunci untuk nomor 4 karena inilah konsep yang paling sering tertukar saat
@@ -893,17 +861,17 @@ menutup pertemuan.
 
 **Diskusi kelas**
 
-* Gejala insiden KRS Online mana yang paling mungkin terjadi di project Anda?
-* Bila tim hanya punya satu hari untuk menguji, urutan QA apa yang paling murah?
+- Gejala insiden KRS Online mana yang paling mungkin terjadi di project Anda?
+- Bila tim hanya punya satu hari untuk menguji, urutan QA apa yang paling murah?
 
 </div>
 <div>
 
 **Latihan dan tantangan**
 
-* Tambahkan tiga kasus uji baru untuk NIM, email, dan telepon
-* Tulis unit test untuk satu fungsi murni dari project Bab 9
-* Buat jurnal bug seminggu: error, penyebab, solusi, kasus uji pencegahannya
+- Tambahkan tiga kasus uji baru untuk NIM, email, dan telepon
+- Tulis unit test untuk satu fungsi murni dari project Bab 9
+- Buat jurnal bug seminggu: error, penyebab, solusi, kasus uji pencegahannya
 
 </div>
 </div>

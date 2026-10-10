@@ -29,11 +29,11 @@ khusus Bab 9, dan praktikumnya membangun aplikasi TokoKu di atas project Bab 7.
 
 ## Tujuan Pembelajaran
 
-* Menjelaskan perbedaan state lokal dan state global beserta trade-off-nya
-* Mengidentifikasi kondisi yang menuntut lifting state up atau Context API
-* Menilai kapan data cukup lokal dan kapan layak menjadi global state
-* Mengimplementasikan Context API dengan JavaScript polos
-* Merancang custom hook `useCart` dan mengevaluasi Zustand serta Redux Toolkit
+- Menjelaskan perbedaan state lokal dan state global beserta trade-off-nya
+- Mengidentifikasi kondisi yang menuntut lifting state up atau Context API
+- Menilai kapan data cukup lokal dan kapan layak menjadi global state
+- Mengimplementasikan Context API dengan JavaScript polos
+- Merancang custom hook `useCart` dan mengevaluasi Zustand serta Redux Toolkit
 
 <!--
 Bacakan kata kerjanya saja. Butir 4 dan 5 adalah inti praktikum dan bahan penilaian
@@ -41,43 +41,6 @@ rubrik: pemahaman konsep 15% dan implementasi 25% (Lampiran A).
 
 Tekankan bahwa butir 3 adalah pertanyaan rekayasa yang paling sering salah dijawab:
 menaruh semua data ke global state sejak awal bukan solusi, melainkan utang.
--->
-
----
-
-## Peta Konsep Bab 9
-
-![w:720](assets/diagrams/bab-09-state-management-01.svg)
-
-> Peta bab: dua tingkat state, tiga teknik pendistribusian, lalu custom hook dan pustaka untuk skala besar.
-
-<!--
-Bacakan peta dari atas: satu akar state management bercabang tiga teknik, yaitu state
-lokal, lifting state up, dan Context API; dari Context API lahir custom hook useCart serta
-pustaka untuk skala besar.
-
-Tekankan bahwa setiap cabang hanya boleh dinaiki bila ada alasan nyata. Naik terlalu
-cepat membuat aplikasi sulit ditelusuri; bertahan terlalu lama membuat props berantai.
--->
-
----
-
-<!-- _class: center -->
-
-## Tiga Pertanyaan Pembuka
-
-* Kalau dua layar menyimpan salinan keranjang sendiri, layar mana yang benar?
-* Berapa lapis props harus dilewati sebelum data sampai ke layar tujuan?
-* Mengapa total belanja lebih aman dihitung ulang daripada disimpan?
-
-Jawabannya tersebar di Subbab 9.1 sampai 9.5 dan 9.7.
-
-<!--
-Think-pair-share: 2 menit sendiri, 2 menit berpasangan, lalu tampung 2 sampai 3 jawaban.
-Jangan dikoreksi dulu; ketiga pertanyaan ini menuntun seluruh isi bab.
-
-Pemicu bila kelas diam: "Sebutkan data di aplikasi kuliah Anda yang berubah di satu
-layar tetapi dibaca di layar lain."
 -->
 
 ---
@@ -105,17 +68,17 @@ tidak boleh dilewati karena istilah di dalamnya dipakai sampai Bab 13.
 
 **State lokal** — hidup di dalam satu komponen
 
-* Contoh: teks yang sedang diketik di kolom pencarian
-* Status buka/tutup panel dan pilihan pada satu tombol
-* Hanya dikenal komponen itu dan anak-anaknya
+- Contoh: teks yang sedang diketik di kolom pencarian
+- Status buka/tutup panel dan pilihan pada satu tombol
+- Hanya dikenal komponen itu dan anak-anaknya
 
 </div>
 <div>
 
 **State global** — dipakai banyak komponen, biasanya lintas layar
 
-* Contoh: isi keranjang di badge, daftar, dan layar pembayaran
-* Bila tiap layar menyimpan salinan sendiri, data bisa tidak sinkron
+- Contoh: isi keranjang di badge, daftar, dan layar pembayaran
+- Bila tiap layar menyimpan salinan sendiri, data bisa tidak sinkron
 
 </div>
 </div>
@@ -138,10 +101,10 @@ pemakainya yang luas.
 
 ## Latihan: Lokal atau Global?
 
-* **A.** Teks yang sedang diketik di kolom pencarian produk
-* **B.** Isi keranjang yang dibaca layar produk dan layar keranjang
-* **C.** Pilihan ukuran minuman yang dipakai dua komponen dalam satu layar
-* **D.** Total harga keranjang
+- **A.** Teks yang sedang diketik di kolom pencarian produk
+- **B.** Isi keranjang yang dibaca layar produk dan layar keranjang
+- **C.** Pilihan ukuran minuman yang dipakai dua komponen dalam satu layar
+- **D.** Total harga keranjang
 
 Tentukan tingkat state yang tepat untuk tiap kasus, lalu sebutkan alasannya.
 
@@ -201,9 +164,9 @@ Tekankan istilah sumber kebenaran tunggal: satu penyimpanan, banyak pembaca.
 
 **Prop drilling** adalah penerusan props secara berantai melalui komponen perantara yang sama sekali tidak memakai data tersebut.
 
-* Terjadi ketika data harus melewati banyak tingkat komponen
-* Menambah satu data baru berarti mengubah deretan komponen perantara
-* Kode menjadi berisik dan sulit dipelihara
+- Terjadi ketika data harus melewati banyak tingkat komponen
+- Menambah satu data baru berarti mengubah deretan komponen perantara
+- Kode menjadi berisik dan sulit dipelihara
 
 > Munculnya prop drilling adalah tanda untuk beralih ke mekanisme berikutnya: Context API.
 
@@ -337,17 +300,17 @@ context mengubah distribusi, bukan tempat penyimpanan.
 
 **Pakai Context bila**
 
-* Data dipakai banyak komponen yang berjauhan (tema, bahasa, keranjang)
-* Data berubah lintas layar
-* Prop drilling sudah terasa menyakitkan
+- Data dipakai banyak komponen yang berjauhan (tema, bahasa, keranjang)
+- Data berubah lintas layar
+- Prop drilling sudah terasa menyakitkan
 
 </div>
 <div>
 
 **Hindari Context bila**
 
-* Data hanya dipakai satu-dua komponen bertetangga
-* Komponen menjadi sulit dipakai ulang karena nilainya tersembunyi
+- Data hanya dipakai satu-dua komponen bertetangga
+- Komponen menjadi sulit dipakai ulang karena nilainya tersembunyi
 
 </div>
 </div>
@@ -383,9 +346,9 @@ export function useTampilSembunyi(awal = false) {
 }
 ```
 
-* Nama fungsi wajib diawali kata `use`
-* Hook bawaan hanya dipanggil di tingkat atas fungsi
-* Tidak boleh dipanggil di dalam percabangan atau perulangan
+- Nama fungsi wajib diawali kata `use`
+- Hook bawaan hanya dipanggil di tingkat atas fungsi
+- Tidak boleh dipanggil di dalam percabangan atau perulangan
 
 <!--
 Tiga manfaat yang harus disebut: komponen lebih pendek dan fokus pada tampilan, logika
@@ -436,9 +399,9 @@ Peringatan: hook ini wajib dipakai di dalam subtree CartProvider, bukan di sampi
 
 ## Tiga Pengujian Sebelum Menjadikan Data Global
 
-* Berapa banyak pemakai? Satu komponen berarti cukup lokal
-* Dipakai lintas layar? Ditulis di satu layar, dibaca di layar lain berarti layak global
-* Banyak pihak menulis data yang sama? Satu tempat mencegah salinan bertabrakan
+- Berapa banyak pemakai? Satu komponen berarti cukup lokal
+- Dipakai lintas layar? Ditulis di satu layar, dibaca di layar lain berarti layak global
+- Banyak pihak menulis data yang sama? Satu tempat mencegah salinan bertabrakan
 
 > Bila pemakainya beberapa komponen berdekatan, coba lifting state up lebih dulu; keranjang baru butuh Context karena dibaca lintas layar.
 
@@ -454,9 +417,9 @@ state lewat props berarti setiap layar harus meneruskan props yang sama.
 
 ## Tiga Tanda Global State Tidak Diperlukan
 
-* Data yang dapat dihitung ulang — derived state seperti `totalHarga` dan `jumlahItem`
-* Data milik server — sebaiknya diambil dan di-cache satu lapisan khusus (Bab 10 dan 11)
-* Data sementara satu layar — isi formulir sebelum disimpan cukup menjadi state lokal
+- Data yang dapat dihitung ulang — derived state seperti `totalHarga` dan `jumlahItem`
+- Data milik server — sebaiknya diambil dan di-cache satu lapisan khusus (Bab 10 dan 11)
+- Data sementara satu layar — isi formulir sebelum disimpan cukup menjadi state lokal
 
 > Menyimpan derived state membuka peluang tidak sinkron: satu operasi yang lupa memperbaruinya sudah cukup merusak tampilan.
 
@@ -535,11 +498,11 @@ pada sesi kedua dan gunakan slide merancang state sebagai pembuka kerja kelompok
 
 Lima pertanyaan yang harus dijawab sebelum menulis kode:
 
-* Data apa yang disimpan? Daftar item `{ id, nama, harga, qty }`
-* Operasi apa yang dibutuhkan? Tambah, kurangi qty, hapus, dan kosongkan
-* Nilai apa yang dihitung, bukan disimpan? `jumlahItem` dan `totalHarga`
-* Di mana state harus hidup? Di `CartProvider` di dalam `app/_layout.js`, membungkus seluruh rute
-* Bagaimana dengan penyimpanan permanen? Masih di memori; ada TODO untuk Bab 11
+- Data apa yang disimpan? Daftar item `{ id, nama, harga, qty }`
+- Operasi apa yang dibutuhkan? Tambah, kurangi qty, hapus, dan kosongkan
+- Nilai apa yang dihitung, bukan disimpan? `jumlahItem` dan `totalHarga`
+- Di mana state harus hidup? Di `CartProvider` di dalam `app/_layout.js`, membungkus seluruh rute
+- Bagaimana dengan penyimpanan permanen? Masih di memori; ada TODO untuk Bab 11
 
 <!--
 Tekankan bahwa merancang state lebih dulu adalah latihan berpikir yang membedakan
@@ -765,8 +728,8 @@ kosong, dan itu wajar karena penyimpanannya masih di memori (Bab 11).
 
 ## Apa yang Terjadi Jika…?
 
-* Badge "Keranjang (0)" tidak bertambah meskipun tombol "Tambah" ditekan berkali-kali
-* Tidak ada pesan error yang muncul di layar maupun di terminal
+- Badge "Keranjang (0)" tidak bertambah meskipun tombol "Tambah" ditekan berkali-kali
+- Tidak ada pesan error yang muncul di layar maupun di terminal
 
 Apa penyebab paling mungkin, dan bagaimana Anda membuktikannya?
 
@@ -810,11 +773,11 @@ otomatis, dan uji kasus tepi (qty 1 lalu kurangi) setiap selesai menulis ulang f
 
 ## Hasil yang Diharapkan dari Praktikum
 
-* Badge "Keranjang (0)" menjadi "(2)" setelah tombol "Tambah" ditekan dua kali pada Buku
-* Rincian baris: "Rp 45.000 x 2 = Rp 90.000" dan "Rp 12.000 x 1 = Rp 12.000"
-* Ringkasan bawah: "Total (3 item): Rp 102.000"
-* Qty tidak pernah menjadi 0 atau negatif saat tombol "-" ditekan
-* Setelah semua item dihapus, muncul pesan "Keranjang masih kosong."
+- Badge "Keranjang (0)" menjadi "(2)" setelah tombol "Tambah" ditekan dua kali pada Buku
+- Rincian baris: "Rp 45.000 x 2 = Rp 90.000" dan "Rp 12.000 x 1 = Rp 12.000"
+- Ringkasan bawah: "Total (3 item): Rp 102.000"
+- Qty tidak pernah menjadi 0 atau negatif saat tombol "-" ditekan
+- Setelah semua item dihapus, muncul pesan "Keranjang masih kosong."
 
 <!--
 Jadikan slide ini daftar periksa praktikum: minta mahasiswa mencentang satu per satu dan
@@ -884,10 +847,10 @@ Context API masih cukup?" (Jawaban: tidak; perlu draft di server, soal analisis 
 
 ## Mini Kuis
 
-* State yang hanya dipakai satu komponen sebaiknya disimpan sebagai apa?
-* Bagaimana urutan pemakaian Context API yang benar?
-* Manakah yang termasuk nilai turunan (derived state) pada keranjang?
-* Mengapa `CartProvider` ditempatkan di `app/_layout.js`?
+- State yang hanya dipakai satu komponen sebaiknya disimpan sebagai apa?
+- Bagaimana urutan pemakaian Context API yang benar?
+- Manakah yang termasuk nilai turunan (derived state) pada keranjang?
+- Mengapa `CartProvider` ditempatkan di `app/_layout.js`?
 
 <!--
 Kuis lisan 4 menit: tampilkan pertanyaan, minta kelas menjawab serentak atau angkat tangan,
@@ -903,10 +866,10 @@ bisa juga dipakai sebagai pemanasan sebelum latihan tertulis.
 
 ## Jawaban
 
-* State lokal dengan `useState` — hanya satu komponen yang memakainya
-* `createContext` → `Provider` → `useContext` — wadah, penyedia, lalu pembaca
-* `totalHarga` — dihitung dari `items`, sehingga tidak perlu disimpan
-* Agar seluruh rute berada di dalam subtree provider dan dapat memanggil `useCart()`
+- State lokal dengan `useState` — hanya satu komponen yang memakainya
+- `createContext` → `Provider` → `useContext` — wadah, penyedia, lalu pembaca
+- `totalHarga` — dihitung dari `items`, sehingga tidak perlu disimpan
+- Agar seluruh rute berada di dalam subtree provider dan dapat memanggil `useCart()`
 
 <!--
 Ulangi pembeda yang paling sering tertukar: derived state (dihitung) versus state (disimpan).
@@ -922,11 +885,11 @@ cakupan pemakaianlah alasannya.
 
 ## Ringkasan
 
-1) Mulai dari state lokal; naikkan hanya bila ada pemakai lain yang benar-benar membutuhkan
-2) Lifting state up menciptakan sumber kebenaran tunggal lewat props dan callback
-3) Prop drilling yang menyakitkan adalah tanda untuk beralih ke Context API
-4) Context API memakai `createContext`, `Provider`, dan `useContext`, dibungkus custom hook `useCart`
-5) Nilai turunan dihitung, bukan disimpan; Zustand dan Redux untuk skala besar
+1. Mulai dari state lokal; naikkan hanya bila ada pemakai lain yang benar-benar membutuhkan
+2. Lifting state up menciptakan sumber kebenaran tunggal lewat props dan callback
+3. Prop drilling yang menyakitkan adalah tanda untuk beralih ke Context API
+4. Context API memakai `createContext`, `Provider`, dan `useContext`, dibungkus custom hook `useCart`
+5. Nilai turunan dihitung, bukan disimpan; Zustand dan Redux untuk skala besar
 
 > Keranjang pada bab ini hidup di memori; membuatnya bertahan setelah aplikasi ditutup adalah materi Bab 11.
 
@@ -947,16 +910,16 @@ urutan disiplin, bukan tangga gengsi.
 
 **Pertanyaan**
 
-* Di mana keranjang toko kampus sebaiknya disimpan, dan apa risikonya?
-* Apa tanda di kode bahwa Context API sudah dipakai berlebihan?
+- Di mana keranjang toko kampus sebaiknya disimpan, dan apa risikonya?
+- Apa tanda di kode bahwa Context API sudah dipakai berlebihan?
 
 </div>
 <div>
 
 **Yang dinilai**
 
-* Ketepatan menghubungkan pilihan penyimpanan dengan konteks jaringan dan perangkat
-* Kemampuan mengenali gejala di kode, bukan hanya menyebut teori
+- Ketepatan menghubungkan pilihan penyimpanan dengan konteks jaringan dan perangkat
+- Kemampuan mengenali gejala di kode, bukan hanya menyebut teori
 
 </div>
 </div>

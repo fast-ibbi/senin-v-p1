@@ -22,19 +22,19 @@ Buka dengan satu kalimat pengait: "Bab sebelumnya kita menyiapkan bahan mentahny
 hari ini kita belajar menyusunnya dengan alasan."
 
 Tanyakan pembuka: "Mengapa dua aplikasi dengan fitur yang mirip bisa terasa jauh
-berbeda kenyamanannya?" Tampung 2–3 jawaban tanpa dikoreksi dulu — pertanyaan itu
-muncul lagi di slide berikutnya.
+berbeda kenyamanannya?" Tampung 2–3 jawaban tanpa dikoreksi dulu; jawabannya tersebar
+di 6.1 (prinsip), 6.2 (komponen), dan 6.5–6.6 (adaptasi).
 -->
 
 ---
 
 ## Tujuan Pembelajaran
 
-* Menjelaskan empat prinsip desain UI mobile beserta alasan di belakangnya
-* Mengidentifikasi peran sistem jarak 8pt, skala tipografi, dan palet warna
-* Mengimplementasikan komponen Card, Button, Form, dan List secara konsisten
-* Merancang wireframe halaman Daftar dan Detail Mahasiswa sebelum menulis kode
-* Menerapkan aksesibilitas dasar dan menganalisis keputusan desain pada studi kasus
+- Menjelaskan empat prinsip desain UI mobile beserta alasan di belakangnya
+- Mengidentifikasi peran sistem jarak 8pt, skala tipografi, dan palet warna
+- Mengimplementasikan komponen Card, Button, Form, dan List secara konsisten
+- Merancang wireframe halaman Daftar dan Detail Mahasiswa sebelum menulis kode
+- Menerapkan aksesibilitas dasar dan menganalisis keputusan desain pada studi kasus
 
 <!--
 Bacakan kata kerjanya saja. Empat tujuan pertama berpijak pada Sub-CPMK 3.1 (prinsip
@@ -43,42 +43,6 @@ dasar) yang pada RPS juga dipetakan ke Bab 6.
 
 Sebutkan penilaiannya sejak awal: Praktikum Bab 6 dan Tugas 2 — redesign UI aplikasi
 kampus.
--->
-
----
-
-## Peta Konsep Bab 6
-
-![w:720](assets/diagrams/bab-06-membangun-user-interface-mobile-01.svg)
-
-<!--
-Baca peta ini sebagai perjalanan satu arah: prinsip lahir lebih dulu, prinsip
-diwujudkan lewat fondasi visual, fondasi itu dipakai membangun komponen dan struktur,
-lalu diuji terhadap ukuran layar serta kebutuhan aksesibilitas, dan berakhir di
-penerapan 6.7.
-
-Ingatkan bahwa simpul terakhir adalah luaran yang dinilai pada praktikum: wireframe
-lalu layar statis dengan data baku.
--->
-
----
-
-<!-- _class: center -->
-
-## Tiga Pertanyaan Pembuka
-
-* Mengapa aplikasi yang sama terasa nyaman di satu ponsel, menyiksa di ponsel lain?
-* Mengapa sebagian tombol ditekan berulang, padahal aplikasinya tidak rusak?
-* Mengapa staf baru butuh berhari-hari, padahal layarnya hanya lima?
-
-Jawabannya tersebar di 6.1 (prinsip), 6.2 (komponen), dan 6.5–6.6 (adaptasi).
-
-<!--
-Think-pair-share: 2 menit berpikir sendiri, 2 menit berpasangan, lalu 2–3 pasangan
-menyampaikan jawaban singkat. Jangan menjawab sekarang.
-
-Pemicu bila kelas pasif: "Sebutkan satu aplikasi yang membuat Anda menebak-nebak
-tombol mana yang harus ditekan lebih dulu."
 -->
 
 ---
@@ -108,16 +72,16 @@ Pertanyaan pertama perancang bukan soal teknologi, melainkan mengapa sebuah anta
 
 **Prinsip, bukan selera**
 
-* Lahir dari pengamatan cara manusia membaca dan memegang ponsel
-* Membangun antarmuka dengan alasan, bukan dengan coba-coba
+- Lahir dari pengamatan cara manusia membaca dan memegang ponsel
+- Membangun antarmuka dengan alasan, bukan dengan coba-coba
 
 </div>
 <div>
 
 **Bahan mentah sudah tersedia**
 
-* Bab 5 memberi `View`, `Text`, `StyleSheet`, Flexbox, `FlatList`
-* Bab ini mengajarkan cara menyusunnya menjadi antarmuka beralasan
+- Bab 5 memberi `View`, `Text`, `StyleSheet`, Flexbox, `FlatList`
+- Bab ini mengajarkan cara menyusunnya menjadi antarmuka beralasan
 
 </div>
 </div>
@@ -137,11 +101,11 @@ bahannya.
 
 ## Prinsip 1 — Konsistensi
 
-* Elemen serupa tampil dan berperilaku serupa: warna, jarak, dan istilah label sama
-* Menurunkan biaya kognitif: setelah belajar satu layar, layar lain bisa ditebak
-* Di SI: staf berliterasi digital beragam jadi lebih sedikit salah memasukkan data
-* Trade-off: konsistensi kaku bisa menghambat solusi khusus konteks
-* Wujud nyatanya: **design token** — satu tempat menyimpan warna dan ukuran
+- Elemen serupa tampil dan berperilaku serupa: warna, jarak, dan istilah label sama
+- Menurunkan biaya kognitif: setelah belajar satu layar, layar lain bisa ditebak
+- Di SI: staf berliterasi digital beragam jadi lebih sedikit salah memasukkan data
+- Trade-off: konsistensi kaku bisa menghambat solusi khusus konteks
+- Wujud nyatanya: **design token** — satu tempat menyimpan warna dan ukuran
 
 <!--
 Contoh paling murah: minta mahasiswa menyebut warna tombol "Simpan" pada aplikasi yang
@@ -159,11 +123,11 @@ literasi digital beragam harus dilatih sekali saja.)
 
 ## Prinsip 2 — Hierarki Visual
 
-* Mata memindai layar, bukan membaca baris demi baris
-* Atur ukuran, ketebalan huruf, warna, dan posisi untuk menunjukkan urutan
-* Judul paling menonjol, lalu konten utama, lalu keterangan yang paling redup
-* Trade-off: hierarki terlalu agresif membuat layar berteriak sekaligus
-* Trade-off: hierarki terlalu datar membuat pengguna tak tahu mulai dari mana
+- Mata memindai layar, bukan membaca baris demi baris
+- Atur ukuran, ketebalan huruf, warna, dan posisi untuk menunjukkan urutan
+- Judul paling menonjol, lalu konten utama, lalu keterangan yang paling redup
+- Trade-off: hierarki terlalu agresif membuat layar berteriak sekaligus
+- Trade-off: hierarki terlalu datar membuat pengguna tak tahu mulai dari mana
 
 <!--
 Demonstrasi cepat: tampilkan dua tangkapan layar, satu dengan semua teks besar dan
@@ -180,11 +144,11 @@ hitungan detik.
 
 ## Prinsip 3 — Umpan Balik
 
-* Setiap tindakan pengguna harus mendapat respons yang terlihat
-* Tombol ditekan meredup; kartu yang ditekan memberi efek visual
-* Umpan balik menjawab kecemasan: "apakah sentuhan saya diterima?"
-* Layar sentuh tidak memberi sensasi fisik, jadi respons visual menggantikannya
-* Trade-off: respons sentuh wajib (Pressable); getaran dan animasi belakangan
+- Setiap tindakan pengguna harus mendapat respons yang terlihat
+- Tombol ditekan meredup; kartu yang ditekan memberi efek visual
+- Umpan balik menjawab kecemasan: "apakah sentuhan saya diterima?"
+- Layar sentuh tidak memberi sensasi fisik, jadi respons visual menggantikannya
+- Trade-off: respons sentuh wajib (Pressable); getaran dan animasi belakangan
 
 <!--
 Analogi: menekan tombol lift yang tidak menyala — orang akan menekannya berkali-kali,
@@ -201,11 +165,11 @@ yang terlihat wajib; getaran dan animasi boleh dipertimbangkan belakangan.)
 
 ## Prinsip 4 — Thumb-friendly
 
-* Sebagian besar interaksi ponsel dilakukan dengan satu ibu jari
-* Bagian bawah dan tengah layar mudah dijangkau; sudut atas sulit
-* Aksi penting ditempatkan di zona terjangkau; area atas untuk judul
-* Trade-off: jangkauan kadang berbenturan dengan kebiasaan (kembali di kiri atas)
-* Karena itu tombol aksi utama ponsel modern ada di bawah — bukan kebetulan
+- Sebagian besar interaksi ponsel dilakukan dengan satu ibu jari
+- Bagian bawah dan tengah layar mudah dijangkau; sudut atas sulit
+- Aksi penting ditempatkan di zona terjangkau; area atas untuk judul
+- Trade-off: jangkauan kadang berbenturan dengan kebiasaan (kembali di kiri atas)
+- Karena itu tombol aksi utama ponsel modern ada di bawah — bukan kebetulan
 
 <!--
 Demonstrasi: minta mahasiswa memegang ponsel dengan satu tangan lalu menyentuh sudut
@@ -242,8 +206,8 @@ satu pelanggarannya pada aplikasi yang mereka pakai sehari-hari.
 
 ## Sistem Jarak 8pt
 
-* Himpunan nilai jarak: 4, 8, 12, 16, 24, 32, 48, 64
-* Dipilih karena habis dibagi 2, cukup kecil untuk detail, cukup besar untuk ritme
+- Himpunan nilai jarak: 4, 8, 12, 16, 24, 32, 48, 64
+- Dipilih karena habis dibagi 2, cukup kecil untuk detail, cukup besar untuk ritme
 
 | Aturan praktis | Nilai |
 |---|---|
@@ -268,10 +232,10 @@ dan 32 selalu selaras.)
 
 ## Card: Satu Kartu, Satu Entitas
 
-* Satu kartu = satu ide = satu entitas; di aplikasi kita, satu mahasiswa
-* Memberi batas visual sehingga mata mudah memisahkan entitas saat digulir
-* Anatomi: latar putih, radius 8–12, padding 16, jarak antar kartu 8
-* Trade-off: kartu memakan ruang vertikal; data seragam lebih hemat sebagai baris
+- Satu kartu = satu ide = satu entitas; di aplikasi kita, satu mahasiswa
+- Memberi batas visual sehingga mata mudah memisahkan entitas saat digulir
+- Anatomi: latar putih, radius 8–12, padding 16, jarak antar kartu 8
+- Trade-off: kartu memakan ruang vertikal; data seragam lebih hemat sebagai baris
 
 <!--
 Analogi: kartu itu seperti kartu nama — begitu ditumpuk, mata tetap dapat memisahkan
@@ -297,8 +261,8 @@ Pertanyaan desainnya bukan "seperti apa bentuknya?", melainkan "seberapa penting
 | outline | Transparan bergaris tepi warna utama | Aksi alternatif |
 | danger | Latar merah | Aksi berisiko atau merusak |
 
-* Aturan: satu primary per layar — jika semua menonjol, tidak ada yang menonjol
-* Label berupa kata kerja yang jelas: "Simpan", bukan "OK"
+- Aturan: satu primary per layar — jika semua menonjol, tidak ada yang menonjol
+- Label berupa kata kerja yang jelas: "Simpan", bukan "OK"
 
 <!--
 Umpan utamanya: pengguna membaca makna dari warna sebelum membaca teksnya. Tombol merah
@@ -359,8 +323,8 @@ yang baru adalah alasan desain di baliknya.
 └──────────────────────────────┘
 ```
 
-* Label selalu terlihat — placeholder hilang begitu pengguna mulai mengetik
-* Tombol simpan menempel di bawah form, dekat jangkauan ibu jari
+- Label selalu terlihat — placeholder hilang begitu pengguna mulai mengetik
+- Tombol simpan menempel di bawah form, dekat jangkauan ibu jari
 
 <!--
 Bahas dua keputusan tampilan saja: label yang tidak boleh bergantung pada placeholder,
@@ -377,11 +341,11 @@ ponsel tidak cukup untuk dua kolom berpasangan.)
 
 ## List: Konsistensi Item
 
-* Struktur item seragam: area sentuh, jarak dalam, dan hierarki teks sama
-* Pola satu baris: judul saja; pola dua baris: judul di atas, keterangan kecil
-* Aplikasi kita memakai dua baris: nama mahasiswa, lalu NIM–angkatan
-* Pemisah: garis tipis atau jarak 8 — pilih satu dan pakai konsisten
-* Tiga keadaan yang diantisipasi: sedang memuat, kosong, dan gagal dimuat
+- Struktur item seragam: area sentuh, jarak dalam, dan hierarki teks sama
+- Pola satu baris: judul saja; pola dua baris: judul di atas, keterangan kecil
+- Aplikasi kita memakai dua baris: nama mahasiswa, lalu NIM–angkatan
+- Pemisah: garis tipis atau jarak 8 — pilih satu dan pakai konsisten
+- Tiga keadaan yang diantisipasi: sedang memuat, kosong, dan gagal dimuat
 
 <!--
 Ingatkan bahwa `FlatList` sudah dikenalkan pada Bab 5; yang dibahas di sini adalah
@@ -403,17 +367,17 @@ item dan jarak antar item tidak seragam.)
 
 **Header (kepala layar)**
 
-* Menjawab: saya di mana, apa yang bisa saya lakukan, bagaimana kembali
-* Elemen: judul, aksi kontekstual di kanan, tombol kembali di kiri
+- Menjawab: saya di mana, apa yang bisa saya lakukan, bagaimana kembali
+- Elemen: judul, aksi kontekstual di kanan, tombol kembali di kiri
 
 </div>
 <div>
 
 **Bottom navigation**
 
-* Bar tab di bawah layar berisi 3–5 tab berikon dan berlabel
-* Diletakkan di bawah karena paling nyaman dijangkau ibu jari
-* Tab aktif selalu ditandai; hanya untuk bagian utama aplikasi
+- Bar tab di bawah layar berisi 3–5 tab berikon dan berlabel
+- Diletakkan di bawah karena paling nyaman dijangkau ibu jari
+- Tab aktif selalu ditandai; hanya untuk bagian utama aplikasi
 
 </div>
 </div>
@@ -445,7 +409,7 @@ lakukan?" (Kurangi menjadi 3–5; tab yang terlalu banyak menjadi terlalu sempit
 | judul layar | 20–28 | 700 | judul header layar |
 | display | 32+ | 700 | angka besar, halaman pembuka |
 
-* Kapitalisasi diputuskan sadar: judul layar gaya kalimat, atur lewat `textTransform`
+- Kapitalisasi diputuskan sadar: judul layar gaya kalimat, atur lewat `textTransform`
 
 > Menonjolkan teks cukup dengan menebalkan (400 → 600 → 700); besar dan tebal sekaligus membuat hierarki berlebihan.
 
@@ -474,8 +438,8 @@ dokumentasi resmi terbaru (reactnative.dev) untuk dukungan weight per platform.
 | Peringatan | Oranye `#C2410C` | nilai batas dan peringatan |
 | Bahaya | Merah `#B91C1C`/`#DC2626` | IPK rendah dan tombol Hapus |
 
-* Kontras WCAG 2.1 level AA: minimal 4,5:1 untuk teks normal dan 3:1 untuk teks besar
-* Jangan andalkan warna sebagai satu-satunya pembawa makna — sertakan teks
+- Kontras WCAG 2.1 level AA: minimal 4,5:1 untuk teks normal dan 3:1 untuk teks besar
+- Jangan andalkan warna sebagai satu-satunya pembawa makna — sertakan teks
 
 <!--
 Tekankan aturan emasnya: warna mempercepat pemindaian, sedangkan teks yang membawa
@@ -511,11 +475,11 @@ aspek UI/UX pada rubrik penilaian praktikum (Lampiran A).
 
 Satu aplikasi dijalankan di ribuan perangkat; asumsi lebar tetap akan terlihat rusak di sebagian perangkat.
 
-* **Flexbox** — fondasi pengaturan proporsi, sudah dikuasai pada Bab 5
-* Lebar persentase dan `flex` untuk membagi ruang secara relatif
-* `flexWrap` agar elemen pindah ke baris baru saat layar sempit
-* `useWindowDimensions` — lebar dan tinggi layar terkini, ikut berubah saat rotasi
-* `maxWidth` agar elemen tidak melebar tak terkendali di layar besar
+- **Flexbox** — fondasi pengaturan proporsi, sudah dikuasai pada Bab 5
+- Lebar persentase dan `flex` untuk membagi ruang secara relatif
+- `flexWrap` agar elemen pindah ke baris baru saat layar sempit
+- `useWindowDimensions` — lebar dan tinggi layar terkini, ikut berubah saat rotasi
+- `maxWidth` agar elemen tidak melebar tak terkendali di layar besar
 
 <!--
 Tekankan trade-off-nya secara jujur: kode responsif lebih rumit dan lebih sulit diuji,
@@ -568,11 +532,11 @@ komponen?" (Hook hanya sah di dalam komponen fungsi.)
 
 > Etika, hukum (layanan publik wajib memperhatikan penyandang disabilitas), dan pasar — tiga alasan aksesibilitas wajib bagi mahasiswa SI.
 
-* `accessibilityRole` — peran elemen bagi pembaca layar: `button`, `header`, `image`
-* `accessibilityLabel` — teks alternatif deskriptif, bukan "Ketuk di sini"
-* `accessibilityState` — status elemen, misalnya `{ disabled: true }`
-* Target sentuh minimal 44×44 poin (Apple) atau 48×48 dp (Material Design)
-* Jika ikonnya kecil, jangan kecilkan area sentuh — perluas dengan `hitSlop`
+- `accessibilityRole` — peran elemen bagi pembaca layar: `button`, `header`, `image`
+- `accessibilityLabel` — teks alternatif deskriptif, bukan "Ketuk di sini"
+- `accessibilityState` — status elemen, misalnya `{ disabled: true }`
+- Target sentuh minimal 44×44 poin (Apple) atau 48×48 dp (Material Design)
+- Jika ikonnya kecil, jangan kecilkan area sentuh — perluas dengan `hitSlop`
 
 <!--
 Tekankan bahwa aksesibilitas ditanam sejak awal, bukan ditambal di akhir; menambahkannya
@@ -594,8 +558,8 @@ kecil. Justru itu gunanya `hitSlop`.
 
 Sebuah layar menampilkan tombol **Hapus Riwayat** berwarna primary (biru) di samping tombol **Simpan**, keduanya berukuran 36×36.
 
-* Prinsip dan standar apa saja yang dilanggar layar ini?
-* Apa perbaikan yang Anda usulkan, dan apa alasan setiap usulan?
+- Prinsip dan standar apa saja yang dilanggar layar ini?
+- Apa perbaikan yang Anda usulkan, dan apa alasan setiap usulan?
 
 <!--
 Beri 2 menit berpikir sendiri, lalu bahas. Jangan membocorkan jawaban di slide ini:
@@ -613,10 +577,10 @@ Bila kelas diam, arahkan ke aturan "satu primary per layar" pada 6.2.
 
 ## Jawaban: Analisis Pelanggaran
 
-* Hierarki aksi: satu primary per layar — di sini dua aksi sama-sama menonjol
-* Warna semantik: aksi destruktif semestinya `danger` (merah), bukan primary (biru)
-* Target sentuh 36×36 berada di bawah acuan minimum 44×44 poin
-* Perbaikan: Simpan tetap primary, Hapus menjadi danger, ukuran dinaikkan
+- Hierarki aksi: satu primary per layar — di sini dua aksi sama-sama menonjol
+- Warna semantik: aksi destruktif semestinya `danger` (merah), bukan primary (biru)
+- Target sentuh 36×36 berada di bawah acuan minimum 44×44 poin
+- Perbaikan: Simpan tetap primary, Hapus menjadi danger, ukuran dinaikkan
 
 <!--
 Jawaban ini disusun dari aturan bab sendiri (6.2 untuk variasi dan hierarki aksi, 6.6
@@ -854,10 +818,10 @@ TalkBack atau VoiceOver, lalu telusuri kartu tanpa melihat layar.
 
 ## Uji Pemahaman
 
-* Prinsip yang menuntut elemen serupa tampil dan berperilaku serupa disebut apa?
-* Berapa rasio kontras WCAG level AA untuk teks normal?
-* Berapa ukuran target sentuh minimum yang menjadi acuan industri?
-* Apa fungsi `useWindowDimensions` pada layar Daftar Mahasiswa?
+- Prinsip yang menuntut elemen serupa tampil dan berperilaku serupa disebut apa?
+- Berapa rasio kontras WCAG level AA untuk teks normal?
+- Berapa ukuran target sentuh minimum yang menjadi acuan industri?
+- Apa fungsi `useWindowDimensions` pada layar Daftar Mahasiswa?
 
 <!--
 Kuis lisan 4 menit: tampilkan pertanyaan, minta kelas menjawab, baru lanjut ke slide
@@ -873,10 +837,10 @@ memakai 44×44 poin dan Material Design memakai 48×48 dp.
 
 ## Jawaban
 
-* Konsistensi — elemen serupa tampil dan berperilaku serupa
-* 4,5:1 untuk teks normal; 3:1 untuk teks besar atau elemen antarmuka
-* 44×44 poin (Apple); Material Design memakai acuan 48×48 dp
-* Mengembalikan lebar/tinggi layar dan memperbarui tampilan saat ukuran berubah
+- Konsistensi — elemen serupa tampil dan berperilaku serupa
+- 4,5:1 untuk teks normal; 3:1 untuk teks besar atau elemen antarmuka
+- 44×44 poin (Apple); Material Design memakai acuan 48×48 dp
+- Mengembalikan lebar/tinggi layar dan memperbarui tampilan saat ukuran berubah
 
 <!--
 Ulangi dua pembeda yang paling sering tertukar: ambang kontras 4,5:1 untuk teks normal
@@ -919,9 +883,9 @@ sehingga tidak perlu dihafal, cukup dipahami alasannya.
 | Tantangan | Pindahkan konstanta warna dan ukuran ke `tema/desain.js` tanpa mengubah render |
 | Tantangan | Master–detail adaptif pada lebar ≥ 900: daftar 40%, detail 60% |
 
-* Kapan tabel padat (NIM–Nama–IPK) lebih tepat daripada kartu?
-* Apa akibatnya bila dua tombol di satu layar sama-sama primary?
-* Merancang wireframe lebih dulu: membuang atau menghemat waktu?
+- Kapan tabel padat (NIM–Nama–IPK) lebih tepat daripada kartu?
+- Apa akibatnya bila dua tombol di satu layar sama-sama primary?
+- Merancang wireframe lebih dulu: membuang atau menghemat waktu?
 
 <!--
 Soal pemahaman dan soal analisis lengkap ada pada bagian Latihan di bab; tiga baris
