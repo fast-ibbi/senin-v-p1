@@ -117,7 +117,7 @@ Tampilan adalah **fungsi dari state**: setiap kali state berubah, React menghitu
 - Mekanismenya disebut **reconciliation** (rekonsiliasi/pencocokan)
 - React membandingkan gambaran tampilan lama dengan yang baru
 - Selisih (diff) minimal itulah yang diterapkan ke layar
-- Di React Native, "layar" adalah pohon komponen native, bukan elemen HTML
+- Di React untuk web, hasil dif diterapkan ke DOM; di React Native, ke pohon komponen native (Bab 5)
 
 > Anda tidak lagi menulis perintah "perbarui teks ini" satu per satu — ubah state, layar mengikuti.
 
@@ -147,7 +147,7 @@ isi array.)
 
 ```jsx
 export default function Sapaan() {
-  return <Text>Halo, mahasiswa!</Text>;
+  return <p>Halo, mahasiswa!</p>;
 }
 ```
 
@@ -156,18 +156,18 @@ Jelaskan bahwa komponen pada dasarnya fungsi biasa: bisa diberi nama, dipanggil,
 dikembalikan komponen lain. Mahasiswa sudah menulis fungsi seperti ini di Bab 3,
 sehingga hambatannya kecil.
 
-Sebutkan bahwa Text adalah komponen bawaan React Native untuk menampilkan teks
-(padanan span atau p di web); pembahasannya di Bab 5, jadi untuk sekarang cukup
-dipahami sebagai wadah teks.
+Sebutkan bahwa <p> adalah elemen HTML biasa yang boleh ditulis langsung di dalam JSX;
+di Bab 5 elemen semacam ini digantikan komponen React Native seperti <View> dan
+<Text>.
 
 Pertanyaan pemandu: "Apa bedanya komponen dengan elemen?" (Jawaban: komponen adalah
 fungsinya, elemen adalah hasil pemanggilannya berupa deskripsi tampilan.)
 
-Peringatan: kode di atas belum bisa berjalan sendirian, karena Text harus diimpor dari
-react-native. Hal itu dibahas pada slide praktikum.
+Peringatan: komponen di atas belum tampil di layar sampai diimpor dan dipakai oleh
+komponen induk. Hal itu dibahas pada slide praktikum.
 
-Sebutkan sekali bahwa <Text>Halo, mahasiswa!</Text> ditulis dengan JSX (JavaScript
-XML); namanya dan aturannya baru dibahas pada slide berikutnya.
+Sebutkan sekali bahwa <p>Halo, mahasiswa!</p> ditulis dengan JSX (JavaScript XML);
+namanya dan aturannya baru dibahas pada slide berikutnya.
 -->
 
 ---
@@ -179,25 +179,28 @@ Tampilan komponen ditulis dengan **JSX** (JavaScript XML): ekstensi sintaks untu
 | Aturan | Konsekuensi |
 |---|---|
 | **Satu elemen akar** | Kembalikan satu pembungkus, atau fragment `<>...</>` |
-| **Semua tag ditutup** | Tulis `<Image />`, bukan `<Image>` ala HTML |
-| **Atribut camelCase** | Tidak ada `class` atau `for`; pakai `style`, `onPress` |
+| **Semua tag ditutup** | Tulis `<img />`, bukan `<img>` ala HTML |
+| **Atribut camelCase** | Tidak ada `class` atau `for`; pakai `className`, `onClick` |
 | **Ekspresi dalam `{}`** | Variabel, pemanggilan fungsi, dan operasi dibungkus kurawal |
 | **Komentar `{/* */}`** | Komentar JSX ditulis di dalam kurung kurawal |
-| **Teks di dalam `<Text>`** | String telanjang memicu error di React Native |
+| **`style` menerima objek** | Kurung kurawal ganda: `style={{ color: 'red' }}` |
 
 <!--
 Pastikan istilah JSX (JavaScript XML) mendarat lebih dulu: itu sintaks mirip markup
 yang dikompilasi menjadi pemanggilan fungsi JavaScript.
 
 Jangan dibacakan berurutan. Mulai dari aturan yang paling sering menimbulkan error di
-praktikum: aturan terakhir dan aturan pertama.
+praktikum: aturan camelCase dan aturan satu elemen akar.
 
 Tunjukkan fragment dengan contoh cepat di editor: dua elemen bersaudara tanpa
 pembungkus menghasilkan error, dan solusinya adalah tag kosong pembuka penutup.
 
 Pertanyaan pemandu: "Mengapa JSX tidak bisa menulis class seperti HTML?" (Jawaban:
-karena JSX dikompilasi menjadi pemanggilan fungsi JavaScript, dan class adalah kata
-kunci khusus di JavaScript.)
+karena class adalah kata kunci khusus di JavaScript; itulah sebabnya React memakai
+className.)
+
+Sebutkan bahwa di React untuk web seluruh elemen HTML boleh dipakai langsung,
+sedangkan komponen React Native seperti View dan Text baru muncul di Bab 5.
 -->
 
 ---
@@ -211,10 +214,10 @@ kunci khusus di JavaScript.)
 ```jsx
 export default function KartuMahasiswa({ mahasiswa }) {
   return (
-    <View>
-      <Text>{mahasiswa.nama}</Text>
-      <Text>NIM {mahasiswa.nim}</Text>
-    </View>
+    <div>
+      <p>{mahasiswa.nama}</p>
+      <p>NIM {mahasiswa.nim}</p>
+    </div>
   );
 }
 ```
@@ -246,7 +249,7 @@ satu arah dari induk ke anak.
 
 ```jsx
 function KartuMahasiswa({ mahasiswa = {} }) {
-  return <Text>{mahasiswa.nama}</Text>;
+  return <p>{mahasiswa.nama}</p>;
 }
 ```
 
@@ -368,7 +371,7 @@ praktikum.
 
 ## Event Handling: Serahkan Referensi Fungsi
 
-Event disampaikan lewat prop berawalan `on`, yang paling umum `onPress` — padanan `onClick` di web.
+Event disampaikan lewat prop berawalan `on`, yang paling umum `onClick` — di React Native namanya `onPress` (Bab 5).
 
 `components/KartuMahasiswa.jsx`
 
@@ -377,27 +380,27 @@ const ubahTampilDetail = () => {
   setDetailTampil((tampilSebelumnya) => !tampilSebelumnya);
 };
 
-<Pressable onPress={ubahTampilDetail}>
-  <Text>Tampilkan Detail</Text>
-</Pressable>
+<button onClick={ubahTampilDetail}>
+  Tampilkan Detail
+</button>
 ```
 
 <!--
-Inti slide ini satu kalimat: yang diserahkan ke onPress adalah fungsi itu sendiri,
+Inti slide ini satu kalimat: yang diserahkan ke onClick adalah fungsi itu sendiri,
 bukan hasil pemanggilannya.
 
 Kesalahan klasik yang harus ditunjukkan langsung di editor: menulis
-onPress={ubahTampilDetail()} membuat fungsi dijalankan seketika saat render sehingga
+onClick={ubahTampilDetail()} membuat fungsi dijalankan seketika saat render sehingga
 tombol tampak tidak berfungsi.
 
 Jelaskan juga functional update pada setDetailTampil: nilai baru dihitung dari nilai
 lama, sehingga aman meski pembaruan terjadi beberapa kali dalam satu gelombang.
 
 Pertanyaan pemandu: "Bagaimana membawa data ke dalam handler, misalnya nama prodi?"
-(Jawaban: fungsi panah inline, misalnya onPress={() => ubahKategoriProdi(prodi)}.)
+(Jawaban: fungsi panah inline, misalnya onClick={() => ubahKategoriProdi(prodi)}.)
 
-Peringatan: Pressable menggantikan TouchableOpacity; detailnya di Bab 5, jadi cukup
-sebutkan sekali agar tidak mengalihkan perhatian.
+Peringatan: <button> adalah elemen HTML biasa; padanannya di React Native adalah
+Pressable (pengganti TouchableOpacity), yang baru dibahas di Bab 5.
 -->
 
 ---
@@ -412,7 +415,7 @@ sebutkan sekali agar tidak mengalihkan perhatian.
 
 ```jsx
 {sedangMemuat ? (
-  <Text>Memuat data mahasiswa...</Text>
+  <p>Memuat data mahasiswa...</p>
 ) : (
   <DaftarMahasiswa data={dataTampil} />
 )}
@@ -421,7 +424,7 @@ sebutkan sekali agar tidak mengalihkan perhatian.
 `components/KartuMahasiswa.jsx`
 
 ```jsx
-{detailTampil && (<Text>Email: {mahasiswa.email}</Text>)}
+{detailTampil && (<p>Email: {mahasiswa.email}</p>)}
 ```
 
 <!--
@@ -481,7 +484,7 @@ diperkenalkan pada Bab 5.
 - Hindari `key={index}` bila urutan daftar dapat berubah: tambah, urut, atau hapus
 - Indeks baru dapat ditoleransi untuk daftar statis yang tidak pernah berubah
 
-> Daftar ribuan item ditangani `FlatList` pada Bab 5; untuk data kecil, `View` + `map` sudah memadai.
+> Untuk data kecil, `div` + `map` sudah memadai; daftar panjang ditangani `FlatList` pada Bab 5.
 
 <!--
 Slide penutup rangkaian list rendering: tekankan kata stabil. Key bukan sekadar unik,
@@ -776,11 +779,11 @@ export default function KartuMahasiswa({ mahasiswa }) {
     setDetailTampil((tampilSebelumnya) => !tampilSebelumnya);
   };
   return (
-    <View style={styles.kartu}>
+    <div className="kartu">
       {/* … rincian kartu: bagian kanan, tombol, dan blok detail … */}
-      <Text style={styles.nama}>{mahasiswa.nama}</Text>
-      <Text style={styles.nim}>NIM {mahasiswa.nim}</Text>
-    </View>
+      <p className="nama">{mahasiswa.nama}</p>
+      <p className="nim">NIM {mahasiswa.nim}</p>
+    </div>
   );
 }
 ```
@@ -791,14 +794,14 @@ kode/bab-04 dan di dalam bab.
 
 Tunjukkan tiga hal saja di dalam kode: props mahasiswa masuk lewat parameter, state
 detailTampil milik kartu itu sendiri, dan handler ubahTampilDetail diserahkan ke
-komponen sentuh. Bagian JSX yang lain ditandai tanda elipsis dan tidak perlu dibacakan.
+elemen tombol. Bagian JSX yang lain ditandai tanda elipsis dan tidak perlu dibacakan.
 
 Pertanyaan pemandu: "Baris mana yang membuat penekanan tombol mengubah layar?"
 (Jawaban: pemanggilan setDetailTampil di dalam handler; handler itu sendiri hanya
 menerima kejadiannya.)
 
-Peringatan: bagian StyleSheet dan Flexbox sengaja tidak dibahas di sini, karena
-menjadi materi Bab 5.
+Peringatan: bagian gaya (className dan CSS) serta tata letak sengaja tidak dibahas di
+sini, karena topiknya muncul untuk React Native pada Bab 5.
 -->
 
 ---
@@ -808,16 +811,17 @@ menjadi materi Bab 5.
 | Gejala | Penyebab dan solusi |
 |---|---|
 | Peringatan "unique key prop", detail terbuka di kartu salah | Key hilang atau memakai indeks: pakai `key={mahasiswa.id}` |
-| Tombol tidak bereaksi sama sekali | Handler ditulis `onPress={ubahTampilDetail()}`: hapus tanda kurungnya |
-| Error merah "Text strings must be rendered within a `<Text>`" | Ada string telanjang di luar komponen teks: bungkus dengan `<Text>` |
+| Tombol tidak bereaksi sama sekali | Handler ditulis `onClick={ubahTampilDetail()}`: hapus tanda kurungnya |
+| Komponen tidak muncul, layar tampak kosong | Nama komponen diawali huruf kecil sehingga JSX membacanya sebagai tag HTML: tulis `<KartuMahasiswa />` |
 | Teks "Memuat data mahasiswa..." tidak pernah hilang | Efek tidak berjalan: pastikan `useEffect(..., [])` dan setter ada di dalamnya |
 
 <!--
 Pilih dua baris yang paling sering terjadi di kelas Anda, biasanya baris pertama dan
 kedua, lalu bahas sampai tuntas.
 
-Bacakan polanya: baca pesan kesalahan sebelum menebak. Peringatan key menyebut
-persis nama masalahnya, dan error Text menyebut komponen yang kurang.
+Bacakan polanya: baca pesan kesalahan sebelum menebak. Peringatan key menyebut persis
+nama masalahnya, sedangkan baris ketiga sering tidak memunculkan pesan sama sekali,
+sehingga harus diperiksa dari penulisan nama komponennya.
 
 Ada satu lagi yang tidak masuk tabel: "Maximum update depth exceeded", yaitu
 lingkaran pembaruan karena setter dipanggil di badan komponen atau di efek tanpa
@@ -861,7 +865,7 @@ disebut sebagai kelanjutan, jangan dijelaskan lebih jauh.
 ## Mini Kuis
 
 - Apa perbedaan props dan state, dan mana yang memicu re-render?
-- Kita menulis `onPress={simpanData()}` — apa yang terjadi saat aplikasi berjalan?
+- Kita menulis `onClick={simpanData()}` — apa yang terjadi saat aplikasi berjalan?
 - `useEffect(() => {...}, [])` dijalankan kapan, dan cleanup-nya berjalan kapan?
 - Kapan `useMemo` benar-benar diperlukan?
 
@@ -870,7 +874,7 @@ Kuis lisan lima menit: tampilkan pertanyaan, minta mahasiswa menjawab berpasanga
 lalu lanjutkan ke slide jawaban. Jangan membocorkan jawaban di slide ini.
 
 Bila lebih dari separuh kelas salah pada pertanyaan kedua, ulangi demonstrasi
-onPress di editor sebelum menutup pertemuan.
+onClick di editor sebelum menutup pertemuan.
 -->
 
 ---
@@ -881,10 +885,10 @@ onPress di editor sebelum menutup pertemuan.
 
 - Props read-only dari induk; state internal diubah lewat setter
 - Keduanya memicu re-render — bedanya siapa pemilik dan siapa yang boleh mengubah
-- `onPress={simpanData()}` menjalankan fungsi saat render, bukan saat ditekan
+- `onClick={simpanData()}` menjalankan fungsi saat render, bukan saat ditekan
 
 <!--
-Ulangi pembeda yang paling sering tertukar: onPress menerima referensi fungsi, bukan
+Ulangi pembeda yang paling sering tertukar: onClick menerima referensi fungsi, bukan
 hasil pemanggilannya.
 
 Tekankan bahwa jawaban kedua sengaja menegaskan keduanya memicu re-render, supaya
