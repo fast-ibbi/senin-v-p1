@@ -2,10 +2,10 @@
 marp: true
 theme: academic
 paginate: true
-title: "Bab 2 — Persiapan Lingkungan Pengembangan"
-description: "Slide kuliah Pemrograman Mobile pertemuan 2: Node.js dan npm, package manager, VS Code, Expo CLI dan Expo Go, Metro Bundler, emulator Android, iOS Simulator, project Expo pertama, struktur folder, dan troubleshooting."
-author: "Dosen Pengampu — Program Studi Sistem Informasi / Teknik Informatika"
-footer: "Pemrograman Mobile · Bab 2 — Persiapan Lingkungan Pengembangan"
+title: "Chapter 2 — Development Environment Setup"
+description: "Mobile Programming lecture slides, meeting 2: Node.js and npm, package managers, VS Code, Expo CLI and Expo Go, Metro Bundler, the Android emulator, iOS Simulator, the first Expo project, folder structure, and troubleshooting."
+author: "Course Instructor — Information Systems / Informatics Engineering Study Program"
+footer: "Mobile Programming · Chapter 2 — Development Environment Setup"
 size: 16:9
 ---
 
@@ -13,41 +13,41 @@ size: 16:9
 <!-- _paginate: skip -->
 <!-- _footer: "" -->
 
-# Bab 2 — Persiapan Lingkungan Pengembangan
+# Chapter 2 — Development Environment Setup
 
-Menyiapkan meja kerja, menjalankan aplikasi pertama · Pertemuan 2
+Preparing the workbench, running the first app · Meeting 2
 
 <!--
-Buka dengan kalimat pengait: "Bab 1 kita menyusun peta; hari ini kita menyiapkan
-peralatan dan menyalakan mesinnya."
+Open with the hook sentence: "In Chapter 1 we drew the map; today we prepare the tools
+and start the engine."
 
-Tanyakan pembuka: "Apa yang Anda siapkan lebih dulu ketika memakai laptop baru untuk
-kuliah?" Tampung dua sampai tiga jawaban sebagai jembatan ke konsep lingkungan kerja
-yang baku dan dapat diulang.
+Opening question: "What do you set up first when you use a new laptop for class?" Collect
+two or three answers as a bridge to the concept of a standardized, reproducible working
+environment.
 
-Sesuai RPS, pertemuan ini berbeban 3 SKS (2 SKS teori + 1 SKS praktikum); sisipkan
-demo singkat lalu langsung praktik di depan komputer.
+Per the RPS, this meeting is worth 3 credits (2 theory credits + 1 practicum credit);
+insert a short demo and then go straight to hands-on practice at the computer.
 -->
 
 ---
 
-## Tujuan Pembelajaran
+## Learning Objectives
 
-- Menjelaskan peran Node.js, npm, dan npx dalam ekosistem Expo
-- Mengidentifikasi komponen lingkungan pengembangan beserta fungsinya
-- Mengimplementasikan pembuatan project Expo pertama dan menjalankannya
-- Menganalisis tiga jalur pengujian dari sisi kecepatan dan kesetiaan perilaku
-- Menjelaskan struktur folder project dan mengevaluasi kendala umum
+- Explain the role of Node.js, npm, and npx in the Expo ecosystem
+- Identify the components of a development environment and their functions
+- Implement the creation of a first Expo project and run it
+- Analyze the three testing paths in terms of speed and behavioral fidelity
+- Explain the project folder structure and evaluate common obstacles
 
 <!--
-Bacakan kata kerjanya saja. Tujuan keempat adalah inti cara berpikir analitis dan
-yang paling sering muncul pada soal ujian.
+Read out only the verbs. The fourth objective is the core of analytical thinking and the
+one that appears most often on exam questions.
 
-Kaitkan dengan penilaian RPS pertemuan ini: rubrik praktikum Bab 2 plus checklist
-troubleshooting yang dikumpulkan bersama laporan praktikum.
+Connect it to this meeting's RPS assessment: the Chapter 2 practicum rubric plus a
+troubleshooting checklist submitted together with the practicum report.
 
-Tegaskan bahwa tujuan kelima bersifat diagnostik: mahasiswa harus mampu memilih
-solusi, bukan sekadar menghafal pesan galat.
+Stress that the fifth objective is diagnostic: students must be able to choose a solution,
+not merely memorize error messages.
 -->
 
 ---
@@ -55,236 +55,255 @@ solusi, bukan sekadar menghafal pesan galat.
 <!-- _class: lead -->
 <!-- _paginate: skip -->
 
-# Bagian 1 — Fondasi: Node.js, npm & VS Code
+# Part 1 — Foundations: Node.js, npm & VS Code
 
-Subbab 2.1 Node.js dan npm · 2.2 Package Manager · 2.3 Visual Studio Code
+Section 2.1 Node.js and npm · 2.2 Package Manager · 2.3 Visual Studio Code
 
 <!--
-Bagian ini konseptual tetapi menentukan seluruh praktikum hari ini. Bila waktu mepet,
-padatkan Subbab 2.2 dan 2.3, jangan lewati Subbab 2.1.
+This part is conceptual, but it determines the whole practicum today. If time is tight,
+compress Sections 2.2 and 2.3; do not skip Section 2.1.
 
-Ingatkan bahwa mahasiswa yang gagal di Bagian 1 hampir selalu gagal juga di Bagian 2,
-karena semua alat Expo berjalan di atas Node.js.
+Remind them that students who fail in Part 1 almost always fail in Part 2 as well,
+because every Expo tool runs on top of Node.js.
 -->
 
 ---
 
-## Node.js: Runtime JavaScript di Luar Browser
+## Node.js: A JavaScript Runtime Outside the Browser
 
-**Node.js** adalah *runtime* (lingkungan eksekusi) JavaScript yang berjalan di luar peramban.
+**Node.js** is a JavaScript *runtime* (execution environment) that runs outside a browser.
 
 <div class="grid2">
 <div>
 
-**Mengapa ia fondasi**
+**Why it is the foundation**
 
-- Membungkus mesin JavaScript V8, mesin yang sama dengan Chrome
-- Expo CLI dan Metro Bundler berjalan di atas Node.js
-- Satu bahasa untuk aplikasi dan alat pengembangnya
+- It wraps the V8 JavaScript engine, the same engine as Chrome
+- Expo CLI and Metro Bundler run on top of Node.js
+- One language for the app and for its developer tools
 
 </div>
 <div>
 
-**Yang sering disalahpahami**
+**What is often misunderstood**
 
-- Bukan bahasa pemrograman baru: JavaScript tetap JavaScript
-- Bukan peramban: tidak ada layar, hanya terminal
+- Not a new programming language: JavaScript stays JavaScript
+- Not a browser: there is no screen, only a terminal
 
-**Penjelasan tambahan:** istilah *runtime* di sini berarti program yang menyediakan tempat JavaScript dieksekusi.
+**Additional explanation:** the term *runtime* here means a program that provides a place for JavaScript to be executed.
 
 </div>
 </div>
 
 <!--
-Analogi: JavaScript adalah bahasa yang Anda kuasai, Node.js adalah ruang kerja yang
-membuat bahasa itu bisa dipakai di luar halaman web.
+Analogy: JavaScript is the language you master; Node.js is the workspace that makes that
+language usable outside a web page.
 
-Pertanyaan pemandu: "Kalau Node.js hanya untuk alat, mengapa kita perlu repot
-mengurus versinya?" (Jawaban: versi runtime memengaruhi perilaku sintaks dan alat,
-sehingga perbedaan versi menimbulkan galat tersamar.)
+Guiding question: "If Node.js is only for tools, why do we need to bother managing its
+version?" (Answer: the runtime version affects the behavior of syntax and tools, so a
+version difference produces obscure errors.)
 
-Peringatan miskonsepsi: banyak mahasiswa mengira Node.js adalah bahasa atau framework.
-Tegaskan bahwa Node.js tidak menambah sintaks, hanya menyediakan tempat menjalankan.
+Misconception warning: many students think Node.js is a language or a framework. Stress
+that Node.js adds no syntax; it only provides a place to run.
 -->
 
 ---
 
-## npm: Pengelola Paket Project
+## Diagram: Node.js: A JavaScript Runtime Outside the Browser
 
-**npm** (*Node Package Manager*) adalah pengelola paket yang terpasang otomatis bersama Node.js.
-
-<div class="grid2">
-<div>
-
-**Tugasnya**
-
-- Mengunduh paket dari registry npmjs.com
-- Mengelola versi dan mencatatnya di `package.json`
-- Menyimpan seluruh paket di folder `node_modules/`
-
-</div>
-<div>
-
-**Bila dikerjakan manual**
-
-- Pustaka disalin tangan dan rawan salah ketik
-- Versi di tiap komputer berbeda dan sulit dilacak
-
-</div>
-</div>
+![w:1120](assets/diagrams/bab-02-persiapan-lingkungan-pengembangan-01.svg)
 
 <!--
-Analogi: npm seperti perpustakaan yang mencatat setiap buku yang dipinjam, sehingga
-rak kerja Anda bisa dibangun ulang kapan saja dari satu daftar.
+Point at the three bands from the bottom up: the engine Chrome also uses, then Node.js as the
+runtime that wraps it, then the two Expo tools that run on top of Node.js. This is the point the
+part opener keeps returning to, drawn as an order.
 
-Tekankan istilah registry: gudang daring npmjs.com yang memuat jutaan paket, bukan
-folder di komputer mahasiswa.
-
-Pertanyaan pemandu: "Apa yang terjadi bila folder node_modules dihapus?" (Jawaban:
-cukup jalankan npm install, semua paket dipasang ulang sesuai catatan package.json.)
+The bands are not to scale and they are not a memory map: they are places where JavaScript runs,
+stacked by who depends on whom. Nothing in this picture adds syntax to the language.
 -->
 
 ---
 
-## `npm install` atau `npx`?
+## npm: The Project's Package Manager
 
-| Aspek | `npm install <paket>` | `npx <perintah>` |
+![w:1120](assets/diagrams/bab-02-persiapan-lingkungan-pengembangan-05.svg)
+
+**npm** (*Node Package Manager*) is the package manager that is installed automatically together with Node.js.
+
+**If done manually**
+
+- Libraries copied by hand and prone to typos
+- Versions differ on each computer and are hard to trace
+
+<!--
+Trimmed to the picture (the diagram says this):
+- Download packages from the npmjs.com registry
+- Manage versions and record them in `package.json`
+- Store every package in the `node_modules/` folder
+
+The two-column layout went with them: the "Its duties" column was the picture, and at w:1120
+the slide had no room to print the same three duties twice without the last line landing on the
+page number.
+
+Read the picture from package.json to node_modules/: the version record is the source of truth,
+npm install is the single command that reads it, and the registry is the online store where the
+packages come from — not a folder on the student's computer.
+
+Analogy: npm is like a library that records every book borrowed, so your work shelf can be
+rebuilt at any time from a single list.
+
+Stress the term registry: the online storehouse npmjs.com that holds millions of packages,
+not a folder on the student's computer.
+
+Guiding question: "What happens if the node_modules folder is deleted?" (Answer: just run
+npm install and every package is reinstalled according to the package.json record.)
+-->
+
+---
+
+## `npm install` or `npx`?
+
+| Aspect | `npm install <package>` | `npx <command>` |
 |---|---|---|
-| Peran | Memasang paket ke dalam project | Menjalankan paket tanpa memasangnya permanen |
-| Hasil | Tercatat di `package.json` dan `node_modules/` | Tidak meninggalkan instalasi global |
-| Contoh | `npm install <nama-paket>` | `npx create-expo-app`, `npx expo start` |
-| Nilai tambah | Menjamin dependency project lengkap | Selalu memakai versi terbaru dari registry |
+| Role | Installs the package into the project | Runs the package without installing it permanently |
+| Result | Recorded in `package.json` and `node_modules/` | Leaves no global installation behind |
+| Example | `npm install <package-name>` | `npx create-expo-app`, `npx expo start` |
+| Added value | Guarantees the project's dependencies are complete | Always uses the newest version from the registry |
 
-> Paket JavaScript murni dipasang dengan `npm install`; paket bawaan SDK dipasang dengan `npx expo install`.
+> Pure JavaScript packages are installed with `npm install`; SDK-bundled packages are installed with `npx expo install`.
 
 <!--
-Bandingkan dua kolom pertama pada baris Peran saja, jangan dibaca baris per baris.
-Baris Contoh yang paling sering ditanyakan mahasiswa.
+Compare only the first two columns on the Role row; do not read the table row by row. The
+Example row is what students ask about most.
 
-Pertanyaan pemandu: "Mengapa create-expo-app dijalankan dengan npx, bukan dipasang
-dulu?" (Jawaban: alat ini berubah seiring waktu, npx selalu mengambil versi terkini
-dan tidak menumpuk program jarang dipakai di komputer.)
+Guiding question: "Why is create-expo-app run with npx instead of being installed first?"
+(Answer: this tool changes over time, npx always fetches the current version and does not
+pile rarely used programs onto the computer.)
 
-Peringatan: jangan menuliskan nomor versi pada perintah instalasi, biarkan npm
-memilih versi yang cocok dengan SDK.
+Warning: do not write version numbers in install commands; let npm choose the version that
+matches the SDK.
 -->
 
 ---
 
-## Package Manager: Mengapa dan Pilihan Mana
+## Package Manager: Why, and Which One to Choose
 
-Sepuluh pustaka yang saling bergantung cepat menghasilkan masalah yang dikenal sebagai *dependency hell* (neraka ketergantungan).
+Ten mutually dependent libraries quickly produce the problem known as *dependency hell*.
 
-- Mencatat daftar dependensi agar project dapat dipasang ulang di komputer lain
-- Mengunduh versi yang saling kompatibel secara otomatis
-- Menyimpan paket di `node_modules/` sehingga satu perintah cukup untuk menyiapkan
+- Record the dependency list so the project can be reinstalled on another computer
+- Download mutually compatible versions automatically
+- Store packages in `node_modules/` so a single command is enough to set it up
 
-| Package Manager | Ciri Khas | Kapan Cocok Dipakai |
+| Package Manager | Distinguishing Feature | When It Fits |
 |---|---|---|
-| **npm** | Bawaan Node.js, paling luas dipakai | Project standar — buku ini memakai npm |
-| **yarn** | Berkas kunci ketat, dikembangkan Meta | Tim yang sudah memakai yarn |
-| **pnpm** | Hemat ruang disk karena berbagi paket | Monorepo atau project besar |
+| **npm** | Bundled with Node.js, most widely used | Standard projects — this book uses npm |
+| **yarn** | Strict lockfile, developed by Meta | Teams that already use yarn |
+| **pnpm** | Saves disk space by sharing packages | Monorepos or large projects |
 
 <!--
-Pesan utama: perbedaan npm, yarn, dan pnpm bukan pada kemampuan, melainkan pada
-strategi penyimpanan berkas dan kecepatan.
+Main message: the difference between npm, yarn, and pnpm is not capability but file
+storage strategy and speed.
 
-Tanyakan: "Kalau ada tiga pilihan, mana yang paling aman untuk kerja tim di kelas?"
-(Jawaban: npm, karena bawaan Node.js dan dipakai default oleh create-expo-app —
-menghindari perbedaan lockfile antaranggota tim.)
+Ask: "If there are three choices, which is safest for team work in class?" (Answer: npm,
+because it is bundled with Node.js and used by default by create-expo-app — avoiding
+lockfile differences between team members.)
 
-Peringatan: mencampur package manager dalam satu tim adalah penyebab konflik
-lockfile, seperti pada Studi Kasus akhir bab ini.
+Warning: mixing package managers within one team is the cause of lockfile conflicts, as in
+the Case Study at the end of this chapter.
 -->
 
 ---
 
-## VS Code: Editor dan Ekstensi Bantu
+## VS Code: The Editor and Helper Extensions
 
-<div class="grid2">
-<div>
+![w:1120](assets/diagrams/bab-02-persiapan-lingkungan-pengembangan-06.svg)
 
-**VS Code** — editor kode sumber gratis buatan Microsoft
+**VS Code** — a free source code editor made by Microsoft
 
-- Penyorotan sintaks dan pelengkapan otomatis (IntelliSense)
-- Penelusuran lintas berkas untuk project berisi puluhan berkas
-- Terminal terintegrasi, tidak perlu berpindah aplikasi
+- Syntax highlighting and automatic completion (IntelliSense)
+- Cross-file search for projects holding dozens of files
+- Integrated terminal, no need to switch applications
 
-</div>
-<div>
-
-**Ekstensi yang membantu**
-
-- **ESLint** memeriksa kualitas kode; **Prettier** merapikan format saat berkas disimpan
-- **Error Lens** menampilkan pesan galat di samping baris bermasalah
-
-</div>
-</div>
-
-> Kombinasi ESLint + Prettier + terminal Expo sudah cukup untuk mengikuti seluruh buku ini.
+> The combination of ESLint + Prettier + the Expo terminal is already enough to follow this entire book.
 
 <!--
-Tekankan alasan keberadaan fitur, bukan daftar fiturnya: satu project React Native
-berisi puluhan hingga ribuan berkas, sehingga editor teks polos tidak realistis.
+Trimmed to the picture (the diagram says this):
+- **ESLint** checks code quality; **Prettier** tidies the format when a file is saved
+- **Error Lens** shows error messages next to the problem line
 
-Pertanyaan pemandu: "Mengapa Prettier penting dalam kerja tim?" (Jawaban: format kode
-semua anggota menjadi seragam, sehingga perubahan pada Git lebih mudah dibaca.)
+Read the picture from left to right as a single save: Prettier tidies the format, ESLint checks
+the code, Error Lens prints the message beside the line. The bold lead-in "Extensions that help"
+was the header of the column those two bullets filled; the extensions now sit in the picture.
 
-Peringatan versi: ekstensi di marketplace berubah dan sebagian diarsipkan
-pengembangnya, termasuk yang pernah populer seperti React Native Tools. Kode ini
-ditandai version-sensitive pada bab: cek nama ekstensi di marketplace saat membaca.
-Material Icon Theme bersifat opsional, semata kenyamanan visual.
+Stress the reason the features exist, not the list of features: one React Native project
+holds dozens to thousands of files, so a plain text editor is not realistic.
+
+Guiding question: "Why does Prettier matter in team work?" (Answer: every member's code
+format becomes uniform, so changes in Git are easier to read.)
+
+Version warning: extensions in the marketplace change and some are archived by their
+developers, including once-popular ones such as React Native Tools. This item is flagged
+version-sensitive in the chapter: check the extension name in the marketplace when
+reading. Material Icon Theme is optional, purely visual comfort.
 -->
 
 ---
 
-## Memverifikasi Node.js dan npm
+## Verifying Node.js and npm
 
-`Terminal` — dua perintah pemeriksaan wajib
+`Terminal` — two mandatory check commands
 
 ```bash
 node --version
 npm --version
 ```
 
-Bila keduanya menampilkan nomor versi, lingkungan Anda siap. Buku ini memakai **Node.js LTS** minimal versi 22.
+If both print a version number, your environment is ready. This book uses **Node.js LTS**, minimum version 22.
 
-**Pertanyaan:** apa yang terjadi bila Node.js belum terpasang atau belum dikenali?
+**Question:** what happens if Node.js is not installed yet or is not recognized?
 
 <!--
-Cara menjelaskan: minta seluruh kelas menjalankan kedua perintah ini sekarang, lalu
-angkat tangan yang belum menampilkan nomor versi. Jangan lanjut sebelum tuntas.
+Teaching method: ask the whole class to run both commands now, then raise the hands of
+those who do not see a version number. Do not move on before it is settled.
 
-Tekankan pilihan LTS, bukan Current: LTS dipelihara lebih lama sehingga paling stabil
-untuk pengembangan, dan itulah yang dipakai buku ini.
+Stress the LTS choice, not Current: LTS is maintained longer and is therefore the most
+stable for development, and that is what this book uses.
 
-Peringatan version-sensitive: angka versi LTS terbaru berubah seiring waktu; gunakan
-rilis LTS terbaru dari situs resmi nodejs.org.
+Version-sensitive warning: the latest LTS version number changes over time; use the newest
+LTS release from the official site nodejs.org.
 
-Jawaban pertanyaan ini ada di slide berikutnya — jangan dijawab sekarang.
+The answer to this question is on the next slide — do not answer it now.
 -->
 
 ---
 
-## Bila Perintah Tidak Dikenali
+## When the Command Is Not Recognized
 
-- Terminal menjawab `node: command not found` atau `'node' is not recognized`
-- Penyebab: Node.js belum terpasang, atau pemasangannya tidak tercatat pada PATH
-- Solusi: pasang Node.js LTS dari nodejs.org; di Windows centang opsi "Add to PATH"
-- Setelah memasang, **buka terminal baru** — terminal lama belum membaca PATH baru
-- Pencegahan: unduh hanya dari situs resmi dan verifikasi sebelum memulai project
+![w:1120](assets/diagrams/bab-02-persiapan-lingkungan-pengembangan-07.svg)
+
+- The terminal answers `node: command not found` or `'node' is not recognized`
+- Solution: install Node.js LTS from nodejs.org; on Windows tick the "Add to PATH" option
+- Prevention: download only from the official site and verify before starting a project
 
 <!--
-PATH adalah daftar folder tempat sistem operasi mencari perintah; gambarkan sebagai
-"buku alamat" terminal. Masalah tersering bukan pada pemasangan, melainkan pada
-terminal lama yang belum memuat PATH.
+Trimmed to the picture (the diagram says this):
+- Cause: Node.js is not installed yet, or its installation was not recorded on the PATH
+- After installing, **open a new terminal** — the old terminal has not read the new PATH
 
-Pertanyaan pemandu: "Mengapa menutup dan membuka ulang terminal bisa menyelesaikan
-masalah?" (Jawaban: terminal baru membaca PATH yang sudah diperbarui; terminal lama
-masih memakai daftar lama.)
+Walk the three states: "command not found", then "PATH not loaded" the moment the LTS is
+installed while the old terminal is still open, then "a version prints" once a new terminal is
+opened. The red loop is the move students make instead: reinstalling lands back in the same
+state, because the installation was never the problem.
 
-Peringatan: mahasiswa sering memasang ulang Node.js berkali-kali padahal hanya perlu
-membuka terminal baru.
+PATH is the list of folders where the operating system looks for commands; describe it as
+the terminal's "address book". The most frequent problem is not the installation but an
+old terminal that has not loaded the PATH.
+
+Guiding question: "Why can closing and reopening the terminal fix the problem?" (Answer: a
+new terminal reads the updated PATH; the old terminal still uses the old list.)
+
+Warning: students often reinstall Node.js many times when they only need to open a new
+terminal.
 -->
 
 ---
@@ -292,259 +311,282 @@ membuka terminal baru.
 <!-- _class: lead -->
 <!-- _paginate: skip -->
 
-# Bagian 2 — Expo, Alat Uji & Project Pertama
+# Part 2 — Expo, Testing Tools & First Project
 
-Subbab 2.4 Expo dan Expo Go · 2.5 Emulator · 2.6 iOS Simulator · 2.7-2.9 Project pertama
+Section 2.4 Expo and Expo Go · 2.5 Emulator · 2.6 iOS Simulator · 2.7-2.9 the first project
 
 <!--
-Bagian ini adalah inti praktikum hari ini: dari konsep alat uji sampai aplikasi
-pertama tampil di layar.
+This part is the core of today's practicum: from the concept of testing tools to the first
+app appearing on screen.
 
-Bila waktu hanya cukup untuk satu bagian, pilih bagian ini dan pindahkan pembahasan
-struktur folder ke tugas mandiri.
+If there is only time for one part, choose this part and move the folder-structure
+discussion to independent work.
 -->
 
 ---
 
-## Expo CLI: Antarmuka Baris Perintah
+## Expo CLI: The Command-Line Interface
 
-**Expo CLI** adalah antarmuka baris perintah untuk membuat, menjalankan, dan mengelola project Expo — tidak perlu dipasang global.
+![w:660](assets/diagrams/bab-02-persiapan-lingkungan-pengembangan-08.svg)
 
-- `npx create-expo-app` — membuat project baru
-- `npx expo start` — menyalakan server pengembangan
-- `npx expo install <paket>` — menambah paket bawaan SDK dengan versi yang cocok
+**Expo CLI** is the command-line interface for creating, running, and managing an Expo project — no global installation needed.
+
+- `npx create-expo-app` — creates a new project
+- `npx expo start` — starts the development server
+- `npx expo install <package>` — adds an SDK-bundled package with a matching version
 
 <!--
-Tekankan bahwa semua perintah dijalankan lewat npx: tidak ada instalasi global yang
-perlu diurus dan versi alat selalu segar.
+Stress that every command is run through npx: there is no global installation to manage
+and the tool version is always fresh.
 
-Pertanyaan pemandu: "Untuk apa npx expo install dipakai nanti?" (Jawaban: memasang
-paket bawaan SDK, misalnya kamera di Bab 12, agar versinya otomatis cocok dengan SDK.)
+Guiding question: "What will npx expo install be used for later?" (Answer: installing
+SDK-bundled packages, for example the camera in Chapter 12, so that the version
+automatically matches the SDK.)
 
-Peringatan: npm install tetap benar untuk paket JavaScript murni; jangan tertukar,
-karena salah cara memasang adalah sumber galat versi yang sulit dilacak.
+Warning: npm install is still correct for pure JavaScript packages; do not mix them up,
+because the wrong install method is a source of version errors that are hard to trace.
 -->
 
 ---
 
-## Expo Go: Cepat, dengan Batas
+## Expo Go: Fast, with Limits
 
-<div class="grid2">
-<div>
+![w:1120](assets/diagrams/bab-02-persiapan-lingkungan-pengembangan-09.svg)
 
-**Yang Anda dapatkan**
-
-- Aplikasi di ponsel sebagai "pemutar" project: pindai kode QR
-- Tanpa proses build, hasil terlihat dalam hitungan detik
-- Ponsel cukup berada di jaringan Wi-Fi yang sama dengan komputer
-
-</div>
-<div>
-
-**Harga yang dibayar**
-
-- Hanya mendukung API yang tersedia pada paket Expo
-- Tidak memuat kode native sendiri, jadi fitur khusus butuh *development build* (Bab 15)
-
-</div>
-</div>
+- The phone only needs to be on the same Wi-Fi network as the computer
+- It does not carry its own native code, so custom features need a *development build* (Chapter 15)
 
 <!--
-Analogi: build tradisional seperti mencetak buku sebelum bisa dibaca; Expo Go seperti
-membaca naskah langsung dari layar penulis.
+Trimmed to the picture (the diagram says this):
+- The app on the phone acts as the project's "player": scan the QR code
+- No build process, the result is visible within seconds
+- It only supports APIs available in the Expo package
 
-Pertanyaan pemandu: "Kapan Expo Go tidak lagi cukup?" (Jawaban: ketika aplikasi butuh
-kode native sendiri atau pengujian yang mendekati produksi, sehingga perlu
-development build pada Bab 15.)
+Read the picture as a trade: the left panel is what the speed buys, the right panel is what it
+costs. The two rows are not paired one to one — the price of the whole left column is the whole
+right column. The bullets kept below carry the details a panel cannot hold: the Wi-Fi
+requirement and the pointer to the development build in Chapter 15.
 
-Peringatan version-sensitive: SDK 57 baru dirilis, sehingga Expo Go di Google Play dan
-App Store dapat masih menunggu persetujuan. Sementara itu, pasang lewat eas go untuk
-perangkat iOS atau lewat fasilitas Expo CLI untuk Android dan emulator sesuai
-petunjuk resmi docs.expo.dev; mekanisme ini dapat berubah sewaktu waktu.
+Analogy: a traditional build is like printing a book before it can be read; Expo Go is
+like reading the manuscript straight from the author's screen.
+
+Guiding question: "When is Expo Go no longer enough?" (Answer: when the app needs its own
+native code or testing close to production, so a development build is needed in
+Chapter 15.)
+
+Version-sensitive warning: SDK 57 has just been released, so Expo Go on Google Play and the
+App Store may still be awaiting approval. In the meantime, install it through eas go for
+iOS devices or through the Expo CLI facility for Android and emulators according to the
+official instructions at docs.expo.dev; this mechanism may change at any time.
 -->
 
 ---
 
-## Metro Bundler dan Fast Refresh
+## Metro Bundler and Fast Refresh
 
-![w:720](assets/diagrams/bab-02-persiapan-lingkungan-pengembangan-02.svg)
+![w:1120](assets/diagrams/bab-02-persiapan-lingkungan-pengembangan-02.svg)
 
-> Laptop Anda menjadi "dapur"; perangkat hanya menerima hasil olahan.
+> Your laptop becomes the "kitchen"; the device only receives the finished dish.
 
 <!--
-Alur dibacakan dari kiri ke kanan: Metro membaca semua modul yang diimpor, menggabungkannya,
-lalu mengirimkannya ke perangkat melalui jaringan pada port default 8081.
+Read the flow from left to right: Metro reads every imported module, bundles them, then
+sends them to the device over the network on default port 8081.
 
-Tekankan Fast Refresh: perubahan tersimpan langsung tampil tanpa kehilangan state yang
-sedang berjalan, dan pengalaman itu akan terasa pada Praktikum 2.
+Stress Fast Refresh: a saved change appears immediately without losing the state that is
+currently running, and that experience will be felt in Practicum 2.
 
-Pertanyaan pemandu: "Mengapa perangkat tidak perlu mengetahui kode asli aplikasi?"
-(Jawaban: yang dikirim adalah bundel hasil olahan Metro, bukan berkas sumber.)
+Guiding question: "Why does the device not need to know the app's original code?" (Answer:
+what is sent is the bundle Metro produced, not the source files.)
 -->
 
 ---
 
-## Tiga Jalur Pengujian Aplikasi
+## Three Paths for Testing an App
 
-| Jalur | Persiapan | Kecepatan dan kesetiaan perilaku |
+| Path | Preparation | Speed and behavioral fidelity |
 |---|---|---|
-| **Expo Go** (Wi-Fi) | Paling ringkas: ponsel dan komputer di Wi-Fi yang sama | Tercepat; perilaku ponsel sungguhan |
-| **Emulator Android** | Perangkat virtual dibuat dan dinyalakan lebih dulu | Lebih lambat; sebagian sensor tidak didukung |
-| **Perangkat fisik** (USB) | Developer options dan USB debugging aktif | Paling meyakinkan untuk kamera, lokasi, notifikasi |
+| **Expo Go** (Wi-Fi) | Most concise: phone and computer on the same Wi-Fi | Fastest; the behavior of a real phone |
+| **Android emulator** | A virtual device is created and started first | Slower; some sensors are not supported |
+| **Physical device** (USB) | Developer options and USB debugging enabled | Most convincing for camera, location, notifications |
 
-> Untuk pengembangan harian, jalur Wi-Fi + Expo Go lebih praktis karena tidak bergantung kabel.
+> For daily development, the Wi-Fi + Expo Go path is more practical because it does not depend on a cable.
 
 <!--
-Bandingkan kolom terakhir lebih dahulu, karena itulah alasan memilih jalur, bukan
-kolom persiapan.
+Compare the last column first, because that is the reason for choosing a path, not the
+preparation column.
 
-Pertanyaan pemandu: "Kelompok Anda akan menguji fitur kamera di Bab 12; jalur mana
-yang dipilih?" (Jawaban: perangkat fisik, karena emulator tidak mewakili sensor nyata.)
+Guiding question: "Your group will test the camera feature in Chapter 12; which path do
+you choose?" (Answer: a physical device, because the emulator does not represent a real
+sensor.)
 
-Peringatan: emulator menghabiskan banyak memori komputer; disarankan laptop dengan
-RAM 8 GB ke atas, dan emulator dinyalakan sebelum npx expo start.
+Warning: the emulator consumes a lot of computer memory; a laptop with 8 GB of RAM or more
+is recommended, and the emulator is started before npx expo start.
 -->
 
 ---
 
 <!-- _class: center -->
 
-## Apa yang Terjadi Jika…?
+## What Happens If…?
 
-Ponsel dan komputer berada pada **jaringan yang berbeda** — kode QR tidak dapat dihubungkan.
+The phone and the computer are on **different networks** — the QR code cannot be connected.
 
-- Apa yang gagal: kodenya, jaringannya, atau perangkatnya?
-- Solusi apa yang tersedia tanpa mengubah pengaturan jaringan kampus?
-- Kecepatan apa yang harus dibayar dari solusi itu?
+- What fails: the code, the network, or the device?
+- What solutions are available without changing the campus network settings?
+- What speed must be paid for that solution?
 
 <!--
-Tanyakan lebih dahulu, jangan dijawab: tampung dua sampai tiga dugaan, baru lanjut ke
-slide berikutnya. Pertanyaan ini menguji apakah mahasiswa paham bahwa aplikasi dikirim
-lewat jaringan, bukan dipasang dari kabel.
+Ask first, do not answer: collect two or three guesses, then move to the next slide. This
+question tests whether students understand that the app is sent over the network, not
+installed from a cable.
 
-Pemicu bila kelas diam: "Wi-Fi kampus biasanya memblokir komunikasi antarperangkat;
-kalau begitu, apa yang masih bisa kita pakai?"
+Trigger if the class is silent: "The campus Wi-Fi usually blocks communication between
+devices; if so, what can we still use?"
 
-Jawaban yang diharapkan ada di slide berikutnya: yang gagal adalah jaringan, dan
-npx expo start --tunnel menjadi solusinya.
+The expected answer is on the next slide: what fails is the network, and
+npx expo start --tunnel becomes the solution.
 -->
 
 ---
 
 <!-- _class: center -->
 
-## Jawaban — Jaringan Berbeda
+## Answer: Different Networks
 
-- Yang gagal adalah **jaringan**, bukan kode: Metro dan ponsel tidak saling menjangkau
-- Hentikan server (**Ctrl+C**), lalu jalankan `npx expo start --tunnel`
-- Opsi `--tunnel` menjembatani koneksi lewat server publik; jaringan tidak diubah
-- Harga yang dibayar: transfer lebih lambat dan butuh koneksi internet yang stabil
+- What fails is the **network**, not the code: Metro and the phone cannot reach each other
+- Stop the server (**Ctrl+C**), then run `npx expo start --tunnel`
+- The `--tunnel` option bridges the connection through a public server; the network is not changed
+- The price paid: slower transfer and a need for a stable internet connection
 
 <!--
-Hubungkan dengan slide troubleshooting: baris "kode QR tidak dapat dihubungkan" adalah
-kasus yang sama, jadi jawaban ini bukan pengetahuan baru melainkan pola diagnosis.
+Connect it to the troubleshooting slide: the row "the QR code cannot be connected" is the
+same case, so this answer is not new knowledge but a diagnostic pattern.
 
-Tekankan bahwa tunnel adalah cadangan, bukan kebiasaan harian; untuk kerja harian,
-jaringan Wi-Fi yang sama tetap lebih cepat.
+Stress that the tunnel is a fallback, not a daily habit; for daily work, the same Wi-Fi
+network is still faster.
 
-Pertanyaan penutup: "Kapan Anda akan memilih tunnel alih alih Wi-Fi kelas?" (Jawaban:
-ketika jaringan memblokir komunikasi antarperangkat, misalnya hotspot ponsel.)
+Closing question: "When would you choose the tunnel instead of classroom Wi-Fi?" (Answer:
+when the network blocks communication between devices, for example a phone hotspot.)
 -->
 
 ---
 
-## Emulator Android: Android Studio dan AVD
+## Android Emulator: Android Studio and AVD
 
-**Emulator** adalah program yang menyimulasikan perilaku ponsel Android di dalam komputer.
+![w:1034](assets/diagrams/bab-02-persiapan-lingkungan-pengembangan-10.svg)
 
-- **Android Studio** — IDE resmi Android, tempat emulator dikelola
-- **AVD Manager** — membuat perangkat virtual: pilih model ponsel dan versi Android
-- Keunggulan: menguji lintas versi Android dengan biaya hampir nol
-- Keterbatasan: lebih lambat, boros memori, sebagian sensor tidak didukung
+**An emulator** is a program that simulates the behavior of an Android phone inside a computer.
+
+- Advantage: test across Android versions at almost no cost
+- Limitation: slower, memory-hungry, some sensors are not supported
 
 <!--
-Analogi: emulator seperti simulator penerbangan — cukup realistis untuk latihan dasar,
-tetapi tidak menggantikan penerbangan sungguhan.
+Trimmed to the picture (the diagram says this):
+- **Android Studio** — the official Android IDE, where the emulator is managed
+- **AVD Manager** — creates a virtual device: choose a phone model and an Android version
 
-Pertanyaan pemandu: "Mengapa pengembang tidak membeli banyak ponsel untuk uji lintas
-versi?" (Jawaban: emulator memungkinkan pengujian berbagai versi Android tanpa biaya
-perangkat.)
+Read the picture as containment, not as a sequence: the IDE holds the emulator and the AVD
+Manager, and the AVD Manager asks for two things — a phone model and an Android version. The
+two bullets that stay are the trade-off, which a container cannot show.
 
-Peringatan: AVD yang belum pernah dibuat membuat tombol a di terminal Expo tidak
-bereaksi apa pun, dan itu bukan kesalahan kode mahasiswa.
+Analogy: an emulator is like a flight simulator — realistic enough for basic practice, but
+it does not replace a real flight.
+
+Guiding question: "Why do developers not buy many phones to test across versions?"
+(Answer: the emulator makes it possible to test various Android versions at no device
+cost.)
+
+Warning: an AVD that has never been created makes the a key in the Expo terminal do
+nothing, and that is not a mistake in the student's code.
 -->
 
 ---
 
-## adb dan Perangkat Fisik
+## adb and Physical Devices
 
-- **adb** — jembatan baris perintah antara komputer dan perangkat Android
-- `adb devices` menampilkan daftar perangkat yang dikenali komputer
-- Aktifkan Developer options: ketuk *Build number* tujuh kali di *About phone*
-- Aktifkan *USB debugging*, lalu izinkan autentikasi RSA saat ponsel bertanya
-- Untuk Expo Go, koneksi USB tidak wajib — cukup satu jaringan Wi-Fi
+![w:1120](assets/diagrams/bab-02-persiapan-lingkungan-pengembangan-11.svg)
+
+- **adb** — the command-line bridge between the computer and an Android device
+- For Expo Go, a USB connection is not required — one Wi-Fi network is enough
 
 <!--
-Jelaskan urutan yang sering terbalik: Developer options dulu, baru USB debugging,
-baru sambungkan kabel. Demonstrasikan bila ada ponsel di kelas.
+Trimmed to the picture (the diagram says this):
+- `adb devices` lists the devices the computer recognizes
+- Enable Developer options: tap *Build number* seven times in *About phone*
+- Enable *USB debugging*, then allow RSA authentication when the phone asks
 
-Pertanyaan pemandu: "Kapan adb benar-benar dibutuhkan?" (Jawaban: saat memastikan
-emulator atau ponsel dikenali komputer sebelum menjalankan aplikasi, misalnya ketika
-tombol a tidak membuka apa pun.)
+The picture is the order, left to right: Developer options, then USB debugging, then the RSA
+prompt, then `adb devices` listing the device. The two bullets that stay are the ones the chain
+cannot hold — what adb is for, and the exception that a cable is not needed for Expo Go.
 
-Peringatan: kabel pengisian daya tanpa jalur data adalah penyebab tersembunyi; status
-unauthorized berarti ponsel belum menyetujui autentikasi komputer.
+Explain the order that is often reversed: Developer options first, then USB debugging, then
+connect the cable. Demonstrate if there is a phone in class.
+
+Guiding question: "When is adb really needed?" (Answer: when making sure the emulator or
+phone is recognized by the computer before running the app, for example when the a key
+opens nothing.)
+
+Warning: a charging cable without a data line is the hidden cause; the unauthorized status
+means the phone has not yet approved the computer's authentication.
 -->
 
 ---
 
-## iOS Simulator: Pengenalan
+## iOS Simulator: An Introduction
 
-**iOS Simulator** adalah program simulasi iPhone atau iPad yang berjalan di komputer.
+![w:1120](assets/diagrams/bab-02-persiapan-lingkungan-pengembangan-12.svg)
 
-- Hanya berjalan di **macOS** dan membutuhkan **Xcode** yang berukuran sangat besar
-- Windows dan Linux tidak dapat menjalankannya sama sekali
-- Alternatif: iPhone fisik dengan Expo Go, atau build cloud EAS Build (Bab 15)
-- Di komputer Mac, tekan **i** di terminal Expo untuk membukanya
+**The iOS Simulator** is a program that simulates an iPhone or iPad running on a computer.
+
+- Windows and Linux cannot run it at all
+- Alternatives: a physical iPhone with Expo Go, or a cloud build with EAS Build (Chapter 15)
+- On a Mac, press **i** in the Expo terminal to open it
 
 <!--
-Pesan pentingnya bukan pada alatnya, melainkan pada pola pikir: pengembangan
-lintas-platform tidak berarti setiap orang wajib memiliki semua perangkat.
+Trimmed to the picture (the diagram says this):
+- It runs only on **macOS** and requires **Xcode**, which is very large
 
-Pertanyaan pemandu: "Bagaimana mahasiswa ber-Windows menguji tampilan di iOS?"
-(Jawaban: meminjam iPhone dan memasang Expo Go pada jaringan yang sama, atau
-menyerahkan build ke layanan cloud pada Bab 15.)
+The three bands are the answer to "why can Windows and Linux not run it at all": the
+Simulator sits on Xcode, Xcode sits on macOS. The bullet that stays is the absence the stack
+cannot draw, and the two alternatives below it are the way out.
 
-Peringatan: jangan menjanjikan pengujian iOS lengkap di kelas yang tidak memiliki Mac.
+The important message is not about the tool but about the mindset: cross-platform
+development does not mean everyone must own every device.
+
+Guiding question: "How do students on Windows test the display on iOS?" (Answer: borrow an
+iPhone and install Expo Go on the same network, or hand the build to a cloud service in
+Chapter 15.)
+
+Warning: do not promise complete iOS testing in a class that has no Mac.
 -->
 
 ---
 
-## Alur Membuat Project Pertama
+## The Flow for Creating the First Project
 
-![w:720](assets/diagrams/bab-02-persiapan-lingkungan-pengembangan-03.svg)
+![w:1120](assets/diagrams/bab-02-persiapan-lingkungan-pengembangan-03.svg)
 
-> **Penjelasan tambahan:** selesaikan dahulu langkah yang gagal sebelum melanjutkan ke langkah berikutnya.
+> **Additional explanation:** finish the step that failed before continuing to the next step.
 
 <!--
-Bacakan sebagai urutan kerja praktikum hari ini, lalu tuliskan urutannya di papan
-sebagai checklist yang dicentang mahasiswa satu per satu. Diagram dibaca dua baris
-(menyiapkan, lalu menjalankan); tunjuk langkah 4 (`code .`) sebagai langkah yang sama
-dengan baris perintah pada slide berikutnya.
+Read it as the work sequence for today's practicum, then write the sequence on the board
+as a checklist that students tick off one by one. Read the diagram as two rows (setting
+up, then running); point to step 4 (`code .`) as the same step as the command line on the
+next slide.
 
-Pertanyaan pemandu: "Langkah mana yang boleh dilewati bila hanya ingin melihat
-aplikasi di emulator?" (Jawaban: tidak ada yang boleh dilewati, tetapi langkah 6
-dijalankan dengan menekan a alih alih memindai kode QR.)
+Guiding question: "Which step may be skipped if you only want to see the app on the
+emulator?" (Answer: none may be skipped, but step 6 is run by pressing a instead of
+scanning the QR code.)
 
-Peringatan: melompati langkah 1 adalah kebiasaan paling sering dan penyebab galat
-beruntun pada langkah berikutnya.
+Warning: skipping step 1 is the most frequent habit and the cause of cascading errors in
+the following steps.
 -->
 
 ---
 
-## Membuat Project Expo Pertama
+## Creating the First Expo Project
 
-`Terminal` — dari folder kerja sampai server menyala
+![w:1120](assets/diagrams/bab-02-persiapan-lingkungan-pengembangan-13.svg)
 
 ```bash
 npx create-expo-app aplikasi-pertama --template blank
@@ -553,107 +595,125 @@ code .
 npx expo start
 ```
 
-- `npx` menjalankan versi terbaru `create-expo-app` tanpa memasangnya global
-- `aplikasi-pertama` menjadi nama folder project: huruf kecil, tanpa spasi
-- `--template blank` memilih templat JavaScript polos tanpa TypeScript
+- `aplikasi-pertama` becomes the project folder name: lowercase, no spaces
+- `--template blank` chooses a plain JavaScript template without TypeScript
 
 <!--
-Tekankan bacaan perintah, bukan hafalan: npx, nama project, lalu templat. Proses
-pembuatan memakan satu sampai beberapa menit karena npm mengunduh seluruh dependency.
+Trimmed to the picture (the diagram says this):
+- `npx` runs the newest version of `create-expo-app` without installing it globally
 
-Jelaskan dua perintah yang belum dibahas pada slide: cd memindahkan terminal ke folder
-project, dan code . menyuruh VS Code membuka folder aktif. Bila code . tidak dikenal,
-buka lewat menu File lalu Open Folder.
+The picture reads the command part by part — npx, the project name, the template — with the job
+of each part on the right. Only one of the three bullets could move: the slide must keep two, so
+the other two stay and repeat their row of the picture on purpose.
 
-Pertanyaan pemandu: "Mengapa seluruh perintah berikutnya dijalankan dari dalam folder
-project?" (Jawaban: npm dan Expo membaca package.json di folder aktif.)
+The lead-in line also moved, because at w:1120 the panel ran 60px past the bottom edge:
+- `Terminal` — from the working folder to a running server
+
+Stress reading the command rather than memorizing it: npx, the project name, then the
+template. The creation process takes one to several minutes because npm downloads every
+dependency.
+
+Explain the two commands not yet covered on the slide: cd moves the terminal into the
+project folder, and code . asks VS Code to open the active folder. If code . is not
+recognized, open it through the File then Open Folder menu.
+
+Guiding question: "Why is every subsequent command run from inside the project folder?"
+(Answer: npm and Expo read package.json in the active folder.)
 -->
 
 ---
 
-## Mengapa `--template blank`?
+## Why `--template blank`?
 
-| Aspek | `--template blank` | Tanpa opsi (templat default) |
+| Aspect | `--template blank` | Without the option (default template) |
 |---|---|---|
-| Bahasa | JavaScript polos pada berkas `.js` | TypeScript pada berkas `.tsx` |
-| Navigasi | Tanpa Expo Router | Expo Router sudah termasuk |
-| Kecocokan | Sesuai keputusan buku: JavaScript polos | Menambah konsep yang belum dibutuhkan |
-| Fokus belajar | Struktur sesederhana mungkin | Navigasi baru dibahas pada Bab 7 |
+| Language | Plain JavaScript in `.js` files | TypeScript in `.tsx` files |
+| Navigation | No Expo Router | Expo Router is already included |
+| Fit | Matches the book's decision: plain JavaScript | Adds concepts that are not needed yet |
+| Learning focus | The simplest possible structure | Navigation is only discussed in Chapter 7 |
 
-> Bab 3 mengupas alasan pemilihan JavaScript; navigasi file-based baru dipelajari pada Bab 7.
+> Chapter 3 examines the reason for choosing JavaScript; file-based navigation is first studied in Chapter 7.
 
 <!--
-Ini keputusan penulisan buku, bukan sekadar selera: seluruh contoh kode pada buku ini
-memakai JavaScript polos, sehingga templat default berbasis TypeScript akan membuat
-mahasiswa bertemu anotasi tipe yang belum diajarkan.
+This is a writing decision for the book, not mere taste: every code example in this book
+uses plain JavaScript, so the default TypeScript-based template would make students meet
+type annotations that have not been taught.
 
-Pertanyaan pemandu: "Apa akibatnya bila kita terlanjur memakai templat default?"
-(Jawaban: project berisi berkas .tsx dan Expo Router yang belum dibutuhkan di tahap
-ini, sehingga mahasiswa belajar dua hal sekaligus.)
+Guiding question: "What is the consequence if we use the default template by mistake?"
+(Answer: the project holds .tsx files and Expo Router that are not needed at this stage,
+so students learn two things at once.)
 
-Peringatan version-sensitive: perilaku templat dapat berubah antarversi Expo; bila
-ragu, periksa deskripsi templat di docs.expo.dev atau jalankan perintah bantuan
-create-expo-app.
+Version-sensitive warning: template behavior can change between Expo versions; if in
+doubt, check the template description at docs.expo.dev or run the create-expo-app help
+command.
 -->
 
 ---
 
-## Menyalakan Server Pengembangan
+## Starting the Development Server
 
-`Terminal` — dijalankan dari dalam folder project
+![w:1120](assets/diagrams/bab-02-persiapan-lingkungan-pengembangan-14.svg)
+
+`Terminal` — run from inside the project folder
 
 ```bash
 npx expo start
 ```
 
-- Muncul kode QR, alamat LAN seperti `exp://192.168.x.x:8081`, dan tombol pintas
-- **a** Android · **i** iOS Simulator (macOS) · **w** web · **r** muat ulang manual
-- **Ctrl+C** menghentikan server pengembangan
+- **a** Android · **i** iOS Simulator (macOS) · **w** web · **r** manual reload
+- **Ctrl+C** stops the development server
 
-> Simpan perubahan pada App.js, lalu amati layar berubah sendiri dalam 1-2 detik — itulah Fast Refresh.
+> Save a change in App.js, then watch the screen change by itself within 1-2 seconds — that is Fast Refresh.
 
 <!--
-Demonstrasikan langsung di proyektor, bukan dijelaskan: tampilkan antarmuka terminal
-Expo dan tunjuk setiap bagiannya, terutama alamat LAN yang membuktikan Metro bekerja.
+Trimmed to the picture (the diagram says this):
+- A QR code appears, a LAN address such as `exp://192.168.x.x:8081`, and shortcut keys
 
-Pertanyaan pemandu: "Mengapa alamat exp:// penting bagi mahasiswa yang memakai
-ponsel?" (Jawaban: itulah alamat tempat Metro menyajikan aplikasi, dan ponsel harus
-berada di jaringan yang sama.)
+Read the chain left to right: the command opens the Expo terminal, the terminal carries the QR
+code and the LAN address, a key picks the target, and the display follows the save. The two
+bullets that stay carry what the chain does not: the r key and Ctrl+C.
 
-Peringatan: jangan menutup terminal Expo selama praktikum; menutupnya mematikan Metro
-dan aplikasi di ponsel kehilangan sambungan.
+Demonstrate directly on the projector instead of explaining: show the Expo terminal
+interface and point to each part, especially the LAN address that proves Metro is working.
+
+Guiding question: "Why does the exp:// address matter to students who use a phone?"
+(Answer: that is the address where Metro serves the app, and the phone must be on the same
+network.)
+
+Warning: do not close the Expo terminal during the practicum; closing it shuts down Metro
+and the app on the phone loses its connection.
 -->
 
 ---
 
-## Perintah Penting Bab 2
+## Key Commands for Chapter 2
 
-| Perintah | Fungsi |
+| Command | Function |
 |---|---|
-| `node --version` / `npm --version` | Memeriksa versi Node.js dan npm |
-| `npx create-expo-app <nama> --template blank` | Membuat project Expo JavaScript polos |
-| `npx expo start` | Menyalakan Metro Bundler dan server pengembangan |
-| `npx expo start --tunnel` | Menyalakan server dengan jembatan jaringan publik |
-| `npx expo start --port 8082` | Memakai port lain bila 8081 sudah dipakai |
-| `adb devices` | Menampilkan daftar perangkat Android yang terhubung |
+| `node --version` / `npm --version` | Checks the Node.js and npm versions |
+| `npx create-expo-app <name> --template blank` | Creates a plain JavaScript Expo project |
+| `npx expo start` | Starts the Metro Bundler and the development server |
+| `npx expo start --tunnel` | Starts the server with a public network bridge |
+| `npx expo start --port 8082` | Uses another port if 8081 is already taken |
+| `adb devices` | Lists the connected Android devices |
 
 <!--
-Slide ini adalah rujukan yang boleh difoto mahasiswa; jangan dibacakan satu per satu.
+This slide is a reference students may photograph; do not read it out one by one.
 
-Tanpa masuk tabel: tombol pintas a, i, w, r dan Ctrl+C di terminal Expo, perintah
-cd dan code ., npx expo start --android untuk langsung membuka emulator, serta opsi
-pembersih cache pada perintah start.
+Not in the table: the shortcut keys a, i, w, r and Ctrl+C in the Expo terminal, the
+commands cd and code ., npx expo start --android to open the emulator directly, and the
+cache-clearing option on the start command.
 
-Pertanyaan pemandu: "Kapan opsi --tunnel dipakai?" (Jawaban: ketika ponsel dan
-komputer tidak berada di satu jaringan, misalnya Wi-Fi kampus yang memblokir
-komunikasi antarperangkat.)
+Guiding question: "When is the --tunnel option used?" (Answer: when the phone and the
+computer are not on one network, for example campus Wi-Fi that blocks communication
+between devices.)
 -->
 
 ---
 
-## Struktur Folder Project Expo
+## Expo Project Folder Structure
 
-`aplikasi-pertama/` — hasil `create-expo-app --template blank`
+`aplikasi-pertama/` — the result of `create-expo-app --template blank`
 
 ```plaintext
 aplikasi-pertama/
@@ -667,68 +727,69 @@ aplikasi-pertama/
 ```
 
 <!--
-Minta mahasiswa membuka panel Explorer di VS Code dan mencocokkan struktur mereka
-dengan slide ini, bukan menghafalnya.
+Ask students to open the Explorer panel in VS Code and match their structure against this
+slide instead of memorizing it.
 
-Peringatan version-sensitive: isi persis templat dapat berbeda antarversi SDK, misalnya
-nama aset ikon atau berkas tambahan. Bila struktur mahasiswa tidak persis sama, itu
-normal; yang wajib dipahami adalah peran berkas intinya.
+Version-sensitive warning: the exact contents of the template can differ between SDK
+versions, for example the names of icon assets or extra files. If a student's structure is
+not exactly the same, that is normal; what must be understood is the role of the core
+files.
 
-Setelah npx expo start dijalankan, akan muncul folder .expo yang menyimpan pengaturan
-lokal dan informasi perangkat, dibuat otomatis dan tidak perlu disentuh.
+After npx expo start is run, a .expo folder appears holding local settings and device
+information; it is created automatically and does not need to be touched.
 -->
 
 ---
 
-## Peran Berkas dan Folder Inti
+## The Role of Core Files and Folders
 
-| Berkas / Folder | Perannya |
+| File / Folder | Its Role |
 |---|---|
-| `App.js` | Komponen utama aplikasi — berkas yang paling sering Anda edit |
-| `index.js` | Pintu masuk; memanggil `registerRootComponent` |
-| `app.json` | Konfigurasi project: nama, slug, versi, orientasi, ikon |
-| `package.json` | Nama project, daftar skrip, dan dependensi versi eksak |
-| `assets/` | Aset statis: ikon aplikasi dan gambar bawaan templat |
-| `node_modules/` | Semua paket unduhan npm; tidak diedit dan tidak dilacak Git |
+| `App.js` | The app's main component — the file you edit most often |
+| `index.js` | The entry point; calls `registerRootComponent` |
+| `app.json` | Project configuration: name, slug, version, orientation, icon |
+| `package.json` | Project name, list of scripts, and exact-version dependencies |
+| `assets/` | Static assets: app icons and images bundled with the template |
+| `node_modules/` | Every package downloaded by npm; not edited and not tracked by Git |
 
 <!--
-Kelompokkan peran menjadi tiga fungsi: identitas project (app.json, package.json),
-pintu masuk aplikasi (index.js, App.js), dan isi pendukung (assets, node_modules).
+Group the roles into three functions: project identity (app.json, package.json), the app
+entry point (index.js, App.js), and supporting content (assets, node_modules).
 
-Pertanyaan pemandu: "Mengapa node_modules tidak pernah diedit dan tidak dilaporkan ke
-Git?" (Jawaban: isinya dapat dipasang ulang kapan saja dengan npm install, sehingga
-menyimpannya hanya memperbesar repositori.)
+Guiding question: "Why is node_modules never edited and never reported to Git?" (Answer:
+its contents can be reinstalled at any time with npm install, so storing them only makes
+the repository bigger.)
 
-Peringatan: jangan mengedit package.json secara manual kecuali memahami dampaknya;
-gunakan perintah npm atau npx expo install.
+Warning: do not edit package.json by hand unless you understand the consequences; use npm
+commands or npx expo install.
 
-File .gitignore memuat pola yang dikecualikan Git, misalnya node_modules dan .expo.
+The .gitignore file holds the patterns Git excludes, for example node_modules and .expo.
 -->
 
 ---
 
-## Alur Eksekusi: index.js lalu App.js
+## Execution Flow: index.js then App.js
 
-![w:720](assets/diagrams/bab-02-persiapan-lingkungan-pengembangan-04.svg)
+![w:1120](assets/diagrams/bab-02-persiapan-lingkungan-pengembangan-04.svg)
 
-> Urutan pemanggilannya sederhana: `package.json` menunjuk `index.js`, `index.js` mendaftarkan `App.js`, dan `App.js` menggambar tampilan.
+> The calling order is simple: `package.json` points to `index.js`, `index.js` registers `App.js`, and `App.js` draws the display.
 
 <!--
-Tekankan bahwa alur ini menjelaskan mengapa App.js adalah berkas yang paling sering
-diedit: ia adalah pintu masuk tampilan.
+Stress that this flow explains why App.js is the file edited most often: it is the entry
+point of the display.
 
-Pertanyaan pemandu: "Bila index.js dihapus, apa yang terjadi?" (Jawaban: Metro tidak
-menemukan pintu masuk, aplikasi gagal dimuat meski App.js masih ada.)
+Guiding question: "If index.js is deleted, what happens?" (Answer: Metro finds no entry
+point, the app fails to load even though App.js still exists.)
 
-Peringatan: konsep import dan export baru dibahas tuntas pada Bab 3; cukup pahami
-alurnya sekarang, jangan menjelaskan modul secara panjang di sini.
+Warning: the concepts of import and export are only covered fully in Chapter 3; for now it
+is enough to understand the flow, do not explain modules at length here.
 -->
 
 ---
 
-## Contoh Kode: App.js "Halo, Dunia!"
+## Code Example: App.js "Halo, Dunia!"
 
-`kode/bab-02/App.js` — produk praktikum pertemuan ini
+`kode/bab-02-persiapan-lingkungan-pengembangan/App.js` — the product of this meeting's practicum
 
 ```js
 import { StatusBar } from 'expo-status-bar';
@@ -747,217 +808,219 @@ export default function App() {
 }
 ```
 
-> Objek `styles` (`StyleSheet.create`) ada pada berkas lengkap `kode/bab-02/App.js`.
+> The `styles` object (`StyleSheet.create`) is in the complete file `kode/bab-02-persiapan-lingkungan-pengembangan/App.js`.
 
 <!--
-Kode ini mengikuti pola resmi templat SDK 57 dan memang tidak dijalankan di emulator
-oleh tim penulis; sampaikan secara netral bahwa mahasiswa yang mengujinya sendiri.
+This code follows the official SDK 57 template pattern and was in fact not run on an
+emulator by the authoring team; state neutrally that students should test it themselves.
 
-Tunjukkan tiga hal saja: dua baris import meminjam alat dari paket, View adalah kotak
-penampung, Text adalah teks yang tampil. View, Text, dan StyleSheet dikupas mendalam
-pada Bab 5, jadi di sini cukup meniru polanya.
+Show only three things: the two import lines borrow tools from packages, View is a
+container box, Text is the text that appears. View, Text, and StyleSheet are examined in
+depth in Chapter 5, so here it is enough to imitate the pattern.
 
-Pertanyaan pemandu: "Bagian mana yang boleh Anda ubah hari ini?" (Jawaban: isi teks
-pada Text judul dan keterangan, lalu simpan untuk melihat Fast Refresh bekerja.)
+Guiding question: "Which part may you change today?" (Answer: the text content inside the
+title and description Text, then save to see Fast Refresh work.)
 -->
 
 ---
 
-## Hasil yang Diharapkan Praktikum
+## Expected Practicum Result
 
-- Dua nomor versi tampil saat `node --version` dan `npm --version` dijalankan
-- Folder `aplikasi-pertama` terbentuk tanpa galat
-- `npx expo start` menampilkan kode QR dan alamat `exp://...:8081`
-- Teks "Halo, Dunia!" tampil di Expo Go dan/atau emulator Android
-- Menyimpan perubahan App.js mengubah layar dalam 1-2 detik (Fast Refresh)
+- Two version numbers appear when `node --version` and `npm --version` are run
+- The `aplikasi-pertama` folder is created without errors
+- `npx expo start` shows a QR code and the address `exp://...:8081`
+- The text "Halo, Dunia!" appears in Expo Go and/or the Android emulator
+- Saving a change in App.js changes the screen within 1-2 seconds (Fast Refresh)
 
 <!--
-Jadikan daftar ini lembar centang: mahasiswa mencentang setiap butir lalu melampirkan
-tangkapan layar sebagai bukti praktikum sesuai rubrik.
+Make this list a checklist: students tick each item and then attach screenshots as
+practicum evidence according to the rubric.
 
-Latihan sengaja merusak kode juga penting: hapus satu tanda kutip, simpan, amati layar
-kesalahan merah, lalu kembalikan kode. Tujuannya melatih membaca pesan galat.
+Deliberately breaking the code is also valuable practice: delete one quotation mark, save,
+watch the red error screen, then restore the code. The goal is to train reading error
+messages.
 
-Pertanyaan pemandu: "Apa arti layar merah itu?" (Jawaban: galat bundling Metro, bukan
-kerusakan perangkat, dan baris pertama pesan menyebut berkas serta barisnya.)
+Guiding question: "What does that red screen mean?" (Answer: a Metro bundling error, not
+device damage, and the first line of the message names the file and its line.)
 -->
 
 ---
 
-## Studi Kasus: Standarisasi Lingkungan
+## Case Study: Standardizing the Environment
 
-**Contoh ilustratif** dengan pola nyata: tiga mahasiswa magang di Divisi Sistem Informasi kampus mengerjakan prototipe aplikasi pengumuman akademik.
+**Illustrative example** with a real pattern: three student interns in the campus Information Systems Division are working on a prototype academic announcement app.
 
-| Tiga masalah minggu pertama | Tiga senjata dari bab ini |
+| Three problems in the first week | Three weapons from this chapter |
 |---|---|
-| Satu magang memakai Node versi lama dari tutorial tahun sebelumnya | **Pembakuan platform**: Node.js LTS yang sama, diverifikasi `node --version` |
-| Magang lain memakai yarn, sehingga berkas kunci berbeda dari rekan | **Satu package manager**: npm secara seragam, hindari perbedaan berkas kunci |
-| Aplikasi jalan di satu laptop, gagal di laptop lain | **npx daripada instalasi global**: selalu versi terkini dari registry |
+| One intern uses an old Node version from last year's tutorial | **Platform standardization**: the same Node.js LTS, verified with `node --version` |
+| Another intern uses yarn, so the lockfile differs from their teammate's | **One package manager**: npm uniformly, avoid lockfile differences |
+| The app runs on one laptop and fails on another | **npx rather than global installs**: always the current version from the registry |
 
-> Versi runtime yang berbeda adalah sumber galat tersamar, bukan sekadar peringatan.
+> Different runtime versions are a source of obscure errors, not just warnings.
 
 <!--
-Bacakan kolom masalah lebih dahulu, minta kelas menebak senjata yang cocok untuk tiap
-masalah, baru buka kolom kanan. Jangan dibacakan sebagai daftar: satu minggu terbuang
-untuk menyamakan versi sebelum satu baris kode pun ditulis.
+Read the problem column first, ask the class to guess the weapon that fits each problem,
+then reveal the right column. Do not read it as a list: a week is wasted equalizing
+versions before a single line of code is written.
 
-Tekankan istilah reproducibility: kemampuan memasang ulang project yang sama di
-komputer lain. Inilah cikal bakal praktik environment management yang dibutuhkan pada
-Project Akhir, Sistem Informasi Akademik Mobile.
+Stress the term reproducibility: the ability to reinstall the same project on another
+computer. This is the seed of the environment management practice needed for the Final
+Project, Mobile Academic Information System.
 
-Pertanyaan pemandu: "Apa satu langkah termurah untuk mencegah kasus ini terulang?"
-(Jawaban: menuliskan langkah setup dan mencatat versi alat di dokumentasi tim.)
+Guiding question: "What is the cheapest single step to keep this case from recurring?"
+(Answer: write down the setup steps and record the tool versions in the team
+documentation.)
 
-Peringatan: kasus ini ilustratif, disusun dari pola nyata pada bab, bukan data nyata
-sebuah kampus.
+Warning: this case is illustrative, assembled from real patterns in the chapter, not real
+data from a campus.
 -->
 
 ---
 
-## Troubleshooting yang Sering Muncul (1/2)
+## Common Troubleshooting (1/2)
 
-| Gejala | Penyebab | Solusi |
+| Symptom | Cause | Solution |
 |---|---|---|
-| `node: command not found` | Belum terpasang atau belum ada di PATH | Pasang Node.js LTS, lalu buka terminal baru |
-| Port 8081 sedang dipakai | Aplikasi lain memakai port default Metro | Tutup aplikasi itu atau pakai port 8082 |
-| Layar merah saat menyimpan | Galat sintaks atau modul tidak ditemukan | Baca baris pertama galat, lalu bersihkan cache |
-| Menekan **a** tidak bereaksi | Emulator belum menyala | Nyalakan AVD di Android Studio lebih dulu |
+| `node: command not found` | Not installed or not on the PATH | Install Node.js LTS, then open a new terminal |
+| Port 8081 is in use | Another app is using Metro's default port | Close that app or use port 8082 |
+| Red screen when saving | Syntax error or module not found | Read the first line of the error, then clear the cache |
+| Pressing **a** does nothing | The emulator is not running | Start the AVD in Android Studio first |
 
 <!--
-Ajarkan urutannya: baca pesan galat, identifikasi lapisan yang gagal, baru bertindak.
-Melompat ke solusi tanpa membaca pesan adalah kebiasaan yang paling mahal.
+Teach the order: read the error message, identify which layer failed, then act. Jumping to
+a solution without reading the message is the most expensive habit.
 
-Pertanyaan pemandu: "Mengapa membersihkan cache Metro kadang diperlukan?" (Jawaban:
-cache dapat menyimpan versi lama kode atau modul, sehingga perubahan tidak tampil.)
+Guiding question: "Why is clearing the Metro cache sometimes necessary?" (Answer: the
+cache can hold an old version of the code or of a module, so changes do not appear.)
 
-Peringatan: jangan menyarankan memasang ulang seluruh project sebelum memeriksa pesan
-galat; itu menghapus petunjuk yang paling berharga.
+Warning: do not suggest reinstalling the whole project before checking the error message;
+that erases the most valuable clue.
 -->
 
 ---
 
-## Troubleshooting yang Sering Muncul (2/2)
+## Common Troubleshooting (2/2)
 
-| Gejala | Penyebab | Solusi |
+| Symptom | Cause | Solution |
 |---|---|---|
-| `adb devices` kosong atau `unauthorized` | USB debugging belum aktif atau belum diizinkan | Aktifkan debugging, izinkan autentikasi, ganti kabel |
-| Perubahan kode tidak tampil | Fast Refresh gagal atau cache Metro lama | Tekan **r**; bila tetap, bersihkan cache |
-| Project tidak kompatibel dengan Expo Go | SDK project dan Expo Go berbeda versi | Samakan versi, lalu periksa dengan `npx expo-doctor` |
-| Kode QR tidak bisa dihubungkan | Ponsel dan komputer berbeda jaringan | Nyalakan ulang server dengan opsi `--tunnel` |
+| `adb devices` is empty or `unauthorized` | USB debugging is not enabled or not allowed | Enable debugging, allow authentication, change the cable |
+| Code changes do not appear | Fast Refresh failed or the Metro cache is stale | Press **r**; if it persists, clear the cache |
+| The project is not compatible with Expo Go | The project SDK and Expo Go are on different versions | Align the versions, then check with `npx expo-doctor` |
+| The QR code cannot be connected | The phone and the computer are on different networks | Restart the server with the `--tunnel` option |
 
 <!--
-Hubungkan tiap baris dengan slide sebelumnya: masalah jaringan, masalah perangkat, dan
-masalah versi SDK. Ketiganya adalah penyebab tersering di kelas.
+Connect each row to the earlier slides: network problems, device problems, and SDK version
+problems. All three are the most frequent causes in class.
 
-Pertanyaan pemandu: "Kapan npx expo-doctor dipakai?" (Jawaban: ketika ragu apakah
-project sehat dan paketnya kompatibel dengan SDK yang dipakai.)
+Guiding question: "When is npx expo-doctor used?" (Answer: when you are unsure whether the
+project is healthy and its packages are compatible with the SDK in use.)
 
-Peringatan: opsi tunnel lebih lambat daripada jaringan lokal dan membutuhkan koneksi
-internet stabil; simpan sebagai cadangan, bukan kebiasaan harian.
+Warning: the tunnel option is slower than the local network and needs a stable internet
+connection; keep it as a fallback, not a daily habit.
 -->
 
 ---
 
-## Rangkuman
+## Summary
 
-1. Node.js adalah runtime JavaScript di luar browser — prasyarat Expo CLI dan Metro
-2. npm mengelola dependensi di `package.json`; `npx` menjalankan perintah tanpa memasang
-3. VS Code + ESLint + Prettier adalah meja kerja; Expo Go menguji instan tanpa build
-4. Emulator untuk uji lintas versi; perangkat fisik untuk sensor dan pengalaman nyata
-5. `--template blank` = JavaScript polos; `npx expo start` menyalakan Metro di port 8081
+1. Node.js is a JavaScript runtime outside the browser — a prerequisite for Expo CLI and Metro
+2. npm manages dependencies in `package.json`; `npx` runs commands without installing
+3. VS Code + ESLint + Prettier is the workbench; Expo Go tests instantly without a build
+4. An emulator for cross-version testing; a physical device for sensors and the real experience
+5. `--template blank` = plain JavaScript; `npx expo start` starts Metro on port 8081
 
 <!--
-Jangan dibacakan. Minta mahasiswa memilih satu nomor dan menjelaskannya dengan kalimat
-sendiri; cara ini lebih melekat daripada mengulang bacaan.
+Do not read it out. Ask students to pick one number and explain it in their own words;
+this sticks better than repeating the reading.
 
-Lengkapi secara lisan: iOS Simulator hanya tersedia di macOS, dan reproducibility
-dicapai dengan membakukan versi serta package manager.
+Complete it orally: the iOS Simulator is only available on macOS, and reproducibility is
+achieved by standardizing versions and the package manager.
 
-Pesan penutup: mulai hari ini, setiap aplikasi yang gagal dipandang sebagai pesan yang
-harus dibaca, bukan musibah.
+Closing message: starting today, every app that fails is seen as a message that must be
+read, not a misfortune.
 -->
 
 ---
 
 <!-- _class: center -->
 
-## Uji Pemahaman
+## Comprehension Check
 
-- Alat apa yang wajib ada sebelum menjalankan `npx create-expo-app`?
-- Apa beda `npm install <paket>` dan `npx <perintah>`?
-- Mengapa buku ini memilih `--template blank`?
-- Apa peran Metro Bundler pada `npx expo start`?
-- Port default yang dipakai Metro Bundler adalah?
+- Which tool is required before running `npx create-expo-app`?
+- What is the difference between `npm install <package>` and `npx <command>`?
+- Why does this book choose `--template blank`?
+- What is the Metro Bundler's role in `npx expo start`?
+- What is the default port used by the Metro Bundler?
 
 <!--
-Kuis lisan 5 menit: tampilkan pertanyaan, minta kelas menjawab serentak atau angkat
-tangan, baru lanjut ke slide jawaban. Jangan membocorkan jawaban di slide ini.
+A 5-minute oral quiz: show the questions, ask the class to answer in chorus or by a show of
+hands, then move to the answers slide. Do not leak the answers on this slide.
 
-Lima pertanyaan ini diambil dari Evaluasi Bab 2 bagian pilihan ganda; pakai sebagai
-pemeriksaan cepat sebelum menutup pertemuan.
+These five questions come from the Chapter 2 Evaluation multiple-choice section; use them
+as a quick check before closing the meeting.
 
-Bila jawaban kelas beragam pada pertanyaan ketiga, ulangi slide template blank sebelum
-menutup pertemuan.
+If class answers vary on the third question, repeat the template blank slide before
+closing the meeting.
 -->
 
 ---
 
 <!-- _class: center -->
 
-## Jawaban
+## Answers
 
-- Node.js — wajib ada sebelum alat Expo dijalankan
-- `npm install` memasang paket ke project; `npx` menjalankan tanpa memasang permanen
-- `blank` menghasilkan JavaScript polos, sementara templat default memakai TypeScript
-- Menggabungkan modul JavaScript dan mengirimkannya ke perangkat
-- Port default Metro Bundler adalah **8081**
+- Node.js — required before the Expo tools can be run
+- `npm install` installs the package into the project; `npx` runs it without a permanent install
+- `blank` produces plain JavaScript, while the default template uses TypeScript
+- It bundles JavaScript modules and sends them to the device
+- The Metro Bundler's default port is **8081**
 
 <!--
-Ulangi pembeda yang paling sering tertukar: npm memasang, npx menjalankan.
+Repeat the distinction most often confused: npm installs, npx runs.
 
-Tanyakan ulang satu nomor secara acak untuk memastikan kelas benar benar mengikuti,
-lalu tutup dengan mengaitkan jawaban kelima ke pesan troubleshooting port 8081.
+Ask one number again at random to make sure the class is really following, then close by
+linking the fifth answer to the port 8081 troubleshooting message.
 -->
 
 ---
 
-## Diskusi Kelas: Reproducibility
+## Class Discussion: Reproducibility
 
 <div class="grid2">
 <div>
 
-**Pertanyaan**
+**Questions**
 
-- Siapa pernah menemui "di komputer saya jalan kok"?
-- Apa yang akan Anda bakukan lebih dahulu di project tim berikutnya?
+- Who has encountered "it works on my computer"?
+- What will you standardize first in your next team project?
 
 </div>
 <div>
 
-**Yang dinilai**
+**What is assessed**
 
-- Ketepatan menghubungkan versi, package manager, dan npx
-- Kemampuan menyusun kebiasaan verifikasi lingkungan
+- Accuracy in connecting versions, the package manager, and npx
+- The ability to assemble environment verification habits
 
 </div>
 </div>
 
 <!--
-Beri 3 menit berpasangan, lalu tampung dua sampai tiga jawaban. Tuliskan usulan
-kebiasaan tim di papan agar bisa dipakai pada Project Akhir.
+Give 3 minutes in pairs, then collect two or three answers. Write the proposed team habits
+on the board so they can be used in the Final Project.
 
-Bila jawaban lemah, arahkan ke tiga hal: catat versi alat, pilih satu package manager,
-dan jangan mengandalkan instalasi global.
+If answers are weak, steer toward three things: record the tool versions, choose one
+package manager, and do not rely on global installs.
 
-Yang dinilai bukan panjang jawaban, melainkan kemampuan menghubungkan penyebab dengan
-pencegahan.
+What is assessed is not the length of the answer but the ability to connect cause with
+prevention.
 -->
 
 ---
 
-## Referensi
+## References
 
-| Sumber | Tautan |
+| Source | Link |
 |---|---|
 | Node.js documentation (2026) | nodejs.org |
 | Expo documentation (2026) | docs.expo.dev |
@@ -966,14 +1029,14 @@ pencegahan.
 <div class="grid2">
 <div>
 
-**Bacaan lanjutan**
+**Further reading**
 
-- Bab 3 — JavaScript Modern
+- Chapter 3 — Modern JavaScript
 
 </div>
 <div>
 
-**Versi teknologi buku ini**
+**Technology versions in this book**
 
 - Expo SDK 57 · React Native 0.86 · React 19.2 · Node.js LTS ≥ 22
 
@@ -981,14 +1044,14 @@ pencegahan.
 </div>
 
 <!--
-Rujukan lengkap ada di Lampiran D, dan glosarium istilah di Lampiran C memuat entri
-seperti Dependency, Emulator, Metro Bundler, npm, dan Node.js.
+The complete references are in Appendix D, and the glossary of terms in Appendix C contains
+entries such as Dependency, Emulator, Metro Bundler, npm, and Node.js.
 
-Sumber utama bab ini tetap dokumentasi resmi, bukan tutorial pihak ketiga yang
-versinya tidak diketahui.
+The primary source for this chapter remains the official documentation, not third-party
+tutorials of unknown version.
 
-Ingatkan bahwa bagian yang bertanda version-sensitive pada bab wajib dicocokkan dengan
-dokumentasi resmi sebelum dipakai di kelas berikutnya.
+Remind them that the parts marked version-sensitive in the chapter must be matched against
+the official documentation before being used in the next class.
 -->
 
 ---
@@ -996,20 +1059,20 @@ dokumentasi resmi sebelum dipakai di kelas berikutnya.
 <!-- _class: lead -->
 <!-- _paginate: skip -->
 
-# Siap Menuju Bab 3
+# Ready for Chapter 3
 
-**Tugas:** kumpulkan laporan Praktikum 2 — tangkapan layar aplikasi di Expo Go atau emulator, catatan versi Node.js dan npm, serta checklist troubleshooting.
+**Assignment:** submit the Practicum 2 report — screenshots of the app in Expo Go or the emulator, a record of the Node.js and npm versions, and the troubleshooting checklist.
 
-Pertemuan berikutnya: JavaScript modern — variabel, tipe data, dan fungsi.
+Next meeting: modern JavaScript — variables, data types, and functions.
 
 <!--
-Tutup dengan satu kalimat: "Hari ini kita menyalakan mesinnya; mulai Bab 3 kita
-mulai menulis bahasanya."
+Close with one sentence: "Today we started the engine; from Chapter 3 we begin to write
+its language."
 
-Sebutkan tenggat pengumpulan laporan praktikum secara eksplisit dan penilaiannya
-mengikuti rubrik praktikum: pemahaman konsep, implementasi, kualitas kode, UI/UX,
-debugging, dan dokumentasi.
+State the practicum report deadline explicitly and its assessment following the practicum
+rubric: conceptual understanding, implementation, code quality, UI/UX, debugging, and
+documentation.
 
-Pesan terakhir: simpan project aplikasi-pertama karena akan dipakai kembali pada
-beberapa bab berikutnya.
+Final message: keep the aplikasi-pertama project because it will be used again in several
+of the following chapters.
 -->

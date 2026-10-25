@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1160 446" width="1160" height="446" role="img"><defs><marker id="a-slate" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#94a3b8"/></marker><marker id="a-acc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#1d4ed8"/></marker><marker id="a-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b91c1c"/></marker><marker id="a-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#15803d"/></marker><marker id="a-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#111827"/></marker></defs><style>
+.t{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif;fill:#111827}
+.m{font-family:ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,'Liberation Mono',monospace}
+.mu{fill:#6b7280}
+.ac{fill:#1d4ed8}
+.rd{fill:#b91c1c}
+.gn{fill:#15803d}
+.am{fill:#b45309}
+.wh{fill:#ffffff}
+.b6{font-weight:600}
+.b7{font-weight:700}
+.mid{text-anchor:middle}
+.end{text-anchor:end}
+.s12{font-size:12px}.s13{font-size:13px}.s14{font-size:14px}.s15{font-size:15px}.s16{font-size:16px}.s17{font-size:17px}.s18{font-size:18px}.s19{font-size:19px}.s20{font-size:20px}.s21{font-size:21px}.s22{font-size:22px}.s24{font-size:24px}.s26{font-size:26px}.s28{font-size:28px}.s30{font-size:30px}.s32{font-size:32px}.s34{font-size:34px}.s36{font-size:36px}.s38{font-size:38px}
+</style><rect x="0" y="0" width="620" height="168" rx="12" fill="#ffffff" stroke="none" stroke-width="1.5"/><rect x="0" y="0" width="620" height="46" rx="12" fill="#eef2ff" stroke="none" stroke-width="1.5"/><rect x="0" y="34" width="620" height="12" rx="0" fill="#eef2ff" stroke="none" stroke-width="1.5"/><text class="t s17 b7 ac" x="18" y="29">useMemo — caches a VALUE</text><line x1="0" y1="46" x2="620" y2="46" stroke="#c7d2fe" stroke-width="1" stroke-linecap="round"/><rect x="0" y="0" width="620" height="168" rx="12" fill="none" stroke="#c7d2fe" stroke-width="1.5"/>
+<text class="t s17 b6" x="18" y="78">Is the computation measurably expensive?</text>
+<text class="t s14 mu" x="18" y="106">filter · aggregate · transform a large dataset</text>
+<text class="t s13 mu" x="18" y="144">If yes → recompute only when a dependency changes.</text>
+<line x1="624" y1="84" x2="676" y2="84" stroke="#1d4ed8" stroke-width="2" stroke-linecap="round" marker-end="url(#a-acc)"/>
+<text class="t s12 b6 ac" x="640" y="72">yes</text>
+<rect x="700" y="0" width="460" height="168" rx="12" fill="#ffffff" stroke="none" stroke-width="1.5"/><rect x="700" y="0" width="460" height="46" rx="12" fill="#eef2ff" stroke="none" stroke-width="1.5"/><rect x="700" y="34" width="460" height="12" rx="0" fill="#eef2ff" stroke="none" stroke-width="1.5"/><text class="t s17 b7 ac" x="718" y="29">result</text><line x1="700" y1="46" x2="1160" y2="46" stroke="#c7d2fe" stroke-width="1" stroke-linecap="round"/><rect x="700" y="0" width="460" height="168" rx="12" fill="none" stroke="#c7d2fe" stroke-width="1.5"/>
+<rect x="718" y="70" width="286" height="23" rx="7" fill="#eef2ff" stroke="#c7d2fe" stroke-width="1"/><text class="m s13 ac" x="728" y="86.2">useMemo(() =&gt; filter(...), [data])</text>
+<text class="t s14" x="718" y="116">Caches the computed value.</text>
+<text class="t s13 mu" x="718" y="140">Not recomputed on every render.</text>
+<rect x="0" y="188" width="620" height="168" rx="12" fill="#ffffff" stroke="none" stroke-width="1.5"/><rect x="0" y="188" width="620" height="46" rx="12" fill="#f0fdf4" stroke="none" stroke-width="1.5"/><rect x="0" y="222" width="620" height="12" rx="0" fill="#f0fdf4" stroke="none" stroke-width="1.5"/><text class="t s17 b7 gn" x="18" y="217">useCallback — caches a FUNCTION</text><line x1="0" y1="234" x2="620" y2="234" stroke="#bbf7d0" stroke-width="1" stroke-linecap="round"/><rect x="0" y="188" width="620" height="168" rx="12" fill="none" stroke="#bbf7d0" stroke-width="1.5"/>
+<text class="t s17 b6" x="18" y="266">Is the function passed to a React.memo child?</text>
+<text class="t s14 mu" x="18" y="294">the function reference must be stable across renders</text>
+<text class="t s13 mu" x="18" y="332">If yes → the child does not re-render needlessly.</text>
+<line x1="624" y1="272" x2="676" y2="272" stroke="#15803d" stroke-width="2" stroke-linecap="round" marker-end="url(#a-green)"/>
+<text class="t s12 b6 gn" x="640" y="260">yes</text>
+<rect x="700" y="188" width="460" height="168" rx="12" fill="#ffffff" stroke="none" stroke-width="1.5"/><rect x="700" y="188" width="460" height="46" rx="12" fill="#f0fdf4" stroke="none" stroke-width="1.5"/><rect x="700" y="222" width="460" height="12" rx="0" fill="#f0fdf4" stroke="none" stroke-width="1.5"/><text class="t s17 b7 gn" x="718" y="217">result</text><line x1="700" y1="234" x2="1160" y2="234" stroke="#bbf7d0" stroke-width="1" stroke-linecap="round"/><rect x="700" y="188" width="460" height="168" rx="12" fill="none" stroke="#bbf7d0" stroke-width="1.5"/>
+<rect x="718" y="258" width="169" height="23" rx="7" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="1"/><text class="m s13 gn" x="728" y="274.2">useCallback(fn, [])</text>
+<text class="t s14" x="718" y="304">Caches the function reference.</text>
+<text class="t s13 mu" x="718" y="328">The dependency array works like useEffect.</text>
+<rect x="0" y="376" width="1160" height="56" rx="10" fill="#eef2ff" stroke="none" stroke-width="1.5"/>
+<rect x="0" y="376" width="6" height="56" rx="0" fill="#1d4ed8" stroke="none" stroke-width="1.5"/>
+<text class="t s17 b6" x="24" y="410">Neither? Write it plainly — premature optimization adds memory and complexity.</text></svg>

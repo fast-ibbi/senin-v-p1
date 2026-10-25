@@ -2,10 +2,10 @@
 marp: true
 theme: academic
 paginate: true
-title: "Bab 3 — JavaScript Modern untuk React Native"
-description: "Slide kuliah Pemrograman Mobile pertemuan 3–4: variabel, tipe data, operator, percabangan, perulangan, fungsi dan arrow function, array dan object, destructuring, spread, map/filter/reduce, module import/export, serta pemrograman asinkron dengan Promise, async/await, dan try/catch."
-author: "Dosen Pengampu — Program Studi Sistem Informasi / Teknik Informatika"
-footer: "Pemrograman Mobile · Bab 3 — JavaScript Modern untuk React Native"
+title: "Chapter 3 — Modern JavaScript for React Native"
+description: "Mobile Programming lecture, meetings 3–4: variables, data types, operators, branching, loops, functions and arrow functions, arrays and objects, destructuring, spread, map/filter/reduce, module import/export, and asynchronous programming with Promise, async/await, and try/catch."
+author: "Course Instructor — Information Systems / Informatics Engineering Study Program"
+footer: "Mobile Programming · Chapter 3 — Modern JavaScript for React Native"
 size: 16:9
 ---
 
@@ -13,35 +13,35 @@ size: 16:9
 <!-- _paginate: skip -->
 <!-- _footer: "" -->
 
-# Bab 3 — JavaScript Modern untuk React Native
+# Chapter 3 — Modern JavaScript for React Native
 
-Fondasi bahasa sebelum menulis komponen · Pertemuan 3–4
+Language foundations before writing components · Meetings 3–4
 
 <!--
-Buka dengan satu kalimat pengait: "Tiga pertemuan ke depan kita belum menulis satu layar pun.
-Hari ini kita membangun bahasanya lebih dulu, karena React Native pada akhirnya adalah JavaScript."
+Open with one hook: "For the next three meetings we do not write a single screen yet.
+Today we build the language first, because React Native is ultimately JavaScript."
 
-Tanyakan pembuka: "Bahasa pemrograman apa yang sebenarnya dipakai React Native?" (Jawaban:
-JavaScript, bukan Kotlin atau Swift — keduanya bahasa native yang tidak kita pakai di buku ini.)
+Opening question: "Which programming language does React Native actually use?" (Answer:
+JavaScript, not Kotlin or Swift — both are native languages we do not use in this book.)
 -->
 
 ---
 
-## Tujuan Pembelajaran
+## Learning Objectives
 
-- Menjelaskan `const` dan `let` beserta konsekuensi *scope*-nya
-- Menerapkan tipe data, operator, percabangan, dan perulangan
-- Menganalisis fungsi biasa dan arrow function, termasuk perilaku `this`
-- Mengimplementasikan *destructuring*, *spread*, `map`, `filter`, `reduce`
-- Mengevaluasi module `import`/`export` dan pola asinkron `async`/`await`
+- Explain `const` and `let` with their *scope* consequences
+- Apply data types, operators, branching, and loops
+- Analyze ordinary functions and arrow functions, including `this` behavior
+- Implement *destructuring*, *spread*, `map`, `filter`, `reduce`
+- Evaluate `import`/`export` modules and the `async`/`await` asynchronous pattern
 
 <!--
-Bacakan kata kerjanya saja, jangan seluruh kalimatnya. Tekankan bahwa tujuan ke-1 sampai ke-4
-dinilai lewat Latihan Bab 3 dan Kuis 1 di pertemuan berikutnya, sedangkan tujuan ke-5 baru
-terpakai penuh ketika kita memanggil server di Bab 10.
+Read out only the verbs, not the whole sentences. Stress that objectives 1 to 4 are
+assessed through Chapter 3 Exercises and Quiz 1 in the next meeting, while objective 5 is
+only fully used when we call a server in Chapter 10.
 
-Kaitkan dengan janji bab: seluruh kode bab ini dijalankan dengan Node.js, belum ada antarmuka —
-tujuannya mengasah logika sebelum menulis komponen di Bab 4.
+Tie it to the chapter's promise: all code in this chapter runs with Node.js, with no interface
+yet — the goal is to sharpen logic before writing components in Chapter 4.
 -->
 
 ---
@@ -49,42 +49,52 @@ tujuannya mengasah logika sebelum menulis komponen di Bab 4.
 <!-- _class: lead -->
 <!-- _paginate: skip -->
 
-# Bagian 1 — Dasar Bahasa JavaScript
+# Part 1 — JavaScript Language Basics
 
-Subbab 3.1 Variabel · 3.2 Tipe Data & Operator · 3.3 Percabangan & Perulangan · 3.4 Fungsi
+Section 3.1 Variables · 3.2 Data Types & Operators · 3.3 Branching & Loops · 3.4 Functions
 
 <!--
-Bagian ini adalah bekal wajib. Bila waktu pertemuan ini mepet, percepat Subbab 3.3 karena
-polanya sudah dikenal dari bahasa pemrograman lain, tetapi jangan lewatkan Subbab 3.1 dan 3.4
-yang menjadi kebiasaan penulisan kode React.
+This part is mandatory groundwork. If this meeting's time is tight, speed up Section 3.3 because
+the patterns are already familiar from other programming languages, but do not skip Sections 3.1 and 3.4
+which shape the habits of writing React code.
 
-Semua contoh di bagian ini disimpan di folder praktik-js dan dijalankan dengan node.
+All examples in this part are stored in the praktik-js folder and run with node.
+
+> `praktik-js/` is the book's generic exercise folder. In the practicum repository the same
+> techniques live in `kode/bab-03-javascript-modern-untuk-react-native/`: `utils/akademik.js`
+> (the pure functions) and `latihan-predikat.js` / `latihan-cari.js` / `latihan-async.js`
+> (the runnable exercises). Read the file names in the slides as technique labels, not as
+> paths that must exist.
 -->
 
 ---
 
-## Variabel: `const` dan `let`
+## Variables: `const` and `let`
 
-**Variabel** adalah tempat menyimpan nilai di dalam program, dideklarasikan dengan `const` atau `let`.
+![w:1120](assets/diagrams/bab-03-javascript-modern-untuk-react-native-05.svg)
 
-- Keduanya ber-*block scope* — hanya berlaku di dalam `{ }` terdekat
-- `const` untuk nilai yang diisi sekali; ia disiplin, bukan sekadar gaya penulisan
-- `let` untuk nilai yang memang berubah, misalnya penghitung perulangan
-- `var` ditinggalkan: ber-*function scope* dan nilainya mudah berubah tanpa disadari
+A **variable** is a place to store a value inside a program, declared with `const` or `let`.
+
+- Both are *block scoped* — they only apply inside the nearest `{ }`
+- `var` is left behind: it is *function scoped* and its value changes easily without being noticed
 
 <!--
-Analogi: const seperti nilai yang sudah ditulis dengan tinta, let seperti tulisan pensil.
+Analogy: const is like a value already written in ink, let is like a pencil mark.
 
-Pertanyaan pemandu: "Mengapa React hampir selalu memakai const?" (Jawaban: nilai state tidak
-diganti langsung, melainkan melalui fungsi pengubah dari useState di Bab 4.)
+Guiding question: "Why does React almost always use const?" (Answer: state values are not
+replaced directly, but through the setter function from useState in Chapter 4.)
 
-Peringatan miskonsepsi: mahasiswa sering mengira const membuat objeknya beku. Slide berikutnya
-mematahkan anggapan itu.
+Misconception warning: students often assume const freezes its object. The next slide
+breaks that assumption.
+
+Trimmed to the picture (the diagram says this):
+- `const` is for a value filled once; it is discipline, not merely a writing style
+- `let` is for a value that really changes, for example a loop counter
 -->
 
 ---
 
-## `const` Menjaga Rujukan, Bukan Isi
+## `const` Keeps the Reference, Not the Contents
 
 `praktik-js/01-variabel.js`
 
@@ -100,71 +110,73 @@ mahasiswa.ipk = 3.5; // BOLEH: properti objek tetap bisa diubah
 console.log(mahasiswa.ipk); // 3.5
 ```
 
-> `const` menjaga rujukan ke objek, bukan isi objeknya.
+> `const` guards the reference to an object, not the object's contents.
 
 <!--
-Tunjukkan tiga baris saja: let diisi ulang, const tidak boleh diisi ulang, dan properti objek
-ber-const tetap bisa diubah.
+Show just three lines: let is reassigned, const may not be reassigned, and a const object's
+properties can still be changed.
 
-Peringatan miskonsepsi paling sering: "const berarti data tidak bisa diubah sama sekali".
-Yang dijaga const adalah alamat memori objeknya, bukan nilai propertinya.
+The most common misconception warning: "const means the data cannot be changed at all".
+What const guards is the object's memory address, not its property values.
 
-Jika dijalankan, `namaAplikasi = 'Nama Lain'` memunculkan TypeError; tunjukkan di editor.
+If run, `namaAplikasi = 'Nama Lain'` raises a TypeError; show it in the editor.
 -->
 
 ---
 
-## Tipe Data Dasar di JavaScript
+## Basic Data Types in JavaScript
 
-| Tipe | Contoh | Catatan |
+| Type | Example | Note |
 |---|---|---|
-| **string** | `'2201001'` | teks |
-| **number** | `3.45` | termasuk bilangan desimal |
-| **boolean** | `true` / `false` | hasil perbandingan |
-| **undefined** | `nilaiBelumDiketahui` | belum terdefinisi |
-| **null** | `null` | sengaja dikosongkan |
-| **object** | `{ nama: 'Budi' }`, `[1, 2, 3]` | mencakup array dan fungsi |
+| **string** | `'2201001'` | text |
+| **number** | `3.45` | includes decimal numbers |
+| **boolean** | `true` / `false` | result of a comparison |
+| **undefined** | `nilaiBelumDiketahui` | not yet defined |
+| **null** | `null` | deliberately left empty |
+| **object** | `{ nama: 'Budi' }`, `[1, 2, 3]` | covers arrays and functions |
 
-> Diperiksa dengan `typeof`, tetapi `typeof []` dan `typeof null` sama-sama `"object"`.
+> Checked with `typeof`, but `typeof []` and `typeof null` are both `"object"`.
 
 <!--
-Jangan dibacakan baris per baris. Minta mahasiswa menyebutkan tipe dari nilai yang Anda
-tuliskan di papan, misalnya nim, ipk, dan status kelulusan.
+Do not read it row by row. Ask students to name the type of the values you
+write on the board, for example nim, ipk, and graduation status.
 
-Peringatan: `typeof` saja tidak cukup untuk membedakan array dan null. Penjelasan tambahan:
-untuk array, gunakan pemeriksaan khusus seperti Array.isArray.
+Warning: `typeof` alone is not enough to tell an array from null. Additional explanation:
+for arrays, use a dedicated check such as Array.isArray.
 
-Tanyakan: "Kalau properti yang tidak ada diakses, error atau undefined?" (Jawaban: undefined,
-dan itu harus diperlakukan hati-hati.)
+Ask: "If a property that does not exist is accessed, error or undefined?" (Answer: undefined,
+and that must be handled carefully.)
 -->
 
 ---
 
-## Operator dan Kesetaraan Ketat
+## Operators and Strict Equality
 
-| Kelompok | Operator | Contoh hasil |
+| Group | Operator | Example result |
 |---|---|---|
-| Aritmetika | `+` `-` `*` `/` `%` | `10 % 3` menghasilkan `1` |
-| Perbandingan | `===` `!==` `>` `<` `>=` `<=` | `3.45 >= 3.5` menghasilkan `false` |
-| Logika | `&&` \|\| `!` | `aktif && ipk >= 3.5` |
-| Kesetaraan | `===` dipakai, `==` dihindari | `'3' === 3` menghasilkan `false` |
+| Arithmetic | `+` `-` `*` `/` `%` | `10 % 3` gives `1` |
+| Comparison | `===` `!==` `>` `<` `>=` `<=` | `3.45 >= 3.5` gives `false` |
+| Logic | `&&` \|\| `!` | `aktif && ipk >= 3.5` |
+| Equality | `===` used, `==` avoided | `'3' === 3` gives `false` |
 
-> `'3' == 3` bernilai `true` karena JavaScript mengubah tipe otomatis — inilah alasan buku ini memakai `===`.
+> `'3' == 3` is `true` because JavaScript converts the type automatically — this is why this book uses `===`.
 
 <!--
-Tekankan satu aturan saja: selalu ===. Tunjukkan bahwa == "menolong" dengan mengubah teks
-menjadi angka, dan pertolongan itulah sumber bug.
+Stress just one rule: always ===. Show that == "helps" by converting text
+into a number, and that help is the source of bugs.
 
-Kejutan klasik yang layak disebut: 0.1 + 0.2 === 0.3 bernilai false pada JavaScript (bilangan
-desimal disimpan dalam biner). Untuk nilai uang, jangan bandingkan langsung.
+A classic surprise worth mentioning: 0.1 + 0.2 === 0.3 is false in JavaScript (decimal numbers
+are stored in binary). For money values, do not compare directly.
 
-Pertanyaan pemandu: "Operator mana yang dipakai untuk tahu baris ganjil atau genap?"
-(Jawaban: modulo %.)
+Guiding question: "Which operator is used to tell an odd or even row?"
+(Answer: modulo %.)
 -->
 
 ---
 
-## Optional Chaining dan Nullish Coalescing
+## Optional Chaining and Nullish Coalescing
+
+![w:1120](assets/diagrams/bab-03-javascript-modern-untuk-react-native-06.svg)
 
 `praktik-js/03-operator.js`
 
@@ -176,23 +188,23 @@ console.log(mahasiswa.alamat ?? 'Alamat tidak tercatat');
 // Alamat tidak tercatat
 ```
 
-- `?.` mengamankan akses properti yang mungkin bernilai `null` atau `undefined`
-- `??` menyediakan nilai bawaan hanya ketika nilainya `null` atau `undefined`
+- `?.` secures access to a property that may be `null` or `undefined`
+- `??` supplies a default value only when the value is `null` or `undefined`
 
 <!--
-Analogi: `?.` seperti bertanya sekaligus "benda ini ada dan punya properti itu?" tanpa menulis
-`if (objek && objek.profil)` yang panjang.
+Analogy: `?.` is like asking at once "does this thing exist and have that property?" without writing
+a long `if (objek && objek.profil)`.
 
-Peringatan: tanpa `?.`, mengakses `alamat.kota` saat `alamat` bernilai null akan melempar error.
-Tunjukkan bedanya dengan mengomentari satu baris.
+Warning: without `?.`, accessing `alamat.kota` when `alamat` is null throws an error.
+Show the difference by commenting out one line.
 
-Jika mahasiswa bertanya soal perbedaan `??` dengan `||`, cukup jawab singkat bahwa `??` hanya
-menyala pada null/undefined, lalu lanjut — detailnya bukan tuntutan bab ini.
+If students ask about the difference between `??` and `||`, just answer briefly that `??` only
+fires on null/undefined, then move on — its detail is not a demand of this chapter.
 -->
 
 ---
 
-## Percabangan: `if`, Ternary, `switch`
+## Branching: `if`, Ternary, `switch`
 
 `praktik-js/04-percabangan.js`
 
@@ -210,38 +222,42 @@ if (ipk >= 3.5) {
 const statusKelulusan = ipk >= 2.0 ? 'Lulus' : 'Tidak Lulus';
 ```
 
-> Ternary untuk dua pilihan sederhana; `switch` untuk satu nilai dengan banyak kemungkinan.
+> Ternary for two simple choices; `switch` for one value with many possibilities.
 
 <!--
-Urutan kondisi adalah inti slide ini. Tanyakan: "Kalau `ipk >= 3.0` ditulis lebih dulu, IPK 3.45
-masuk cabang mana?" (Jawaban: Sangat Memuaskan — padahal berhak Cumlaude.)
+The order of conditions is the core of this slide. Ask: "If `ipk >= 3.0` is written first, which
+branch does GPA 3.45 fall into?" (Answer: the 'Sangat Memuaskan' branch — even though it deserves Cumlaude.)
 
-Sebutkan bahwa `break` pada switch mencegah eksekusi jatuh ke kasus berikutnya, dan bahwa
-ternary akan sering mereka lihat di kode React pada Bab 4 saat kondisi di dalam tampilan.
+Mention that `break` in switch prevents execution from falling into the next case, and that
+they will often see the ternary in React code in Chapter 4 when a condition sits inside the view.
 -->
 
 ---
 
-## Falsy dan Truthy
+## Falsy and Truthy
 
-- Nilai *falsy* hanya: `false`, `0`, `''`, `null`, `undefined`, dan `NaN`
-- Semua nilai lain *truthy* — termasuk array kosong `[]` dan objek kosong `{}`
-- Akibatnya `if ([])` selalu masuk cabang benar
-- Karena itu tulis kondisi eksplisit: `if (daftarMahasiswa.length > 0)`
+![w:1120](assets/diagrams/bab-03-javascript-modern-untuk-react-native-01.svg)
+
+- As a result `if ([])` always takes the true branch
+- Therefore write conditions explicitly: `if (daftarMahasiswa.length > 0)`
 
 <!--
-Ini miskonsepsi paling mahal di bagian ini: "kosong berarti salah". Buktikan langsung di Node.js
-dengan `if ([])` dan `if (daftar.length > 0)`.
+Trimmed to the picture (the diagram says this):
+- The *falsy* values are only: `false`, `0`, `''`, `null`, `undefined`, and `NaN`
+- Every other value is *truthy* — including the empty array `[]` and the empty object `{}`
 
-Pertanyaan pemandu: "Kalau daftar mahasiswa kosong, apakah `if (daftarMahasiswa)` dianggap salah?"
-(Jawaban: tidak — selalu benar.)
+This is the most expensive misconception in this part: "empty means false". Prove it directly in Node.js
+with `if ([])` and `if (daftar.length > 0)`.
 
-Kaitkan ke depan: pemeriksaan panjang array seperti ini muncul saat menampilkan daftar di Bab 4.
+Guiding question: "If the student list is empty, is `if (daftarMahasiswa)` considered false?"
+(Answer: no — it is always true.)
+
+Look ahead: array-length checks like this appear when displaying a list in Chapter 4.
 -->
 
 ---
 
-## Perulangan: `for`, `while`, `for...of`
+## Loops: `for`, `while`, `for...of`
 
 `praktik-js/05-perulangan.js`
 
@@ -261,54 +277,54 @@ console.log(`Total IPK: ${total}`); // Total IPK: 17.03
 ```
 
 <!--
-Tekankan pemilihan alat, bukan sintaks: for saat jumlah putaran diketahui, while saat berhenti
-bergantung kondisi (misalnya percobaan login di Bab 13), for...of untuk menelusuri array.
+Stress choosing the tool, not the syntax: for when the number of rounds is known, while when stopping
+depends on a condition (for example login attempts in Chapter 13), for...of to walk an array.
 
-Peringatan: `for (const nilai in daftarNilai)` mengembalikan indeks, bukan nilainya — jangan
-tertukar dengan for...of.
+Warning: `for (const nilai in daftarNilai)` returns the index, not the value — do not
+confuse it with for...of.
 
-Sebutkan bahwa for...of adalah dasar pemahaman iterasi yang dipakai React untuk merender daftar.
+Mention that for...of is the basis for understanding the iteration React uses to render a list.
 -->
 
 ---
 
 <!-- _class: center -->
 
-## Apa yang Terjadi Jika…?
+## What Happens If…?
 
-- `for (let i = 1; i <= 5; i--)` dijalankan — apa yang terjadi?
-- Rantai `if` diurutkan dari kondisi paling longgar — cabang mana yang salah?
-- `for (const nilai in daftarNilai)` dipakai untuk array — apa yang tercetak?
+- `for (let i = 1; i <= 5; i--)` is run — what happens?
+- An `if` chain is ordered from the loosest condition — which branch is wrong?
+- `for (const nilai in daftarNilai)` is used on an array — what gets printed?
 
 <!--
-Berikan 3 menit berpikir berpasangan. Minta alasan, bukan hanya jawaban; jawaban lengkap ada di
-slide berikutnya sehingga semua kelompok tetap menebak lebih dulu.
+Give 3 minutes of think-pair-share. Ask for reasons, not just answers; the complete answers are on
+the next slide, so every group still guesses first.
 
-Bila ada kelompok yang benar semua, minta mereka menulis perbaikan satu baris untuk setiap kasus
-di papan — itu latihan berikutnya.
+If a group gets everything right, ask them to write a one-line fix for each case
+on the board — that is the next exercise.
 -->
 
 ---
 
 <!-- _class: center -->
 
-## Jawaban
+## Answers
 
-- Perulangan tidak pernah berhenti: `i` makin kecil, syarat `i <= 5` selalu benar
-- IPK 3.45 salah dikategorikan; urutan kondisi harus dari ketat ke longgar
-- Yang tercetak adalah indeks `0, 1, 2, …`, bukan nilai IPK — gunakan `for...of`
+- The loop never stops: `i` gets smaller, so the condition `i <= 5` is always true
+- The GPA 3.45 is categorized wrongly; the conditions must run from strict to loose
+- What is printed is the index `0, 1, 2, …`, not the GPA value — use `for...of`
 
 <!--
-Ulangi penyebabnya, bukan hasilnya: ketiga kesalahan ini adalah kesalahan "alat yang salah",
-bukan kesalahan "JS yang sulit".
+Repeat the cause, not the result: these three mistakes are "wrong tool" mistakes,
+not "hard JS" mistakes.
 
-**Penjelasan tambahan:** perulangan tak berujung hanya membekukan terminal, bukan merusak komputer
-— ajarkan Ctrl+C supaya mahasiswa tidak panik saat praktikum.
+**Additional explanation:** an endless loop only freezes the terminal, it does not damage the computer
+— teach Ctrl+C so students do not panic during the practicum.
 -->
 
 ---
 
-## Fungsi Deklarasi dan Arrow Function
+## Declaration Functions and Arrow Functions
 
 `praktik-js/06-fungsi.js`
 
@@ -327,17 +343,17 @@ console.log(tentukanPredikat());     // Memuaskan (parameter default 0)
 console.log(jumlahkan(1, 2, 3, 4));  // 10
 ```
 
-> **Arrow function** (fungsi panah) lebih ringkas dan tidak memiliki `this` sendiri — karena itu dominan di React.
+> An **arrow function** is more concise and has no `this` of its own — that is why it dominates in React.
 
 <!--
-Bahas tiga hal: pola early return (setiap cabang mengembalikan nilai), arrow function satu
-ekspresi tanpa return eksplisit, dan parameter default ipk = 0.
+Discuss three things: the early return pattern (every branch returns a value), the single-expression
+arrow function without an explicit return, and the default parameter ipk = 0.
 
-Peringatan miskonsepsi: arrow function bukan sekadar "fungsi yang lebih pendek" — pembedanya adalah
-`this` yang merujuk lingkup luar, dan sebab itulah React memakainya untuk penangan peristiwa.
+Misconception warning: an arrow function is not merely "a shorter function" — what sets it apart is
+`this` pointing to the outer scope, and that is why React uses it for event handlers.
 
-Sebutkan jalan ke depan: fungsi kecil yang satu tujuan adalah fondasi pure function yang diuji
-di Bab 14.
+Mention the road ahead: small single-purpose functions are the foundation of the pure functions tested
+in Chapter 14.
 -->
 
 ---
@@ -345,20 +361,20 @@ di Bab 14.
 <!-- _class: lead -->
 <!-- _paginate: skip -->
 
-# Bagian 2 — Array, Object & Pengolahan Data
+# Part 2 — Arrays, Objects & Data Processing
 
-Subbab 3.5 Array & Object · 3.6 Destructuring & Spread · 3.7 map / filter / reduce
+Section 3.5 Arrays & Objects · 3.6 Destructuring & Spread · 3.7 map / filter / reduce
 
 <!--
-Bagian ini adalah bagian yang paling sering dipakai di bab-bab berikutnya: hampir semua data
-aplikasi berbentuk array of object, dan hampir semua tampilan daftar lahir dari map.
+This is the part used most often in the following chapters: almost all application data
+is shaped as an array of objects, and almost all list views are born from map.
 
-Ingatkan bahwa pola ini berlanjut sampai Project Akhir, jadi jangan sekadar dihafal.
+Remind them that this pattern carries through to the Final Project, so do not merely memorize it.
 -->
 
 ---
 
-## Array dan Object: Tipe Rujukan
+## Arrays and Objects: Reference Types
 
 `praktik-js/07-array-object.js`
 
@@ -374,47 +390,47 @@ salinan.ipk = 4.0;
 console.log(mahasiswa.ipk);      // 4.0 — objek asli ikut berubah!
 ```
 
-> Array dan object adalah tipe rujukan: menyalin dengan `=` hanya menyalin alamatnya.
+> Arrays and objects are reference types: copying with `=` copies only the address.
 
 <!--
-Analogi: menyalin rujukan itu seperti memberi nama panggilan kedua untuk orang yang sama —
-mengubah nama panggilan tidak membuat orang kedua muncul.
+Analogy: copying a reference is like giving a second nickname to the same person —
+changing the nickname does not make a second person appear.
 
-Tunjukkan kejutan pada tiga baris terakhir, lalu tanyakan: "Bagaimana cara benar menyalin objek?"
-(Jawaban: spread pada Subbab 3.6 — biarkan mahasiswa menebak sebelum slide berikutnya.)
+Show the surprise in the last three lines, then ask: "What is the right way to copy an object?"
+(Answer: spread in Section 3.6 — let students guess before the next slide.)
 
-Peringatan: bug jenis aliasing ini jarang muncul saat praktik kecil, tetapi sangat sering terjadi
-saat mengubah state React di Bab 4.
+Warning: this kind of aliasing bug rarely appears in small practice, but it happens very often
+when changing React state in Chapter 4.
 -->
 
 ---
 
-## Data Mahasiswa Baku Buku Ini
+## Standard Student Data in This Book
 
-| NIM | Nama | Prodi | IPK |
+| NIM | Name | Program | GPA |
 |---|---|---|---|
-| 2201001 | Budi Santoso | Sistem Informasi | 3.45 |
-| 2201002 | Siti Aminah | Teknik Informatika | 3.82 |
-| 2201003 | Agus Wijaya | Informatika | 3.20 |
-| 2201004 | Dewi Lestari | Rekayasa Perangkat Lunak | 3.61 |
-| 2201005 | Rizky Pratama | Sistem Informasi | 2.95 |
+| 2201001 | Budi Santoso | Information Systems | 3.45 |
+| 2201002 | Siti Aminah | Informatics Engineering | 3.82 |
+| 2201003 | Agus Wijaya | Informatics | 3.20 |
+| 2201004 | Dewi Lestari | Software Engineering | 3.61 |
+| 2201005 | Rizky Pratama | Information Systems | 2.95 |
 
-> Bentuk objeknya `{ id, nim, nama, prodi, angkatan, ipk, email, telepon }`, dipakai ulang sampai Project Akhir.
+> The object shape is `{ id, nim, nama, prodi, angkatan, ipk, email, telepon }`, reused until the Final Project.
 
 <!--
-Jelaskan bahwa lima data ini bukan contoh sekali pakai: struktur yang sama dipakai pada Bab 4
-sampai Bab 8, Bab 10, dan Project Akhir, sehingga mahasiswa selalu bekerja pada data yang dikenal.
+Explain that these five records are not a one-off example: the same structure is used in Chapters 4
+to 8, Chapter 10, and the Final Project, so students always work on familiar data.
 
-Pertanyaan pemandu: "Ada berapa program studi unik di tabel ini?" (Jawaban: empat, dan Sistem
-Informasi muncul dua kali.)
+Guiding question: "How many unique programs are in this table?" (Answer: four, and Information
+Systems appears twice.)
 
-Peringatan: jangan mengarang data mahasiswa lain di latihan, agar hasil mahasiswa dapat
-dibandingkan satu sama lain.
+Warning: do not invent other student records in the exercises, so that student results can be
+compared with one another.
 -->
 
 ---
 
-## Destructuring: Mengambil Nilai dalam Satu Baris
+## Destructuring: Taking Values in One Line
 
 `praktik-js/08-destructuring.js`
 
@@ -429,24 +445,26 @@ const [pertama, kedua, ...sisaNilai] = nilaiUjian;
 console.log(pertama, kedua, sisaNilai); // 80 90 [ 75, 88 ]
 ```
 
-> **Destructuring** (penguraian struktur) mengambil nilai objek/array ke variabel dalam satu baris.
+> **Destructuring** takes object/array values into variables in one line.
 
 <!--
-Tunjukkan tiga kemampuan sekaligus: mengambil properti langsung menjadi variabel, mengganti nama
-variabel dengan `nim: nomorInduk`, dan memberi nilai bawaan untuk properti yang tidak ada.
+Show three capabilities at once: taking a property straight into a variable, renaming the
+variable with `nim: nomorInduk`, and giving a default value for a property that does not exist.
 
-Peringatan: destructuring array bekerja berdasarkan urutan, bukan nama — menukar posisi akan
-menukar nilai.
+Warning: array destructuring works by order, not by name — swapping the position swaps
+the value.
 
-Kaitkan ke depan: pola `const [nilai, setNilai] = useState(0)` di Bab 4 memakai mekanisme yang
-sama, sehingga slide ini adalah pintu masuk hook.
+Look ahead: the pattern `const [nilai, setNilai] = useState(0)` in Chapter 4 uses the same
+mechanism, so this slide is the gateway to hooks.
 -->
 
 ---
 
-## Spread Operator: Menyalin dan Memperbarui
+## Spread Operator: Copying and Updating
 
-`praktik-js/08-destructuring.js` dan `praktik-js/pengolah-nilai.mjs`
+![w:1120](assets/diagrams/bab-03-javascript-modern-untuk-react-native-07.svg)
+
+`praktik-js/08-destructuring.js` and `praktik-js/pengolah-nilai.mjs`
 
 ```js
 const dataLama = { nim: '2201003', nama: 'Agus Wijaya', ipk: 3.2 };
@@ -454,52 +472,55 @@ const dataBaru = { ...dataLama, ipk: 3.35 };
 
 console.log(dataLama.ipk); // 3.2 (tidak berubah)
 console.log(dataBaru.ipk); // 3.35 (objek baru)
-
-// Set menolak duplikat, spread mengubahnya kembali menjadi array
-const prodiUnik = [...new Set(daftarMahasiswa.map((m) => m.prodi))];
 ```
 
-- Simbol `...` sama, tugas berbeda: *spread* menyebarkan isi, *rest* mengumpulkan sisa
-- Pola `{ ...dataLama, ipk: 3.35 }` adalah dasar pembaruan *immutable* di React
+- The symbol `...` is the same, the job differs: *spread* scatters the contents, *rest* gathers the rest
+- The pattern `{ ...dataLama, ipk: 3.35 }` is the basis of *immutable* updates in React
 
 <!--
-Tekankan pola "salin dulu, baru perbarui": objek asli tetap utuh, dan kita memperoleh objek baru
-untuk ditampilkan. Inilah cara React memperbarui state pada Bab 4 dan Bab 9.
+Stress the pattern "copy first, then update": the original object stays intact, and we get a new object
+to display. This is how React updates state in Chapter 4 and Chapter 9.
 
-Bedakan spread dan rest dengan satu contoh singkat: `...dataLama` menyebar, `...sisaNilai`
-mengumpulkan.
+Tell spread and rest apart with one short example: `...dataLama` scatters, `...sisaNilai`
+gathers.
 
-Pertanyaan pemandu: "Mengapa React lebih suka membuat objek baru daripada mengubah yang lama?"
-(Jawaban: agar perubahan data terdeteksi dan tidak ada komponen yang membaca data yang salah.)
+Guiding question: "Why does React prefer creating a new object to changing the old one?"
+(Answer: so the data change is detected and no component reads the wrong data.)
+
+The Set trick was moved off the slide so the picture would fit (write it on the board if a
+student asks): `const prodiUnik = [...new Set(daftarMahasiswa.map((m) => m.prodi))]` — Set
+rejects duplicates, spread turns it back into an array.
 -->
 
 ---
 
-## `map`, `filter`, dan `reduce`
+## `map`, `filter`, and `reduce`
 
-| Metode | Tugasnya | Hasilnya |
+| Method | Its job | Its result |
 |---|---|---|
-| `map` | mengubah setiap elemen menjadi elemen baru | array baru, panjang sama |
-| `filter` | memilih elemen yang memenuhi kondisi | array baru, lebih pendek atau sama |
-| `reduce` | menggabungkan seluruh elemen | satu nilai, misalnya total IPK |
+| `map` | changes each element into a new element | new array, same length |
+| `filter` | picks the elements that meet a condition | new array, shorter or the same |
+| `reduce` | combines all elements | one value, for example the total GPA |
 
-- Ketiganya mengembalikan nilai baru tanpa mengubah array asli
-- Kawan pendampingnya: `find` mencari satu data, `some` dan `every` memeriksa kondisi
+- All three return a new value without changing the original array
+- Their companions: `find` looks up one record, `some` and `every` check a condition
+
+![w:1120](assets/diagrams/bab-03-javascript-modern-untuk-react-native-08.svg)
 
 <!--
-Bacakan kolom tengah saja, lalu minta mahasiswa menebak nama metode untuk tiga tugas: "ambil nama
-semua mahasiswa", "ambil IPK di atas 3.5", "hitung total IPK". (Jawaban: map, filter, reduce.)
+Read out only the middle column, then ask students to guess the method name for three jobs: "take the names
+of all students", "take the GPAs above 3.5", "compute the total GPA". (Answer: map, filter, reduce.)
 
-Peringatan: `reduce` tanpa nilai awal akan memakai elemen pertama sebagai akumulator dan gagal
-untuk array kosong — selalu tulis nilai awal `0`.
+Warning: `reduce` without an initial value uses the first element as the accumulator and fails
+on an empty array — always write the initial value `0`.
 
-Sebutkan bahwa `map` mengembalikan array baru, sedangkan `forEach` hanya berkeliling tanpa
-mengembalikan apa pun; itulah sebabnya pencetakan di praktikum memakai forEach.
+Mention that `map` returns a new array, whereas `forEach` only walks around without
+returning anything; that is why the printing in the practicum uses forEach.
 -->
 
 ---
 
-## Contoh: Rekap Mahasiswa Berprestasi
+## Example: Summary of High-achieving Students
 
 `praktik-js/09-map-filter-reduce.js`
 
@@ -518,17 +539,17 @@ const namaBerprestasi = daftarMahasiswa
 console.log(namaBerprestasi); // [ 'Siti Aminah', 'Dewi Lestari' ]
 ```
 
-> Rantai `filter(...).map(...)` dibaca alami: saring dulu, petakan setelahnya.
+> The `filter(...).map(...)` chain reads naturally: filter first, map afterwards.
 
 <!--
-Tunjukkan bahwa argumen setiap metode adalah callback yang menerima satu elemen array — di sini
-diberi nama m singkatan dari mahasiswa.
+Show that each method's argument is a callback receiving one array element — here
+named m, short for mahasiswa.
 
-Bandingkan cara berpikirnya: perulangan manual memberitahu komputer *bagaimana*, sedangkan rantai
-ini menyatakan *apa* yang diinginkan; hasilnya tidak mungkin salah indeks.
+Compare the way of thinking: a manual loop tells the computer *how*, whereas this chain
+states *what* is wanted; its result cannot get an index wrong.
 
-Peringatan: pemula sering menulis `filter` untuk sesuatu yang sebenarnya pencarian satu data —
-untuk itu gunakan `find`, yang mengembalikan objek alih-alih array.
+Warning: beginners often write `filter` for what is really a lookup of one record —
+for that use `find`, which returns an object instead of an array.
 -->
 
 ---
@@ -536,93 +557,97 @@ untuk itu gunakan `find`, yang mengembalikan objek alih-alih array.
 <!-- _class: lead -->
 <!-- _paginate: skip -->
 
-# Bagian 3 — Module & Pemrograman Asinkron
+# Part 3 — Modules & Asynchronous Programming
 
-Subbab 3.8 Module · 3.9 Promise · 3.10 async/await & try/catch
+Section 3.8 Modules · 3.9 Promise · 3.10 async/await & try/catch
 
 <!--
-Bagian ini pembeda antara "bisa menulis JavaScript" dan "siap memakai React Native": aplikasi
-mobile selalu memanggil data dari luar dirinya, dan semuanya berbentuk operasi asinkron.
+This part separates "can write JavaScript" from "ready to use React Native": a mobile
+app always calls data from outside itself, and all of it takes the form of asynchronous operations.
 
-Sesuai RPS, Sistem Modul (3.8) masih bagian pertemuan 3; bila waktu pertemuan 3 habis, Subbab
-3.9–3.10 yang dipindahkan ke pertemuan 4 bersama Praktikum 3.
+Per the RPS, the Module System (3.8) is still part of meeting 3; if meeting 3 runs out of time, it is
+Sections 3.9–3.10 that move to meeting 4 along with Practicum 3.
 -->
 
 ---
 
-## Module: Memecah Kode Menjadi File
+## Modules: Splitting Code into Files
 
-![w:720](assets/diagrams/bab-03-javascript-modern-untuk-react-nat-02.svg)
+![w:1120](assets/diagrams/bab-03-javascript-modern-untuk-react-native-02.svg)
 
-> **Module** (modul) memecah kode menjadi berkas; hanya yang di-`export` dapat dipakai berkas lain.
+> A **module** splits code into files; only what is `export`ed can be used by another file.
 
 <!--
-Jelaskan alasan historisnya secara singkat: sebelum ada module, semua berkas dimuat lewat tag
-script dan berbagi satu ruang nama global, sehingga dua berkas yang memakai nama `daftarMahasiswa`
-saling menimpa tanpa peringatan.
+Explain the historical reason briefly: before modules existed, every file was loaded through a
+script tag and shared one global namespace, so two files using the name `daftarMahasiswa`
+overwrote each other without warning.
 
-Pertanyaan pemandu: "Mengapa berkas data dipisahkan dari berkas logika?" (Jawaban: data dan logika
-dapat diuji serta diubah sendiri-sendiri, dan itu cerminan pemisahan data dari presentasi nanti.)
+Guiding question: "Why is the data file separated from the logic file?" (Answer: data and logic
+can be tested and changed on their own, and that mirrors the separation of data from presentation later.)
 
-Peringatan: nama di dalam kurung kurawal import harus sama persis dengan nama ekspornya.
+Warning: the name inside the import braces must match the export name exactly.
 -->
 
 ---
 
-## Menjalankan Module di Node.js
+## Running Modules in Node.js
 
-`praktik-js/cetak-data.mjs` — dijalankan dari dalam folder `praktik-js`
+`praktik-js/cetak-data.mjs` — run from inside the `praktik-js` folder
 
 ```bash
 node cetak-data.mjs
 node --check cetak-data.mjs
 ```
 
-`praktik-js/package.json` — alternatif bila berkas tetap berekstensi `.js`
+![w:1120](assets/diagrams/bab-03-javascript-modern-untuk-react-native-09.svg)
 
-```json
-{
-  "type": "module"
-}
-```
-
-- Tanpa `.mjs` atau `"type": "module"`, Node menolak `import` dengan `SyntaxError`
-- `node --check` berhasil bila terminal tidak menampilkan apa pun (kode keluar 0)
+- Without `.mjs` or `"type": "module"`, Node rejects `import` with a `SyntaxError`
+- `node --check` succeeds when the terminal shows nothing (exit code 0)
 
 <!--
-Tunjukkan dua cara mengaktifkan ESM, lalu tegaskan pilihan praktis untuk bab ini: pakai ekstensi
-.mjs karena paling cepat.
+Show the two ways to enable ESM, then state the practical choice for this chapter: use the
+.mjs extension because it is the quickest.
 
-Peringatan: ketiadaan keluaran dari opsi pemeriksa sintaks sering dianggap kegagalan oleh
-mahasiswa. Suruh mereka memeriksa kode keluar dengan `echo $?` (macOS/Linux) atau
-`echo %errorlevel%` (Windows): angka 0 berarti sintaks valid.
+Warning: the absence of output from the syntax-check option is often taken as failure by
+students. Have them check the exit code with `echo $?` (macOS/Linux) or
+`echo %errorlevel%` (Windows): the number 0 means the syntax is valid.
 
-Pertanyaan pemandu: "Apa yang terjadi kalau import menunjuk berkas yang salah nama?" (Jawaban:
-ERR_MODULE_NOT_FOUND, karena nama berkas di Node peka huruf besar-kecil.)
+Guiding question: "What happens if the import points to a file with the wrong name?" (Answer:
+ERR_MODULE_NOT_FOUND, because file names in Node are case-sensitive.)
+
+Trimmed to the picture (the diagram says this):
+
+    `praktik-js/package.json` — the alternative if the file keeps the `.js` extension
+
+    { "type": "module" }
+
+The picture's right panel carries the same two facts in one glance — `"type": "module"` and
+where it goes — so the literal itself is kept here, word for word, for anyone who types it
+along.
 -->
 
 ---
 
-## Promise dan Tiga Statusnya
+## Promises and Their Three States
 
-![w:720](assets/diagrams/bab-03-javascript-modern-untuk-react-nat-03.svg)
+![w:1120](assets/diagrams/bab-03-javascript-modern-untuk-react-native-03.svg)
 
-> **Promise** adalah objek yang mewakili hasil operasi asinkron yang belum tentu selesai.
+> A **Promise** is an object representing the result of an asynchronous operation that is not necessarily finished.
 
 <!--
-Analogi: promise seperti nomor antrean layanan — Anda belum membawa barangnya, tetapi sudah punya
-bukti bahwa hasilnya akan ada, atau bahwa permintaannya gagal.
+Analogy: a promise is like a service queue number — you do not have the goods yet, but you already have
+proof that the result will exist, or that the request failed.
 
-Tekankan alasan keberadaannya: JavaScript berjalan pada satu utas, sehingga operasi lambat yang
-dibiarkan memblokir akan membekukan seluruh aplikasi.
+Stress the reason it exists: JavaScript runs on a single thread, so a slow operation
+left to block will freeze the entire application.
 
-Peringatan: mahasiswa sering mengira mereka harus sering membuat Promise sendiri. Yang wajib
-adalah bisa mengonsumsinya, karena fetch di Bab 10 mengembalikan Promise.
+Warning: students often think they must frequently create Promises themselves. What is mandatory
+is being able to consume one, because fetch in Chapter 10 returns a Promise.
 -->
 
 ---
 
-## Mengonsumsi Promise: `then` dan `catch`
+## Consuming a Promise: `then` and `catch`
 
 `praktik-js/10-promise.js`
 
@@ -642,245 +667,262 @@ ambilDataMahasiswa()
   .finally(() => console.log('Proses selesai.'));
 ```
 
-> `.finally` selalu dijalankan — tempat yang tepat untuk menutup indikator "memuat…".
+> `.finally` always runs — the right place to close the "loading…" indicator.
 
 <!--
-Jelaskan bahwa setTimeout di sini hanyalah alat bantu agar terasa seperti latensi jaringan; pada
-Bab 10 perannya digantikan fetch.
+Explain that the setTimeout here is only a helper to make it feel like network latency; in
+Chapter 10 its role is taken over by fetch.
 
-Tunjukkan bentuk kode yang rata: rantai .then/.catch menggantikan callback bersarang yang makin
-dalam dan sulit dibaca.
+Show the flat code shape: the .then/.catch chain replaces nested callbacks that get deeper
+and harder to read.
 
-Pertanyaan pemandu: "Di mana kita menuliskan 'Mengambil data…' dan di mana kita menghapusnya?"
-(Jawaban: sebelum pemanggilan, dan di dalam .finally.)
+Guiding question: "Where do we write 'Mengambil data…' and where do we remove it?"
+(Answer: before the call, and inside .finally.)
 
-Sebutkan bahwa Promise.all dipakai bila beberapa permintaan ingin ditunggu sekaligus.
+Mention that Promise.all is used when several requests are to be awaited at once.
 -->
 
 ---
 
-## `async`/`await`: Asinkron Seperti Sinkron
-
-`praktik-js/11-async-await.js`
+## `async`/`await`: Asynchronous as if Synchronous
 
 ```js
 async function tampilkanData() {
-  try {
-    console.log('Memuat data...');
-    const data = await ambilDataMahasiswa();
-    console.log(`Data diterima: ${data.nama} (IPK ${data.ipk})`);
-    return data;
-  } catch (error) {
-    console.error('Terjadi kegagalan:', error.message);
-  }
+  console.log('Memuat data...');
+  const data = await ambilDataMahasiswa();
+  console.log(`Data diterima: ${data.nama} (IPK ${data.ipk})`);
+  return data;
 }
 
 tampilkanData();
 ```
 
-- Fungsi `async` selalu mengembalikan *promise*
-- `await` menunggu satu Promise tanpa membekukan seluruh aplikasi
+- An `async` function always returns a *promise*
+- `await` waits for one Promise without freezing the entire application
+
+![w:1120](assets/diagrams/bab-03-javascript-modern-untuk-react-native-10.svg)
 
 <!--
-Tunjukkan bahwa satu-satunya baris yang berbeda dari kode sinkron hanyalah `await` di depan
-pemanggilan — itulah daya tarik sintaks ini untuk tiga langkah berurutan seperti "ambil data,
-olah, simpan".
+Show that the only line differing from synchronous code is the `await` in front of
+the call — that is the appeal of this syntax for three sequential steps such as "fetch data,
+process, save".
 
-Peringatan: `await` hanya sah di dalam fungsi async atau di tingkat teratas module; memakainya di
-tempat lain memunculkan SyntaxError.
+Warning: `await` is only valid inside an async function or at the top level of a module; using it
+anywhere else raises a SyntaxError.
 
-Kaitkan ke depan: pola async/await + try/catch inilah yang dipakai setiap kali memanggil server di
-Bab 10, menyimpan lokal di Bab 11, dan autentikasi di Bab 13.
+Look ahead: this async/await + try/catch pattern is what is used every time we call a server in
+Chapter 10, save locally in Chapter 11, and authenticate in Chapter 13.
+
+Trimmed to make room for the picture — not because the diagram says it, but because the
+`try`/`catch` route is the next slide's subject and it has its own picture. The fence keeps the
+`async`/`await` template whole, including its progress line and its invocation; the wrapper it
+was written inside is here, verbatim. This slide also gave up its file line to the picture — the
+file is `praktik-js/11-async-await.js`, and it is the one runnable example of this pattern.
+
+    async function tampilkanData() {
+      try {
+        console.log('Memuat data...');
+        const data = await ambilDataMahasiswa();
+        console.log(`Data diterima: ${data.nama} (IPK ${data.ipk})`);
+        return data;
+      } catch (error) {
+        console.error('Terjadi kegagalan:', error.message);
+      }
+    }
+
+    tampilkanData();
+
+The full version is `latihan-async.js` in `kode/bab-03-javascript-modern-untuk-react-native/`.
 -->
 
 ---
 
-## `try`/`catch`: Aplikasi Tidak Boleh Diam
+## `try`/`catch`: the App Must Not Stay Silent
 
-![w:720](assets/diagrams/bab-03-javascript-modern-untuk-react-nat-04.svg)
+![w:1120](assets/diagrams/bab-03-javascript-modern-untuk-react-native-04.svg)
 
-> Blok `catch` adalah tempat aplikasi memilih bereaksi, bukan tempat menyembunyikan kesalahan.
+> The `catch` block is where the app chooses to react, not where it hides the error.
 
 <!--
-Bacakan alurnya sebagai cerita satu permintaan data: berhasil sampai pengguna melihat data, gagal
-sampai pengguna melihat pesan yang jelas.
+Read the flow as the story of one data request: succeeding until the user sees the data, failing
+until the user sees a clear message.
 
-Pertanyaan pemandu: "Aplikasi mana yang pernah Anda pakai lalu diam saja saat gagal memuat?"
-(Jawaban beragam; arahkan ke kesimpulan bahwa diam adalah pilihan desain yang buruk.)
+Guiding question: "Which app have you used that just stayed silent when loading failed?"
+(Answers vary; steer toward the conclusion that silence is a bad design choice.)
 
-**Penjelasan tambahan:** blok `catch` kosong membuat error hilang tanpa jejak — selalu tampilkan
-atau catat pesan kegagalannya.
+**Additional explanation:** an empty `catch` block makes the error vanish without a trace — always display
+or log its failure message.
 -->
 
 ---
 
-## Praktikum 3: Pengolah Nilai Mahasiswa
+## Practicum 3: Student Grade Processor
 
-- Siapkan folder `praktik-js`; `node --version` menampilkan 22 atau lebih
-- `pengolah-nilai.mjs` memuat enam fungsi, satu teknik per fungsi
-- Ringkas (`map`) · saring (`filter`) · rata-rata (`filter`+`reduce`)
-- Cari (`find`) · prodi unik (`Set`+`spread`) · simpan (`async`/`await` + `try`/`catch`)
-- Periksa `node --check`, jalankan `node pengolah-nilai.mjs`, hasilnya `hasil-rekap.json`
+- Open `kode/bab-03-javascript-modern-untuk-react-native/`; `node --version` shows 22 or higher
+- `utils/akademik.js` holds one pure function per technique: `totalSks` (`reduce`), `filterSemester` (`filter`), `hitungIpk` (`reduce`), `cariMatakuliah` (`find`), `kelompokkanPerSemester` (`reduce`), `urutkanJadwal` (`sort` on a copy)
+- `data/matakuliah.js` and `data/mahasiswa.js` export the records with `export` — no `require`
+- Run the three CLI exercises: `node latihan-predikat.js`, `node latihan-cari.js 20230002`, `node latihan-async.js`
+- `latihan-async.js` shows `async`/`await` + `try`/`catch`/`finally`; add `--gagal` to see the error path
 
-> Berkas lengkap tersedia di `kode/bab-03/`: `data-mahasiswa.mjs` mengekspor `daftarMahasiswa` (lima data baku) dengan `export`; `pengolah-nilai.mjs` adalah program utama yang memanggil `main()` — tanpa `export`.
+> The complete files are in `kode/bab-03-javascript-modern-untuk-react-native/`. All of them are ES modules, because this project sets `"type": "module"` in `package.json`; that is why `node latihan-cari.js` works without `.mjs`.
 
 <!--
-Tekankan bahwa latihan ini adalah versi kecil dari otomatisasi laporan: satu skrip yang dapat
-dijalankan ulang dengan hasil yang konsisten.
+Stress that this exercise is a small version of report automation: one script that can be
+rerun with consistent results.
 
-Sisipkan satu pertanyaan pemandu: "Apa yang terjadi kalau perintah dijalankan dari folder lain?"
-(Jawaban: program tetap berjalan, tetapi hasil-rekap.json muncul di folder tempat terminal berada.)
+Add one guiding question: "What happens if the command is run from another folder?"
+(Answer: the program still runs, but hasil-rekap.json appears in the folder where the terminal is.)
 
-Peringatan: praktikum ini tanpa dependency, jadi kegagalan hampir selalu berasal dari ekstensi
-berkas atau folder kerja yang salah, bukan dari paket yang belum dipasang.
+Warning: this practicum has no dependencies, so a failure almost always comes from the file
+extension or the wrong working folder, not from a package that has not been installed.
 -->
 
 ---
 
-## Hasil yang Diharapkan dan Verifikasi
+## Expected Results and Verification
 
-| Prodi | Rata-rata IPK |
+| Program | Average GPA |
 |---|---|
-| Sistem Informasi | 3.20 |
-| Teknik Informatika | 3.82 |
-| Informatika | 3.20 |
-| Rekayasa Perangkat Lunak | 3.61 |
+| Information Systems | 3.20 |
+| Informatics Engineering | 3.82 |
+| Informatics | 3.20 |
+| Software Engineering | 3.61 |
 
-- Mahasiswa berprestasi (IPK minimal 3.5): Siti Aminah 3.82 dan Dewi Lestari 3.61
-- Lulus bila terminal tanpa error, angka sesuai, dan `hasil-rekap.json` terbentuk
+- High-achieving students (GPA of at least 3.5): Siti Aminah 3.82 and Dewi Lestari 3.61
+- Pass when the terminal shows no error, the numbers match, and `hasil-rekap.json` is created
 
 <!--
-Tekankan tiga penanda keberhasilan, bukan hanya "tidak error": keluaran sesuai, berkas terbentuk,
-dan isi berkas memiliki jumlahMahasiswa 5.
+Stress three markers of success, not just "no error": the output matches, the file is created,
+and the file content has jumlahMahasiswa 5.
 
-Catat sebagai hal yang wajar bila berbeda: catatan pada naskah menyebut angka di atas berasal dari
-eksekusi nyata penulis buku, sehingga satu-satunya nilai yang boleh berbeda pada komputer
-mahasiswa adalah disimpanPada (waktu penyimpanan).
+Treat it as normal if something differs: the note in the manuscript says that the numbers above come from
+the book author's real run, so the only value that may differ on the student's computer
+is disimpanPada (the storage time).
 
-Pertanyaan pemandu: "Mengapa rata-rata Sistem Informasi dan Informatika sama-sama 3.20?"
-(Jawaban: masing-masing prodi hanya memiliki satu mahasiswa pada data baku.)
+Guiding question: "Why are the Information Systems and Informatics averages both 3.20?"
+(Answer: each program has only one student in the static data.)
 -->
 
 ---
 
-## Studi Kasus: Laporan Bagian Akademik
+## Case Study: Academic Office Report
 
-| Permintaan pimpinan | Teknik yang dipakai |
+| Management request | Technique used |
 |---|---|
-| Rata-rata IPK per program studi | `filter` + `reduce` per prodi |
-| Penerima beasiswa (IPK minimal 3,5) | `filter` dengan ambang |
-| Data mahasiswa dengan NIM tertentu | `find` |
-| Laporan yang dapat diulang konsisten | *script* JavaScript dengan keluaran JSON |
+| Average GPA per program | `filter` + `reduce` per program |
+| Scholarship recipients (GPA of at least 3.5) | `filter` with a threshold |
+| Student data with a specific NIM | `find` |
+| A report that can be repeated consistently | a JavaScript *script* with JSON output |
 
-> Sebelumnya staf menyaring berkas Excel secara manual: lambat, rawan salah salin, dan hasilnya berbeda antar staf.
+> Previously staff filtered an Excel file by hand: slow, prone to copy errors, and results differed between staff.
 
 <!--
-Bacakan sebagai cerita masalah kantor, bukan sebagai tabel. Intinya: masalahnya bukan pada data,
-melainkan pada pengolahan manual yang tidak dapat diulang.
+Read it as the story of an office problem, not as a table. The point: the problem is not the data,
+but manual processing that cannot be repeated.
 
-Pertanyaan pemandu: "Apa risiko terbesar bila dua staf mengerjakan permintaan yang sama dengan
-cara manual?" (Jawaban: dua laporan berbeda dari data yang sama.)
+Guiding question: "What is the biggest risk when two staff members handle the same request
+by hand?" (Answer: two different reports from the same data.)
 
-Kaitkan ke Project Akhir: daftar mahasiswa nanti diambil dari server, disaring, dihitung, dan
-ditampilkan di layar perangkat dengan teknik yang sama.
+Look ahead to the Final Project: the student list will later be fetched from a server, filtered, computed, and
+displayed on the device screen with the same techniques.
 -->
 
 ---
 
 <!-- _class: center -->
 
-## Mini Kuis
+## Mini Quiz
 
-- Hasil `[5, 8, 3, 9].filter((x) => x > 4)` adalah…
-- Hasil `[1, 2, 3, 4].reduce((total, x) => total + x, 0)` adalah…
-- Agar `import` berjalan di Node.js tanpa konfigurasi tambahan, ekstensi berkasnya…
-- Pernyataan yang benar tentang arrow function adalah…
+- The result of `[5, 8, 3, 9].filter((x) => x > 4)` is…
+- The result of `[1, 2, 3, 4].reduce((total, x) => total + x, 0)` is…
+- For `import` to run in Node.js without extra configuration, the file extension is…
+- The statement that is true about arrow functions is…
 
 <!--
-Kuis lisan 5 menit: tampilkan pertanyaan, minta seluruh kelas menjawab serentak atau mengangkat
-tangan, baru lanjut ke slide jawaban. Jangan membocorkan jawaban di slide ini.
+Five-minute oral quiz: show the questions, ask the whole class to answer together or raise
+hands, then move to the answer slide. Do not leak the answers on this slide.
 
-Butir ketiga dan keempat paling sering salah; bila itu terjadi, ulangi Subbab 3.8 dan 3.4 sebelum
-menutup pertemuan. Pertanyaan ini juga menjadi pemanasan untuk Kuis 1 pada pertemuan berikutnya.
+The third and fourth items are the most often missed; if that happens, repeat Sections 3.8 and 3.4 before
+closing the meeting. These questions also warm up Quiz 1 in the next meeting.
 -->
 
 ---
 
 <!-- _class: center -->
 
-## Jawaban
+## Answers
 
-- `[5, 8, 9]` — `filter` menyisakan elemen yang memenuhi kondisi
-- `10` — `reduce` menjumlahkan seluruh elemen dengan nilai awal `0`
-- `.mjs` — alternatifnya `"type": "module"` pada `package.json`
-- Arrow function tidak memiliki `this` sendiri — sebabnya ia dominan di React
+- `[5, 8, 9]` — `filter` keeps the elements that meet the condition
+- `10` — `reduce` adds up all elements with the initial value `0`
+- `.mjs` — the alternative is `"type": "module"` in `package.json`
+- An arrow function has no `this` of its own — which is why it dominates in React
 
 <!--
-Ulangi dua pembeda yang paling sering tertukar: `filter` mengembalikan array, sedangkan `find`
-mengembalikan satu elemen; dan ekstensi .mjs mengubah cara Node membaca berkas, bukan isi kodenya.
+Repeat the two distinctions most often swapped: `filter` returns an array, whereas `find`
+returns a single element; and the .mjs extension changes how Node reads the file, not the code content.
 
-Jika jawaban kelas beragam pada butir keempat, tulis ulang contoh event handler di papan dan
-tanyakan nilai `this` di dalamnya.
+If class answers vary on the fourth item, rewrite the event handler example on the board and
+ask for the value of `this` inside it.
 -->
 
 ---
 
-## Rangkuman
+## Summary
 
-1. `const` untuk nilai tetap dan `let` untuk nilai yang berubah; keduanya ber-*block scope*
-2. Pakai `===`, serta `?.` dan `??`; ingat nilai *falsy* saat menulis kondisi
-3. Arrow function lebih ringkas dan tidak memiliki `this` sendiri — dasar kode React
-4. `map`, `filter`, `reduce`, *destructuring*, dan *spread* mengolah data tanpa mengubah aslinya
-5. Module memecah kode; `async`/`await` dengan `try`/`catch` adalah pola baku memanggil data
+1. `const` for fixed values and `let` for values that change; both are *block scoped*
+2. Use `===`, plus `?.` and `??`; remember *falsy* values when writing conditions
+3. Arrow functions are more concise and have no `this` of their own — the basis of React code
+4. `map`, `filter`, `reduce`, *destructuring*, and *spread* process data without changing the original
+5. Modules split code; `async`/`await` with `try`/`catch` is the standard pattern for calling data
 
 <!--
-Jangan dibacakan. Minta lima mahasiswa berbeda menjelaskan satu nomor dengan kalimat sendiri —
-cara ini jauh lebih efektif daripada mengulang bacaan.
+Do not read it out. Ask five different students to explain one number each in their own words —
+this is far more effective than repeating the reading.
 
-Pesan penutup: dua kebiasaan yang dibawa dari bab ini ke seluruh buku adalah memakai === dan
-memperlakukan data sebagai sesuatu yang disalin, bukan diubah.
+Closing message: the two habits carried from this chapter through the whole book are using === and
+treating data as something that is copied, not changed.
 -->
 
 ---
 
-## Latihan dan Diskusi
+## Exercises and Discussion
 
 <div class="grid2">
 <div>
 
-**Latihan (lihat Bab 3)**
+**Exercises (see Chapter 3)**
 
 - `latihan-predikat.js`: `map` + `tentukanPredikat`
-- `latihan-cari.js`: `find` menurut NIM
+- `latihan-cari.js`: `find` by NIM
 - `hitungRataRataAngkatan(angkatan)`: `filter` + `reduce`
 
 </div>
 <div>
 
-**Diskusi kelas**
+**Class discussion**
 
-- `for` dengan penampung vs `reduce` untuk IPK tertinggi
-- Mengapa `try`/`catch` lebih baik daripada membiarkan error menghentikan program?
+- `for` with a container vs `reduce` for the highest GPA
+- Why is `try`/`catch` better than letting an error stop the program?
 
 </div>
 </div>
 
 <!--
-Latihan pertama dan kedua dikerjakan di kelas bila waktu tersisa, ketiga menjadi pekerjaan rumah
-bersama soal 1–5 pada Latihan Bab 3, sesuai RPS pertemuan 3.
+The first and second exercises are done in class if time remains, the third becomes homework
+together with questions 1–5 in the Chapter 3 Exercises, per the RPS for meeting 3.
 
-Untuk diskusi, beri 3 menit berpasangan lalu tampung 2–3 jawaban. Jawaban yang diharapkan pada
-butir kedua: aplikasi tetap hidup dan pengguna menerima pesan yang jelas, bukan layar beku.
+For the discussion, give 3 minutes in pairs then collect 2–3 answers. The expected answer on
+the second item: the app stays alive and the user receives a clear message, not a frozen screen.
 
-Nilai diskusi dari kualitas alasan, bukan dari pilihan jawabannya; catat keaktifan untuk komponen
-partisipasi.
+Assess the discussion on the quality of the reasoning, not on the choice of answer; record participation
+for the participation component.
 -->
 
 ---
 
-## Referensi
+## References
 
-| Sumber | Tautan |
+| Source | Link |
 |---|---|
 | JavaScript, MDN Web Docs (2026) | developer.mozilla.org |
 | Node.js documentation (2026) | nodejs.org |
@@ -891,15 +933,15 @@ partisipasi.
 <div class="grid2">
 <div>
 
-**Bacaan lanjutan**
+**Further reading**
 
-- Bab 4 — Dasar React (komponen, JSX, `state`)
-- Lampiran C — Glosarium (istilah *Promise*, *hook*, *JSX*)
+- Chapter 4 — React Basics (components, JSX, `state`)
+- Appendix C — Glossary (the terms *Promise*, *hook*, *JSX*)
 
 </div>
 <div>
 
-**Versi teknologi buku ini**
+**Technology versions in this book**
 
 - Expo SDK 57 · React Native 0.86 · React 19.2 · Node.js LTS ≥ 22
 
@@ -907,11 +949,11 @@ partisipasi.
 </div>
 
 <!--
-Sebutkan bahwa glosarium Lampiran C memuat istilah yang dipakai hari ini — destructuring, spread
-operator, Promise, Async/Await — sehingga mahasiswa tidak perlu mencari arti di blog asing.
+Mention that the Appendix C glossary holds the terms used today — destructuring, spread
+operator, Promise, Async/Await — so students need not look up the meaning on foreign blogs.
 
-Sumber utama bab ini adalah dokumentasi resmi MDN dan Node.js; semua contoh dijalankan dengan
-Node.js pada folder praktik-js tanpa dependency tambahan.
+The main sources for this chapter are the official MDN and Node.js documentation; all examples run with
+Node.js in the praktik-js folder without extra dependencies.
 -->
 
 ---
@@ -919,17 +961,17 @@ Node.js pada folder praktik-js tanpa dependency tambahan.
 <!-- _class: lead -->
 <!-- _paginate: skip -->
 
-# Siap Menuju Bab 4
+# Ready for Chapter 4
 
-**Tugas:** selesaikan Praktikum 3, kerjakan Latihan Bab 3, dan siapkan diri untuk Kuis 1.
+**Assignment:** complete Practicum 3, do the Chapter 3 Exercises, and prepare for Quiz 1.
 
-Pertemuan berikutnya: Dasar React — komponen, JSX, props, dan state.
+Next meeting: React Basics — components, JSX, props, and state.
 
 <!--
-Tutup dengan pengait: "Hari ini kita belajar berbicara; pertemuan berikutnya kita mulai menggambar
-di layar." Tekankan bahwa semua materi hari ini akan muncul kembali di setiap bab berikutnya.
+Close with a hook: "Today we learned to speak; next meeting we start drawing
+on the screen." Stress that everything from today will reappear in every following chapter.
 
-Sebutkan tenggat secara eksplisit: Latihan Bab 3 dikumpulkan kapan, dalam format apa, dan dinilai
-lewat rubrik praktikum Lampiran A (pemahaman konsep 15%, implementasi 25%, kualitas kode 15%,
-UI/UX 15%, debugging 10%, dokumentasi 20%).
+State the deadline explicitly: when the Chapter 3 Exercises are due, in what format,
+and how they are assessed through the Appendix A practicum rubric (conceptual understanding 15%,
+implementation 25%, code quality 15%, UI/UX 15%, debugging 10%, documentation 20%).
 -->

@@ -2,10 +2,10 @@
 marp: true
 theme: academic
 paginate: true
-title: "Bab 4 — Dasar React"
-description: "Slide kuliah Pemrograman Mobile pertemuan 4–5: konsep UI deklaratif, komponen dan JSX, props, state, event handling, conditional dan list rendering, komposisi komponen, serta hooks useState, useEffect, useMemo, dan useCallback."
-author: "Dosen Pengampu — Program Studi Sistem Informasi / Teknik Informatika"
-footer: "Pemrograman Mobile · Bab 4 — Dasar React"
+title: "Chapter 4 — React Fundamentals"
+description: "Mobile Programming lecture slides, meetings 4–5: declarative UI concepts, components and JSX, props, state, event handling, conditional and list rendering, component composition, and the useState, useEffect, useMemo, and useCallback hooks."
+author: "Course Instructor — Information Systems / Informatics Engineering Study Program"
+footer: "Mobile Programming · Chapter 4 — React Fundamentals"
 size: 16:9
 ---
 
@@ -13,58 +13,58 @@ size: 16:9
 <!-- _paginate: skip -->
 <!-- _footer: "" -->
 
-# Bab 4 — Dasar React
+# Chapter 4 — React Fundamentals
 
-Komponen, JSX, props, state, dan hooks · Pertemuan 4–5
+Components, JSX, props, state, and hooks · Meetings 4–5
 
 <!--
-Buka dengan mengaitkan ke pertemuan sebelumnya: Bab 3 sudah memberi alat bahasanya
-(variabel, fungsi, array, object, spread, map). Hari ini alat itu dipakai membangun
-antarmuka.
+Open by linking back to the previous meeting: Chapter 3 already supplied the language
+tools (variables, functions, arrays, objects, spread, map). Today those tools are used to
+build an interface.
 
-Tanyakan pembuka: "Kalau data mahasiswa berubah, siapa yang seharusnya memperbarui
-layar? Kode kita atau alatnya?" Tampung jawaban tanpa dikoreksi, karena slide 8 yang
-menjawabnya.
+Opening question: "If student data changes, who is supposed to update the screen? Our
+code or the tool?" Collect the answers without correcting them, because slide 8 answers
+it.
 -->
 
 ---
 
-## Tujuan Pembelajaran (1/2)
+## Learning Objectives (1/2)
 
-- Menjelaskan konsep UI deklaratif dan `UI = f(state)`
-- Mengidentifikasi aturan penulisan JSX dan membedakan komponen dengan elemen
-- Mengimplementasikan komponen reusable dengan props dan nilai default
-- Menganalisis perbedaan props dan state serta memperbarui state secara immutable
+- Explain the declarative UI concept and `UI = f(state)`
+- Identify the rules for writing JSX and distinguish components from elements
+- Implement reusable components with props and default values
+- Analyze the difference between props and state and update state immutably
 
 <!--
-Bacakan kata kerjanya saja, lalu tekankan bahwa tujuan ke-4 adalah yang paling sering
-diuji: mayoritas bug pemula lahir dari mencampur props dan state.
+Read out only the verbs, then stress that objective 4 is the one tested most often: most
+beginner bugs are born from mixing up props and state.
 
-Petakan penilaian: tujuan-tujuan ini dinilai lewat Latihan Bab 4 dan Praktikum Bab 4
-(rubrik praktikum Lampiran A); Kuis 1 pada pertemuan ini menguji materi JavaScript
-Bab 3, bukan materi bab ini.
+Map the assessment: these objectives are assessed through Chapter 4 Exercises and
+Chapter 4 Practicum (practicum rubric, Appendix A); Quiz 1 in this meeting tests
+Chapter 3 JavaScript material, not this chapter's material.
 -->
 
 ---
 
-## Tujuan Pembelajaran (2/2)
+## Learning Objectives (2/2)
 
-- Menerapkan event handling dengan referensi fungsi pada prop `on`
-- Menerapkan conditional rendering dan list rendering dengan `key` yang benar
-- Mengimplementasikan lifecycle sederhana dengan `useEffect` termasuk cleanup
-- Mengevaluasi kapan `useMemo` dan `useCallback` benar-benar diperlukan
+- Apply event handling with a function reference on the `on` prop
+- Apply conditional rendering and list rendering with a correct `key`
+- Implement a simple lifecycle with `useEffect`, including cleanup
+- Evaluate when `useMemo` and `useCallback` are genuinely needed
 
 <!--
-Tujuan terakhir (mengevaluasi useMemo dan useCallback) adalah yang paling sering
-disalahpahami: mahasiswa cenderung memakai useMemo di mana-mana karena mengira itu
-"wajib". Tekankan kata mengevaluasi.
+The last objective (evaluating useMemo and useCallback) is the most often
+misunderstood: students tend to use useMemo everywhere because they think it is
+"mandatory". Stress the word evaluate.
 
-Catatan penomoran: deck memecah tujuan ke-5 bab sumber (event handling, conditional
-dan list rendering) menjadi dua butir, sehingga tujuan useMemo menjadi butir ke-8.
+Numbering note: the deck splits the source chapter's objective 5 (event handling,
+conditional and list rendering) into two items, so the useMemo objective becomes item 8.
 
-Pertanyaan pemandu: "Tujuan ke-4 soal apa, dan tujuan terakhir soal apa?"
-(Jawaban: ke-4 soal memperbarui state tanpa mutasi, terakhir soal menahan diri agar
-tidak mengoptimasi tanpa alasan.)
+Guiding question: "What is objective 4 about, and what is the last objective about?"
+(Answer: 4 is about updating state without mutation, the last is about holding back so
+as not to optimize without reason.)
 -->
 
 ---
@@ -72,78 +72,64 @@ tidak mengoptimasi tanpa alasan.)
 <!-- _class: lead -->
 <!-- _paginate: skip -->
 
-# Bagian 1 — Pola Pikir, Komponen & Props
+# Part 1 — Mindset, Components & Props
 
-Subbab 4.1 Konsep React · 4.2 Component dan JSX · 4.3 Props
+Section 4.1 React concepts · 4.2 Components and JSX · 4.3 Props
 
 <!--
-Bagian ini konseptual dan paling menentukan. Bila waktu pertemuan ke-4 tersisa
-sedikit, bagian inilah yang harus tetap utuh, karena Subbab 4.4 dan seterusnya
-mengandaikan mahasiswa sudah memegang UI = f(state).
+This part is conceptual and the most decisive. If the meeting-4 time left is short,
+this part is the one that must stay intact, because Section 4.4 and the rest assume
+students already hold UI = f(state).
 
-Sisa bagian bab ini dipindahkan ke pertemuan ke-5.
+The rest of this chapter's parts move to meeting 5.
 -->
 
 ---
 
-## Mengapa React Ada?
+## Why Does React Exist?
 
-**Imperatif** — kode memerintahkan langsung: ambil elemen ini, ubah teksnya, tambahkan baris itu.
-
-**Deklaratif** — kode mendeskripsikan *apa yang tampil* dari data; React yang memperbarui layar.
-
-- Makin besar aplikasi, perintah imperatif makin tersebar dan sulit dilacak
-- Satu data berubah, lima bagian layar bisa tertinggal karena perintahnya terlewat
-- React (2013, dikembangkan Meta) hadir justru untuk menutup celah itu
+![w:1120](assets/diagrams/bab-04-dasar-react-05.svg)
 
 <!--
-Analogi: imperatif seperti memberi sopir daftar belokan satu per satu, sedangkan
-deklaratif seperti menuliskan alamat tujuan dan membiarkan sopir memilih jalannya.
+Analogy: imperative is like giving the driver a turn-by-turn list, whereas declarative
+is like writing down the destination address and letting the driver pick the route.
 
-Tanyakan: "Aplikasi apa yang pernah Anda lihat datanya berubah di satu tempat tetapi
-tidak berubah di tempat lain?" (Jawaban yang diharapkan: pengalaman nyata, misalnya
-jumlah barang di keranjang tidak cocok dengan isi keranjang.)
+Ask: "Which app have you seen where the data changes in one place but does not change
+in another?" (Expected answer: a real experience, for example the item count on the
+cart does not match the cart contents.)
 
-Miskonsepsi yang sering muncul: deklaratif dianggap berarti "tidak menulis logika".
-Yang berpindah hanyalah tempat logikanya, bukan jumlahnya.
+A common misconception: declarative is taken to mean "writing no logic". What moves
+is only the place of the logic, not the amount of it.
 -->
 
 ---
 
-## `UI = f(state)`: Tampilan adalah Fungsi dari State
+## `UI = f(state)`: The View Is a Function of State
 
-Tampilan adalah **fungsi dari state**: setiap kali state berubah, React menghitung tampilan baru dan memperbarui bagian yang benar-benar berubah.
-
-- Mekanismenya disebut **reconciliation** (rekonsiliasi/pencocokan)
-- React membandingkan gambaran tampilan lama dengan yang baru
-- Selisih (diff) minimal itulah yang diterapkan ke layar
-- Di React untuk web, hasil dif diterapkan ke DOM; di React Native, ke pohon komponen native (Bab 5)
-
-> Anda tidak lagi menulis perintah "perbarui teks ini" satu per satu — ubah state, layar mengikuti.
+![w:1120](assets/diagrams/bab-04-dasar-react-06.svg)
 
 <!--
-Kaitkan dengan istilah fungsi pada Bab 3: komponen menerima data dan mengembalikan
-tampilan, persis seperti fungsi yang menerima argumen dan mengembalikan nilai.
+Link back to the term function from Chapter 3: a component receives data and returns
+a view, exactly like a function that receives arguments and returns a value.
 
-Tekankan bahwa reconciliation cukup dipahami sebagai ide, bukan dihafal detailnya:
-React menyimpan gambaran lama, membandingkan, lalu menerapkan perbedaan.
+Stress that reconciliation is enough to understand as an idea, not to memorize in
+detail: React keeps the old picture, compares it, then applies the differences.
 
-Pertanyaan pemandu: "Kalau state tidak berubah tetapi layar berubah juga, apa yang
-salah?" (Jawaban: ada yang memutasi data di luar state, misalnya langsung mengubah
-isi array.)
+Guiding question: "If the state does not change but the screen changes anyway, what is
+wrong?" (Answer: something mutates data outside state, for example changing the
+contents of an array directly.)
 -->
 
 ---
 
-## Komponen: Unit Terkecil UI
+## Components: The Smallest Unit of the UI
 
-**Komponen** adalah fungsi JavaScript yang menerima data (props) dan mengembalikan deskripsi tampilan.
+![w:1120](assets/diagrams/bab-04-dasar-react-22.svg)
 
-- Aplikasi besar tersusun dari puluhan komponen kecil yang saling disusun
-- `App.js` di akar project adalah **komponen akar**: pintu masuk seluruh tampilan (Bab 2)
-- React modern hanya mengenal **functional component**, bukan class component
+**A component** is a JavaScript function that receives data (props) and returns a description of the view.
 
-`components/Sapaan.jsx`
+- A large application is built from dozens of small components arranged together
+- Modern React knows only **function components**, not class components
 
 ```jsx
 export default function Sapaan() {
@@ -152,62 +138,61 @@ export default function Sapaan() {
 ```
 
 <!--
-Jelaskan bahwa komponen pada dasarnya fungsi biasa: bisa diberi nama, dipanggil, dan
-dikembalikan komponen lain. Mahasiswa sudah menulis fungsi seperti ini di Bab 3,
-sehingga hambatannya kecil.
+Explain that a component is essentially an ordinary function: it can be named, called,
+and returned by another component. Students already wrote functions like this in
+Chapter 3, so the barrier is low.
 
-Sebutkan bahwa <p> adalah elemen HTML biasa yang boleh ditulis langsung di dalam JSX;
-di Bab 5 elemen semacam ini digantikan komponen React Native seperti <View> dan
-<Text>.
+Mention that <p> is an ordinary HTML element that may be written directly inside JSX;
+in Chapter 5 elements like this are replaced by React Native components such as <View>
+and <Text>.
 
-Pertanyaan pemandu: "Apa bedanya komponen dengan elemen?" (Jawaban: komponen adalah
-fungsinya, elemen adalah hasil pemanggilannya berupa deskripsi tampilan.)
+Guiding question: "What is the difference between a component and an element?"
+(Answer: a component is the function, an element is the result of calling it, a
+description of the view.)
 
-Peringatan: komponen di atas belum tampil di layar sampai diimpor dan dipakai oleh
-komponen induk. Hal itu dibahas pada slide praktikum.
+Warning: the component above does not appear on screen until it is imported and used
+by a parent component. That is discussed on the practicum slide.
 
-Sebutkan sekali bahwa <p>Halo, mahasiswa!</p> ditulis dengan JSX (JavaScript XML);
-namanya dan aturannya baru dibahas pada slide berikutnya.
+Mention once that <p>Halo, mahasiswa!</p> is written with JSX (JavaScript XML); its name
+and rules are only discussed on the next slide.
+
+Trimmed to the picture (the diagram says this):
+- `App.js` at the project root is the **root component**: the entry point for the whole view (Chapter 2)
+
+Path of the file whose body is below, moved off the slide so the picture and the code fit
+on one screen together:
+`components/Sapaan.jsx`
 -->
 
 ---
 
-## Enam Aturan Penulisan JSX
+## Six Rules for Writing JSX
 
-Tampilan komponen ditulis dengan **JSX** (JavaScript XML): ekstensi sintaks untuk menulis struktur tampilan mirip markup di dalam kode JavaScript.
-
-| Aturan | Konsekuensi |
-|---|---|
-| **Satu elemen akar** | Kembalikan satu pembungkus, atau fragment `<>...</>` |
-| **Semua tag ditutup** | Tulis `<img />`, bukan `<img>` ala HTML |
-| **Atribut camelCase** | Tidak ada `class` atau `for`; pakai `className`, `onClick` |
-| **Ekspresi dalam `{}`** | Variabel, pemanggilan fungsi, dan operasi dibungkus kurawal |
-| **Komentar `{/* */}`** | Komentar JSX ditulis di dalam kurung kurawal |
-| **`style` menerima objek** | Kurung kurawal ganda: `style={{ color: 'red' }}` |
+![w:1120](assets/diagrams/bab-04-dasar-react-07.svg)
 
 <!--
-Pastikan istilah JSX (JavaScript XML) mendarat lebih dulu: itu sintaks mirip markup
-yang dikompilasi menjadi pemanggilan fungsi JavaScript.
+Make sure the term JSX (JavaScript XML) lands first: it is markup-like syntax that is
+compiled into JavaScript function calls.
 
-Jangan dibacakan berurutan. Mulai dari aturan yang paling sering menimbulkan error di
-praktikum: aturan camelCase dan aturan satu elemen akar.
+Do not read them in order. Start with the rules that most often cause errors in the
+practicum: the camelCase rule and the single root element rule.
 
-Tunjukkan fragment dengan contoh cepat di editor: dua elemen bersaudara tanpa
-pembungkus menghasilkan error, dan solusinya adalah tag kosong pembuka penutup.
+Show fragments with a quick example in the editor: two sibling elements without a
+wrapper produce an error, and the solution is an empty opening tag and empty closing
+tag.
 
-Pertanyaan pemandu: "Mengapa JSX tidak bisa menulis class seperti HTML?" (Jawaban:
-karena class adalah kata kunci khusus di JavaScript; itulah sebabnya React memakai
-className.)
+Guiding question: "Why can JSX not write class like HTML?" (Answer: because class is a
+reserved keyword in JavaScript; that is why React uses className.)
 
-Sebutkan bahwa di React untuk web seluruh elemen HTML boleh dipakai langsung,
-sedangkan komponen React Native seperti View dan Text baru muncul di Bab 5.
+Mention that in React for the web every HTML element may be used directly, whereas
+React Native components such as View and Text only appear in Chapter 5.
 -->
 
 ---
 
-## Props: Data dari Induk ke Anak
+## Props: Data from Parent to Child
 
-**Props** (properties) adalah cara mengalirkan data dari komponen induk ke komponen anak — bayangkan sebagai parameter fungsi untuk komponen.
+**Props** (properties) are how data flows from a parent component to a child component — think of them as function parameters for a component.
 
 `components/KartuMahasiswa.jsx`
 
@@ -223,130 +208,98 @@ export default function KartuMahasiswa({ mahasiswa }) {
 ```
 
 <!--
-Tekankan satu hal: komponen anak tidak perlu tahu dari mana data berasal. Pemakaiannya
-dari komponen induk terlihat seperti tag HTML biasa, misalnya
+Stress one thing: the child component does not need to know where the data comes from.
+Its use from the parent component looks like an ordinary HTML tag, for example
 KartuMahasiswa mahasiswa={mahasiswaBudi}.
 
-Kaitkan kurung kurawal pada parameter dengan destructuring yang sudah dipelajari di
-Bab 3 Subbab 3.6: cara singkat membuka bungkusan objek props.
+Link the curly braces in the parameter to the destructuring already learned in
+Chapter 3, Section 3.6: a shorthand for unwrapping the props object.
 
-Pertanyaan pemandu: "Kalau data yang sama ditampilkan sepuluh kali, berapa komponen
-yang harus ditulis?" (Jawaban: satu, dipakai sepuluh kali dengan props berbeda.)
+Guiding question: "If the same data is displayed ten times, how many components must
+be written?" (Answer: one, used ten times with different props.)
 
-Peringatan: jangan menyebut props sebagai "variabel global"; props selalu mengalir
-satu arah dari induk ke anak.
+Warning: do not call props a "global variable"; props always flow in one direction from
+parent to child.
 -->
 
 ---
 
-## Props: Read-only, Nilai Default, dan `children`
+## Props: Read-only, Default Values, and `children`
 
-- **Read-only:** komponen anak dilarang mengubah props yang diterimanya
-- **Nilai default:** pakai parameter fungsi, bukan `defaultProps` yang tidak diperlukan lagi
-- **`children`:** isi di antara tag pembuka dan penutup otomatis menjadi prop
-
-`components/KartuMahasiswa.jsx`
-
-```jsx
-function KartuMahasiswa({ mahasiswa = {} }) {
-  return <p>{mahasiswa.nama}</p>;
-}
-```
+![w:1120](assets/diagrams/bab-04-dasar-react-08.svg)
 
 <!--
-Tekankan alasan read-only: kalau anak boleh mengubah data milik induk, sumber
-kebenaran data menjadi kabur. Perubahan data harus diminta ke pemiliknya, yaitu
-komponen induk atau setter yang diturunkan.
+Stress the reason for read-only: if a child may change data owned by the parent, the
+source of truth for the data becomes blurred. Data changes must be requested from the
+owner, namely the parent component or a setter passed down.
 
-Jelaskan bahwa pada React 19.2 nilai default cukup ditulis pada parameter fungsi,
-seperti yang sudah dipakai di Bab 3; defaultProps adalah cara lama.
+Explain that in React 19.2 a default value is simply written in the function
+parameter, as already used in Chapter 3; defaultProps is the old way.
 
-Pertanyaan pemandu: "Bila induk lupa mengirim props mahasiswa, apa yang terjadi?"
-(Jawaban: komponen tetap berjalan dengan nilai default, tidak error.)
+Guiding question: "If the parent forgets to send the mahasiswa props, what happens?"
+(Answer: the component still runs with the default value, no error.)
 
-Peringatan: pola children dibahas ulang pada slide komposisi; jangan mendahului
-materi lifting state up yang baru muncul di Bab 9.
+Warning: the children pattern is discussed again on the composition slide; do not jump
+ahead to lifting state up, which only appears in Chapter 9.
 -->
 
 ---
 
-## State dan `useState`
+## State and `useState`
 
-**State** adalah data internal komponen yang boleh berubah seiring waktu; perubahannya memicu re-render.
-
-- `useState('Semua')` menerima nilai awal dan mengembalikan sepasang nilai
-- Pasangan itu: state `kategoriProdi` dan fungsi pengubahnya, yaitu **setter**
-- Konvensi penamaannya `const [x, setX] = useState(...)` — destructuring array (Bab 3)
-- Memanggil setter membuat React menjalankan ulang komponen dan menyesuaikan JSX
-
-> Ubah state, layar mengikuti — inilah wujud nyata `UI = f(state)`.
+![w:1120](assets/diagrams/bab-04-dasar-react-09.svg)
 
 <!--
-Analogi: props seperti paket kiriman dari luar yang tidak boleh dibongkar isinya,
-state seperti buku catatan pribadi yang boleh ditulis ulang oleh pemiliknya.
+Analogy: props are like a parcel from outside whose contents may not be unpacked,
+state is like a personal notebook its owner may rewrite.
 
-Tunjukkan di editor: menekan tombol memanggil setter, dan teks di layar berubah tanpa
-satu pun perintah manipulasi tampilan ditulis.
+Show it in the editor: pressing the button calls the setter, and the text on screen
+changes without a single display-manipulation command being written.
 
-Pertanyaan pemandu: "Mana yang boleh diubah oleh komponen: props atau state?"
-(Jawaban: hanya state miliknya sendiri, dan hanya lewat setter.)
+Guiding question: "Which may a component change: props or state?" (Answer: only its own
+state, and only through the setter.)
 
-Peringatan: useState tidak boleh dipanggil di dalam percabangan if atau perulangan;
-aturan ini diulang pada slide hooks.
+Warning: useState may not be called inside an if branch or a loop; this rule is repeated
+on the hooks slide.
 -->
 
 ---
 
-## Aturan Emas: Immutability (ketidakberubahan)
+## The Golden Rule: Immutability
 
-Jangan pernah mengubah state secara langsung, karena React tidak mendeteksi perubahan itu dan layar tidak diperbarui.
-
-| Jangan (mutasi) | Lakukan (nilai baru) |
-|---|---|
-| `kategoriProdi = 'X'` | `setKategoriProdi('X')` |
-| `data.push(mahasiswaBaru)` | `setData([...data, mahasiswaBaru])` |
-
-> Aturan ini berlaku untuk seluruh sisa buku dan menjadi salah satu sumber bug tersering pemula.
+![w:1120](assets/diagrams/bab-04-dasar-react-10.svg)
 
 <!--
-Ini slide yang paling layak diulang bila waktu memungkinkan. Tunjukkan bahwa push
-mengubah isi array yang sama, sehingga React tidak melihat state "berubah"; spread
-operator membuat array baru sehingga React mendeteksi perubahan.
+This is the slide most worth repeating if time allows. Show that push changes the
+contents of the same array, so React does not see state as "changed"; the spread
+operator makes a new array so React detects the change.
 
-Kaitkan dengan Bab 3: spread operator sudah dikuasai, jadi yang baru hanyalah
-kebiasaan memakainya untuk menyalin sebelum mengubah.
+Link it to Chapter 3: the spread operator is already mastered, so what is new is only
+the habit of using it to copy before changing.
 
-Pertanyaan pemandu: "Kalau datanya sudah benar tetapi layar tidak berubah, apa
-tersangka pertama Anda?" (Jawaban: state dimutasi langsung, bukan lewat setter.)
+Guiding question: "If the data is already correct but the screen does not change, what is
+your first suspect?" (Answer: state mutated directly, not through the setter.)
 
-Peringatan: banyak mahasiswa menyimpulkan bahwa array tidak boleh diubah sama sekali.
-Yang dilarang adalah memutasi state, bukan memakai operasi yang mengembalikan nilai
-baru.
+Warning: many students conclude that arrays may not be changed at all. What is forbidden
+is mutating state, not using operations that return a new value.
 -->
 
 ---
 
 ## Props vs State
 
-| Aspek | Props | State |
-|---|---|---|
-| Asal data | dari komponen induk | internal komponen itu sendiri |
-| Boleh berubah? | tidak (read-only) | ya, lewat setter |
-| Memicu re-render? | ya, jika induk mengirim nilai baru | ya, jika setter dipanggil |
-| Pemilik | komponen induk | komponen yang mendeklarasikannya |
-
-> Keduanya sama-sama data yang menentukan tampilan; bedanya hanya siapa pemilik dan siapa yang boleh mengubah.
+![w:1120](assets/diagrams/bab-04-dasar-react-11.svg)
 
 <!--
-Jangan membaca tabel baris per baris. Bandingkan dua kolom lewat satu contoh: kategori
-prodi dipilih pengguna sehingga menjadi state di App, sedangkan objek mahasiswa
-dikirim ke kartu sehingga menjadi props.
+Do not read the table row by row. Compare the two columns through one example: the
+program category is chosen by the user so it becomes state in App, whereas the student
+object is sent to the card so it becomes props.
 
-Latih dengan pertanyaan cepat: "sedangMemuat itu props atau state?" (Jawaban: state,
-karena dikelola dan diubah di dalam App sendiri.)
+Practice with a quick question: "Is sedangMemuat props or state?" (Answer: state,
+because it is managed and changed inside App itself.)
 
-Peringatan: props tetap dapat memicu re-render, tetapi bukan anak yang mengubahnya;
-induk yang mengirim nilai baru. Perbedaan halus ini sering tertukar di ujian.
+Warning: props can still trigger a re-render, but it is not the child that changes them;
+the parent sends the new value. This subtle difference is often mixed up in exams.
 -->
 
 ---
@@ -354,102 +307,70 @@ induk yang mengirim nilai baru. Perbedaan halus ini sering tertukar di ujian.
 <!-- _class: lead -->
 <!-- _paginate: skip -->
 
-# Bagian 2 — Interaksi, Rendering & Komposisi
+# Part 2 — Interaction, Rendering & Composition
 
-Subbab 4.5 Event Handling · 4.6 Conditional & List · 4.7 Komposisi · 4.8–4.9 Hooks
+Section 4.5 Event handling · 4.6 Conditional & list · 4.7 Composition · 4.8–4.9 Hooks
 
 <!--
-Bagian ini adalah inti praktikum dan paling padat. Bila waktu pertemuan ke-5 mepet,
-pindahkan Subbab 4.9 (useMemo dan useCallback) ke sesi tanya jawab, karena sifatnya
-pengantar.
+This part is the core of the practicum and the densest. If the meeting-5 time is tight,
+move Section 4.9 (useMemo and useCallback) into the question-and-answer session, because
+it is introductory in nature.
 
-Semua kode yang dibahas di sini berkumpul menjadi satu aplikasi kecil pada slide
-praktikum.
+All the code discussed here comes together into one small application on the practicum
+slide.
 -->
 
 ---
 
-## Event Handling: Serahkan Referensi Fungsi
+## Event Handling: Hand Over a Function Reference
 
-Event disampaikan lewat prop berawalan `on`, yang paling umum `onClick` — di React Native namanya `onPress` (Bab 5).
-
-`components/KartuMahasiswa.jsx`
-
-```jsx
-const ubahTampilDetail = () => {
-  setDetailTampil((tampilSebelumnya) => !tampilSebelumnya);
-};
-
-<button onClick={ubahTampilDetail}>
-  Tampilkan Detail
-</button>
-```
+![w:1120](assets/diagrams/bab-04-dasar-react-12.svg)
 
 <!--
-Inti slide ini satu kalimat: yang diserahkan ke onClick adalah fungsi itu sendiri,
-bukan hasil pemanggilannya.
+The core of this slide is one sentence: what is handed to onClick is the function
+itself, not the result of calling it.
 
-Kesalahan klasik yang harus ditunjukkan langsung di editor: menulis
-onClick={ubahTampilDetail()} membuat fungsi dijalankan seketika saat render sehingga
-tombol tampak tidak berfungsi.
+The classic mistake that must be shown directly in the editor: writing
+onClick={ubahTampilDetail()} runs the function immediately at render, so the button
+appears not to work.
 
-Jelaskan juga functional update pada setDetailTampil: nilai baru dihitung dari nilai
-lama, sehingga aman meski pembaruan terjadi beberapa kali dalam satu gelombang.
+Also explain the functional update in setDetailTampil: the new value is computed from
+the old value, so it is safe even when the update happens several times in one batch.
 
-Pertanyaan pemandu: "Bagaimana membawa data ke dalam handler, misalnya nama prodi?"
-(Jawaban: fungsi panah inline, misalnya onClick={() => ubahKategoriProdi(prodi)}.)
+Guiding question: "How do you carry data into the handler, for example the program
+name?" (Answer: an inline arrow function, for example onClick={() => ubahKategoriProdi(prodi)}.)
 
-Peringatan: <button> adalah elemen HTML biasa; padanannya di React Native adalah
-Pressable (pengganti TouchableOpacity), yang baru dibahas di Bab 5.
+Warning: <button> is an ordinary HTML element; its counterpart in React Native is
+Pressable (the replacement for TouchableOpacity), which is only discussed in Chapter 5.
 -->
 
 ---
 
-## Conditional Rendering: Tiga Pola
+## Conditional Rendering: Three Patterns
 
-- **Ternary `? :`** — memilih salah satu dari dua tampilan
-- **Operator `&&`** — menampilkan elemen hanya jika kondisi benar
-- **`null` eksplisit** — cara paling jelas untuk "jangan tampilkan apa pun"
-
-`App.jsx`
-
-```jsx
-{sedangMemuat ? (
-  <p>Memuat data mahasiswa...</p>
-) : (
-  <DaftarMahasiswa data={dataTampil} />
-)}
-```
-
-`components/KartuMahasiswa.jsx`
-
-```jsx
-{detailTampil && (<p>Email: {mahasiswa.email}</p>)}
-```
+![w:1120](assets/diagrams/bab-04-dasar-react-13.svg)
 
 <!--
-Tekankan bahwa ketiga pola ini memanfaatkan ekspresi JavaScript yang mengembalikan
-nilai truthy dan falsy, materi Bab 3 Subbab 3.2, bukan fitur baru dari React.
+Stress that these three patterns use JavaScript expressions that return truthy and
+falsy values, Chapter 3 Section 3.2 material, not a new feature of React.
 
-Tunjukkan satu state menggerakkan dua tampilan sekaligus: detailTampil menentukan
-teks tombol sekaligus memunculkan blok detail. Ini contoh paling murah untuk
-menjelaskan UI = f(state).
+Show one state driving two views at once: detailTampil determines the button text and
+brings up the detail block at the same time. This is the cheapest example for
+explaining UI = f(state).
 
-Pertanyaan pemandu: "Kalau nilainya 0 atau string kosong, apakah && tetap aman?"
-(Jawaban: berhati-hatilah, karena 0 dan string kosong adalah nilai falsy yang tetap
-dapat tercetak di layar. Untuk kondisi semacam ini pakai ternary.)
+Guiding question: "If the value is 0 or an empty string, is && still safe?" (Answer: be
+careful, because 0 and the empty string are falsy values that can still be printed on
+screen. For conditions like this use a ternary.)
 
-Peringatan: kondisi kosong sering membuat mahasiswa menulis if di dalam JSX; ingatkan
-bahwa yang diperlukan hanya ekspresi.
+Warning: empty conditions often make students write if inside JSX; remind them that only
+an expression is needed.
 -->
 
 ---
 
-## List Rendering dengan `map`
+## List Rendering with `map`
 
-- `map` mengubah array data menjadi array elemen JSX (Bab 3 Subbab 3.7)
-- Data tidak pernah dimutasi, karena `map` mengembalikan array baru
-- Setiap elemen daftar wajib diberi **key**: identitas unik di antara saudara kandungnya
+![w:900](assets/diagrams/bab-04-dasar-react-14.svg)
 
 `components/DaftarMahasiswa.jsx`
 
@@ -460,316 +381,271 @@ bahwa yang diperlukan hanya ekspresi.
 ```
 
 <!--
-Hubungkan dengan komposisi: list rendering dan komponen reusable adalah pasangan yang
-tidak terpisahkan, karena map menghasilkan satu komponen yang sama berulang kali.
+Connect it to composition: list rendering and reusable components are an inseparable
+pair, because map produces the same component over and over.
 
-Perhatikan titik penulisan key: key diletakkan pada elemen yang dihasilkan map, bukan
-di dalam komponen KartuMahasiswa. Ini kekeliruan yang paling sering terjadi.
+Note where key is written: key goes on the element produced by map, not inside the
+KartuMahasiswa component. This is the most frequent mistake.
 
-Pertanyaan pemandu: "Mengapa data tidak boleh diubah di dalam map?" (Jawaban: karena
-map sudah mengembalikan array baru; memutasi data justru melanggar aturan
-immutability.)
+Guiding question: "Why may the data not be changed inside map?" (Answer: because map
+already returns a new array; mutating the data actually breaks the immutability rule.)
 
-Peringatan: untuk daftar besar, jangan menyimpulkan bahwa map selalu cukup. FlatList
-diperkenalkan pada Bab 5.
+Warning: for a large list, do not conclude that map is always enough. FlatList is
+introduced in Chapter 5.
 -->
 
 ---
 
-## `key`: Unik, Stabil, Bukan Indeks
+## `key`: Unique, Stable, Not the Index
 
-- Hilang key memunculkan peringatan: "Each child in a list should have a unique key prop"
-- Key yang berubah membuat React salah mencocokkan elemen antar render
-- Pakai identitas data yang memang unik, misalnya `mahasiswa.id`
-- Hindari `key={index}` bila urutan daftar dapat berubah: tambah, urut, atau hapus
-- Indeks baru dapat ditoleransi untuk daftar statis yang tidak pernah berubah
-
-> Untuk data kecil, `div` + `map` sudah memadai; daftar panjang ditangani `FlatList` pada Bab 5.
+![w:1120](assets/diagrams/bab-04-dasar-react-15.svg)
 
 <!--
-Slide penutup rangkaian list rendering: tekankan kata stabil. Key bukan sekadar unik,
-tetapi juga tidak berubah antar render.
+The closing slide of the list rendering series: stress the word stable. A key is not
+merely unique, it also does not change between renders.
 
-Contoh yang paling meyakinkan: kartu yang sedang terbuka detailnya ikut berpindah ke
-kartu lain setelah daftar disaring, karena React mengira elemen indeks 2 yang lama
-adalah elemen indeks 2 yang baru.
+The most convincing example: a card whose detail is open moves to another card after
+the list is filtered, because React thinks the old element at index 2 is the new element
+at index 2.
 
-Pertanyaan pemandu: "Mengapa Math.random() sebagai key justru lebih buruk daripada
-indeks?" (Jawaban: key berubah setiap render, sehingga React membuang dan membangun
-ulang semua elemen.)
+Guiding question: "Why is Math.random() as a key actually worse than the index?"
+(Answer: the key changes on every render, so React discards and rebuilds every element.)
 
-Peringatan: hilangnya key tidak menghentikan aplikasi; peringatannya mudah diabaikan
-justru karena aplikasi tetap berjalan. Bug-nya muncul belakangan dan sulit dilacak.
+Warning: a missing key does not stop the application; its warning is easy to ignore
+precisely because the application keeps running. The bug appears later and is hard to
+trace.
 -->
 
 ---
 
 <!-- _class: center -->
 
-## Apa yang terjadi jika…?
+## What Happens If…?
 
-- Daftar lima mahasiswa memakai `key={index}`, lalu Anda menyaring per program studi?
-- Sebuah kartu sedang terbuka detailnya, lalu daftar diurutkan ulang berdasarkan nama?
-- React memberi tahu lewat apa ketika daftar bermasalah?
+- The list of five students uses `key={index}`, then you filter by program?
+- A card has its detail open, then the list is re-sorted by name?
+- How does React tell you when the list has a problem?
 
 <!--
-Skenario ini diambil dari praktikum bab ini. Minta mahasiswa menuliskan dugaan
-jawabannya di kertas selama 2 menit sebelum slide berikutnya ditampilkan.
+These scenarios are taken from this chapter's practicum. Ask students to write down
+their guessed answers on paper for 2 minutes before the next slide is shown.
 
-Jangan mengonfirmasi jawaban dari bangku; cukup catat siapa yang menyebut kata
-"bergeser" atau "tertukar", karena itulah inti jawabannya.
+Do not confirm answers from the seats; just note who says the word "shift" or "swapped",
+because that is the core of the answer.
 
-Bila kelas ragu, beri petunjuk: "React mencocokkan elemen berdasarkan apa?"
+If the class hesitates, give a hint: "What does React match the elements by?"
 -->
 
 ---
 
 <!-- _class: center -->
 
-## Jawaban: Detail Tersangkut ke Kartu Lain
+## Answers: The Detail Gets Stuck to Another Card
 
-- Indeks bergeser, sehingga React mencocokkan elemen lama dengan elemen yang salah
-- State `detailTampil` milik kartu lain ikut terbuka — datanya benar, tampilannya salah
-- Peringatan di konsol: *"Each child in a list should have a unique key prop"*
+- The index shifts, so React matches the old element with the wrong element
+- The `detailTampil` state of another card opens along with it — the data is correct, the view is wrong
+- The console warning: *"Each child in a list should have a unique key prop"*
 
-> Perbaikan: `key={mahasiswa.id}` — unik dan tidak berubah antar render.
+> The fix: `key={mahasiswa.id}` — unique and unchanged between renders.
 
 <!--
-Tegaskan bahwa gejala ini menipu: mahasiswa akan menuduh data mahasiswa tertukar,
-padahal datanya benar dan yang salah adalah pencocokan elemen oleh React.
+Stress that this symptom is deceptive: students will blame swapped student data, when
+the data is correct and what is wrong is React's element matching.
 
-Tunjukkan di editor: ganti key menjadi id, maka perilaku aneh itu hilang tanpa
-mengubah satu baris pun logika data.
+Show it in the editor: change the key to id, and the odd behavior disappears without
+changing a single line of data logic.
 
-Pertanyaan pemandu: "Mengapa React tidak sekadar memperbaiki sendiri masalah ini?"
-(Jawaban: React tidak tahu identitas data yang benar; hanya pengembang yang
-mengetahuinya.)
+Guiding question: "Why does React not just fix this problem itself?" (Answer: React does
+not know the true identity of the data; only the developer knows it.)
 
-Peringatan: jangan menyarankan key acak sebagai jalan pintas; itu memindahkan bug,
-bukan menghilangkannya.
+Warning: do not suggest a random key as a shortcut; that moves the bug, it does not
+remove it.
 -->
 
 ---
 
-## Komposisi Komponen & Reusable Component
+## Component Composition & Reusable Components
 
-![w:900](assets/diagrams/bab-04-dasar-react-02.svg)
-
-- Data mengalir ke bawah lewat props; state tinggal di tempat ia dideklarasikan
-- `KartuMahasiswa` menyimpan `detailTampil` sendiri, jadi setiap kartu berdiri sendiri
-
-> Satu komponen `KartuMahasiswa` yang sama dapat muncul di daftar, di layar detail, bahkan di layar lain pada project akhir.
+![w:1120](assets/diagrams/bab-04-dasar-react-02.svg)
 
 <!--
-Jelaskan arah panahnya sekali saja: data turun ke bawah, sedangkan state berdiri di
-tempat ia dideklarasikan. Jangan membaca ulang label yang sudah terlihat di layar.
+Explain the arrow direction once only: data flows down, whereas state stands where it
+is declared. Do not re-read labels already visible on screen.
 
-Sebutkan pola children sebagai bentuk kedua penyaluran tampilan: komponen induk
-menentukan slot, pemakainya mengisi isi slot tersebut. Komponen KartuInfo pada bab
-adalah contohnya.
+Mention the children pattern as the second way of passing the view: the parent
+component defines a slot, its user fills that slot. The KartuInfo component in the
+chapter is the example.
 
-Pertanyaan pemandu: "Kalau menekan tombol di kartu Budi, apakah kartu Siti ikut
-terbuka?" (Jawaban: tidak, karena detailTampil adalah state lokal setiap kartu.)
+Guiding question: "If the button on Budi's card is pressed, does Siti's card open as
+well?" (Answer: no, because detailTampil is local state in each card.)
 
-Peringatan: jangan mengajak mahasiswa memecah komponen terlalu halus. Aturan praktis
-bab ini dua saja: dipakai di lebih dari satu tempat, atau mulai terlalu panjang untuk
-dipahami sekilas.
+Warning: do not invite students to split components too finely. The practical rule in
+this chapter is just two: used in more than one place, or starting to get too long to
+grasp at a glance.
 -->
 
 ---
 
-## Dua Aturan Hooks yang Tidak Boleh Dilanggar
+## Two Rules of Hooks That Must Not Be Broken
 
-- Hooks hanya dipanggil **di dalam fungsi komponen** atau custom hook (Bab 9)
-- Selalu di **tingkat atas**: bukan di dalam `if`, perulangan, atau fungsi bersarang
-- React mengandalkan urutan pemanggilan hooks yang sama di setiap render
-- Melanggar aturan ini membuat React kehilangan jejak state
-
-> Aturan yang sama berlaku untuk `useState`, `useEffect`, `useMemo`, dan `useCallback`.
+![w:1120](assets/diagrams/bab-04-dasar-react-16.svg)
 
 <!--
-Tekankan alasan di balik aturan ini: React tidak menyimpan state dengan nama variabel,
-tetapi berdasarkan urutan pemanggilan. Kalau urutannya bergeser karena berada di dalam
-percabangan, React membaca state yang salah.
+Stress the reason behind this rule: React does not store state by variable name, but
+by call order. If the order shifts because a call sits inside a branch, React reads the
+wrong state.
 
-Sebutkan bahwa ESLint pada project Expo sudah menegur jika aturan ini dilanggar, jadi
-mahasiswa tidak perlu menghafal tanpa alat bantu.
+Mention that ESLint in the Expo project already warns when this rule is broken,
+so students need not memorize it without a tool to help them.
 
-Pertanyaan pemandu: "Mengapa useEffect di dalam if berbahaya?" (Jawaban: pada render
-tertentu efeknya dipanggil dan pada render lain tidak, sehingga urutan hooks bergeser.)
+Guiding question: "Why is useEffect inside if dangerous?" (Answer: in some renders the
+effect is called and in others it is not, so the hooks order shifts.)
 -->
 
 ---
 
-## `useEffect`: Efek Samping dan Cleanup
+## `useEffect`: Side Effects and Cleanup
 
-Render harus murni; pekerjaan yang menyentuh dunia luar, seperti timer dan pembacaan data, ditempatkan di `useEffect`.
-
-`App.js`
-
-```jsx
-useEffect(() => {
-  const timer = setTimeout(() => {
-    setSedangMemuat(false);
-  }, 2000);
-
-  return () => clearTimeout(timer);
-}, []);
-```
+![w:1120](assets/diagrams/bab-04-dasar-react-17.svg)
 
 <!--
-Jelaskan dua argumen useEffect: fungsi efek dan dependency array. Fungsi efek berjalan
-setelah komponen dirender, sedangkan array menentukan kapan ia dijalankan ulang.
+Explain the two arguments of useEffect: the effect function and the dependency array.
+The effect function runs after the component renders, whereas the array determines when
+it is run again.
 
-Fungsi yang dikembalikan adalah cleanup: dipanggil ketika komponen dilepas atau
-sebelum efek dijalankan ulang. Tanpa cleanup, timer terus berjalan dan dapat memicu
-pembaruan state pada komponen yang sudah tidak ada.
+The returned function is cleanup: called when the component is removed or before the
+effect is run again. Without cleanup, a timer keeps running and can trigger a state
+update on a component that no longer exists.
 
-Sebutkan bahwa di mode pengembangan React sengaja menjalankan efek dua kali untuk
-membantu menemukan efek yang tidak bersih; ini normal dan bukan bug kode mahasiswa.
+Mention that in development mode React deliberately runs effects twice to help find
+effects that are not clean; this is normal and not a bug in the student's code.
 
-Pertanyaan pemandu: "Apa bedanya [] , [dep], dan tanpa array sama sekali?"
-(Jawaban: sekali saat mount, dijalankan ulang saat dep berubah, dan setiap render.)
+Guiding question: "What is the difference between [] , [dep], and no array at all?"
+(Answer: once on mount, re-run when dep changes, and on every render.)
 
-Peringatan: efek ini adalah simulasi pemuatan data, bukan pengambilan data sungguhan.
-Loading state yang sebenarnya dibahas pada Bab 10.
+Warning: this effect is a simulation of data loading, not real data fetching. The real
+loading state is discussed in Chapter 10.
 -->
 
 ---
 
 ## Lifecycle: Mount, Update, Unmount
 
-![w:900](assets/diagrams/bab-04-dasar-react-03.svg)
-
-- **Mount** — render pertama selesai; efek dengan `[]` berjalan sekali
-- **Update** — ada dependency yang berubah; efek dijalankan ulang
-- **Unmount** — komponen dihapus dari layar; fungsi cleanup dipanggil
+![w:1120](assets/diagrams/bab-04-dasar-react-03.svg)
 
 <!--
-Ingatkan bahwa istilah mount dan unmount akan muncul lagi pada navigation lifecycle di
-Bab 7, jadi penting dipakai dengan makna yang konsisten.
+Remind them that the terms mount and unmount will appear again in the navigation
+lifecycle in Chapter 7, so they must be used with a consistent meaning.
 
-Analogi sederhana: menyalakan lampu saat masuk ruangan, menyesuaikan terangnya saat
-kondisi berubah, dan mematikannya saat keluar ruangan.
+A simple analogy: turning a lamp on when entering a room, adjusting its brightness when
+conditions change, and turning it off when leaving the room.
 
-Pertanyaan pemandu: "Kalau dependency array dihilangkan sama sekali, efek berjalan
-kapan?" (Jawaban: setiap render, jarang diinginkan, dan sering menjadi sumber masalah
-kinerja.)
+Guiding question: "If the dependency array is dropped entirely, when does the effect
+run?" (Answer: on every render, rarely desirable, and often a source of performance
+problems.)
 
-Peringatan: jangan menyamakan lifecycle dengan urutan kerja komponen kelas. Di React
-modern semuanya dikelola lewat efek.
+Warning: do not equate lifecycle with the working order of class components. In modern
+React everything is managed through effects.
 -->
 
 ---
 
-## `useMemo` dan `useCallback`: Kapan Dipakai
+## `useMemo` and `useCallback`: When to Use Them
 
-| Hook | Menyimpan apa | Kapan diperlukan |
-|---|---|---|
-| `useMemo` | hasil perhitungan | komputasi terukur mahal: filter, agregasi, transformasi data besar |
-| `useCallback` | referensi fungsi | fungsi diteruskan ke anak yang dibungkus `React.memo` |
-
-- Tanpa `useMemo`, `filter` dijalankan ulang pada setiap render
-- Keduanya menyimpan data di memori dan menambah kerumitan membaca kode
-- Optimasi prematur, yaitu menebak tanpa data kinerja, membuat kode lebih sulit dipelihara
-
-> Pada data lima mahasiswa manfaatnya belum terasa; pola ini menjadi penting ketika jumlah data membesar.
+![w:1120](assets/diagrams/bab-04-dasar-react-18.svg)
 
 <!--
-Tekankan kata terukur pada kolom terakhir. Optimasi diambil karena ada bukti beban,
-bukan karena kebiasaan atau tren.
+Stress the word measurable in the last column. An optimization is made because there is
+evidence of load, not because of habit or fashion.
 
-Jelaskan pembagian tugasnya dengan satu kalimat: useMemo menyimpan nilai, useCallback
-menyimpan fungsi. Keduanya memakai dependency array yang cara kerjanya sama seperti
-pada useEffect.
+Explain the division of labor in one sentence: useMemo stores a value, useCallback
+stores a function. Both use a dependency array that works the same way as in useEffect.
 
-Pertanyaan pemandu: "Kalau useMemo dipakai pada setiap perhitungan, apa akibatnya?"
-(Jawaban: bukan hanya tidak berguna, tetapi menambah memori terpakai dan menyulitkan
-pembaca kode.)
+Guiding question: "If useMemo is used on every computation, what is the consequence?"
+(Answer: it is not only useless, it adds memory use and makes the code harder for a
+reader.)
 
-Peringatan: praktikum bab ini memang memakai useMemo untuk filter dan rata-rata IPK
-sebagai ilustrasi pola; sampaikan terus terang bahwa pada data sekecil ini manfaatnya
-baru terasa saat data membesar.
+Warning: this chapter's practicum does use useMemo for the filter and the GPA average as
+an illustration of the pattern; say plainly that on data this small the benefit is only
+felt once the data grows.
 -->
 
 ---
 
-## Alur Kejadian: Satu Ketukan, Satu Re-render
+## The Event Flow: One Tap, One Re-render
 
-![w:900](assets/diagrams/bab-04-dasar-react-04.svg)
-
-> Semua konsep bab ini bertemu di rantai ini: event, state, render, lalu layar.
+![w:1120](assets/diagrams/bab-04-dasar-react-04.svg)
 
 <!--
-Ini slide perangkum bagian tengah bab. Minta mahasiswa menceritakan rantai ini dengan
-kalimat sendiri sebelum Anda menjelaskannya.
+This slide summarizes the middle of the chapter. Ask students to retell this chain in
+their own sentences before you explain it.
 
-Uji dengan pertanyaan uraian yang ada di bab: jelaskan alur lengkap dari menekan
-tombol Tampilkan Detail hingga blok detail muncul. Jawaban yang benar menyebut
-handler, setter, re-render, dan conditional rendering.
+Test it with the essay question in the chapter: explain the complete flow from pressing
+the Tampilkan Detail button until the detail block appears. A correct answer mentions the
+handler, the setter, the re-render, and conditional rendering.
 
-Pertanyaan pemandu: "Mengapa layar tidak bisa berubah tanpa setter?" (Jawaban: karena
-React hanya tahu state berubah jika setter dipanggil; mutasi langsung tidak terdeteksi.)
+Guiding question: "Why can the screen not change without a setter?" (Answer: because
+React only knows state has changed if the setter is called; a direct mutation is not
+detected.)
 -->
 
 ---
 
-## Studi Kasus: Data Akademik di BAAK
+## Case Study: Academic Data at BAAK
 
-Bagian administrasi akademik menjawab puluhan pertanyaan harian; petugas menyaring berkas spreadsheet secara manual, lambat dan rawan salah salin.
+![w:1120](assets/diagrams/bab-04-dasar-react-23.svg)
 
-- Aplikasi menampilkan data mahasiswa **secara dinamis**: filter prodi dan ringkasan agregat
-- Satu sumber kebenaran: data dipisah dari tampilan, sehingga tidak ada dua versi angka
-- Kartu berdiri sendiri, jadi kekeliruan satu kartu tidak merembet ke kartu lain
-- Rata-rata IPK dihitung otomatis dari data yang tampil, bukan diketik manual
-- Ketika data datang dari server pada Bab 10, struktur komponen tidak berubah
+The academic administration office answers dozens of questions a day; staff sift through spreadsheet files manually — slow, and prone to copy errors.
+
+- One source of truth: data is separated from the view, so there are never two versions of a number
+- Each card stands alone, so a mistake in one card does not spread to another
+- The GPA average is computed automatically from the displayed data, not typed by hand
+- When the data comes from a server in Chapter 10, the component structure does not change
 
 <!--
-Bawakan sebagai cerita kebutuhan pengguna, bukan sebagai daftar fitur. Tujuannya agar
-mahasiswa melihat bahwa seluruh materi bab ini menutup satu masalah nyata.
+Tell it as a story of a user need, not as a list of features. The goal is for students
+to see that the whole of this chapter closes one real problem.
 
-Tekankan dua hal: data yang dipisahkan dari tampilan membuat migrasi ke server nyaris
-tanpa biaya, dan agregat yang dihitung otomatis tidak mungkin tidak sinkron dengan
-daftar yang sedang tampil.
+Stress two things: data separated from the view makes the migration to a server almost
+free, and an aggregate computed automatically cannot be out of sync with the list being
+displayed.
 
-Pertanyaan pemandu: "Apa yang berubah pada komponen bila DATA_MAHASISWA diganti
-hasil fetch?" (Jawaban: hampir tidak ada, hanya sumber datanya.)
+Guiding question: "What changes in the components when DATA_MAHASISWA is replaced by
+the result of fetch?" (Answer: almost nothing, only the data source.)
 
-Peringatan: kasus ini adalah cikal bakal Aplikasi Manajemen Data Mahasiswa menuju
-project akhir; jangan merancang fitur di luar cakupan bab.
+Warning: this case is the forerunner of the Student Data Management Application
+towards the final project; do not design features beyond this chapter's scope.
+
+Trimmed to the picture (the diagram says this):
+- The application displays student data **dynamically**: program filter and aggregate summary
 -->
 
 ---
 
-## Praktikum: Rangkaian Langkah Kerja
+## Practicum: Sequence of Work Steps
 
-1. Tulis `DATA_MAHASISWA` (lima data baku) dan `PILIHAN_PRODI` di luar komponen
-2. Deklarasikan state `kategoriProdi` dan `sedangMemuat`
-3. Simulasikan pemuatan: `useEffect` 2 detik dengan cleanup `clearTimeout`
-4. Siapkan `useMemo` untuk filter prodi dan rata-rata IPK
-5. Tulis `KartuMahasiswa` dan `DaftarMahasiswa`, lalu rakit keduanya di `App.js`
+![w:1120](assets/diagrams/bab-04-dasar-react-19.svg)
 
 <!--
-Sebutkan struktur folder minimalnya secara lisan: App.js di akar, lalu folder
-components yang memuat DaftarMahasiswa.js dan KartuMahasiswa.js.
+Mention the minimal folder structure out loud: App.js at the root, then a components
+folder holding DaftarMahasiswa.js and KartuMahasiswa.js.
 
-Ingatkan alasan data statis diletakkan di luar komponen: DATA_MAHASISWA dan
-PILIHAN_PRODI tidak perlu dibuat ulang pada setiap render.
+Remind them why static data is placed outside the component: DATA_MAHASISWA and
+PILIHAN_PRODI do not need to be recreated on every render.
 
-Pertanyaan pemandu: "Mengapa key tidak dituliskan di dalam KartuMahasiswa?"
-(Jawaban: karena key diperlukan pada elemen yang dihasilkan map, bukan di dalam
-komponennya.)
+Guiding question: "Why is key not written inside KartuMahasiswa?" (Answer: because key
+is needed on the element produced by map, not inside its component.)
 
-Peringatan: dua jam pertama biasanya habis pada kegagalan lingkungan, bukan pada
-logika. Arahkan mahasiswa ke bagian Troubleshooting bab ini bila aplikasi tidak mau
-berjalan sebelum menebak-nebak logikanya.
+Warning: the first two hours are usually spent on environment failures, not on logic.
+Point students to this chapter's Troubleshooting section if the application will not run
+before guessing at the logic.
 -->
 
 ---
 
-## Kode Kunci: `KartuMahasiswa.js`
+## Key Code: `KartuMahasiswa.js`
 
-`kode/bab-04/components/KartuMahasiswa.js`
+`kode/bab-04-dasar-react/components/KartuMahasiswa.js`
 
 ```jsx
 export default function KartuMahasiswa({ mahasiswa }) {
@@ -789,194 +665,184 @@ export default function KartuMahasiswa({ mahasiswa }) {
 ```
 
 <!--
-Kode di slide ini dipotong agar muat di layar; berkas lengkapnya ada di folder
-kode/bab-04 dan di dalam bab.
+The code on this slide is truncated to fit the screen; the complete file is in the
+kode/bab-04-dasar-react folder and inside the chapter.
 
-Tunjukkan tiga hal saja di dalam kode: props mahasiswa masuk lewat parameter, state
-detailTampil milik kartu itu sendiri, dan handler ubahTampilDetail diserahkan ke
-elemen tombol. Bagian JSX yang lain ditandai tanda elipsis dan tidak perlu dibacakan.
+Show only three things in the code: the mahasiswa props enter through the parameter,
+the detailTampil state belongs to that card itself, and the ubahTampilDetail handler is
+handed to the button element. The other JSX parts are marked with an ellipsis and need
+not be read out.
 
-Pertanyaan pemandu: "Baris mana yang membuat penekanan tombol mengubah layar?"
-(Jawaban: pemanggilan setDetailTampil di dalam handler; handler itu sendiri hanya
-menerima kejadiannya.)
+Guiding question: "Which line makes pressing the button change the screen?" (Answer: the
+setDetailTampil call inside the handler; the handler itself only receives the event.)
 
-Peringatan: bagian gaya (className dan CSS) serta tata letak sengaja tidak dibahas di
-sini, karena topiknya muncul untuk React Native pada Bab 5.
+Warning: the styling (className and CSS) and layout are deliberately not discussed here,
+because the topic appears for React Native in Chapter 5.
 -->
 
 ---
 
-## Troubleshooting Praktikum
+## Practicum Troubleshooting
 
-| Gejala | Penyebab dan solusi |
+![w:1120](assets/diagrams/bab-04-dasar-react-20.svg)
+
+<!--
+Pick the two rows that happen most often in your class, usually the first and second
+rows, then discuss them thoroughly.
+
+Read out the pattern: read the error message before guessing. The key warning names the
+problem exactly, whereas the third row often produces no message at all, so it must be
+checked from how the component name is written.
+
+There is one more that does not fit the table: "Maximum update depth exceeded", an update
+loop because a setter is called in the component body or in an effect without a
+dependency. Mention it as an advanced case.
+
+Warning: do not suggest that students patch it with a random key or turn off the ESLint
+warning; that hides the symptom, not the cause.
+-->
+
+---
+
+## Application in IS/IT Practice
+
+| Practice in this chapter | Continues into |
 |---|---|
-| Peringatan "unique key prop", detail terbuka di kartu salah | Key hilang atau memakai indeks: pakai `key={mahasiswa.id}` |
-| Tombol tidak bereaksi sama sekali | Handler ditulis `onClick={ubahTampilDetail()}`: hapus tanda kurungnya |
-| Komponen tidak muncul, layar tampak kosong | Nama komponen diawali huruf kecil sehingga JSX membacanya sebagai tag HTML: tulis `<KartuMahasiswa />` |
-| Teks "Memuat data mahasiswa..." tidak pernah hilang | Efek tidak berjalan: pastikan `useEffect(..., [])` dan setter ada di dalamnya |
+| The `KartuMahasiswa` component for the student list | Chapter 5: `FlatList` and React Native components |
+| Local state for each card's detail | Chapter 8: forms and controlled components |
+| Static data inside the code | Chapter 10: `fetch` to a REST API and loading state |
+| State held by the `App` parent component | Chapter 9: lifting state up and the Context API |
+| Filter and average as pure logic | Chapter 14: function testing |
 
 <!--
-Pilih dua baris yang paling sering terjadi di kelas Anda, biasanya baris pertama dan
-kedua, lalu bahas sampai tuntas.
+This slide answers the question "when do I use all of this?". Each row connects one
+decision in this chapter with the chapter where that decision is tested or extended.
 
-Bacakan polanya: baca pesan kesalahan sebelum menebak. Peringatan key menyebut persis
-nama masalahnya, sedangkan baris ketiga sering tidak memunculkan pesan sama sekali,
-sehingga harus diperiksa dari penulisan nama komponennya.
+Stress the last row: it is the pure aggregate logic that is later tested automatically,
+so keeping computation outside the view is not merely tidiness.
 
-Ada satu lagi yang tidak masuk tabel: "Maximum update depth exceeded", yaitu
-lingkaran pembaruan karena setter dipanggil di badan komponen atau di efek tanpa
-dependency. Sebutkan sebagai kasus lanjutan.
+Guiding question: "If student data later comes from a server, which row changes?"
+(Answer: the third row, the data source; the components stay.)
 
-Peringatan: jangan menyarankan mahasiswa menambal dengan key acak atau mematikan
-peringatan ESLint; itu menyembunyikan gejala, bukan menyelesaikan penyebabnya.
--->
-
----
-
-## Penerapan di Praktik SI/TI
-
-| Praktik di bab ini | Berlanjut ke |
-|---|---|
-| Komponen `KartuMahasiswa` untuk daftar mahasiswa | Bab 5: `FlatList` dan komponen React Native |
-| State lokal untuk detail setiap kartu | Bab 8: form dan controlled component |
-| Data statis di dalam kode | Bab 10: `fetch` ke REST API dan loading state |
-| State yang dipegang komponen induk `App` | Bab 9: lifting state up dan Context API |
-| Filter dan rata-rata sebagai logika murni | Bab 14: pengujian fungsi |
-
-<!--
-Slide ini menjawab pertanyaan "kapan saya memakai semua ini?". Setiap baris
-menghubungkan satu keputusan di bab ini dengan bab tempat keputusan itu diuji atau
-diperluas.
-
-Tekankan baris terakhir: logika agregat yang murni itulah yang nanti diuji otomatis,
-sehingga menaruh perhitungan di luar tampilan bukan sekadar kerapian.
-
-Pertanyaan pemandu: "Kalau data mahasiswa nanti datang dari server, baris mana yang
-berubah?" (Jawaban: baris ketiga, sumber datanya; komponennya tetap.)
-
-Peringatan: lifting state up dan Context API adalah materi Bab 9. Di sini cukup
-disebut sebagai kelanjutan, jangan dijelaskan lebih jauh.
+Warning: lifting state up and the Context API are Chapter 9 material. Here it is enough
+to mention them as the continuation, do not explain them further.
 -->
 
 ---
 
 <!-- _class: center -->
 
-## Mini Kuis
+## Mini Quiz
 
-- Apa perbedaan props dan state, dan mana yang memicu re-render?
-- Kita menulis `onClick={simpanData()}` — apa yang terjadi saat aplikasi berjalan?
-- `useEffect(() => {...}, [])` dijalankan kapan, dan cleanup-nya berjalan kapan?
-- Kapan `useMemo` benar-benar diperlukan?
+- What is the difference between props and state, and which one triggers a re-render?
+- We write `onClick={simpanData()}` — what happens when the application runs?
+- When does `useEffect(() => {...}, [])` run, and when does its cleanup run?
+- When is `useMemo` genuinely needed?
 
 <!--
-Kuis lisan lima menit: tampilkan pertanyaan, minta mahasiswa menjawab berpasangan,
-lalu lanjutkan ke slide jawaban. Jangan membocorkan jawaban di slide ini.
+A five-minute oral quiz: show the questions, ask students to answer in pairs, then move
+on to the answer slide. Do not leak the answers on this slide.
 
-Bila lebih dari separuh kelas salah pada pertanyaan kedua, ulangi demonstrasi
-onClick di editor sebelum menutup pertemuan.
+If more than half the class gets the second question wrong, repeat the onClick
+demonstration in the editor before closing the meeting.
 -->
 
 ---
 
 <!-- _class: center -->
 
-## Jawaban (1/2)
+## Answers (1/2)
 
-- Props read-only dari induk; state internal diubah lewat setter
-- Keduanya memicu re-render — bedanya siapa pemilik dan siapa yang boleh mengubah
-- `onClick={simpanData()}` menjalankan fungsi saat render, bukan saat ditekan
+- Props are read-only from the parent; internal state is changed through the setter
+- Both trigger a re-render — the difference is who owns them and who may change them
+- `onClick={simpanData()}` runs the function at render time, not when pressed
 
 <!--
-Ulangi pembeda yang paling sering tertukar: onClick menerima referensi fungsi, bukan
-hasil pemanggilannya.
+Repeat the distinction most often confused: onClick receives a function reference, not
+the result of calling it.
 
-Tekankan bahwa jawaban kedua sengaja menegaskan keduanya memicu re-render, supaya
-mahasiswa tidak menyimpulkan bahwa hanya state yang mengubah layar.
+Stress that the second answer deliberately affirms that both trigger a re-render,
+so students do not conclude that only state is able to change the screen.
 -->
 
 ---
 
 <!-- _class: center -->
 
-## Jawaban (2/2)
+## Answers (2/2)
 
-- `useEffect(fn, [])` berjalan sekali saat mount; cleanup saat unmount atau efek ulang
-- `useMemo` perlu bila perhitungannya terukur mahal (filter/agregasi/transformasi data besar)
-- `useCallback` perlu bila fungsi diteruskan ke anak yang dibungkus `React.memo`
+- `useEffect(fn, [])` runs once on mount; cleanup on unmount or when the effect re-runs
+- `useMemo` is needed when the computation is measurably expensive (large-data filter/aggregation/transformation)
+- `useCallback` is needed when a function is passed to a child wrapped in `React.memo`
 
 <!--
-Tekankan kata terukur pada jawaban useMemo: optimasi diambil karena ada bukti beban,
-bukan karena kebiasaan. Satu kalimat pembeda: useMemo menyimpan nilai, useCallback
-menyimpan fungsi.
+Stress the word measurable in the useMemo answer: an optimization is made because there
+is evidence of load, not because of habit. One distinguishing sentence: useMemo stores a
+value, useCallback stores a function.
 
-Bila banyak yang salah pada pertanyaan terakhir, ingatkan kembali slide optimasi
-prematur dan cukupkan sampai di situ.
+If many miss the last question, recall the premature optimization slide and stop there.
 -->
 
 ---
 
-## Rangkuman
+## Summary
 
-1. `UI = f(state)`: deklaratif — React yang memperbarui layar, bukan perintah kita
-2. Komponen adalah fungsi yang mengembalikan JSX; disusun lewat komposisi
-3. Aturan JSX: satu elemen akar, tag tertutup, atribut camelCase, ekspresi `{}`
-4. Props read-only, state immutable (tidak diubah langsung); handler sebagai referensi fungsi
-5. `key` unik dan stabil; `useEffect` butuh cleanup; `useMemo` hanya bila terukur perlu
+![w:1120](assets/diagrams/bab-04-dasar-react-21.svg)
 
 <!--
-Jangan dibacakan. Minta mahasiswa memilih satu nomor dan menjelaskannya dengan kalimat
-sendiri; cara ini jauh lebih efektif daripada mengulang bacaan.
+Do not read it out. Ask students to pick one number and explain it in their own words;
+this works far better than repeating the reading.
 
-Tekankan nomor 1 dan 4 sebagai dua kalimat yang paling layak diingat dari bab ini.
+Stress numbers 1 and 4 as the two sentences most worth remembering from this chapter.
 
-Pesan penutup: mulai sekarang, setiap bug "data berubah tetapi tampilan tidak" punya
-daftar periksa sendiri, yaitu setter, immutability, dan key.
+Closing message: from now on, every "data changed but the view did not" bug has its own
+checklist, namely setter, immutability, and key.
 -->
 
 ---
 
-## Diskusi Kelas dan Refleksi
+## Class Discussion and Reflection
 
 <div class="grid2">
 <div>
 
-**Diskusi**
+**Discussion**
 
-- Apa yang berubah dari bayangan Anda tentang cara layar diperbarui?
-- Mengapa bug "data berubah, tampilan tidak" sulit dilacak?
+- What changed in your picture of how the screen is updated?
+- Why is the bug "the data changed, the view did not" hard to trace?
 
 </div>
 <div>
 
-**Yang dinilai**
+**What is assessed**
 
-- Ketepatan istilah: props, state, re-render, cleanup
-- Bukan hafalan, melainkan alasan saat memakai `useMemo`
+- Precision of terms: props, state, re-render, cleanup
+- Not memorization, but the reason for using `useMemo`
 
 </div>
 </div>
 
-> Soal pemahaman, praktik, analisis, dan tantangan bab ini menjadi bahan Latihan Bab 4 dan dinilai melalui rubrik praktikum Lampiran A.
+> The comprehension, practice, analysis, and challenge questions of this chapter form the material for Chapter 4 Exercises and are assessed through the practicum rubric in Appendix A.
 
 <!--
-Beri tiga menit berpasangan, lalu tampung dua sampai tiga jawaban. Pertanyaan pertama
-bersifat reflektif, jadi tidak ada jawaban yang salah; yang dinilai adalah keberanian
-mengakui intuisi lamanya.
+Give three minutes in pairs, then collect two to three answers. The first question is
+reflective, so there is no wrong answer; what is assessed is the courage to admit the old
+intuition.
 
-Pertanyaan kedua menghubungkan refleksi dengan praktik: bug itu sulit dilacak karena
-datanya memang benar, sehingga pemeriksaan biasanya berhenti di data dan tidak sampai
-ke mekanisme re-render.
+The second question connects reflection with practice: that bug is hard to trace because
+the data really is correct, so the check usually stops at the data and never reaches the
+re-render mechanism.
 
-Arahkan mahasiswa mencatat jawabannya singkat, karena tantangan Bab 4 meminta
-perbandingan pola state lokal dengan state di induk, yang menjadi pintu masuk Bab 9.
+Ask students to write their answers briefly, because the Chapter 4 challenge asks for a
+comparison of the local state pattern with state in the parent, which is the doorway into
+Chapter 9.
 -->
 
 ---
 
-## Referensi
+## References
 
-| Sumber | Tautan |
+| Source | Link |
 |---|---|
 | React documentation (2026) | react.dev |
 | React Native documentation (2026) | reactnative.dev |
@@ -987,14 +853,14 @@ perbandingan pola state lokal dengan state di induk, yang menjadi pintu masuk Ba
 <div class="grid2">
 <div>
 
-**Bacaan lanjutan**
+**Further reading**
 
-- Bab 5 — Dasar React Native
+- Chapter 5 — React Native Fundamentals
 
 </div>
 <div>
 
-**Versi teknologi buku ini**
+**Technology versions in this book**
 
 - Expo SDK 57 · React Native 0.86 · React 19.2 · Node.js LTS ≥ 22
 
@@ -1002,15 +868,16 @@ perbandingan pola state lokal dengan state di induk, yang menjadi pintu masuk Ba
 </div>
 
 <!--
-Rujukan lengkap ada pada Lampiran D. Glosarium Lampiran C memuat 60 entri (misalnya
-Hook, Props, State, dan JSX); istilah reconciliation dan immutability dijelaskan pada
-slide 8 dan slide 14, dengan padanan rekonsiliasi/pencocokan dan ketidakberubahan.
+The complete references are in Appendix D. The Appendix C glossary has 60 entries (for
+example Hook, Props, State, and JSX); the terms reconciliation and immutability are
+explained on slide 8 and slide 14, with the glossary equivalents
+rekonsiliasi/pencocokan and ketidakberubahan.
 
-Sumber utama bab ini adalah dokumentasi resmi react.dev, bukan blog atau jawaban
-forum yang mungkin sudah usang untuk React 19.2.
+The primary source for this chapter is the official react.dev documentation, not blogs or
+forum answers that may already be out of date for React 19.2.
 
-Ingatkan bahwa versi teknologi yang dipakai buku ini terpin pada Expo SDK 57, React
-Native 0.86, React 19.2, dan Node.js LTS minimal 22.
+Remind them that the technology versions used in this book are pinned to Expo SDK 57,
+React Native 0.86, React 19.2, and Node.js LTS at least 22.
 -->
 
 ---
@@ -1018,17 +885,17 @@ Native 0.86, React 19.2, dan Node.js LTS minimal 22.
 <!-- _class: lead -->
 <!-- _paginate: skip -->
 
-# Siap Menuju Bab 5
+# Ready for Chapter 5
 
-**Tugas:** selesaikan praktikum Bab 4 — komponen `KartuMahasiswa` reusable dan daftar mahasiswa statis — serta Latihan Bab 4.
+**Assignment:** complete Practicum 4 — a reusable `KartuMahasiswa` component and a static student list — plus Chapter 4 Exercises.
 
-Pertemuan berikutnya: komponen tampilan React Native — `View`, `Text`, `FlatList`, dan Flexbox.
+Next meeting: React Native display components — `View`, `Text`, `FlatList`, and Flexbox.
 
 <!--
-Tutup dengan satu kalimat: "Hari ini kita belajar memasak bahannya; Bab 5 mengajari
-cara menatanya di piring."
+Close with one sentence: "Today we learned to cook the ingredients; Chapter 5 teaches
+how to plate them."
 
-Sebutkan tenggat Latihan Bab 4 secara eksplisit, lalu ulangi bahwa praktikum dinilai
-dengan rubrik praktikum pada Lampiran A: pemahaman konsep 15%, implementasi 25%,
-kualitas kode 15%, UI/UX 15%, debugging 10%, dan dokumentasi 20%.
+State the Chapter 4 Exercises deadline explicitly, then repeat that the practicum is
+assessed with the practicum rubric in Appendix A: conceptual understanding 15%,
+implementation 25%, code quality 15%, UI/UX 15%, debugging 10%, and documentation 20%.
 -->

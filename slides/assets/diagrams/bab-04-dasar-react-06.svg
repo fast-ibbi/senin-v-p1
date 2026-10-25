@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1160 470" width="1160" height="470" role="img"><defs><marker id="a-slate" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#94a3b8"/></marker><marker id="a-acc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#1d4ed8"/></marker><marker id="a-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b91c1c"/></marker><marker id="a-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#15803d"/></marker><marker id="a-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#111827"/></marker></defs><style>
+.t{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif;fill:#111827}
+.m{font-family:ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,'Liberation Mono',monospace}
+.mu{fill:#6b7280}
+.ac{fill:#1d4ed8}
+.rd{fill:#b91c1c}
+.gn{fill:#15803d}
+.am{fill:#b45309}
+.wh{fill:#ffffff}
+.b6{font-weight:600}
+.b7{font-weight:700}
+.mid{text-anchor:middle}
+.end{text-anchor:end}
+.s12{font-size:12px}.s13{font-size:13px}.s14{font-size:14px}.s15{font-size:15px}.s16{font-size:16px}.s17{font-size:17px}.s18{font-size:18px}.s19{font-size:19px}.s20{font-size:20px}.s21{font-size:21px}.s22{font-size:22px}.s24{font-size:24px}.s26{font-size:26px}.s28{font-size:28px}.s30{font-size:30px}.s32{font-size:32px}.s34{font-size:34px}.s36{font-size:36px}.s38{font-size:38px}
+</style><text class="m s34 b7 mid" x="580" y="50"><tspan fill="#111827">UI</tspan><tspan fill="#6b7280"> = </tspan><tspan fill="#1d4ed8">f</tspan><tspan fill="#111827">(</tspan><tspan fill="#b45309">state</tspan><tspan fill="#111827">)</tspan></text>
+<text class="t s17 mu mid" x="580" y="80">the view is a function of data — not a sequence of commands</text>
+<rect x="0" y="104" width="257" height="214" rx="12" fill="#ffffff" stroke="none" stroke-width="1.5"/><rect x="0" y="104" width="257" height="46" rx="12" fill="#fffbeb" stroke="none" stroke-width="1.5"/><rect x="0" y="138" width="257" height="12" rx="0" fill="#fffbeb" stroke="none" stroke-width="1.5"/><text class="t s17 b7 am" x="18" y="133">1 · state changes</text><line x1="0" y1="150" x2="257" y2="150" stroke="#fde68a" stroke-width="1" stroke-linecap="round"/><rect x="0" y="104" width="257" height="214" rx="12" fill="none" stroke="#fde68a" stroke-width="1.5"/>
+<rect x="18" y="144" width="128" height="27" rx="7" fill="#fffbeb" stroke="#fde68a" stroke-width="1"/><text class="m s15 am" x="28" y="162.9">prodi = 'TI'</text>
+<text class="t s15 mu" x="18" y="214">What changes is the</text>
+<text class="t s15 mu" x="18" y="236">data, not the view.</text>
+<text class="t s15 mu" x="18" y="274">React waits for</text>
+<text class="t s15 mu" x="18" y="296">the next trigger.</text>
+<line x1="259" y1="211" x2="297" y2="211" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" marker-end="url(#a-slate)"/>
+<rect x="301" y="104" width="257" height="214" rx="12" fill="#ffffff" stroke="none" stroke-width="1.5"/><rect x="301" y="104" width="257" height="46" rx="12" fill="#eef2ff" stroke="none" stroke-width="1.5"/><rect x="301" y="138" width="257" height="12" rx="0" fill="#eef2ff" stroke="none" stroke-width="1.5"/><text class="t s17 b7 ac" x="319" y="133">2 · component runs</text><line x1="301" y1="150" x2="558" y2="150" stroke="#c7d2fe" stroke-width="1" stroke-linecap="round"/><rect x="301" y="104" width="257" height="214" rx="12" fill="none" stroke="#c7d2fe" stroke-width="1.5"/>
+<rect x="319" y="144" width="65" height="27" rx="7" fill="#eef2ff" stroke="#c7d2fe" stroke-width="1"/><text class="m s15 ac" x="329" y="162.9">App()</text>
+<text class="t s15 mu" x="319" y="214">Produces a description</text>
+<text class="t s15 mu" x="319" y="236">of new UI — not yet</text>
+<text class="t s15 mu" x="319" y="258">touching the screen.</text>
+<rect x="319" y="274" width="71" height="25" rx="7" fill="#ffffff" stroke="#e5e7eb" stroke-width="1"/><text class="m s14 " x="329" y="291.5">render</text>
+<line x1="560" y1="211" x2="598" y2="211" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" marker-end="url(#a-slate)"/>
+<rect x="602" y="104" width="257" height="214" rx="12" fill="#ffffff" stroke="none" stroke-width="1.5"/><rect x="602" y="104" width="257" height="46" rx="12" fill="#f8fafc" stroke="none" stroke-width="1.5"/><rect x="602" y="138" width="257" height="12" rx="0" fill="#f8fafc" stroke="none" stroke-width="1.5"/><text class="t s17 b7 " x="620" y="133">3 · compare</text><line x1="602" y1="150" x2="859" y2="150" stroke="#e5e7eb" stroke-width="1" stroke-linecap="round"/><rect x="602" y="104" width="257" height="214" rx="12" fill="none" stroke="#e5e7eb" stroke-width="1.5"/>
+<text class="t s13 b6 mu ls" x="620" y="174">old</text>
+<rect x="620" y="184" width="100" height="16" rx="4" fill="#f8fafc" stroke="#e5e7eb" stroke-width="1"/><text class="t s12 mu" x="628" y="196">Budi</text><rect x="620" y="205" width="100" height="16" rx="4" fill="#f8fafc" stroke="#e5e7eb" stroke-width="1"/><text class="t s12 mu" x="628" y="217">Siti</text><rect x="620" y="226" width="100" height="16" rx="4" fill="#f8fafc" stroke="#e5e7eb" stroke-width="1"/><text class="t s12 mu" x="628" y="238">Andi</text>
+<text class="t s13 b6 mu ls" x="766" y="174">new</text>
+<rect x="766" y="184" width="74" height="16" rx="4" fill="#f8fafc" stroke="#e5e7eb" stroke-width="1"/><text class="t s12 mu" x="774" y="196">Siti</text><rect x="766" y="205" width="74" height="16" rx="4" fill="#f8fafc" stroke="#e5e7eb" stroke-width="1"/><text class="t s12 mu" x="774" y="217">Andi</text>
+<text class="t s14 b6 ac" x="620" y="272">diff: 1 card removed,</text>
+<text class="t s14 b6 ac" x="620" y="292">the rest reused.</text>
+<line x1="861" y1="211" x2="899" y2="211" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" marker-end="url(#a-slate)"/>
+<rect x="903" y="104" width="257" height="214" rx="12" fill="#ffffff" stroke="none" stroke-width="1.5"/><rect x="903" y="104" width="257" height="46" rx="12" fill="#f0fdf4" stroke="none" stroke-width="1.5"/><rect x="903" y="138" width="257" height="12" rx="0" fill="#f0fdf4" stroke="none" stroke-width="1.5"/><text class="t s17 b7 gn" x="921" y="133">4 · patch the screen</text><line x1="903" y1="150" x2="1160" y2="150" stroke="#bbf7d0" stroke-width="1" stroke-linecap="round"/><rect x="903" y="104" width="257" height="214" rx="12" fill="none" stroke="#bbf7d0" stroke-width="1.5"/>
+<rect x="921" y="140" width="120" height="72" rx="6" fill="#f8fafc" stroke="#e5e7eb" stroke-width="1.5"/>
+<text class="t s12 mu" x="933" y="158">Budi</text>
+<rect x="933" y="170" width="96" height="16" rx="4" fill="#eef2ff" stroke="#c7d2fe" stroke-width="1"/>
+<text class="t s11 ac b6" x="941" y="182">Siti  ← new</text>
+<text class="t s12 mu" x="933" y="200">Andi</text>
+<text class="t s15 mu" x="921" y="236">Only changed nodes</text>
+<text class="t s15 mu" x="921" y="256">are updated.</text>
+<text class="t s14 b6" x="921" y="286">Web: DOM</text>
+<text class="t s13 mu" x="921" y="306">RN: native tree</text>
+<rect x="0" y="344" width="1160" height="46" rx="10" fill="#f8fafc" stroke="none" stroke-width="1.5"/>
+<text class="t s18 b6" x="24" y="374">Reconciliation = keep the old picture, compare, then apply the minimal diff.</text>
+<rect x="0" y="404" width="1160" height="56" rx="10" fill="#eef2ff" stroke="none" stroke-width="1.5"/>
+<rect x="0" y="404" width="6" height="56" rx="0" fill="#1d4ed8" stroke="none" stroke-width="1.5"/>
+<text class="t s19 b6" x="24" y="439">Change state → the screen follows. No “update this text” command one by one.</text></svg>

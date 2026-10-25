@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1160 430" width="1160" height="430" role="img"><defs><marker id="a-slate" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#94a3b8"/></marker><marker id="a-acc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#1d4ed8"/></marker><marker id="a-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b91c1c"/></marker><marker id="a-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#15803d"/></marker><marker id="a-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#111827"/></marker></defs><style>
+.t{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif;fill:#111827}
+.m{font-family:ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,'Liberation Mono',monospace}
+.mu{fill:#6b7280}
+.ac{fill:#1d4ed8}
+.rd{fill:#b91c1c}
+.gn{fill:#15803d}
+.am{fill:#b45309}
+.wh{fill:#ffffff}
+.b6{font-weight:600}
+.b7{font-weight:700}
+.mid{text-anchor:middle}
+.end{text-anchor:end}
+.s12{font-size:12px}.s13{font-size:13px}.s14{font-size:14px}.s15{font-size:15px}.s16{font-size:16px}.s17{font-size:17px}.s18{font-size:18px}.s19{font-size:19px}.s20{font-size:20px}.s21{font-size:21px}.s22{font-size:22px}.s24{font-size:24px}.s26{font-size:26px}.s28{font-size:28px}.s30{font-size:30px}.s32{font-size:32px}.s34{font-size:34px}.s36{font-size:36px}.s38{font-size:38px}
+</style><rect x="0" y="0" width="540" height="340" rx="12" fill="#ffffff" stroke="none" stroke-width="1.5"/><rect x="0" y="0" width="540" height="46" rx="12" fill="#eef2ff" stroke="none" stroke-width="1.5"/><rect x="0" y="34" width="540" height="12" rx="0" fill="#eef2ff" stroke="none" stroke-width="1.5"/><text class="t s17 b7 ac" x="18" y="29">PROPS — data from the parent</text><line x1="0" y1="46" x2="540" y2="46" stroke="#c7d2fe" stroke-width="1" stroke-linecap="round"/><rect x="0" y="0" width="540" height="340" rx="12" fill="none" stroke="#c7d2fe" stroke-width="1.5"/>
+<rect x="620" y="0" width="540" height="340" rx="12" fill="#ffffff" stroke="none" stroke-width="1.5"/><rect x="620" y="0" width="540" height="46" rx="12" fill="#fffbeb" stroke="none" stroke-width="1.5"/><rect x="620" y="34" width="540" height="12" rx="0" fill="#fffbeb" stroke="none" stroke-width="1.5"/><text class="t s17 b7 am" x="638" y="29">STATE — data it owns</text><line x1="620" y1="46" x2="1160" y2="46" stroke="#fde68a" stroke-width="1" stroke-linecap="round"/><rect x="620" y="0" width="540" height="340" rx="12" fill="none" stroke="#fde68a" stroke-width="1.5"/>
+<text class="t s12 b6 mu ls" x="18" y="92">Source</text>
+<text class="t s16" x="18" y="118">from the parent component</text>
+<text class="t s12 b6 mu ls" x="638" y="92">Source</text>
+<text class="t s16" x="638" y="118">inside the component itself</text>
+<line x1="18" y1="132" x2="522" y2="132" stroke="#e5e7eb" stroke-width="1" stroke-linecap="round"/>
+<line x1="638" y1="132" x2="1142" y2="132" stroke="#e5e7eb" stroke-width="1" stroke-linecap="round"/>
+<text class="t s12 b6 mu ls" x="18" y="154">Can it change?</text>
+<text class="t s16" x="18" y="180">no — read-only</text>
+<text class="t s12 b6 mu ls" x="638" y="154">Can it change?</text>
+<text class="t s16" x="638" y="180">yes, via the setter</text>
+<line x1="18" y1="194" x2="522" y2="194" stroke="#e5e7eb" stroke-width="1" stroke-linecap="round"/>
+<line x1="638" y1="194" x2="1142" y2="194" stroke="#e5e7eb" stroke-width="1" stroke-linecap="round"/>
+<text class="t s12 b6 mu ls" x="18" y="216">Triggers re-render?</text>
+<text class="t s16" x="18" y="242">yes, when the parent sends a new value</text>
+<text class="t s12 b6 mu ls" x="638" y="216">Triggers re-render?</text>
+<text class="t s16" x="638" y="242">yes, when the setter is called</text>
+<line x1="18" y1="256" x2="522" y2="256" stroke="#e5e7eb" stroke-width="1" stroke-linecap="round"/>
+<line x1="638" y1="256" x2="1142" y2="256" stroke="#e5e7eb" stroke-width="1" stroke-linecap="round"/>
+<text class="t s12 b6 mu ls" x="18" y="278">Owner</text>
+<text class="t s16" x="18" y="304">the parent component</text>
+<text class="t s12 b6 mu ls" x="638" y="278">Owner</text>
+<text class="t s16" x="638" y="304">the component that declares it</text>
+<rect x="437" y="16" width="14" height="11" rx="2" fill="#b91c1c"/><path d="M 440 16 v-4 a4 4 0 0 1 8 0 v4" fill="none" stroke="#b91c1c" stroke-width="2"/>
+<text class="t s12 b6 rd" x="458" y="28">read-only</text>
+<text class="t s12 b6 am" x="1078" y="28">mutable</text>
+<rect x="0" y="362" width="1160" height="56" rx="10" fill="#eef2ff" stroke="none" stroke-width="1.5"/>
+<rect x="0" y="362" width="6" height="56" rx="0" fill="#1d4ed8" stroke="none" stroke-width="1.5"/>
+<text class="t s18 b6" x="24" y="396">Both determine the view; the difference is who owns and who may change.</text></svg>

@@ -2,10 +2,10 @@
 marp: true
 theme: academic
 paginate: true
-title: "Bab 7 — Navigasi Aplikasi"
-description: "Slide kuliah Pemrograman Mobile pertemuan 7: konsep navigasi mobile, Expo Router dan file-based routing, pola stack/tab/drawer, parameter antar halaman, nested navigation, navigation lifecycle, dan protected screen."
-author: "Dosen Pengampu — Program Studi Sistem Informasi / Teknik Informatika"
-footer: "Pemrograman Mobile · Bab 7 — Navigasi Aplikasi"
+title: "Chapter 7 — App Navigation"
+description: "Mobile Programming lecture, meeting 7: mobile navigation concepts, Expo Router and file-based routing, stack/tab/drawer patterns, parameters between screens, nested navigation, navigation lifecycle, and protected screens."
+author: "Course Instructor — Information Systems / Informatics Engineering Study Program"
+footer: "Mobile Programming · Chapter 7 — App Navigation"
 size: 16:9
 ---
 
@@ -13,34 +13,34 @@ size: 16:9
 <!-- _paginate: skip -->
 <!-- _footer: "" -->
 
-# Bab 7 — Navigasi Aplikasi
+# Chapter 7 — App Navigation
 
-Expo Router: rute dari struktur folder · Pertemuan 7 · Sub-CPMK 4.1
+Expo Router: routes from the folder structure · Meeting 7 · Sub-CPMK 4.1
 
 <!--
-Pengait pembuka: "Bab 5 dan Bab 6 menghasilkan layar; hari ini layar-layar itu disatukan
-menjadi satu aplikasi yang bisa ditelusuri pengguna."
+Opening hook: "Chapters 5 and 6 produced screens; today those screens are joined into one
+app the user can trace through."
 
-Sebutkan kaitan RPS: pertemuan 7 memuat Bab 6 (Sub-CPMK 3.1 dan 3.2) serta Bab 7
-(Sub-CPMK 4.1). Deck ini khusus Bab 7; praktikumnya bersambung ke Bab 8.
+State the RPS link: meeting 7 covers Chapter 6 (Sub-CPMK 3.1 and 3.2) and Chapter 7
+(Sub-CPMK 4.1). This deck covers Chapter 7 only; its practicum continues into Chapter 8.
 -->
 
 ---
 
-## Tujuan Pembelajaran
+## Learning Objectives
 
-- Menjelaskan konsep navigasi mobile serta pola stack, tab, dan drawer
-- Mengimplementasikan setup Expo Router pada project template blank
-- Membedakan navigasi deklaratif (`<Link>`) dan imperatif (`router.push`)
-- Mengimplementasikan dynamic route dan pengiriman parameter antar halaman
-- Merancang nested navigation, `useFocusEffect`, dan protected screen
+- Explain the concept of mobile navigation and the stack, tab, and drawer patterns
+- Implement Expo Router setup on a blank template project
+- Distinguish declarative navigation (`<Link>`) from imperative navigation (`router.push`)
+- Implement dynamic routes and parameter passing between screens
+- Design nested navigation, `useFocusEffect`, and protected screens
 
 <!--
-Bacakan kata kerjanya saja. Butir 1 adalah konsep yang diuji di UTS; butir 2 sampai 5
-dinilai langsung pada praktikum pertemuan ini.
+Read out only the verbs. Item 1 is the concept tested in the midterm exam; items 2 to 5
+are assessed directly in this meeting's practicum.
 
-Tanyakan pembuka: "Siapa yang pernah menekan tombol kembali dan mendarat di layar yang
-salah?" Simpan pertanyaan itu untuk dibahas pada slide protected screen.
+Opening question: "Who has ever pressed the back button and landed on the wrong screen?"
+Keep that question for the protected screen slide.
 -->
 
 ---
@@ -48,115 +48,112 @@ salah?" Simpan pertanyaan itu untuk dibahas pada slide protected screen.
 <!-- _class: lead -->
 <!-- _paginate: skip -->
 
-# Bagian 1 — Pola Navigasi Mobile
+# Part 1 — Mobile Navigation Patterns
 
-Subbab 7.1 Konsep · 7.2 Stack · 7.3 Tab · 7.4 Drawer
+Section 7.1 Concept · 7.2 Stack · 7.3 Tab · 7.4 Drawer
 
 <!--
-Bagian paling konseptual. Bila waktu pertemuan mepet, padatkan Subbab 7.4 (drawer),
-tetapi Subbab 7.1 jangan dilewati karena seluruh bab bergantung padanya.
+The most conceptual part. If meeting time is tight, compress Section 7.4 (drawer), but do
+not skip Section 7.1 because the whole chapter depends on it.
 -->
 
 ---
 
-## Apa Itu Navigasi?
+## What Is Navigation?
 
-**Navigasi** (navigation) adalah sistem yang mengatur tumpukan layar yang sedang aktif, riwayat kunjungan, serta cara layar menerima data dari layar lain.
+![w:1120](assets/diagrams/bab-07-navigasi-aplikasi-06.svg)
 
-<div class="grid2">
-<div>
+**Navigation** is the system that governs the stack of screens currently active, the visit history, and the way a screen receives data from another screen.
 
-**Analogi: peramban web**
+**What is attached to the operating system**
 
-- Alamat halaman, tombol maju/mundur, data lewat query string
-- Di mobile: rute internal, riwayat dijaga navigator
-
-</div>
-<div>
-
-**Yang menempel pada sistem operasi**
-
-- Android: tombol atau gesture "kembali" perangkat
-- iOS: gesture geser dari tepi kiri layar
-
-</div>
-</div>
+- Android: the device's "back" button or gesture
+- iOS: swipe gesture from the left edge of the screen
 
 <!--
-Analogi peramban memindahkan pengetahuan yang sudah dimiliki mahasiswa: alamat, riwayat,
-dan data yang menempel pada alamat adalah konsep yang sama.
+The browser analogy transfers knowledge students already have: the address, the history,
+and the data attached to the address are the same concept.
 
-Tanyakan: "Apa padanan tombol kembali di peramban pada ponsel Android?" (Tombol atau
-gesture kembali perangkat, itulah sebabnya navigasi yang salah terasa mengganggu.)
+Ask: "What is the equivalent of a browser's back button on an Android phone?" (The
+device's back button or gesture, which is why wrong navigation feels so intrusive.)
+
+Trimmed to the picture (the diagram says this):
+- Page address, forward/back buttons, data passed through the query string
+- On mobile: internal routes, history maintained by the navigator
+
+The column heading "Analogy: a web browser" went with them: the picture's left panel is
+titled WEB BROWSER, so the analogy is now read off the picture, not off a label.
 -->
 
 ---
 
-## Navigasi: Keputusan Arsitektur Awal
+## Navigation: An Early Architecture Decision
 
-- Hampir semua fitur bergantung pada navigasi; kesalahan di sini terasa langsung
-- Tanpa pustaka, layar aktif disimpan di state dan logika kembali ditulis manual
-- Akibatnya: state layar bercampur data, riwayat tidak akurat, transisi tidak konsisten
-- Nilai tambah: alur aplikasi terbaca dari pohon folder, bukan dari kode pendaftaran
-- Trade-off: membuat layar on the fly langsung dari kode menjadi lebih terbatas
+![w:1120](assets/diagrams/bab-07-navigasi-aplikasi-01.svg)
+
+- Almost every feature depends on navigation; a mistake here is felt immediately
+- Without a library, the active screen is kept in state and the back logic is written by hand
+- The result: screen state mixes with data, history is inaccurate, transitions are inconsistent
+- The payoff: the app flow is readable from the folder tree, not from registration code
+- Trade-off: creating a screen on the fly straight from code becomes more limited
 
 <!--
-Ini slide "mengapa", bukan "bagaimana". Tekankan bahwa pengelolaan riwayat dan gestur
-kembali adalah pekerjaan yang selalu berulang, sehingga layak diserahkan ke pustaka.
+This is a "why" slide, not a "how" slide. Stress that history management and back gestures
+are always recurring work, so they deserve to be handed to a library.
 
-Tanyakan: "Apa yang terjadi kalau riwayat dibuat sendiri dengan state?" (Aplikasi tumbuh,
-state bercampur, tombol kembali tidak bisa ditebak, dan pengguna mengeluh.)
+Ask: "What happens if the history is built by hand with state?" (The app grows, state gets
+mixed together, the back button becomes unpredictable, and users complain.)
 -->
 
 ---
 
-## Tiga Pola Navigasi
+## Three Navigation Patterns
 
-| Pola | Karakteristik | Contoh penggunaan |
+| Pattern | Characteristics | Example use |
 |---|---|---|
-| **Stack** (tumpukan) | Layar baru menutupi layar lama; tombol kembali membuka layar sebelumnya | Daftar → Detail → Form |
-| **Tab** | Layar sejajar tanpa hierarki; layar tetap hidup saat berpindah | Beranda, Daftar, Profil |
-| **Drawer** (laci) | Menu tersembunyi di sisi layar; hemat ruang layar | Pengaturan, menu admin |
+| **Stack** | A new screen covers the old one; the back button reveals the previous screen | List → Detail → Form |
+| **Tab** | Side-by-side screens without hierarchy; a screen stays alive when you switch | Home, List, Profile |
+| **Drawer** | A menu hidden at the side of the screen; saves screen space | Settings, admin menu |
 
-> Ketiganya tidak saling meniadakan: aplikasi profesional memakai tab sebagai kerangka, stack di dalam setiap tab, dan drawer untuk menu sekunder.
+> The three do not cancel each other out: a professional app uses tabs as the frame, a stack inside each tab, and a drawer for secondary menus.
 
 <!--
-Minta mahasiswa menyebut satu aplikasi di ponsel mereka untuk setiap baris tabel;
-pengalaman konkret lebih melekat daripada definisi.
+Ask students to name one app on their phone for each table row; concrete experience sticks
+better than a definition.
 
-Peringatan miskonsepsi: tab bukan versi sederhana dari stack. Keduanya menyelesaikan
-masalah berbeda, yaitu layar sejajar versus layar berjenjang.
+Misconception warning: a tab is not a simpler version of a stack. The two solve different
+problems, namely side-by-side screens versus tiered screens.
 -->
 
 ---
 
-## Stack dan Tab: Tiga Pembedanya
+## Stack and Tab: Three Differences
 
-| Aspek | Stack | Tab |
+| Aspect | Stack | Tab |
 |---|---|---|
-| Hierarki | Ayah dan anak: layar baru menutupi layar lama | Saudara: tidak ada layar yang menutupi layar lain |
-| Kondisi layar | Layar yang tertutup bisa dilepas dari memori | Semua layar tetap terpasang, hanya kehilangan fokus |
-| Cara berpindah | Push dan pop dengan transisi bertumpuk | Berpindah instan antar layar sejajar |
+| Hierarchy | Parent and child: a new screen covers the old one | Siblings: no screen covers another |
+| Screen condition | A covered screen can be released from memory | Every screen stays mounted and only loses focus |
+| How you move | Push and pop with a stacked transition | Instant switching between side-by-side screens |
 
-> Aturan praktis industri: tab untuk dua sampai lima fungsi utama yang selalu dibutuhkan cepat; stack untuk alur detail yang berjenjang dan sementara.
+> Industry rule of thumb: tabs for two to five main functions that are always needed quickly; a stack for detail flows that are tiered and temporary.
 
 <!--
-Baris kedua tabel ini adalah akar masalah "daftar tidak segar" pada Subbab 7.7. Katakan
-bahwa kita akan kembali ke baris ini nanti, jangan dijelaskan sekarang.
+The second row of this table is the root of the "stale list" problem in Section 7.7. Say
+that we will return to this row later; do not explain it yet.
 
-Tanyakan: "Mengapa alur detail tidak cocok dijadikan tab?" (Kembali menjadi tidak
-natural; tab tidak menyimpan hierarki langkah.)
+Ask: "Why is a detail flow a poor fit for a tab?" (Going back becomes unnatural; a tab does
+not store a step hierarchy.)
 -->
 
 ---
 
-## Drawer: Menu yang Menyembunyikan Diri
+## Drawer: The Menu That Hides Itself
 
-- Dibuka dengan menggeser dari tepi kiri atau menekan ikon hamburger
-- Unggul untuk menu sekunder yang banyak: pengaturan, bantuan, laporan
-- Kurang tepat untuk fungsi harian karena menunya tidak terlihat langsung
+- Opened by swiping from the left edge or pressing the hamburger icon
+- Strong for many secondary menus: settings, help, reports
+- A poor fit for daily functions because its menu is not immediately visible
 
-`app/_layout.js` — pengenalan, bukan materi praktikum
+`app/_layout.js` — an introduction, not practicum material
 
 ```js
 import { Drawer } from 'expo-router/drawer';
@@ -171,54 +168,56 @@ export default function LayoutDrawer() {
 }
 ```
 
-> ⚠ version-sensitive: drawer bergantung pada paket `@react-navigation/drawer`; periksa docs.expo.dev/router untuk versi SDK Anda.
-
 <!--
-Cukup dikenalkan, tidak dipraktikkan: praktikum bab ini memakai stack dan tab karena
-keduanya mencakup sebagian besar kebutuhan aplikasi bisnis.
+Introduce it only, without practicing it: this chapter's practicum uses stack and tab
+because the two cover most business-app needs.
 
-Ingatkan penanda version-sensitive: nama impor dan langkah instalasi drawer bergantung
-versi, jadi jangan menyalin dari tutorial lama.
+Read the warning that used to print under the code, verbatim: ⚠ version-sensitive: the
+drawer depends on the `@react-navigation/drawer` package; check docs.expo.dev/router for
+your SDK version.
+
+Remind them of the version-sensitive marker: drawer import names and install steps depend
+on the version, so do not copy from old tutorials.
 -->
 
 ---
 
 <!-- _class: center -->
 
-## Latihan: Pilih Polanya
+## Exercise: Pick the Pattern
 
-- **A.** Cari pasien → lihat detail jadwal → batalkan janji temu
-- **B.** Beranda, Janji Temu, dan Profil yang dibuka puluhan kali sehari
-- **C.** Menu Pengaturan, Bantuan, dan Laporan yang jarang dibuka
+- **A.** Search for a patient → view appointment details → cancel the appointment
+- **B.** Home, Appointments, and Profile opened dozens of times a day
+- **C.** Settings, Help, and Reports menus that are rarely opened
 
-Tentukan pola untuk tiap kebutuhan, lalu sebutkan alasannya.
+Decide the pattern for each need, then state your reason.
 
 <!--
-Think-pair-share 3 menit, lalu tampung 2 sampai 3 jawaban. Jawaban tidak dibahas di slide
-ini; pembahasannya ada di slide berikutnya.
+Think-pair-share for 3 minutes, then collect 2 to 3 answers. The answer is not discussed on
+this slide; the discussion is on the next slide.
 
-Bila kelas menjawab semuanya tab, ingatkan pertanyaan pemandu: "Mana yang berjenjang dan
-mana yang sejajar?"
+If the class answers tab for everything, repeat the guiding question: "Which one is tiered
+and which one is side by side?"
 -->
 
 ---
 
-## Pembahasan: Pola dan Alasannya
+## Discussion: The Patterns and the Reasons
 
-| Kebutuhan | Pola | Alasan |
+| Need | Pattern | Reason |
 |---|---|---|
-| A. Cari pasien → detail → batal | Stack | Berjenjang; kembali harus ke langkah sebelumnya |
-| B. Beranda, Janji Temu, Profil | Tab | Fungsi utama, diakses cepat, tidak saling menutupi |
-| C. Pengaturan, Bantuan, Laporan | Drawer | Menu sekunder; hemat ruang layar |
+| A. Search patient → detail → cancel | Stack | Tiered; going back must return to the previous step |
+| B. Home, Appointments, Profile | Tab | Main functions, accessed quickly, none covering another |
+| C. Settings, Help, Reports | Drawer | Secondary menus; saves screen space |
 
-> Pola yang sama dipakai aplikasi praktikum: tab Beranda dan Mahasiswa, dengan stack di dalam tab Mahasiswa.
+> The same pattern is used by the practicum app: a Home tab and a Students tab, with a stack inside the Students tab.
 
 <!--
-Hubungkan jawaban kelas dengan praktikum bab ini: struktur tab berisi stack inilah yang
-dibangun pada langkah kerja Praktikum 7.
+Connect the class answers to this chapter's practicum: this tab-containing-stack structure
+is what the Practicum 7 work steps build.
 
-Peringatan: menaruh "Rincian, Pembayaran, Pengiriman" sebagai tiga tab adalah kekeliruan
-yang dibahas pada Soal Analisis bab ini.
+Warning: putting "Details, Payment, Delivery" as three tabs is the mistake discussed in
+this chapter's Analysis Question.
 -->
 
 ---
@@ -226,79 +225,71 @@ yang dibahas pada Soal Analisis bab ini.
 <!-- _class: lead -->
 <!-- _paginate: skip -->
 
-# Bagian 2 — Expo Router: Rute dari Folder
+# Part 2 — Expo Router: Routes from Folders
 
-Subbab 7.2 file-based routing · setup pada project blank
+Section 7.2 file-based routing · setup on a blank project
 
 <!--
-Bagian ini paling teknis: tiga penyesuaian konfigurasi. Pastikan mahasiswa menyelesaikan
-ketiganya sebelum menulis berkas di folder app/, karena kesalahan di sini muncul sebagai
-layar kosong saat aplikasi dijalankan.
+This is the most technical part: three configuration adjustments. Make sure students finish
+all three before creating files in the app/ folder, because a mistake here shows up as a
+blank screen when the app runs.
 -->
 
 ---
 
-## File-Based Routing: Folder Menjadi Alamat
+## File-Based Routing: Folders Become Addresses
 
-**Expo Router** adalah pustaka navigasi resmi ekosistem Expo yang menerapkan **file-based routing**: setiap berkas di folder `app/` menjadi satu layar, dan nama berkas menjadi alamatnya.
+![w:1120](assets/diagrams/bab-07-navigasi-aplikasi-07.svg)
 
-<div class="grid2">
-<div>
+**Expo Router** is the official navigation library of the Expo ecosystem and it applies **file-based routing**: every file in the `app/` folder becomes one screen, and the file name becomes its address.
 
-**Konvensi alamat**
+**How it differs from the old approach**
 
-- `app/index.js` menjadi `/`
-- `app/login.js` menjadi `/login`
-- `app/mahasiswa/index.js` menjadi `/mahasiswa`
-
-</div>
-<div>
-
-**Bedanya dengan pendekatan lama**
-
-- Dulu setiap layar didaftarkan satu per satu di dalam kode
-- Sekarang struktur aplikasi terlihat dari pohon folder
-
-</div>
-</div>
+- Previously every screen was registered one by one inside the code
+- Now the app structure is visible from the folder tree
 
 <!--
-Tekankan konsekuensi praktisnya: menambah layar berarti menambah berkas, bukan menambah
-baris pendaftaran, sehingga dua pengembang tidak lagi berebut satu berkas rute.
+Stress the practical consequence: adding a screen means adding a file, not adding a
+registration line, so two developers no longer fight over one route file.
 
-Tanyakan: "Kalau folder mahasiswa/ dipindah, ada berapa tempat yang harus diubah?"
-(Jawaban: satu, yaitu struktur folder; alamat mengikuti otomatis.)
+Ask: "If the mahasiswa/ folder is moved, how many places have to change?" (Answer: one, the
+folder structure; the address follows automatically.)
+
+Trimmed to the picture (the diagram says this):
+- `app/index.js` becomes `/`
+- `app/login.js` becomes `/login`
+- `app/mahasiswa/index.js` becomes `/mahasiswa`
 -->
 
 ---
 
-## Menyiapkan Expo Router: Tiga Penyesuaian
+## Setting Up Expo Router: Three Adjustments
 
-1. Pasang paket navigasi dengan `npx expo install` pada project template blank (Bab 2)
-2. Ubah properti `"main"` pada `package.json` menjadi `"expo-router/entry"`
-3. Tambahkan properti `"scheme"` pada `app.json` untuk mendukung deep linking
+1. Install the navigation packages with `npx expo install` on the blank template project (Chapter 2)
+2. Change the `"main"` property in `package.json` to `"expo-router/entry"`
+3. Add a `"scheme"` property to `app.json` to support deep linking
 
-**Deep linking** adalah tautan langsung yang membuka layar tertentu dari luar aplikasi, misalnya dari notifikasi (Bab 12).
+**Deep linking** is a direct link that opens a specific screen from outside the app, for example from a notification (Chapter 12).
 
-> Setelah ketiganya selesai, `App.js` tidak lagi dimuat dan boleh dihapus.
+> Once all three are done, `App.js` is no longer loaded and may be deleted.
 
 <!--
-Sebutkan konsekuensi bila langkah 2 terlewat: Metro masih mencari App.js yang sudah
-dihapus, dan aplikasi menampilkan layar kosong. Itu troubleshooting pertama di bab ini.
+State the consequence if step 2 is missed: Metro is still looking for the deleted App.js,
+and the app shows a blank screen. That is the first troubleshooting item in this chapter.
 
-Beri 5 menit untuk mengerjakan ketiganya bersama, lalu periksa satu per satu sebelum
-berpindah ke struktur folder.
+Give 5 minutes to do all three together, then check them one by one before moving on to the
+folder structure.
 -->
 
 ---
 
-## Perubahan Konfigurasi
+## Configuration Changes
 
 ```bash
 npx expo install expo-router react-native-safe-area-context react-native-screens expo-linking expo-constants expo-status-bar
 ```
 
-`package.json` — cuplikan, hanya properti yang relevan
+`package.json` — excerpt, only the relevant properties
 
 ```json
 {
@@ -306,7 +297,7 @@ npx expo install expo-router react-native-safe-area-context react-native-screens
 }
 ```
 
-`app.json` — cuplikan, tambahkan `"scheme"` di dalam objek `"expo"`
+`app.json` — excerpt, add `"scheme"` inside the `"expo"` object
 
 ```json
 {
@@ -319,55 +310,55 @@ npx expo install expo-router react-native-safe-area-context react-native-screens
 }
 ```
 
-> ⚠ version-sensitive: dokumentasi lama menuliskan `"main": "node_modules/expo-router/entry"`; `"expo-router/entry"` adalah bentuk terbaru pada dokumentasi resmi.
+> ⚠ version-sensitive: older documentation writes `"main": "node_modules/expo-router/entry"`; `"expo-router/entry"` is the newer form in the official documentation.
 
 <!--
-Jelaskan peran paket pendukung: react-native-screens memakai komponen native demi
-performa, react-native-safe-area-context menangani area aman layar, sedangkan
-expo-linking dan expo-constants mendukung deep linking serta konfigurasi.
+Explain the role of the supporting packages: react-native-screens uses native components for
+performance, react-native-safe-area-context handles the screen's safe area, while
+expo-linking and expo-constants support deep linking and configuration.
 
-Ingatkan penanda version-sensitive pada nilai main: salin dari dokumentasi resmi versi SDK
-yang terpasang, bukan dari tutorial lama.
+Remind them of the version-sensitive marker on the main value: copy it from the official
+documentation for the installed SDK version, not from an old tutorial.
 -->
 
 ---
 
-## Dari Berkas ke Alamat
+## From File to Address
 
-![w:720](assets/diagrams/bab-07-navigasi-aplikasi-02.svg)
+![w:1120](assets/diagrams/bab-07-navigasi-aplikasi-02.svg)
 
-> Folder berkurung seperti `(app)` adalah route group: folder ini tidak ikut menjadi bagian alamat.
+> A bracketed folder such as `(app)` is a route group: it adds no segment to the address, so `index.js` is `/`, `login.js` is `/login`, `(app)/mahasiswa/index.js` is `/mahasiswa`, and `(app)/mahasiswa/[id].js` is the dynamic `/mahasiswa/:id`.
 
 <!--
-Minta mahasiswa membacakan tiap baris: berkas mana menghasilkan alamat mana. Ini latihan
-membaca struktur folder yang dipakai sepanjang sisa bab.
+Ask students to read each line aloud: which file produces which address. This is practice in
+reading the folder structure used throughout the rest of the chapter.
 
-Kesalahan yang sering muncul: mengira alamatnya menjadi /(app)/mahasiswa. Tegaskan bahwa
-tanda kurung justru menghapus segmen itu dari alamat.
+A frequent mistake: thinking the address becomes /(app)/mahasiswa. Make clear that the
+parentheses actually remove that segment from the address.
 -->
 
 ---
 
-## Peta Rute Aplikasi Manajemen Data Mahasiswa
+## Route Map of the Student Data Management App
 
-| Alur | Berkas di folder `app/` | Alamat |
+| Flow | File in the `app/` folder | Address |
 |---|---|---|
-| Pengarah awal | `index.js` | `/` |
+| Initial redirect | `index.js` | `/` |
 | Login | `login.js` | `/login` |
-| Beranda | `(app)/index.js` | `/` (di dalam grup) |
-| Daftar Mahasiswa | `(app)/mahasiswa/index.js` | `/mahasiswa` |
-| Detail Mahasiswa | `(app)/mahasiswa/[id].js` | `/mahasiswa/:id` |
-| Form Tambah/Edit | `(app)/mahasiswa/tambah.js` | `/mahasiswa/tambah?edit=...` |
+| Home | `(app)/index.js` | `/` (inside the group) |
+| Student List | `(app)/mahasiswa/index.js` | `/mahasiswa` |
+| Student Detail | `(app)/mahasiswa/[id].js` | `/mahasiswa/:id` |
+| Add/Edit Form | `(app)/mahasiswa/tambah.js` | `/mahasiswa/tambah?edit=...` |
 
-- Detail dan Form sengaja bukan tab: keduanya bergantung pada layar Daftar
-- Login diletakkan di luar grup `(app)` agar tidak ikut terlindungi
+- Detail and Form are deliberately not tabs: both depend on the List screen
+- Login is placed outside the `(app)` group so it is not protected
 
 <!--
-Tabel ini adalah peta kerja Praktikum 7. Suruh mahasiswa menandai berkas yang sudah mereka
-buat dan yang belum sebelum praktikum dimulai.
+This table is the work map for Practicum 7. Have students mark which files they have already
+created and which they have not before the practicum starts.
 
-Tanyakan: "Mengapa Detail dan Form tidak dijadikan tab?" (Keduanya berjenjang dan harus
-bisa kembali ke Daftar; tab tidak dirancang untuk hubungan berjenjang.)
+Ask: "Why are Detail and Form not made tabs?" (Both are tiered and must be able to return to
+the List; a tab is not designed for a tiered relationship.)
 -->
 
 ---
@@ -375,20 +366,20 @@ bisa kembali ke Daftar; tab tidak dirancang untuk hubungan berjenjang.)
 <!-- _class: lead -->
 <!-- _paginate: skip -->
 
-# Bagian 3 — Layar, Parameter & Perlindungan
+# Part 3 — Screens, Parameters & Protection
 
-Subbab 7.5 parameter · 7.6 bersarang · 7.7 lifecycle · 7.8 protected
+Section 7.5 parameters · 7.6 nesting · 7.7 lifecycle · 7.8 protected
 
 <!--
-Bagian terpadat. Bila waktu tinggal sedikit, prioritaskan Subbab 7.5 (parameter) dan 7.8
-(protected screen); Subbab 7.7 dapat dilanjutkan sebagai tugas baca.
+The densest part. If little time remains, prioritize Section 7.5 (parameters) and 7.8
+(protected screen); Section 7.7 can be continued as a reading assignment.
 -->
 
 ---
 
-## Layout Root: `<Stack />`
+## Root Layout: `<Stack />`
 
-`app/_layout.js` — satu stack untuk seluruh aplikasi; versi lengkap di `kode/bab-07/app/_layout.js`
+`app/_layout.js` — one stack for the whole app; code in `kode/bab-07-navigasi-aplikasi/app/_layout.js`
 
 ```js
 import { Stack } from 'expo-router';
@@ -406,21 +397,21 @@ export default function LayoutRoot() {
 }
 ```
 
-> Daftar `<Stack.Screen>` bersifat opsional: layar yang tidak disebutkan tetap menjadi bagian stack dengan pengaturan default.
+> Unmentioned screens still join the stack by default: the `<Stack.Screen>` list is optional.
 
 <!--
-Tekankan dua hal: screenOptions memberi gaya seragam pada seluruh stack, dan grup (app)
-disembunyikan headernya karena grup itu menampilkan tab-nya sendiri.
+Stress two things: screenOptions gives a uniform style to the whole stack, and the (app)
+group has its header hidden because that group shows its own tabs.
 
-Ingatkan bahwa berkas ini setara dengan panggung seluruh aplikasi; semua layar tampil di
-atasnya. Versi lengkapnya ada di kode/bab-07/app/_layout.js.
+Remind them that this file is the stage for the whole app; every screen appears on top of
+it. The full version is in kode/bab-07-navigasi-aplikasi/app/_layout.js.
 -->
 
 ---
 
-## Dua Gaya Membuka Layar
+## Two Ways to Open a Screen
 
-**Deklaratif** — tautan yang terlihat pengguna
+**Declarative** — a link the user can see
 
 ```js
 import { Link } from 'expo-router';
@@ -430,7 +421,7 @@ import { Link } from 'expo-router';
 </Link>
 ```
 
-**Imperatif** — dipicu oleh logika program
+**Imperative** — triggered by program logic
 
 ```js
 import { router } from 'expo-router';
@@ -442,21 +433,24 @@ import { router } from 'expo-router';
 </Pressable>
 ```
 
-> Aturan praktis: `<Link>` untuk tautan yang terlihat; `router` untuk perpindahan hasil proses, seperti `replace` setelah login dan `back` setelah menyimpan.
-
 <!--
-Contoh ini mengikuti Contoh 7.2 pada bab: dua gaya, hasil setara, peran berbeda.
+This example follows Example 7.2 in the chapter: two styles, equivalent result, different
+roles.
 
-Tekankan asChild: tanpa asChild, Link dan Pressable berebut gestur sehingga kartu terasa
-mati. Penyebabnya ada dua menurut Troubleshooting bab: dua komponen sentuh berebut gestur,
-atau tautan dirender sebagai teks tanpa gaya sentuh.
+Read the rule of thumb that used to sit under the code, verbatim: Rule of thumb: `<Link>`
+for visible links; `router` for transitions produced by a process, such as `replace` after
+login and `back` after saving.
+
+Stress asChild: without asChild, Link and Pressable compete for the gesture and the card
+feels dead. The chapter's Troubleshooting gives two causes: two touch components competing
+for the gesture, or a link rendered as text without a touch style.
 -->
 
 ---
 
-## Dynamic Route dan Parameter
+## Dynamic Routes and Parameters
 
-`app/(app)/mahasiswa/[id].js` — membaca nilai dari alamat
+`app/(app)/mahasiswa/[id].js` — reading a value from the address
 
 ```js
 import { Text } from 'react-native';
@@ -468,58 +462,58 @@ export default function LayarDetail() {
 }
 ```
 
-- Kurung siku menandai segmen dinamis: `/mahasiswa/2201001`
-- Query parameter untuk nilai opsional: `/mahasiswa/tambah?edit=2201001`
-- Semua nilai dari alamat bertipe string; `String(id)` mengamankan nilai berbentuk array
-- Parameter tidak ada bernilai `undefined`, jadi periksa dulu sebelum dipakai
+- Square brackets mark a dynamic segment: `/mahasiswa/2201001`
+- A query parameter for optional values: `/mahasiswa/tambah?edit=2201001`
+- Every value from the address is a string; `String(id)` guards against values that arrive as an array
+- A missing parameter has the value `undefined`, so check it before use
 
 <!--
-Demonstrasikan dengan dua alamat berbeda, misalnya 2201001 dan 2201003, pada berkas
-[id].js yang sama. Inilah inti rute dinamis.
+Demonstrate with two different addresses, for example 2201001 and 2201003, on the same
+[id].js file. This is the core of dynamic routes.
 
-Peringatan: nilai dari alamat selalu string. Mahasiswa yang membandingkannya langsung
-dengan angka akan menemui "data tidak ditemukan" padahal datanya ada.
+Warning: a value from the address is always a string. A student who compares it directly
+with a number will meet "data not found" even though the data exists.
 -->
 
 ---
 
-## Nested Navigation: Tab Berisi Stack
+## Nested Navigation: A Tab Containing a Stack
 
-![w:720](assets/diagrams/bab-07-navigasi-aplikasi-03.svg)
+![w:1120](assets/diagrams/bab-07-navigasi-aplikasi-03.svg)
 
-- Setiap tab punya riwayat sendiri: pindah tab tidak menghapus posisi di stack
-- Header ganda dicegah dengan `headerShown: false` pada Tabs, jadi hanya satu pemilik header
-- Stack terdalam yang menampilkan judul layar: Daftar, Detail, dan Tambah Mahasiswa
+- Each tab has its own history: switching tabs does not erase your position in the stack
+- Double headers are prevented with `headerShown: false` on Tabs, so only one owner shows a header
+- The innermost stack shows the screen titles: List, Detail, and Add Student
 
 <!--
-Bacakan diagram sebagai struktur folder: lapisan atas app/(app)/_layout.js berisi Tabs,
-dan folder mahasiswa/ punya _layout.js sendiri berisi Stack.
+Read the diagram as a folder structure: the top layer app/(app)/_layout.js holds Tabs, and
+the mahasiswa/ folder has its own _layout.js holding a Stack.
 
-Tanyakan: "Apa yang terjadi kalau Tabs juga menampilkan header?" (Dua batang judul
-bertumpuk; masalah yang paling terlihat mata di praktikum.)
+Ask: "What happens if Tabs also shows a header?" (Two stacked title bars; the most obvious
+problem in the practicum.)
 -->
 
 ---
 
-## Kenapa Daftar Tidak Segar Setelah Kembali?
+## Why Is the List Stale After Going Back?
 
-![w:720](assets/diagrams/bab-07-navigasi-aplikasi-04.svg)
+![w:1120](assets/diagrams/bab-07-navigasi-aplikasi-04.svg)
 
-> Layar tab tidak dilepas dari memori; `useEffect` biasa hanya berjalan saat pemasangan, bukan saat fokus kembali.
+> A tab screen is not released from memory; a plain `useEffect` runs only on mount, not when focus returns.
 
 <!--
-Sambungkan dengan baris kedua tabel stack versus tab: karena layar tetap terpasang,
-useEffect tidak terpicu lagi ketika pengguna kembali ke tab itu.
+Connect it to the second row of the stack-versus-tab table: because the screen stays
+mounted, useEffect is no longer triggered when the user returns to that tab.
 
-Tanyakan: "Kalau begitu, kapan daftar mengambil data baru?" (Saat layar mendapat fokus.
-Itulah alasan useFocusEffect ada.)
+Ask: "Then when does the list fetch new data?" (When the screen gains focus. That is why
+useFocusEffect exists.)
 -->
 
 ---
 
-## `useFocusEffect` dan `useCallback`
+## `useFocusEffect` and `useCallback`
 
-`app/(app)/index.js` — pola pemantauan fokus
+`app/(app)/index.js` — the focus-monitoring pattern
 
 ```js
 import { useCallback } from 'react';
@@ -535,57 +529,57 @@ useFocusEffect(
 );
 ```
 
-- Argumen wajib dibungkus `useCallback`; tanpa itu efek terpicu berulang setiap render
-- Daftar dependensi `useCallback` menentukan kapan efek dianggap berubah, misalnya `[id]`
+- The argument must be wrapped in `useCallback`; without it the effect fires repeatedly on every render
+- The `useCallback` dependency list decides when the effect counts as changed, for example `[id]`
 
 <!--
-Polanya dua bagian: fungsi efek dan fungsi pembersihan. Tunjukkan pasangan buka dan tutup
-itu seperti masuk ruangan lalu mematikan lampu saat keluar.
+The pattern has two parts: the effect function and the cleanup function. Show that open and
+close pair like entering a room and turning off the light on the way out.
 
-Peringatan dari troubleshooting bab: useFocusEffect tanpa useCallback membuat efek
-berjalan terus-menerus; gejalanya terbaca di konsol, bukan di layar.
+Warning from the chapter's troubleshooting: useFocusEffect without useCallback makes the
+effect run continuously; the symptom shows in the console, not on the screen.
 -->
 
 ---
 
-## `useEffect` atau `useFocusEffect`?
+## `useEffect` or `useFocusEffect`?
 
-| Kebutuhan | Hook | Alasan |
+| Need | Hook | Reason |
 |---|---|---|
-| Mengambil data sekali saat komponen terpasang | `useEffect` | Berjalan satu kali; tidak bergantung fokus |
-| Menyegarkan daftar setiap layar kembali terlihat | `useFocusEffect` | Layar tab tetap terpasang, jadi fokus perlu dipantau |
+| Fetch data once when the component mounts | `useEffect` | Runs once; does not depend on focus |
+| Refresh the list every time the screen becomes visible again | `useFocusEffect` | The tab screen stays mounted, so focus has to be monitored |
 
-> Praktikum bab ini memakai `useFocusEffect` di Beranda untuk menyimulasikan penyegaran; pola yang sama dipakai Bab 10 saat data datang dari API.
+> The practicum for this chapter uses `useFocusEffect` on Home to simulate a refresh; the same pattern is used in Chapter 10 when the data comes from an API.
 
 <!--
-Aturan pemilihan ini yang paling sering ditanyakan: bedakan "sekali jalan" dari "setiap
-kali terlihat", bukan "baru" dari "lama".
+This selection rule is what gets asked most often: distinguish "runs once" from "every time
+it is visible", not "new" from "old".
 
-Tanyakan: "Beranda memperbarui waktu terakhir dilihat, hook mana yang tepat?"
-(useFocusEffect, karena prosesnya harus diulang setiap layar terlihat.)
+Ask: "Home updates the last-seen time; which hook is right?" (useFocusEffect, because the
+process has to be repeated every time the screen becomes visible.)
 -->
 
 ---
 
-## Protected Screen: Satu Titik Kontrol
+## Protected Screen: A Single Control Point
 
-![w:720](assets/diagrams/bab-07-navigasi-aplikasi-05.svg)
+![w:1120](assets/diagrams/bab-07-navigasi-aplikasi-05.svg)
 
-> Perlindungan ditempatkan pada satu titik, yaitu layout grup `(app)`, dan berlaku otomatis untuk semua layar di dalamnya, termasuk layar yang ditambahkan kemudian.
+> Protection sits at one point, the `(app)` group layout, and applies automatically to every screen inside it, including screens added later.
 
 <!--
-Tekankan prinsip single point of control: pemeriksaan per layar rawan terlewat, apalagi
-saat aplikasi tumbuh dan satu layar baru lupa dipasangi pemeriksaan.
+Stress the single point of control principle: a per-screen check is easy to forget,
+especially when the app grows and one new screen is left without the check.
 
-Tanyakan: "Kalau besok ditambah layar Laporan, apakah perlu memeriksa status login di
-sana juga?" (Tidak, selama layar itu berada di dalam grup (app).)
+Ask: "If a Reports screen is added tomorrow, do we need to check the login state there
+too?" (No, as long as that screen is inside the (app) group.)
 -->
 
 ---
 
-## Pola Redirect dan Jebakan Redirect Loop
+## The Redirect Pattern and the Redirect Loop Trap
 
-`app/(app)/_layout.js` — pemeriksaan sebelum merender tab
+`app/(app)/_layout.js` — the check before rendering the tabs
 
 ```js
 import { Redirect, Tabs } from 'expo-router';
@@ -599,227 +593,231 @@ export default function LayoutAplikasi() {
 }
 ```
 
-- `<Redirect />` lebih disukai daripada navigasi manual: deklaratif dan aman saat render
-- Layar login wajib di luar grup terlindungi agar tidak terjadi redirect loop
+- `<Redirect />` is preferred over manual navigation: declarative and safe during render
+- The login screen must sit outside the protected group so a redirect loop cannot occur
 
 <!--
-Jebakan utama bab ini: kalau login.js diletakkan di dalam grup (app), pengguna yang belum
-masuk akan dilempar ke login yang justru memeriksa autentikasi lagi, dan terjadi
-perpindahan berulang tanpa ujung.
+The main trap in this chapter: if login.js is placed inside the (app) group, a user who is
+not signed in is thrown to login, which checks authentication again, and an endless
+repeated transition follows.
 
-Catat juga status masuk di memori (lib/session.js) hilang saat aplikasi ditutup;
-implementasi sungguhan ada di Bab 11 (penyimpanan) dan Bab 13 (token).
+Also note that the signed-in status in memory (lib/session.js) is lost when the app closes;
+the real implementation is in Chapter 11 (storage) and Chapter 13 (tokens).
 -->
 
 ---
 
 <!-- _class: center -->
 
-## Apa yang Terjadi Jika…?
+## What Happens If…?
 
-- `useFocusEffect` dipakai tanpa `useCallback`?
-- `login.js` diletakkan di dalam grup `(app)`?
-- Tabs tidak menyembunyikan headernya di atas Stack?
+- `useFocusEffect` is used without `useCallback`?
+- `login.js` is placed inside the `(app)` group?
+- Tabs does not hide its header above the Stack?
 
-Sebutkan gejala yang terlihat pengguna, bukan hanya nama kesalahannya.
+Name the symptom the user sees, not just the name of the error.
 
 <!--
-Diskusi kelas 4 menit: bagi tiga kelompok kecil, satu skenario per kelompok, lalu tiap
-kelompok menyampaikan satu gejala yang terlihat di layar.
+Four-minute class discussion: split into three small groups, one scenario per group, then
+each group reports one symptom visible on the screen.
 
-Analisis lengkapnya ada di slide berikutnya, jadi jangan dibocorkan lebih dulu.
+The full analysis is on the next slide, so do not leak it in advance.
 -->
 
 ---
 
-## Analisis Tiga Skenario
+## Analysis of Three Scenarios
 
-| Skenario | Sebab | Gejala yang terlihat |
+| Scenario | Cause | Visible symptom |
 |---|---|---|
-| `useFocusEffect` tanpa `useCallback` | Fungsi baru dibuat setiap render | Efek berjalan terus-menerus; ada peringatan di konsol |
-| `login.js` di dalam grup `(app)` | Layar login ikut diperiksa autentikasinya | Pengguna terlempar ke login berulang kali |
-| Tabs tidak menyembunyikan header | Tabs dan Stack sama-sama menampilkan header | Dua batang judul bertumpuk di layar Detail |
+| `useFocusEffect` without `useCallback` | A new function is created on every render | The effect keeps running; there is a warning in the console |
+| `login.js` inside the `(app)` group | The login screen is authentication-checked too | The user is thrown back to login again and again |
+| Tabs does not hide the header | Tabs and Stack both display a header | Two title bars stacked on the Detail screen |
 
 <!--
-Untuk setiap baris, minta mahasiswa menyebutkan perbaikan dalam satu kalimat: bungkus
-dengan useCallback; pindahkan login ke luar grup; set headerShown false pada Tabs.
+For each row, ask students to state the fix in one sentence: wrap it with useCallback; move
+login outside the group; set headerShown false on Tabs.
 
-Tekankan bahwa ketiganya adalah kesalahan yang paling sering muncul di praktikum bab ini,
-sehingga ketiganya juga menjadi bahan penilaian debugging.
+Stress that all three are the mistakes that show up most often in this chapter's practicum,
+so all three are also part of the debugging assessment.
 -->
 
 ---
 
-## Studi Kasus: Klinik "SehatIn"
+## Case Study: the "SehatIn" Clinic
 
-**Contoh ilustratif** pada bab ini: klinik pratama di Semarang, tim tiga orang yang belum berpengalaman mobile, harus memutuskan struktur navigasi sebelum menulis kode.
+![w:1120](assets/diagrams/bab-07-navigasi-aplikasi-08.svg)
 
-- **Pola:** tiga tab (Beranda, Janji Temu, Profil) + stack di dalam tiap tab
-- **Pelindung:** pemeriksaan hak akses pada layout grup, bukan di setiap layar
-- **Deep linking:** notifikasi pembatalan membuka Detail Janji via `sehatin://janji/415`
+An **illustrative example** in this chapter: a primary clinic in Semarang, a three-person team with no mobile experience, must decide the navigation structure before writing code.
 
-> Kesimpulan bab: struktur navigasi adalah keputusan arsitektur. Salah memilih berarti pengguna tersesat, kode sulit dirawat, dan perbaikan menjadi mahal.
+- **Pattern:** three tabs (Home, Appointments, Profile) + a stack inside each tab
+- **Guard:** the access check on the group layout, not on every screen
+
+> Chapter conclusion: the navigation structure is an architecture decision. Choosing wrong means users get lost, the code is hard to maintain, and fixes become expensive.
 
 <!--
-Bacakan sebagai cerita keputusan, bukan daftar fitur: tanpa tab, pasien yang ingin melihat
-jadwal harus menekan kembali berkali-kali dari layar terdalam. Sebutkan bahwa ini contoh
-ilustratif pada bab, bukan sistem nyata yang sedang berjalan.
+Read it as a story of decisions, not a feature list: without tabs, a patient who wants to see
+the schedule has to press back many times from the deepest screen. State that this is an
+illustrative example in the chapter, not a real running system.
 
-Tekankan pola yang diambil dari kasus ini dipakai lagi pada Project Akhir "Sistem
-Informasi Akademik Mobile": tab untuk fungsi utama, stack untuk detail, satu titik pelindung.
+Stress that the pattern taken from this case is reused in the Final Project "Mobile Academic
+Information System": tabs for main functions, stack for details, one guard point.
+
+Trimmed to the picture (the diagram says this):
+**Deep linking:** a cancellation notification opens the Appointment Detail via `sehatin://janji/415`
 -->
 
 ---
 
-## Praktikum 7: Alur yang Diuji
+## Practicum 7: The Flow Under Test
 
-1. Buka aplikasi, tampil layar Masuk karena pengarah di `index.js`
-2. Tekan Masuk, sampai di Beranda dengan dua tab: Beranda dan Mahasiswa
-3. Tab Mahasiswa menampilkan lima kartu data baku; tekan satu kartu, Detail terbuka
-4. Tombol "Edit Data ini" membuka form dengan isian yang sudah terisi data lama
-5. Tekan Keluar, kembali ke Masuk, dan tombol kembali tidak membuka Beranda
+1. Open the app; the Login screen appears because of the redirect in `index.js`
+2. Press Login and land on Home with two tabs: Home and Students
+3. The Students tab shows five static-data cards; press one card and Detail opens
+4. The "Edit this Data" button opens the form with the fields already filled with the old data
+5. Press Logout, return to Login, and the back button does not open Home
 
-> Data baku praktikum: Budi Santoso, Siti Aminah, Agus Wijaya, Dewi Lestari, dan Rizky Pratama.
+> Practicum static data: Budi Santoso, Siti Aminah, Agus Wijaya, Dewi Lestari, and Rizky Pratama.
 
 <!--
-Bacakan sebagai skenario uji yang akan dijalankan di laboratorium, bukan sebagai daftar
-fitur. Tekankan langkah 2 dan 5 karena keduanya bergantung pada router.replace.
+Read it as a test scenario to be run in the laboratory, not as a feature list. Stress steps
+2 and 5 because both depend on router.replace.
 
-Peringatan: bila langkah 5 gagal, periksa apakah layar login memakai router.push, sebab
-pengguna akan bisa mundur ke layar login setelah masuk.
+Warning: if step 5 fails, check whether the login screen uses router.push, because the user
+would then be able to go back to the login screen after signing in.
 -->
 
 ---
 
-## Troubleshooting yang Paling Sering
+## Most Common Troubleshooting
 
-| Gejala | Penyebab | Solusi |
+| Symptom | Cause | Solution |
 |---|---|---|
-| Layar kosong setelah mengubah `package.json` | `main` belum bernilai `expo-router/entry`; Metro masih mencari `App.js` | Perbaiki `main`, lalu `npx expo start -c` |
-| Kartu tidak merespons saat ditekan | `Link` tanpa `asChild` membungkus `Pressable` | Pakai pola `<Link asChild><Pressable>` |
-| "Data mahasiswa tidak ditemukan" | Parameter string dibandingkan dengan `id` non-string | Normalisasi dengan `String(id)` |
+| Blank screen after changing `package.json` | `main` is not yet `expo-router/entry`; Metro is still looking for `App.js` | Fix `main`, then `npx expo start -c` |
+| The card does not respond when pressed | `Link` without `asChild` wraps `Pressable` | Use the `<Link asChild><Pressable>` pattern |
+| "Student data not found" | A string parameter is compared with a non-string `id` | Normalize with `String(id)` |
 
-> Tiga gejala ini menutup sebagian besar pertanyaan praktikum Bab 7; daftar lengkapnya ada pada bagian Troubleshooting bab.
+> These three symptoms cover most of the Practicum 7 questions; the complete list is in the chapter's Troubleshooting section.
 
 <!--
-Jangan dibacakan semuanya. Pilih satu gejala yang paling sering Anda temui di kelas, minta
-mahasiswa menebak penyebabnya, baru tampilkan kolom solusi.
+Do not read them all. Pick the one symptom you meet most often in class, ask students to
+guess the cause, and only then show the solution column.
 
-Kebiasaan yang ditanamkan: baca pesan kesalahan dan periksa berkas konfigurasi lebih dulu
-sebelum bertanya.
+The habit being instilled: read the error message and check the configuration files before
+asking for help.
 -->
 
 ---
 
 <!-- _class: center -->
 
-## Uji Pemahaman
+## Comprehension Check
 
-- Berkas `app/mahasiswa/[id].js` membuka alamat apa?
-- Apa fungsi nilai `"main": "expo-router/entry"` pada `package.json`?
-- Mengapa layar tab butuh `useFocusEffect`, bukan `useEffect` biasa?
-- Mengapa layar login diletakkan di luar grup `(app)`?
+- Which address does the file `app/mahasiswa/[id].js` open?
+- What is the role of the `"main": "expo-router/entry"` value in `package.json`?
+- Why does a tab screen need `useFocusEffect` rather than a plain `useEffect`?
+- Why is the login screen placed outside the `(app)` group?
 
 <!--
-Kuis lisan 5 menit: tampilkan pertanyaan, minta kelas menjawab serentak atau angkat tangan,
-baru lanjut ke slide jawaban.
+Five-minute oral quiz: show the question, ask the class to answer together or raise a hand,
+then move on to the answers slide.
 
-Jangan menjawab di slide ini, karena ekspor PDF menampilkan seluruh slide kepada mahasiswa.
+Do not answer on this slide, because the PDF export shows every slide to students.
 -->
 
 ---
 
 <!-- _class: center -->
 
-## Jawaban
+## Answers
 
-- `/mahasiswa/<nilai>` untuk nilai apa pun, misalnya `/mahasiswa/2201001`
-- Titik masuk aplikasi yang membaca folder `app/` dan menyiapkan navigator
-- Karena layar tab tetap terpasang di memori, efek sekali jalan tidak terpicu oleh fokus
-- Agar tidak ikut terlindungi; kalau ikut, pengguna terlempar ke login berulang
+- `/mahasiswa/<value>` for any value, for example `/mahasiswa/2201001`
+- The app entry point that reads the `app/` folder and sets up the navigator
+- Because a tab screen stays mounted in memory, a run-once effect is not triggered by focus
+- So it is not protected; if it were, the user would be thrown back to login repeatedly
 
 <!--
-Ulangi dua pembeda yang paling sering tertukar: parameter selalu string, dan tab tidak
-pernah melepas layarnya dari memori.
+Repeat the two distinctions most often swapped: a parameter is always a string, and a tab
+never releases its screen from memory.
 
-Bila banyak yang salah pada pertanyaan ketiga, ulangi diagram lifecycle sebelum menutup
-pertemuan.
+If many students got the third question wrong, repeat the lifecycle diagram before closing
+the meeting.
 -->
 
 ---
 
-## Ringkasan (1/2)
+## Summary (1/2)
 
-1. Navigasi mengatur perpindahan layar, riwayat, dan pengiriman data antar layar
-2. Pola utama: stack (berjenjang), tab (sejajar), dan drawer (laci)
-3. Expo Router memakai file-based routing: satu berkas di `app/` menjadi satu rute
-4. Setup project blank: pasang paket, ubah `main`, lalu tambahkan `scheme`
-5. `<Stack />` dan `<Tabs />` membangun navigator dengan perilaku yang berbeda
+1. Navigation governs moving between screens, the history, and data passing between screens
+2. The main patterns: stack (tiered), tab (side by side), and drawer
+3. Expo Router uses file-based routing: one file in `app/` becomes one route
+4. Blank project setup: install the packages, change `main`, then add `scheme`
+5. `<Stack />` and `<Tabs />` build navigators with different behavior
 
 <!--
-Minta mahasiswa memilih satu nomor dan menjelaskannya dengan kalimat sendiri; cara ini
-lebih efektif daripada membacakan ulang.
+Ask students to pick one number and explain it in their own sentence; this works better than
+reading them all again.
 
-Tekankan nomor 3 sebagai pergeseran paradigma bab ini: dari mendaftarkan layar di dalam
-kode menjadi menyusun berkas di dalam folder.
+Stress number 3 as this chapter's paradigm shift: from registering screens inside the code
+to arranging files inside folders.
 -->
 
 ---
 
-## Ringkasan (2/2)
+## Summary (2/2)
 
-1. `<Link>` deklaratif untuk tautan terlihat; `router` imperatif untuk logika
-2. Parameter dikirim lewat dynamic route `[id]` dan query `?edit=`, selalu string
-3. Nested navigation berarti tab berisi stack; `(app)` adalah route group tanpa alamat
-4. `useFocusEffect` dengan `useCallback` memicu proses setiap layar difokuskan
-5. Protected screen pada satu titik, yaitu layout grup, dengan `<Redirect />`
+1. `<Link>` is declarative for visible links; `router` is imperative for logic
+2. Parameters are sent through the dynamic route `[id]` and the query `?edit=`, always as strings
+3. Nested navigation means a tab containing a stack; `(app)` is a route group with no address
+4. `useFocusEffect` with `useCallback` triggers a process every time the screen is focused
+5. A protected screen at one point, the group layout, with `<Redirect />`
 
 <!--
-Hubungkan nomor 2 dengan troubleshooting "data tidak ditemukan": sebagian besar kasus
-berakar pada tipe string, bukan pada datanya.
+Connect number 2 with the "data not found" troubleshooting: most cases are rooted in the
+string type, not in the data.
 
-Tutup dengan pertanyaan reflektif: "Keputusan struktur mana yang paling berisiko bila
-salah sejak awal?" Pertanyaan itu dibahas pada slide diskusi berikutnya.
+Close with a reflective question: "Which structure decision is riskiest if it is wrong from
+the start?" That question is discussed on the next discussion slide.
 -->
 
 ---
 
-## Diskusi Kelas: Struktur yang Salah Sejak Awal
+## Class Discussion: A Structure Wrong from the Start
 
 <div class="grid2">
 <div>
 
-**Pertanyaan**
+**Questions**
 
-- Keputusan struktur mana yang paling mahal bila salah sejak awal?
-- Bagaimana Anda menguji bahwa tombol kembali bekerja wajar?
+- Which structure decision is the most expensive if it is wrong from the start?
+- How do you test that the back button behaves naturally?
 
 </div>
 <div>
 
-**Yang dinilai**
+**What is assessed**
 
-- Ketepatan menghubungkan keputusan dengan riwayat dan fokus layar
-- Kemampuan merancang satu skenario uji, bukan hanya menyebut teori
+- Accuracy in connecting the decision to history and screen focus
+- The ability to design one test scenario, not just to quote theory
 
 </div>
 </div>
 
-> Struktur yang benar membuat aplikasi tumbuh tanpa kehilangan arah; pola yang sama dipakai pada Project Akhir.
+> The right structure lets the app grow without losing its way; the same pattern is used in the Final Project.
 
 <!--
-Beri 3 menit berpasangan, lalu tampung 2 sampai 3 jawaban. Jawaban kuat menyebut tab
-untuk fungsi utama, stack untuk alur detail, dan satu titik pelindung.
+Give 3 minutes in pairs, then collect 2 to 3 answers. A strong answer names tabs for main
+functions, a stack for detail flows, and one guard point.
 
-Bila jawaban berhenti pada "banyak layar", arahkan: "Apa akibatnya pada tombol kembali
-pengguna, dan pada perawatan kode?"
+If the answer stops at "many screens", redirect: "What does that mean for the user's back
+button, and for maintaining the code?"
 -->
 
 ---
 
-## Referensi
+## References
 
-| Sumber | Tautan |
+| Source | Link |
 |---|---|
 | Expo documentation (2026) | docs.expo.dev |
 | Expo Router: Introduction (2026) | docs.expo.dev/router/introduction/ |
@@ -830,15 +828,15 @@ pengguna, dan pada perawatan kode?"
 <div class="grid2">
 <div>
 
-**Bab terkait**
+**Related chapters**
 
-- Bab 2 — template blank, Expo Go, emulator
-- Bab 8 — form dan validasi; Bab 10 — data dari API
+- Chapter 2 — blank template, Expo Go, emulator
+- Chapter 8 — forms and validation; Chapter 10 — data from an API
 
 </div>
 <div>
 
-**Versi teknologi buku ini**
+**Technology versions in this book**
 
 - Expo SDK 57 · React Native 0.86 · React 19.2 · Node.js LTS ≥ 22
 
@@ -846,12 +844,12 @@ pengguna, dan pada perawatan kode?"
 </div>
 
 <!--
-Rujukan lengkap ada di Lampiran D; istilah Expo Router dan navigation dijelaskan pada
-Lampiran C (glosarium), sedangkan route group didefinisikan pada slide "Dari Berkas ke
-Alamat" (Subbab 7.6).
+The complete references are in Appendix D; the terms Expo Router and navigation are explained
+in Appendix C (glossary), while route group is defined on the "From File to Address" slide
+(Section 7.6).
 
-Ingatkan bahwa dokumentasi daring sangat bergantung versi, jadi cocokkan selalu dengan
-versi SDK 57 yang dipakai buku ini.
+Remind them that online documentation depends heavily on version, so always match it to the
+SDK 57 version used in this book.
 -->
 
 ---
@@ -859,17 +857,17 @@ versi SDK 57 yang dipakai buku ini.
 <!-- _class: lead -->
 <!-- _paginate: skip -->
 
-# Siap Menghadapi UTS
+# Ready for the Midterm Exam
 
-**Praktikum:** selesaikan Praktikum Bab 6 dan Bab 7 sampai alur Masuk → Beranda → Daftar → Detail → Form berjalan.
+**Practicum:** complete the Chapter 6 and Chapter 7 practicums until the Login → Home → List → Detail → Form flow works.
 
-Pertemuan 8 adalah **UTS** dengan materi Bab 1 sampai Bab 7 (bobot 20%); Tugas 2 (redesign UI aplikasi kampus) masih berjalan dari Bab 6.
+Meeting 8 is the **midterm exam** covering Chapters 1 through 7 (20% weight); Assignment 2 (campus app UI redesign) is still running from Chapter 6.
 
 <!--
-Tutup dengan satu kalimat: "Bab ini memberi aplikasi alamat; bab berikutnya memberi isi
-pada alamat itu."
+Close with one sentence: "This chapter gives the app addresses; the next chapter gives
+content to those addresses."
 
-Sebutkan cakupan UTS secara eksplisit (Bab 1 sampai 7, bobot 20% menurut RPS) dan
-rubrik praktikum: pemahaman konsep 15%, implementasi 25%, kualitas kode 15%, UI/UX 15%,
-debugging 10%, dokumentasi 20% (Lampiran A).
+State the midterm scope explicitly (Chapters 1 through 7, 20% weight per the RPS) and the
+practicum rubric: conceptual understanding 15%, implementation 25%, code quality 15%, UI/UX
+15%, debugging 10%, documentation 20% (Appendix A).
 -->

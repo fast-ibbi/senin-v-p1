@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1160 474" width="1160" height="474" role="img"><defs><marker id="a-slate" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#94a3b8"/></marker><marker id="a-acc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#1d4ed8"/></marker><marker id="a-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b91c1c"/></marker><marker id="a-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#15803d"/></marker><marker id="a-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#111827"/></marker></defs><style>
+.t{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif;fill:#111827}
+.m{font-family:ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,'Liberation Mono',monospace}
+.mu{fill:#6b7280}
+.ac{fill:#1d4ed8}
+.rd{fill:#b91c1c}
+.gn{fill:#15803d}
+.am{fill:#b45309}
+.wh{fill:#ffffff}
+.b6{font-weight:600}
+.b7{font-weight:700}
+.mid{text-anchor:middle}
+.end{text-anchor:end}
+.s12{font-size:12px}.s13{font-size:13px}.s14{font-size:14px}.s15{font-size:15px}.s16{font-size:16px}.s17{font-size:17px}.s18{font-size:18px}.s19{font-size:19px}.s20{font-size:20px}.s21{font-size:21px}.s22{font-size:22px}.s24{font-size:24px}.s26{font-size:26px}.s28{font-size:28px}.s30{font-size:30px}.s32{font-size:32px}.s34{font-size:34px}.s36{font-size:36px}.s38{font-size:38px}
+</style><rect x="0" y="0" width="372" height="400" rx="12" fill="#ffffff" stroke="none" stroke-width="1.5"/><rect x="0" y="0" width="372" height="46" rx="12" fill="#fef2f2" stroke="none" stroke-width="1.5"/><rect x="0" y="34" width="372" height="12" rx="0" fill="#fef2f2" stroke="none" stroke-width="1.5"/><text class="t s17 b7 rd" x="18" y="29">READ-ONLY — the child only reads</text><line x1="0" y1="46" x2="372" y2="46" stroke="#fecaca" stroke-width="1" stroke-linecap="round"/><rect x="0" y="0" width="372" height="400" rx="12" fill="none" stroke="#fecaca" stroke-width="1.5"/>
+<text class="t s15 mu" x="18" y="74">A child component must not change props.</text>
+<rect x="96" y="90" width="180" height="54" rx="8" fill="#eef2ff" stroke="#c7d2fe" stroke-width="1.5"/>
+<text class="t s18 b7 mid" x="186" y="115">App</text>
+<text class="t s12 mu mid" x="186" y="134">parent · owns the data</text>
+<line x1="186" y1="146" x2="186" y2="176" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" marker-end="url(#a-slate)"/>
+<text class="t s13 b6 mu" x="196" y="166">props</text>
+<rect x="76" y="180" width="220" height="54" rx="8" fill="#fff" stroke="#e5e7eb" stroke-width="1.5"/>
+<text class="t s17 b6 mid" x="186" y="205">KartuMahasiswa</text>
+<text class="t s12 mu mid" x="186" y="224">child · receiver</text>
+<rect x="261" y="188" width="14" height="11" rx="2" fill="#b91c1c"/><path d="M 264 188 v-4 a4 4 0 0 1 8 0 v4" fill="none" stroke="#b91c1c" stroke-width="2"/>
+<text class="t s18 b7 rd" x="18" y="270">✗</text>
+<text class="t s15 b6 rd" x="42" y="270">a child must not change props</text>
+<text class="t s14 mu" x="18" y="306">If the child needs a change, it asks</text>
+<text class="t s14 mu" x="18" y="326">the parent via a setter passed down.</text>
+<rect x="394" y="0" width="372" height="400" rx="12" fill="#ffffff" stroke="none" stroke-width="1.5"/><rect x="394" y="0" width="372" height="46" rx="12" fill="#f0fdf4" stroke="none" stroke-width="1.5"/><rect x="394" y="34" width="372" height="12" rx="0" fill="#f0fdf4" stroke="none" stroke-width="1.5"/><text class="t s17 b7 gn" x="412" y="29">DEFAULT VALUE — still runs</text><line x1="394" y1="46" x2="766" y2="46" stroke="#bbf7d0" stroke-width="1" stroke-linecap="round"/><rect x="394" y="0" width="372" height="400" rx="12" fill="none" stroke="#bbf7d0" stroke-width="1.5"/>
+<text class="t s15 mu" x="412" y="74">Fallback when the parent forgets to send.</text>
+<rect x="412" y="90" width="182" height="27" rx="7" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="1"/><text class="m s15 gn" x="422" y="108.9">{ mahasiswa = {} }</text>
+<text class="t s13 b6 mu ls" x="412" y="152">parent sends the data</text>
+<text class="t s17 b7 gn" x="412" y="180">✓</text>
+<text class="t s16 b6" x="436" y="180">name and NIM appear</text>
+<text class="t s13 b6 mu ls" x="412" y="226">parent forgets to send</text>
+<text class="t s17 b7 gn" x="412" y="254">✓</text>
+<text class="t s16 b6" x="436" y="254">the default is used</text>
+<text class="t s14 mu" x="412" y="300">Result: no error — it just shows</text>
+<text class="t s14 mu" x="412" y="320">empty, and the app keeps running.</text>
+<rect x="788" y="0" width="372" height="400" rx="12" fill="#ffffff" stroke="none" stroke-width="1.5"/><rect x="788" y="0" width="372" height="46" rx="12" fill="#eef2ff" stroke="none" stroke-width="1.5"/><rect x="788" y="34" width="372" height="12" rx="0" fill="#eef2ff" stroke="none" stroke-width="1.5"/><text class="t s17 b7 ac" x="806" y="29">CHILDREN — content slot</text><line x1="788" y1="46" x2="1160" y2="46" stroke="#c7d2fe" stroke-width="1" stroke-linecap="round"/><rect x="788" y="0" width="372" height="400" rx="12" fill="none" stroke="#c7d2fe" stroke-width="1.5"/>
+<text class="t s15 mu" x="806" y="74">Content between the tags becomes the child prop.</text>
+<text class="t m s15 mu" x="806" y="104">&lt;KartuInfo&gt;</text>
+<rect x="794" y="116" width="344" height="34" rx="6" fill="#eef2ff" stroke="#c7d2fe" stroke-width="1.5" stroke-dasharray="5 4"/>
+<text class="t m s15 ac b6" x="806" y="139">  &lt;p&gt;Card content…&lt;/p&gt;</text>
+<text class="t m s15 mu" x="806" y="182">&lt;/KartuInfo&gt;</text>
+<text class="t s13 b6 ac" x="806" y="216">↑ this becomes the children prop automatically</text>
+<text class="t s14 mu" x="806" y="258">The parent component prepares a slot;</text>
+<text class="t s14 mu" x="806" y="278">the consumer fills its content.</text>
+<rect x="0" y="420" width="1160" height="54" rx="10" fill="#eef2ff" stroke="none" stroke-width="1.5"/>
+<rect x="0" y="420" width="6" height="54" rx="0" fill="#1d4ed8" stroke="none" stroke-width="1.5"/>
+<text class="t s18 b6" x="24" y="454">Props always flow one way: from parent to child. Never the other way.</text></svg>

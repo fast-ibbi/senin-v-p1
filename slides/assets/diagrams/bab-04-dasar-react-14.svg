@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1160 392" width="1160" height="392" role="img"><defs><marker id="a-slate" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#94a3b8"/></marker><marker id="a-acc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#1d4ed8"/></marker><marker id="a-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b91c1c"/></marker><marker id="a-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#15803d"/></marker><marker id="a-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#111827"/></marker></defs><style>
+.t{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif;fill:#111827}
+.m{font-family:ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,'Liberation Mono',monospace}
+.mu{fill:#6b7280}
+.ac{fill:#1d4ed8}
+.rd{fill:#b91c1c}
+.gn{fill:#15803d}
+.am{fill:#b45309}
+.wh{fill:#ffffff}
+.b6{font-weight:600}
+.b7{font-weight:700}
+.mid{text-anchor:middle}
+.end{text-anchor:end}
+.s12{font-size:12px}.s13{font-size:13px}.s14{font-size:14px}.s15{font-size:15px}.s16{font-size:16px}.s17{font-size:17px}.s18{font-size:18px}.s19{font-size:19px}.s20{font-size:20px}.s21{font-size:21px}.s22{font-size:22px}.s24{font-size:24px}.s26{font-size:26px}.s28{font-size:28px}.s30{font-size:30px}.s32{font-size:32px}.s34{font-size:34px}.s36{font-size:36px}.s38{font-size:38px}
+</style><rect x="0" y="0" width="330" height="292" rx="12" fill="#ffffff" stroke="none" stroke-width="1.5"/><rect x="0" y="0" width="330" height="46" rx="12" fill="#f8fafc" stroke="none" stroke-width="1.5"/><rect x="0" y="34" width="330" height="12" rx="0" fill="#f8fafc" stroke="none" stroke-width="1.5"/><text class="t s17 b7 " x="18" y="29">data · array</text><line x1="0" y1="46" x2="330" y2="46" stroke="#e5e7eb" stroke-width="1" stroke-linecap="round"/><rect x="0" y="0" width="330" height="292" rx="12" fill="none" stroke="#e5e7eb" stroke-width="1.5"/>
+<text class="t s13 mu" x="18" y="74">array of objects, unchanged</text>
+<rect x="18" y="96" width="294" height="44" rx="7" fill="#f8fafc" stroke="#e5e7eb" stroke-width="1.5"/><text class="m s13 mu" x="30" y="124">{ id: '<tspan class="ac b6">m1</tspan>', nama: '<tspan>Budi</tspan>' }</text>
+<rect x="18" y="154" width="294" height="44" rx="7" fill="#f8fafc" stroke="#e5e7eb" stroke-width="1.5"/><text class="m s13 mu" x="30" y="182">{ id: '<tspan class="ac b6">m2</tspan>', nama: '<tspan>Siti</tspan>' }</text>
+<rect x="18" y="212" width="294" height="44" rx="7" fill="#f8fafc" stroke="#e5e7eb" stroke-width="1.5"/><text class="m s13 mu" x="30" y="240">{ id: '<tspan class="ac b6">m3</tspan>', nama: '<tspan>Andi</tspan>' }</text>
+<line x1="334" y1="146" x2="386" y2="146" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" marker-end="url(#a-slate)"/>
+<text class="t s13 b6 mu" x="344" y="132">map</text>
+<rect x="400" y="0" width="470" height="292" rx="12" fill="#ffffff" stroke="none" stroke-width="1.5"/><rect x="400" y="0" width="470" height="46" rx="12" fill="#eef2ff" stroke="none" stroke-width="1.5"/><rect x="400" y="34" width="470" height="12" rx="0" fill="#eef2ff" stroke="none" stroke-width="1.5"/><text class="t s17 b7 ac" x="418" y="29">result · array of JSX elements</text><line x1="400" y1="46" x2="870" y2="46" stroke="#c7d2fe" stroke-width="1" stroke-linecap="round"/><rect x="400" y="0" width="470" height="292" rx="12" fill="none" stroke="#c7d2fe" stroke-width="1.5"/>
+<text class="t s13 mu" x="418" y="74">one element per item, with a key</text>
+<rect x="418" y="96" width="434" height="44" rx="7" fill="#fff" stroke="#c7d2fe" stroke-width="1.5"/><text class="m s13 ac" x="430" y="124">&lt;KartuMahasiswa</text><rect x="555" y="106" width="74" height="24" rx="5" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="1.5"/><text class="m s12 gn b6" x="563" y="123">key=&quot;m1&quot;</text><text class="m s13 ac" x="640" y="124">mahasiswa={m1} /&gt;</text>
+<rect x="418" y="154" width="434" height="44" rx="7" fill="#fff" stroke="#c7d2fe" stroke-width="1.5"/><text class="m s13 ac" x="430" y="182">&lt;KartuMahasiswa</text><rect x="555" y="164" width="74" height="24" rx="5" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="1.5"/><text class="m s12 gn b6" x="563" y="181">key=&quot;m2&quot;</text><text class="m s13 ac" x="640" y="182">mahasiswa={m2} /&gt;</text>
+<rect x="418" y="212" width="434" height="44" rx="7" fill="#fff" stroke="#c7d2fe" stroke-width="1.5"/><text class="m s13 ac" x="430" y="240">&lt;KartuMahasiswa</text><rect x="555" y="222" width="74" height="24" rx="5" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="1.5"/><text class="m s12 gn b6" x="563" y="239">key=&quot;m3&quot;</text><text class="m s13 ac" x="640" y="240">mahasiswa={m3} /&gt;</text>
+<rect x="900" y="0" width="260" height="292" rx="12" fill="#ffffff" stroke="none" stroke-width="1.5"/><rect x="900" y="0" width="260" height="46" rx="12" fill="#fffbeb" stroke="none" stroke-width="1.5"/><rect x="900" y="34" width="260" height="12" rx="0" fill="#fffbeb" stroke="none" stroke-width="1.5"/><text class="t s17 b7 am" x="918" y="29">what to remember</text><line x1="900" y1="46" x2="1160" y2="46" stroke="#fde68a" stroke-width="1" stroke-linecap="round"/><rect x="900" y="0" width="260" height="292" rx="12" fill="none" stroke="#fde68a" stroke-width="1.5"/>
+<text class="t s15 b7 gn" x="918" y="80">✓</text>
+<text class="t s13" x="940" y="80">key on the returned element</text>
+<text class="t s15 b7 gn" x="918" y="122">✓</text>
+<text class="t s13" x="940" y="122">key unique &amp; stable</text>
+<text class="t s15 b7 gn" x="918" y="164">✓</text>
+<text class="t s13" x="940" y="164">map returns a new array</text>
+<text class="t s15 b7 rd" x="918" y="206">✗</text>
+<text class="t s13" x="940" y="206">data.push inside map</text>
+<text class="t s15 b7 rd" x="918" y="248">✗</text>
+<text class="t s13" x="940" y="248">key inside the component</text>
+<rect x="0" y="312" width="1160" height="54" rx="10" fill="#eef2ff" stroke="none" stroke-width="1.5"/>
+<rect x="0" y="312" width="6" height="54" rx="0" fill="#1d4ed8" stroke="none" stroke-width="1.5"/>
+<text class="t s17 b6" x="24" y="346">map turns data into elements; the key goes on the returned element, not inside the component.</text></svg>

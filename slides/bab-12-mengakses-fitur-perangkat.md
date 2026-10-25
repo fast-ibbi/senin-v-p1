@@ -2,10 +2,10 @@
 marp: true
 theme: academic
 paginate: true
-title: "Bab 12 — Mengakses Fitur Perangkat"
-description: "Slide kuliah Pemrograman Mobile pertemuan 13: API perangkat dan izin runtime, config plugin, kamera dan image picker, lokasi dan akurasi, notifikasi lokal, sistem berkas, info perangkat, privasi data, dan Aplikasi Profil Mahasiswa."
-author: "Dosen Pengampu — Program Studi Sistem Informasi / Teknik Informatika"
-footer: "Pemrograman Mobile · Bab 12 — Mengakses Fitur Perangkat"
+title: "Chapter 12 — Accessing Device Features"
+description: "Mobile Programming lecture, meeting 13: device APIs and runtime permissions, config plugins, camera and image picker, location and accuracy, local notifications, the file system, device info, data privacy, and the Student Profile App."
+author: "Course Instructor — Information Systems / Informatics Engineering Study Program"
+footer: "Mobile Programming · Chapter 12 — Accessing Device Features"
 size: 16:9
 ---
 
@@ -13,34 +13,35 @@ size: 16:9
 <!-- _paginate: skip -->
 <!-- _footer: "" -->
 
-# Bab 12 — Mengakses Fitur Perangkat
+# Chapter 12 — Accessing Device Features
 
-Kamera, lokasi, notifikasi, dan izin (permission) · Pertemuan 13
+Camera, location, notifications, and permissions · Meeting 13
 
 <!--
-Buka dengan satu kalimat pengait: "Hari ini aplikasi kita mulai menyentuh dunia nyata —
-kamera, kunci lokasi, dan laci notifikasi ponsel Anda."
+Open with one hook sentence: "Today our app starts touching the real world —
+the camera, location lock, and your phone's notification drawer."
 
-Tanyakan pembuka tanpa dikoreksi dulu: "Sebutkan izin apa saja yang diminta aplikasi
-kampus di ponsel Anda?" Tampung dua sampai tiga jawaban sebagai bahan Subbab 12.1.
+Opening question, without correcting yet: "Name the permissions the campus app asks
+for on your phone." Collect two or three answers as material for Section 12.1.
 -->
 
 ---
 
-## Tujuan Pembelajaran
+## Learning Objectives
 
-- Menjelaskan API perangkat dan model izin runtime Android dan iOS
-- Mengidentifikasi peran enam paket Expo untuk fitur perangkat
-- Mengimplementasikan permintaan izin dan penanganan penolakannya
-- Mengambil foto serta membaca koordinat beserta nilai akurasinya
-- Menganalisis privasi data perangkat dan membangun Aplikasi Profil Mahasiswa
+- Explain device APIs and the Android and iOS runtime permission model
+- Identify the role of six Expo packages for device features
+- Implement permission requests and the handling of their denial
+- Capture photos and read coordinates together with their accuracy values
+- Analyze device data privacy and build the Student Profile App
 
 <!--
-Bacakan kata kerjanya saja. Tekankan bahwa tujuan ke-5 adalah yang dinilai pada
-praktikum: aplikasi harus tetap berfungsi saat izin ditolak, bukan hanya saat disetujui.
+Read out only the verbs. Stress that the fifth objective is the one assessed in the
+practicum: the app must keep working when permission is denied, not only when it is
+granted.
 
-Kaitkan dengan RPS: pertemuan ini memetakan Sub-CPMK 6.2 dengan luaran Aplikasi Profil
-Mahasiswa, dan penilaiannya mengikuti rubrik praktikum (Lampiran A).
+Tie it to the RPS: this meeting maps Sub-CPMK 6.2 to the Student Profile App outcome,
+and its assessment follows the practicum rubric (Appendix A).
 -->
 
 ---
@@ -48,91 +49,100 @@ Mahasiswa, dan penilaiannya mengikuti rubrik praktikum (Lampiran A).
 <!-- _class: lead -->
 <!-- _paginate: skip -->
 
-# Bagian 1 — API Perangkat dan Izin
+# Part 1 — Device APIs and Permissions
 
-Subbab 12.1 · Deklarasi config plugin · Permintaan izin runtime
+Section 12.1 · Config plugin declaration · Runtime permission request
 
 <!--
-Bagian ini adalah fondasi bab. Bila waktu pertemuan mepet, Subbab 12.5 yang boleh
-dipindahkan ke pertemuan berikutnya, tetapi 12.1 tidak boleh dipadatkan.
+This part is the foundation of the chapter. If meeting time is tight, Section 12.5 is
+the one that may move to the next meeting, but 12.1 may not be condensed.
 
-Ingatkan bahwa bagian ini juga berlaku untuk paket apa pun yang akan mereka pakai
-setelah lulus — pola izinnya sama di seluruh ekosistem mobile.
+Remind them that this part also applies to any package they will use after graduating —
+the permission pattern is the same across the whole mobile ecosystem.
 -->
 
 ---
 
-## Apa Itu API Perangkat?
+## What Is a Device API?
 
-**API perangkat (device API)** adalah antarmuka yang disediakan sistem operasi agar program dapat memerintah perangkat keras atau layanan sistem.
+A **device API** is an interface provided by the operating system so that a program can command the hardware or system services.
 
-![w:1100](assets/diagrams/bab-12-mengakses-fitur-perangkat-02.svg)
+![w:1120](assets/diagrams/bab-12-mengakses-fitur-perangkat-02.svg)
 
-> React Native hanya menjembatani: Anda menulis JavaScript, bagian native dikerjakan paket Expo.
+> React Native only bridges: you write JavaScript, the native part is done by an Expo package.
 
 <!--
-Analogi: paket Expo seperti resepsionis yang mengurus perizinan; Anda cukup mengisi
-formulir, tanpa perlu berbicara langsung dengan petugas keamanan.
+Analogy: an Expo package is like a receptionist who handles the permits; you just fill
+in a form, without needing to talk to the security officer directly.
 
-Tekankan bahwa yang "native" pada React Native adalah tampilan antarmukanya (Bab 1),
-sedangkan di sini yang dibungkus adalah kemampuan perangkat kerasnya.
+Stress that the "native" part of React Native is its user interface (Chapter 1),
+whereas here what is wrapped is the hardware capability.
 
-Pertanyaan pemandu: "Mengapa hasilnya harus kembali ke JavaScript?" (Jawaban: karena
-seluruh keputusan tampilan dan penyimpanan ada di kode JavaScript kita.)
+Guiding question: "Why must the result come back to JavaScript?" (Answer: because all
+display and storage decisions live in our JavaScript code.)
 -->
 
 ---
 
-## Sandbox: Mengapa Izin Ada
+## Sandbox: Why Permissions Exist
 
-- Tanpa izin, aplikasi mana pun dapat memotret Anda tanpa diketahui
-- **Sandbox** mengurung tiap aplikasi di ruang terpisah miliknya
-- **Izin runtime (runtime permission)** diminta saat aplikasi berjalan
-- Model ini dipakai Android sejak versi 6 (Marshmallow) dan iOS
-- iOS mewajibkan **deskripsi penggunaan** di `Info.plist`; tanpa itu aplikasi berhenti
+![w:1120](assets/diagrams/bab-12-mengakses-fitur-perangkat-05.svg)
+
+- Android has used this model since version 6 (Marshmallow), and so has iOS
+- iOS requires a **usage description** in `Info.plist`; without it the app stops
 
 <!--
-Tekankan bedanya Android dan iOS di sini: Android menampilkan dialog sistem, sedangkan
-iOS mewajibkan teks alasan di Info.plist — dan bila teks itu tidak ada, aplikasi iOS
-langsung berhenti (crash), bukan sekadar menolak fitur.
+Trimmed to the picture (the diagram says this):
+- Without permissions, any app could photograph you without your knowledge
+- A **sandbox** confines each app to its own separate space
+- A **runtime permission** is requested while the app is running
 
-Ini kesalahpahaman paling sering: mahasiswa menyimpulkan "izin ditolak" padahal
-aplikasinya crash karena deskripsi penggunaan belum dideklarasikan.
+The picture's left panel is the counterfactual and its right panel is the two mechanisms
+that answer it, so the three bullets that stated them one after another moved here. The
+slide keeps the platform pair — Android's version-6 model and iOS's usage description —
+because the picture does not show them.
 
-Tanyakan: "Siapa yang dapat mengaktifkan kamera ponsel Anda tanpa Anda sadari?"
-(Jawaban: seharusnya tidak ada, karena sandbox dan izin.)
+Stress the Android and iOS difference here: Android shows a system dialog, whereas
+iOS requires the reason text in Info.plist — and if that text is missing, the iOS app
+stops immediately (crashes), not merely refuses the feature.
+
+This is the most common misunderstanding: students conclude "permission denied" when
+the app actually crashed because the usage description was not declared.
+
+Ask: "Who can turn on your phone's camera without you knowing?"
+(Answer: supposedly no one, because of the sandbox and permissions.)
 -->
 
 ---
 
-## Dua Lapis Izin
+## Two Layers of Permission
 
-| Lapis | Kapan terjadi | Yang mengerjakan |
+| Layer | When it happens | Who does it |
 |---|---|---|
-| Deklarasi `plugins` | Saat build | Config plugin di `app.json` |
-| Deklarasi iOS | Saat build | Kunci `NS…UsageDescription` di `Info.plist` |
-| Deklarasi Android | Saat build | Entri di `AndroidManifest.xml` |
-| Pemeriksaan | Sebelum fitur dipakai | `getPermissionsAsync()` |
-| Permintaan | Saat aplikasi berjalan | `requestPermissionsAsync()` |
+| `plugins` declaration | At build time | Config plugin in `app.json` |
+| iOS declaration | At build time | `NS…UsageDescription` keys in `Info.plist` |
+| Android declaration | At build time | Entries in `AndroidManifest.xml` |
+| Check | Before the feature is used | `getPermissionsAsync()` |
+| Request | While the app is running | `requestPermissionsAsync()` |
 
-> Di Expo Go, sebagian besar izin sudah dideklarasikan Expo Go; daftar `plugins` tetap wajib ditulis untuk build mandiri.
+> In Expo Go, most permissions are already declared by Expo Go; the `plugins` list must still be written for a standalone build.
 
 <!--
-Bandingkan dua baris pertama tabel dengan tiga baris terakhir: baris pertama berurusan
-dengan berkas konfigurasi, baris terakhir berurusan dengan pengguna.
+Compare the first two rows of the table with the last three: the first rows deal with
+configuration files, the last rows deal with the user.
 
-Akibat praktis yang harus diingat: percobaan cepat di Expo Go tidak akan mengungkap
-kesalahan config plugin, sehingga kesalahan itu baru muncul saat build (Bab 15).
+The practical consequence to remember: a quick test in Expo Go will not reveal config
+plugin mistakes, so those mistakes only appear at build time (Chapter 15).
 
-Tanyakan: "Kalau izin sudah dideklarasikan, apakah pengguna otomatis mengizinkan?"
-(Jawaban: tidak — deklarasi hanya menyiapkan gerbangnya.)
+Ask: "If the permission is already declared, does the user grant it automatically?"
+(Answer: no — the declaration only prepares the gate.)
 -->
 
 ---
 
-## Config Plugin: Mendeklarasikan Izin
+## Config Plugin: Declaring Permissions
 
-`app.json` (potongan blok `plugins`)
+`app.json` (excerpt of the `plugins` block)
 
 ```json
 "plugins": [
@@ -147,43 +157,43 @@ Tanyakan: "Kalau izin sudah dideklarasikan, apakah pengguna otomatis mengizinkan
 ]
 ```
 
-> Teks izin ditulis dalam bahasa Indonesia dan menjelaskan kegunaannya — bagian dari praktik privasi yang baik.
+> Permission texts are written in Indonesian and explain their purpose — part of good privacy practice.
 
 <!--
-Tunjukkan strukturnya, bukan karakternya: entri pertama dan kedua berbentuk array
-karena punya opsi, sedangkan expo-notifications cukup berupa string.
+Show the structure, not the characters: the first and second entries are arrays
+because they have options, whereas expo-notifications is enough as a string.
 
-Saat prebuild atau EAS Build, Expo menyuntikkan nilai photosPermission menjadi kunci
-NSPhotoLibraryUsageDescription di Info.plist dan menambahkan izin ke AndroidManifest.xml.
+At prebuild or EAS Build, Expo injects the photosPermission value as the
+NSPhotoLibraryUsageDescription key in Info.plist and adds the permissions to AndroidManifest.xml.
 
-⚠ version-sensitive: nama opsi config plugin mengikuti versi SDK — periksa dokumentasi
-resmi docs.expo.dev untuk daftar opsi paket sebelum menjalankan build.
+⚠ version-sensitive: config plugin option names follow the SDK version — check the official
+docs.expo.dev documentation for a package's option list before running a build.
 -->
 
 ---
 
-## Alur Permintaan Izin
+## Permission Request Flow
 
-![w:1100](assets/diagrams/bab-12-mengakses-fitur-perangkat-03.svg)
+![w:1120](assets/diagrams/bab-12-mengakses-fitur-perangkat-03.svg)
 
-> Pola "periksa dulu, minta kalau perlu" ini dipakai berulang sepanjang bab.
+> This "check first, request if needed" pattern is used repeatedly throughout the chapter.
 
 <!--
-Telusuri bagan ini bersama kelas, simpul demi simpul, dengan satu skenario nyata:
-tombol "Ambil Foto" ditekan untuk kedua kalinya.
+Walk through this chart with the class, node by node, with one real scenario:
+the "Take Photo" button pressed for the second time.
 
-Tekankan bahwa ada tiga jalan keluar, bukan dua: dipakai, ditolak sementara, dan
-ditolak permanen. Jalan ketiga inilah yang paling sering terlupakan mahasiswa.
+Stress that there are three exits, not two: granted, denied temporarily, and
+denied permanently. The third exit is the one students forget most often.
 
-Peringatan miskonsepsi: `getPermissionsAsync()` tidak akan memunculkan dialog apa pun —
-ia hanya membaca status.
+Misconception warning: `getPermissionsAsync()` will not bring up any dialog — it only
+reads the status.
 -->
 
 ---
 
-## Pola Izin di Kode
+## Permission Pattern in Code
 
-`utils/polaIzin.js` — pola "periksa dulu, minta kalau perlu"
+`utils/polaIzin.js` — the "check first, request if needed" pattern
 
 ```js
 import * as ImagePicker from 'expo-image-picker';
@@ -198,88 +208,88 @@ export async function pastikanIzinGaleri() {
 }
 ```
 
-> Fungsi ini menerapkan pola yang sama untuk semua paket: periksa status, minta bila perlu, kembalikan hasilnya.
+> This function applies the same pattern for every package: check the status, request if needed, return the result.
 
 <!--
-Bacakan sebagai alur keputusan, bukan sebagai sintaksis: izin sudah ada, ya langsung
-disetujui tanpa dialog; belum ada, sistem menampilkan dialog satu kali.
+Read it as a decision flow, not as syntax: permission already there, then approved
+directly without a dialog; not there yet, the system shows the dialog once.
 
-Fungsi ini sengaja mengembalikan boolean agar layar pemanggil tidak perlu tahu detail
-objek PermissionResponse.
+The function deliberately returns a boolean so the calling screen does not need to know
+the details of the PermissionResponse object.
 
-Tanyakan: "Mengapa memeriksa dulu, tidak langsung meminta?" (Jawaban: agar pengguna
-tidak diganggu dialog berulang setiap kali fitur dipakai.)
+Ask: "Why check first instead of requesting straight away?" (Answer: so the user is not
+disturbed by repeated dialogs every time the feature is used.)
 -->
 
 ---
 
-## Membaca Hasil Izin
+## Reading the Permission Result
 
-| Properti | Arti |
+| Property | Meaning |
 |---|---|
-| `granted` | Izin diberikan atau tidak (boolean) |
-| `status` | `granted`, `denied`, atau `undetermined` |
-| `canAskAgain` | Masih bisa diminta lagi, atau pengguna sudah memilih "jangan tanyakan lagi" |
+| `granted` | Whether permission is given or not (boolean) |
+| `status` | `granted`, `denied`, or `undetermined` |
+| `canAskAgain` | Whether it can still be requested, or the user has chosen "don't ask again" |
 
-> Ketiga nilai ini yang menentukan keputusan di layar: pakai fitur, minta sekali lagi, atau arahkan ke Pengaturan lewat `Linking.openSettings()`.
+> These three values determine the decision on the screen: use the feature, ask once more, or send the user to Settings via `Linking.openSettings()`.
 
 <!--
-Tekankan bahwa status izin bukan dua keadaan, melainkan tiga — dan yang ketiga menuntut
-desain layar yang berbeda.
+Stress that permission status is not two states but three — and the third demands a
+different screen design.
 
-Kaitkan dengan kebiasaan profesional: membaca isi objek hasil API sebelum memutuskan,
-bukan hanya memeriksa satu properti.
+Tie it to a professional habit: read the contents of the API result object before
+deciding, not just check a single property.
 
-Tanyakan: "Apa yang harus dilakukan aplikasi bila canAskAgain bernilai false dan kita
-tetap memanggil requestPermissionsAsync?" (Jawaban: dialog tidak muncul lagi; fungsi
-langsung mengembalikan status ditolak.)
+Ask: "What should the app do when canAskAgain is false and we still call
+requestPermissionsAsync?" (Answer: the dialog no longer appears; the function
+returns a denied status immediately.)
 -->
 
 ---
 
 <!-- _class: center -->
 
-## Apa yang Terjadi Jika…?
+## What Happens If…?
 
-**Apa yang terjadi jika** aplikasi meminta lima izin sekaligus saat pertama kali dibuka, lalu pengguna memilih "jangan tanyakan lagi" untuk kamera?
+**What happens if** an app requests five permissions at once the first time it is opened, and the user then chooses "don't ask again" for the camera?
 
-- Apa yang dilihat pengguna pada detik pertama memakai aplikasi?
-- Apa yang masih bisa dilakukan aplikasi setelah itu?
-- Bagaimana seharusnya permintaan izin disusun ulang?
+- What does the user see in the first second of using the app?
+- What can the app still do after that?
+- How should the permission requests be rearranged?
 
 <!--
-Beri 3 menit berpasangan. Jawaban yang diharapkan: pengguna kebingungan karena tidak
-tahu konteks, tingkat penolakan naik termasuk penolakan permanen, dan aplikasi tidak
-dapat memunculkan dialog lagi sehingga wajib menyediakan jalan ke Pengaturan.
+Give 3 minutes in pairs. Expected answer: the user is confused because they do not
+know the context, the refusal rate rises including permanent denials, and the app
+can no longer bring up the dialog so it must provide a route to Settings.
 
-Bila jawaban berhenti pada "pengguna menolak", dorong ke pertanyaan ketiga — bagian
-yang dinilai pada Soal Analisis Subbab 12.6.
+If answers stop at "the user refuses", push to the third question — the part assessed
+in the Analysis Question of Section 12.6.
 -->
 
 ---
 
-## Menangani Penolakan sebagai Keadaan Normal
+## Handling Denial as a Normal State
 
-| Keadaan | Yang tampil | Tindakan aplikasi |
+| State | What appears | App action |
 |---|---|---|
-| Sudah diizinkan | Tidak ada dialog | Langsung memakai fitur |
-| Ditolak sementara | Dialog sistem satu kali | Jelaskan alasan, minta lagi saat dibutuhkan |
-| Ditolak permanen | Dialog tidak muncul lagi | Tampilkan penjelasan dan tombol "Buka Pengaturan" |
+| Already granted | No dialog | Use the feature directly |
+| Denied temporarily | System dialog once | Explain the reason, ask again when needed |
+| Denied permanently | Dialog no longer appears | Show an explanation and an "Open Settings" button |
 
-- Izin tidak bersifat permanen — pengguna dapat mencabutnya kapan saja
-- Mintalah izin saat dibutuhkan, bukan serentak saat aplikasi dibuka
-- Periksa ulang izin sebelum memakai fitur sensitif
+- Permission is not permanent — the user can revoke it at any time
+- Request permission when it is needed, not all at once when the app opens
+- Recheck the permission before using a sensitive feature
 
 <!--
-Slide ini jawaban dari pertanyaan di slide sebelumnya. Tekankan baris terakhir tabel:
-satu-satunya jalan adalah mengarahkan pengguna secara manual, sehingga aplikasi harus
-menjelaskan lebih dahulu mengapa izin itu dibutuhkan.
+This slide is the answer to the question on the previous slide. Stress the last row of
+the table: the only route is to send the user there manually, so the app must explain
+first why that permission is needed.
 
-Analogi: seperti pintu yang terkunci dari dalam — mengetuk berkali-kali tidak menolong,
-Anda harus meminta pemiliknya membuka.
+Analogy: like a door locked from the inside — knocking many times does not help, you
+have to ask the owner to open it.
 
-Peringatan miskonsepsi: menampilkan pesan "izin ditolak" tanpa jalan keluar sama saja
-membuat aplikasi buntu.
+Misconception warning: showing a "permission denied" message with no way out is the
+same as leaving the app dead-ended.
 -->
 
 ---
@@ -287,67 +297,67 @@ membuat aplikasi buntu.
 <!-- _class: lead -->
 <!-- _paginate: skip -->
 
-# Bagian 2 — Kamera, Lokasi, Notifikasi, Berkas
+# Part 2 — Camera, Location, Notifications, Files
 
-Subbab 12.2 Kamera dan Galeri · 12.3 Lokasi · 12.4 Notifikasi · 12.5 Berkas dan Perangkat
+Section 12.2 Camera and Gallery · 12.3 Location · 12.4 Notifications · 12.5 Files and Device
 
 <!--
-Bagian ini praktis dan padat: empat paket Expo. Bila waktu tersisa sedikit, kerjakan
-Subbab 12.2 dan 12.3 di kelas, lalu 12.4 dan 12.5 sebagai praktikum mandiri.
+This part is practical and dense: four Expo packages. If little time remains, do
+Section 12.2 and 12.3 in class, then 12.4 and 12.5 as an independent practicum.
 
-Ingatkan bahwa seluruh paket dipasang dengan npx expo install, bukan npm install, agar
-versinya cocok dengan SDK 57.
+Remind them that every package is installed with npx expo install, not npm install, so
+that the versions match SDK 57.
 -->
 
 ---
 
-## Dua Paket untuk Kamera
+## Two Packages for the Camera
 
-| Aspek | `expo-camera` | `expo-image-picker` |
+| Aspect | `expo-camera` | `expo-image-picker` |
 |---|---|---|
-| Tampilan | Pratinjau langsung lewat `<CameraView>` | Antarmuka kamera bawaan sistem |
-| Alur | Izin, pratinjau, tombol rana dikelola sendiri | `launchCameraAsync()` menangani semuanya |
-| Hasil | Kendali penuh atas bidikan dan pemrosesannya | Satu berkas gambar berupa `uri` |
-| Cocok untuk | Pemindai kode QR, filter, deteksi wajah | Foto profil, bukti pembayaran, lampiran |
+| View | Live preview through `<CameraView>` | The system's built-in camera interface |
+| Flow | Permission, preview, and shutter button managed by you | `launchCameraAsync()` handles everything |
+| Result | Full control over the shot and its processing | One image file as a `uri` |
+| Suits | QR code scanners, filters, face detection | Profile photos, payment proof, attachments |
 
-> Pilih `expo-image-picker` bila hasil akhirnya "cukup satu berkas gambar"; pilih `expo-camera` bila aplikasi harus menampilkan atau mengolah bidikan langsung.
+> Choose `expo-image-picker` when the end result is "just one image file"; choose `expo-camera` when the app must show or process the shot live.
 
 <!--
-Tekankan bahwa untuk kebutuhan "ambil satu foto lalu tampilkan", expo-camera justru
-berlebihan — mahasiswa cenderung memilih paket paling canggih, padahal ukuran tepat
-lebih penting daripada kelengkapan.
+Stress that for a "take one photo then show it" need, expo-camera is actually
+overkill — students tend to choose the most capable package, when the right size
+matters more than completeness.
 
-Kaitkan dengan analisis trade-off Bab 1: keputusan paket adalah trade-off antara
-kendali dan kesederhanaan.
+Tie it to the trade-off analysis of Chapter 1: the package decision is a trade-off
+between control and simplicity.
 
-⚠ version-sensitive: komponen CameraView menggantikan komponen Camera lama yang sudah
-tidak disarankan; periksa dokumentasi resmi expo-camera terbaru.
+⚠ version-sensitive: the CameraView component replaces the old Camera component, which is
+no longer recommended; check the latest official expo-camera documentation.
 -->
 
 ---
 
-## Think-Pair-Share: Memilih Paket
+## Think-Pair-Share: Choosing a Package
 
-- Foto profil mahasiswa untuk aplikasi kampus
-- Pemindai kode QR pada kartu ujian
-- Filter kamera yang harus terlihat real-time
+- A student profile photo for the campus app
+- A QR code scanner on an exam card
+- A camera filter that must look real-time
 
-**Tugas:** tentukan paket untuk setiap skenario dan sebutkan alasannya.
+**Task:** decide the package for each scenario and state the reason.
 
 <!--
-2 menit berpasangan, lalu tampung 2 sampai 3 jawaban. Jawaban yang diharapkan:
-image-picker untuk foto profil; expo-camera untuk dua skenario sisanya karena keduanya
-membutuhkan bidikan langsung.
+2 minutes in pairs, then collect 2 to 3 answers. Expected answer:
+image-picker for the profile photo; expo-camera for the other two scenarios because both
+need a live shot.
 
-Nilai penalarannya, bukan jawabannya: mahasiswa yang menyebut "karena hasil akhirnya
-hanya satu berkas gambar" sudah memahami Subbab 12.2.
+Judge the reasoning, not the answer: a student who says "because the end result is only
+one image file" already understands Section 12.2.
 -->
 
 ---
 
-## expo-camera: Pratinjau Langsung
+## expo-camera: Live Preview
 
-`screens/LayarKamera.js` — kamera dengan pengelolaan izin sendiri
+`screens/LayarKamera.js` — a camera with its own permission handling
 
 ```js
 import { CameraView, useCameraPermissions } from 'expo-camera';
@@ -366,25 +376,25 @@ export default function LayarKamera() {
 }
 ```
 
-> Kode lengkap dengan `StyleSheet` ada pada bab; di sini hanya bagian keputusannya.
+> The complete code with `StyleSheet` is in the chapter; here only the decision part.
 
 <!--
-Tunjukkan tiga hal saja: hook useCameraPermissions mengembalikan pasangan status dan
-fungsi peminta, cabang if memutuskan apa yang digambar, dan CameraView adalah komponen
-yang menampilkan bidikan.
+Point out just three things: the useCameraPermissions hook returns a pair of status and
+request function, the if branch decides what is drawn, and CameraView is the component
+that shows the shot.
 
-Perhatikan bahwa izin diminta saat layar dibuka, bukan saat aplikasi dimulai — inilah
-penerapan "minta izin saat dibutuhkan" pada Subbab 12.1.
+Note that permission is requested when the screen opens, not when the app starts — this
+is the "request permission when needed" application from Section 12.1.
 
-Peringatan: sebagian baris disederhanakan untuk slide; mahasiswa menyalin versi lengkap
-dari bab agar styles dan komponen Text/View/Pressable ikut terdefinisi.
+Warning: some lines are simplified for the slide; students copy the complete version
+from the chapter so that styles and the Text/View/Pressable components are defined too.
 -->
 
 ---
 
-## expo-image-picker: Satu Panggilan Selesai
+## expo-image-picker: One Call and Done
 
-`screens/ProfilMahasiswa.js` — ambil foto dari kamera sistem
+`screens/ProfilMahasiswa.js` — take a photo from the system camera
 
 ```js
 async function ambilFotoDariKamera() {
@@ -396,54 +406,54 @@ async function ambilFotoDariKamera() {
   const hasil = await ImagePicker.launchCameraAsync({
     mediaTypes: ['images'], allowsEditing: true, aspect: [1, 1], quality: 0.6,
   });
-  if (!hasil.canceled) {
-    setFotoUri(hasil.assets[0].uri);
-  }
+  if (!hasil.canceled) setFotoUri(hasil.assets[0].uri);
 }
 ```
 
-- Hasilnya objek: `canceled` menandai pembatalan, `assets[0].uri` berisi alamat gambar
-- `allowsEditing: true` dengan `aspect: [1, 1]` memotong foto menjadi persegi
-- `uri` menunjuk berkas sementara di cache sistem, bukan berkas permanen
+- The result is an object: `canceled` marks a cancellation, `assets[0].uri` holds the image address
+- `allowsEditing: true` with `aspect: [1, 1]` crops the photo into a square
+- `uri` points to a temporary file in the system cache, not a permanent file
 
 <!--
-Bandingkan panjang kode ini dengan expo-camera di slide sebelumnya — perbedaannya
-adalah seluruh antarmuka kamera diserahkan ke sistem.
+Compare the length of this code with expo-camera on the previous slide — the difference
+is that the whole camera interface is handed over to the system.
 
-Tekankan pengujian `!hasil.canceled` sebelum mengakses assets: bila pengguna menekan
-batal, assets kosong dan pengaksesan langsung akan menimbulkan galat.
+Stress testing `!hasil.canceled` before accessing assets: if the user presses
+cancel, assets is empty and accessing it directly raises an error.
 
-⚠ version-sensitive: opsi mediaTypes sejak SDK yang lebih baru ditulis sebagai array
-string, misalnya ['images'], menggantikan konstanta MediaTypeOptions yang lama.
+⚠ version-sensitive: since a newer SDK the mediaTypes option is written as an array of
+strings, for example ['images'], replacing the old MediaTypeOptions constants.
 -->
 
 ---
 
-## Lokasi: Dua Sumber Posisi
+## Location: Two Sources of Position
 
-- **GPS (Global Positioning System)** menghitung posisi dari sinyal satelit
-- Paling akurat di area terbuka; di dalam gedung sering meleset ratusan meter
-- Posisi berbasis jaringan (Wi-Fi dan menara seluler) lebih cepat, kurang presisi
-- `expo-location` menyatukan kedua sumber dan mengembalikan koordinat
+![w:1120](assets/diagrams/bab-12-mengakses-fitur-perangkat-06.svg)
 
-Aplikasi cukup memilih tingkat akurasi yang dibutuhkan, lalu menerima koordinatnya.
+- **GPS (Global Positioning System)** computes a position from satellite signals
+- Most accurate in open areas; indoors it often misses by hundreds of meters
+- Network-based position (Wi-Fi and cell towers) is faster, less precise
+- `expo-location` unites both sources and returns coordinates
+
+The app only has to choose the accuracy level it needs, then accept the coordinates.
 
 <!--
-Analogi: GPS seperti mengukur dengan penggaris panjang dari langit, sedangkan posisi
-berbasis jaringan seperti menebak dari tetangga terdekat — lebih cepat, kurang tepat.
+Analogy: GPS is like measuring with a long ruler from the sky, whereas a network-based
+position is like guessing from the nearest neighbor — faster, less exact.
 
-Tanyakan: "Mengapa aplikasi presensi tidak boleh memakai akurasi Balanced?" (Jawaban:
-radius ketidakpastiannya terlalu besar untuk memastikan mahasiswa benar berada di kelas.)
+Ask: "Why may an attendance app not use Balanced accuracy?" (Answer: its uncertainty
+radius is too large to confirm that a student is really in the classroom.)
 
-Sebutkan sekali bahwa izin lokasi latar belakang ada, lebih ketat, dan tidak dibahas di
-buku ini agar mahasiswa tidak memakainya tanpa dasar.
+Mention once that background location permission exists, is stricter, and is not covered
+in this book so that students do not use it without grounds.
 -->
 
 ---
 
-## Membaca Koordinat dan Akurasi
+## Reading Coordinates and Accuracy
 
-`utils/ambilLokasi.js` — isi fungsi `ambilKoordinat()`
+`utils/ambilLokasi.js` — the body of the `ambilKoordinat()` function
 
 ```js
 const izin = await Location.requestForegroundPermissionsAsync();
@@ -461,75 +471,78 @@ return {
 };
 ```
 
-> Izin, pengambilan, lalu pengembalian objek ringkas — pola yang sama seperti `pastikanIzinGaleri`.
+> Permission, retrieval, then returning a compact object — the same pattern as `pastikanIzinGaleri`.
 
 <!--
-Perhatikan urutannya: izin lebih dahulu, baru membaca posisi. Bila izin ditolak, fungsi
-mengembalikan null dan layar memutuskan sendiri apa yang ditampilkan.
+Note the order: permission first, then read the position. If permission is denied, the
+function returns null and the screen decides for itself what is displayed.
 
-Tekankan nama requestForegroundPermissionsAsync: "foreground" berarti lokasi hanya
-dibaca saat aplikasi terbuka di layar.
+Stress the name requestForegroundPermissionsAsync: "foreground" means the location is only
+read while the app is open on screen.
 
-Tanyakan: "Mengapa fungsi ini mengembalikan null, bukan menampilkan pesan galat?"
-(Jawaban: agar lapisan tampilan yang memutuskan pesannya — pemisahan tanggung jawab.)
+Ask: "Why does this function return null instead of showing an error message?"
+(Answer: so that the view layer decides the message — separation of responsibility.)
 -->
 
 ---
 
-## Memilih Tingkat Akurasi
+## Choosing an Accuracy Level
 
-| Nilai | Perkiraan ketelitian | Cocok untuk |
+| Value | Approximate precision | Suits |
 |---|---|---|
-| `Lowest` | Paling kasar, hemat baterai | Sekadar mengetahui wilayah |
-| `Balanced` | Sekitar 100 meter | Menampilkan koordinat profil |
-| `High` | Sekitar 10 meter | Presensi yang butuh ketelitian |
+| `Lowest` | Coarsest, easy on the battery | Merely knowing the region |
+| `Balanced` | Around 100 meters | Showing profile coordinates |
+| `High` | Around 10 meters | Attendance that needs precision |
 
-- `accuracy` adalah perkiraan radius ketidakpastian dalam meter, bukan titik pasti
-- Tampilkan nilai akurasi bersama koordinat — koordinat tanpa akurasi menyesatkan
+- `accuracy` is the estimated uncertainty radius in meters, not an exact point
+- Show the accuracy value together with the coordinates — coordinates without accuracy mislead
 
 <!--
-Tekankan angka 35 pada pesan "+/- 35 meter": artinya posisi sebenarnya berada di suatu
-tempat dalam lingkaran berdiameter 70 meter, bukan tepat di titik itu.
+Stress the number 35 in the "+/- 35 meters" message: it means the actual position is
+somewhere inside a circle 70 meters across, not exactly at that point.
 
-Inilah kesalahpahaman terbesar pada aplikasi presensi: koordinat diperlakukan sebagai
-titik pasti, padahal ia pusat lingkaran ketidakpastian.
+This is the biggest misunderstanding in attendance apps: coordinates are treated as an
+exact point, when they are the center of an uncertainty circle.
 
-Tanyakan: "Mengapa menampilkan koordinat dengan lima angka desimal tanpa akurasi bisa
-menyesatkan?" (Jawaban: angka desimal memberi kesan presisi yang tidak dimiliki datanya.)
+Ask: "Why can showing coordinates with five decimal places without accuracy
+mislead?" (Answer: the decimal places give an impression of precision that the data does
+not have.)
 -->
 
 ---
 
-## Notifikasi: Lokal vs Push Jarak Jauh
+## Notifications: Local vs Remote Push
 
-| Aspek | Notifikasi lokal | Notifikasi push jarak jauh |
+| Aspect | Local notification | Remote push notification |
 |---|---|---|
-| Pengirim | Perangkat itu sendiri | Server pengirim |
-| Jaringan | Tidak memerlukan jaringan | Memerlukan layanan push |
-| Contoh | Pengingat jadwal kuliah | Pemberitahuan nilai baru |
-| Penanganan | `expo-notifications` | Expo Push Service, FCM (Android), APNs (iOS) |
+| Sender | The device itself | A sending server |
+| Network | Does not need a network | Needs a push service |
+| Example | A class schedule reminder | A new-grade notice |
+| Handling | `expo-notifications` | Expo Push Service, FCM (Android), APNs (iOS) |
 
-> Notifikasi push tidak dapat ditangani `expo-notifications` saja; bab ini hanya membahas notifikasi lokal.
+> Push notifications cannot be handled by `expo-notifications` alone; this chapter only covers local notifications.
 
 <!--
-Tekankan alasan keberadaan notifikasi: aplikasi tidak selalu terbuka saat momen penting
-terjadi, sehingga pengingat dipindahkan ke level sistem operasi.
+Stress why notifications exist: the app is not always open when an important moment
+happens, so reminders move up to the operating-system level.
 
-Peringatan miskonsepsi yang sering muncul di praktikum: mahasiswa mengira
-scheduleNotificationAsync dapat mengirim pesan ke ponsel mahasiswa lain. Push membutuhkan
-server pengirim (Expo Push Service/FCM/APNs) dan tidak dapat ditangani expo-notifications
-saja — di luar cakupan bab ini; kaitkan dengan pola API pada Bab 10 saat mahasiswa
-bertanya lanjut.
+A misconception that often appears in the practicum: students think
+scheduleNotificationAsync can send a message to another student's phone. Push needs a
+sending server (Expo Push Service/FCM/APNs) and cannot be handled by expo-notifications
+alone — outside this chapter's scope; tie it to the API pattern in Chapter 10 when
+students ask further.
 
-Tanyakan: "Kalau perangkat tidak punya internet, notifikasi mana yang tetap muncul?"
-(Jawaban: notifikasi lokal.)
+Ask: "If the device has no internet, which notification still appears?"
+(Answer: the local notification.)
 -->
 
 ---
 
-## Kanal Notifikasi dan Izin di Android
+## Notification Channels and Permission on Android
 
-`utils/kirimNotifikasi.js` — langkah pertama, membuat kanal
+![w:1120](assets/diagrams/bab-12-mengakses-fitur-perangkat-07.svg)
+
+`utils/kirimNotifikasi.js` — the first step, creating a channel
 
 ```js
 await Notifications.setNotificationChannelAsync('pengingat-kuliah', {
@@ -538,28 +551,37 @@ await Notifications.setNotificationChannelAsync('pengingat-kuliah', {
 });
 ```
 
-- **Kanal notifikasi (notification channel)** mengelompokkan notifikasi per jenis
-- Pengguna mengatur bunyi dan tingkat gangguan per kanal
-- Tanpa kanal, notifikasi dapat diabaikan sistem di Android
-- Di Android 13 ke atas izin notifikasi ditanyakan eksplisit; versi lama langsung disetujui
+- The user sets the sound and interruption level per channel
+- On Android 13 and above the notification permission is asked explicitly; older versions grant it directly
 
 <!--
-Analogi kanal: seperti folder surel masuk — pengguna dapat membisukan satu folder tanpa
-mematikan seluruh notifikasi aplikasi.
+Trimmed to the picture (the diagram says this):
+- A **notification channel** groups notifications by type
+- Without a channel, notifications may be dropped by the system on Android
 
-Tekankan bahwa kanal adalah keharusan di Android, bukan pilihan gaya: notifikasi tanpa
-kanal dapat dibuang sistem, dan gejalanya membingungkan karena penjadwalan tampak
-berhasil.
+The two panels are this pair: left is the requirement (a notification outside a channel
+may be discarded), right is the mechanism (a channel groups notifications by type, which
+is what makes them controllable). The two bullets that stayed are the facts the picture
+does not show — what the user does per channel (sound and interruption level), and the
+separate Android 13 permission gate.
 
-Kaitkan dengan Troubleshooting pada bab: notifikasi "tidak muncul" biasanya berakar pada
-kanal belum dibuat atau izin ditolak, bukan pada penjadwalannya.
+Channel analogy: like email folders — the user can mute one folder without turning off
+all of the app's notifications.
+
+Stress that a channel is a requirement on Android, not a style choice: a notification
+without a channel may be discarded by the system, and the symptom is confusing because
+the scheduling looks successful.
+
+Tie it to the Troubleshooting section of the chapter: a notification that "does not appear"
+usually comes down to the channel not being created or the permission being denied, not to
+the scheduling.
 -->
 
 ---
 
-## Menjadwalkan Notifikasi Lokal
+## Scheduling a Local Notification
 
-`utils/kirimNotifikasi.js` — langkah kedua dan ketiga
+`utils/kirimNotifikasi.js` — the second and third steps
 
 ```js
 const izin = await Notifications.requestPermissionsAsync();
@@ -577,25 +599,25 @@ await Notifications.scheduleNotificationAsync({
 return true;
 ```
 
-> Nilai balik `false` memberi tahu layar bahwa pengguna menolak notifikasi.
+> The `false` return value tells the screen that the user refused the notification.
 
 <!--
-Bacakan tiga bagiannya: permintaan izin, isi pesan, dan pemicu. Jelaskan bahwa TIME_INTERVAL
-berarti "muncul setelah N detik", bukan jam tertentu.
+Read out its three parts: the permission request, the message content, and the trigger.
+Explain that TIME_INTERVAL means "appear after N seconds", not a particular time of day.
 
-⚠ version-sensitive: bentuk trigger bernama-tipe diperkenalkan di SDK yang lebih baru;
-pada versi lama cukup trigger: { seconds: 5 }. Periksa dokumentasi resmi expo-notifications
-untuk bentuk terkini sebelum menyalin.
+⚠ version-sensitive: the named-type trigger shape was introduced in a newer SDK;
+on older versions trigger: { seconds: 5 } was enough. Check the official
+expo-notifications documentation for the current shape before copying.
 
-Pertanyaan: "Mengapa fungsi mengembalikan boolean, bukan langsung menampilkan pesan?"
-(Jawaban: agar layar yang memutuskan umpan baliknya.)
+Question: "Why does the function return a boolean instead of showing a message directly?"
+(Answer: so that the screen decides the feedback.)
 -->
 
 ---
 
-## Sistem Berkas: Direktori Privat Aplikasi
+## File System: The App's Private Directory
 
-`utils/catatanBerkas.js` — API berorientasi objek `File` dan `Paths`
+`utils/catatanBerkas.js` — the object-oriented `File` and `Paths` API
 
 ```js
 import { File, Paths } from 'expo-file-system';
@@ -607,52 +629,50 @@ export async function simpanCatatan(isian) {
 }
 export async function bacaCatatan() {
   const berkas = new File(Paths.document, 'catatan-saya.txt');
-  if (!berkas.exists) {
-    return '';
-  }
+  if (!berkas.exists) return '';
   return await berkas.text();
 }
 ```
 
-- `Paths.document` untuk berkas permanen; direktori cache boleh dibersihkan sistem
-- Operasi ini tidak memerlukan izin karena direktorinya privat milik aplikasi
-- Salin `uri` image picker ke `Paths.document` agar foto bertahan
+- `Paths.document` for permanent files; the cache directory may be cleaned by the system
+- These operations need no permission because the directory is private to the app
+- Copy the image picker's `uri` into `Paths.document` so the photo survives
 
 <!--
-Analogi sandbox berkas: seperti lemari pribadi berkunci di rumah sendiri — aplikasi
-bebas keluar-masuk tanpa izin, tetapi aplikasi lain tidak dapat membukanya.
+File-sandbox analogy: like a locked private cabinet in your own house — the app comes and
+goes freely without permission, but other apps cannot open it.
 
-Tekankan beda dua direktori: documentDirectory bertahan, cacheDirectory boleh dibersihkan
-sistem kapan saja. Inilah akar masalah foto profil yang hilang.
+Stress the difference between the two directories: documentDirectory persists, cacheDirectory
+may be cleaned by the system at any time. This is the root of the disappearing profile photo.
 
-⚠ version-sensitive: API File dan Paths menggantikan fungsi lama seperti writeAsStringAsync;
-periksa dokumentasi resmi expo-file-system untuk bentuk terkini.
+⚠ version-sensitive: the File and Paths API replace older functions such as writeAsStringAsync;
+check the official expo-file-system documentation for the current shape.
 -->
 
 ---
 
-## Info Perangkat dengan expo-device
+## Device Info with expo-device
 
-| Properti | Isi |
+| Property | Content |
 |---|---|
-| `deviceName` | Nama perangkat |
-| `modelName` | Model, misalnya "Pixel 7" |
-| `osName` dan `osVersion` | Sistem operasi beserta versinya |
-| `isDevice` | Membedakan perangkat fisik dari emulator |
+| `deviceName` | Device name |
+| `modelName` | Model, for example "Pixel 7" |
+| `osName` and `osVersion` | Operating system and its version |
+| `isDevice` | Distinguishes a physical device from an emulator |
 
-- Berguna untuk menyesuaikan tampilan dan menolak fitur tertentu di emulator
-- ⚠ Kombinasi data ini dapat dipakai untuk **fingerprinting** (identifikasi unik pengguna)
-- Praktiknya tunduk pada prinsip minimasi data pada Subbab 12.6
+- Useful for adapting the display and refusing certain features on an emulator
+- ⚠ This data combination can be used for **fingerprinting** (unique user identification)
+- In practice it is subject to the data minimization principle in Section 12.6
 
 <!--
-Hubungkan isDevice dengan aplikasi presensi: server dapat menolak presensi dari
-emulator, dan inilah data yang dipakai untuk memutuskan hal itu.
+Connect isDevice with the attendance app: the server can reject attendance from an
+emulator, and this is the data used to decide that.
 
-Tekankan bahwa data perangkat bukan data teknis netral: kombinasinya dapat menunjuk satu
-orang secara unik, sehingga menjadi persoalan privasi.
+Stress that device data is not neutral technical data: the combination can point to one
+person uniquely, so it becomes a privacy matter.
 
-Tanyakan: "Apakah aplikasi profil mahasiswa kita benar-benar butuh seluruh properti
-perangkat?" (Jawaban: tidak — hanya yang tampil di layar.)
+Ask: "Does our student profile app really need every device property?"
+(Answer: no — only what is shown on screen.)
 -->
 
 ---
@@ -660,67 +680,67 @@ perangkat?" (Jawaban: tidak — hanya yang tampil di layar.)
 <!-- _class: lead -->
 <!-- _paginate: skip -->
 
-# Bagian 3 — Privasi dan Mini Project
+# Part 3 — Privacy and Mini Project
 
-Subbab 12.6 Keamanan dan Privasi · 12.7 Aplikasi Profil Mahasiswa
+Section 12.6 Security and Privacy · 12.7 Student Profile App
 
 <!--
-Bagian ini adalah pembeda antara mahasiswa yang bisa menulis kode dan calon analis
-sistem: siapa pun dapat memanggil kamera, tetapi tidak semua orang memikirkan akibatnya.
+This part is the differentiator between a student who can write code and a future systems
+analyst: anyone can call the camera, but not everyone thinks about the consequences.
 
-Bila waktu pertemuan hampir habis, kerjakan 12.6 di kelas (diskusi) dan 12.7 sebagai
-praktikum mandiri dengan laporan.
+If meeting time is nearly up, do 12.6 in class (discussion) and 12.7 as an independent
+practicum with a report.
 -->
 
 ---
 
-## Tiga Prinsip Privasi Data Perangkat
+## Three Principles of Device Data Privacy
 
-1. **Minta izin dengan penjelasan (informed consent)** — jelaskan "untuk apa" dipakai
-2. **Jangan mengunggah tanpa persetujuan** — hanya atas tindakan eksplisit pengguna
-3. **Minimalkan data (data minimization)** — ambil sesedikit mungkin yang masih berfungsi
+1. **Request permission with an explanation (informed consent)** — explain "what for" it will be used
+2. **Do not upload without consent** — only on an explicit user action
+3. **Minimize data (data minimization)** — take as little as still works
 
-- AsyncStorage bukan tempat data sensitif; token disimpan di `expo-secure-store` (Bab 13)
+- AsyncStorage is not a place for sensitive data; tokens are stored in `expo-secure-store` (Chapter 13)
 
-> "Data yang tidak pernah dikumpulkan adalah data yang tidak bisa bocor."
+> "Data that is never collected is data that cannot leak."
 
 <!--
-Jelaskan tiap prinsip dengan satu contoh yang salah dan satu yang benar: izin "membaca
-lokasi" versus "lokasi untuk mengisi alamat profil".
+Explain each principle with one wrong and one right example: the permission "read
+location" versus "location for filling in the profile address".
 
-Tekankan prinsip ketiga sebagai yang paling praktis: akurasi kasar bila cukup, simpan
-koordinat terakhir bukan jejak pergerakan, satu gambar bukan seluruh galeri.
+Stress the third principle as the most practical: coarse accuracy when it is enough, store
+the last coordinate rather than a movement track, one image rather than the whole gallery.
 
-Tanyakan: "Mengapa aplikasi yang dipublikasikan wajib punya kebijakan privasi?"
-(Jawaban: diwajibkan Google Play dan App Store, dan pengguna semakin membacanya.)
+Ask: "Why must a published app have a privacy policy?"
+(Answer: Google Play and the App Store require it, and users read them more and more.)
 -->
 
 ---
 
-## Mini Project: Aplikasi Profil Mahasiswa
+## Mini Project: Student Profile App
 
-![w:720](assets/diagrams/bab-12-mengakses-fitur-perangkat-04.svg)
+![w:1120](assets/diagrams/bab-12-mengakses-fitur-perangkat-04.svg)
 
-- Empat kelompok data: akademik, foto, lokasi, dan informasi perangkat
-- Struktur berkas: `App.js`, `screens/ProfilMahasiswa.js`, `utils/profilStorage.js`
-- Bukti keberhasilan: tutup aplikasi, buka kembali, seluruh data masih tampil
+- Four data groups: academic, photo, location, and device information
+- File structure: `app/(tabs)/profil/index.js`, `utils/polaIzin.js`, `api/presensi.js`
+- Proof of success: close the app, open it again, all the data is still shown
 
 <!--
-Tunjukkan pola yang berulang di setiap cabang: minta izin, pakai fitur, simpan hasil.
-Pola inilah yang akan terus dipakai pada aplikasi nyata.
+Show the pattern that repeats in every branch: request permission, use the feature, save
+the result. This is the pattern that will keep being used in real apps.
 
-Tekankan bahwa arsitekturnya sengaja sederhana — satu layar, logika penyimpanan dipisah
-ke utils, dan komponen kecil InfoBaris dipakai ulang (latihan komponen Bab 5).
+Stress that the architecture is deliberately simple — one screen, the storage logic split
+into utils, and the small InfoBaris component reused (the component exercise from Chapter 5).
 
-Pertanyaan pemandu: "Apa yang terjadi bila pemulihan data dijalankan setiap render,
-bukan sekali di useEffect?" (Jawaban: data tersimpan menimpa input pengguna.)
+Guiding question: "What happens if data restoration runs on every render rather
+than once in useEffect?" (Answer: the stored data overwrites the user's input.)
 -->
 
 ---
 
-## Pola Simpan dan Muat Profil
+## Profile Save and Load Pattern
 
-`kode/bab-12/utils/profilStorage.js` — pembungkus AsyncStorage
+`kode/bab-11-penyimpanan-data-lokal/utils/cache.js` — the AsyncStorage wrapper taught in Chapter 11 (snapshot + timestamp)
 
 ```js
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -739,178 +759,190 @@ export async function muatProfil() {
 }
 ```
 
-> Layar tidak perlu tahu nama kunci atau detail serialisasi JSON — pola yang sama dengan Bab 11.
+> The screen does not need to know the key name or the details of JSON serialization — the same pattern as Chapter 11.
 
 <!--
-Tekankan pemisahan tanggung jawab: layar mengurus tampilan, berkas ini mengurus
-penyimpanan. Bila suatu hari penyimpanan berpindah ke server, hanya berkas ini berubah.
+Stress the separation of responsibility: the screen handles the display, this file
+handles storage. If storage moves to a server one day, only this file changes.
 
-Ingatkan pola pemulihan di layar: hasil muatProfil diuji dengan if, lalu setiap state
-diisi nilai bawaan seperti || '' agar layar tidak pernah menerima undefined.
+Remind them of the restore pattern on the screen: the muatProfil result is tested with if,
+then each state is filled with a default value such as || '' so that the screen never
+receives undefined.
 
-Peringatan: objek profil lama tanpa lokasi tetap harus dapat dimuat — inilah alasan
-nilai bawaan itu penting.
+Warning: an old profile object without a location must still load — this is why those
+default values matter.
 -->
 
 ---
 
 <!-- _class: center -->
 
-## Mini Kuis
+## Mini Quiz
 
-- Apa dua lapis pengelolaan izin pada project Expo?
-- Paket mana yang tepat untuk memindai kode QR?
-- Apa arti `accuracy: 35` pada hasil pembacaan lokasi?
-- Mengapa `uri` image picker tidak aman untuk penyimpanan jangka panjang?
-- Apa bedanya notifikasi lokal dan notifikasi push jarak jauh?
+- What are the two layers of permission handling in an Expo project?
+- Which package is right for scanning a QR code?
+- What does `accuracy: 35` mean in a location reading?
+- Why is the image picker's `uri` unsafe for long-term storage?
+- What is the difference between a local notification and a remote push notification?
 
 <!--
-Kuis lisan 5 menit: tampilkan pertanyaan, minta kelas menjawab serentak atau angkat
-tangan, baru lanjut ke slide jawaban. Jangan membocorkan jawaban di slide ini.
+Five-minute oral quiz: show the questions, ask the class to answer together or raise
+hands, then move to the answer slide. Do not leak the answers on this slide.
 
-Bila jawaban kelas beragam pada pertanyaan ketiga, ulangi penjelasan lingkaran
-ketidakpastian sebelum menutup pertemuan.
+If the class's answers vary on the third question, repeat the explanation of the
+uncertainty circle before closing the meeting.
 -->
 
 ---
 
 <!-- _class: center -->
 
-## Jawaban
+## Answers
 
-- Deklarasi lewat `plugins` di `app.json`, dan permintaan saat aplikasi berjalan
-- `expo-camera` — aplikasi harus menampilkan dan mengolah bidikan langsung
-- Perkiraan radius ketidakpastian lebih kurang 35 meter dari posisi sebenarnya
-- Berkasnya sementara di cache sistem dan dapat dibersihkan kapan saja
-- Push dikirim server pengirim; lokal dijadwalkan sendiri oleh perangkat
+- Declaration through `plugins` in `app.json`, and the request while the app is running
+- `expo-camera` — the app must show and process the shot live
+- An estimated uncertainty radius of about 35 meters from the actual position
+- The file is temporary in the system cache and may be cleaned at any time
+- Push is sent by a sending server; local is scheduled by the device itself
 
 <!--
-Ulangi pembeda yang paling sering tertukar: akurasi adalah radius ketidakpastian, bukan
-tingkat kecepatan atau jumlah satelit.
+Repeat the distinction most often mixed up: accuracy is an uncertainty radius, not a
+speed level or a number of satellites.
 
-Bila banyak yang salah pada pertanyaan pertama, ulangi tabel dua lapis izin sebelum
-menutup pertemuan.
+If many missed the first question, repeat the two-layer permission table before
+closing the meeting.
 -->
 
 ---
 
-## Studi Kasus: Presensi Foto dan Lokasi
+## Case Study: Photo and Location Attendance
 
-| Yang diperiksa server | Fitur perangkat yang dipakai |
+![w:1120](assets/diagrams/bab-12-mengakses-fitur-perangkat-08.svg)
+
+| What the server checks | Device feature used |
 |---|---|
-| Foto diambil pada rentang waktu sesi | Kamera atau galeri (Subbab 12.2) |
-| Koordinat berada dalam radius 100 meter dari gedung | Lokasi berakurasi `High` (Subbab 12.3) |
-| Tidak ada dua presensi dari perangkat yang sama | Info perangkat (Subbab 12.5) |
+| The photo is taken within the session time window | Camera or gallery (Section 12.2) |
+| The coordinates are within a 100-meter radius of the building | Location at `High` accuracy (Section 12.3) |
+| No two attendances come from the same device | Device info (Section 12.5) |
 
-- Pengingat sesi kuliah dikirim lewat notifikasi lokal (Subbab 12.4)
-- Akibatnya, praktik titip tanda tangan secara fisik menjadi jauh lebih sulit
+- The class session reminder is sent through a local notification (Section 12.4)
+- As a result, the practice of having someone else sign the attendance sheet in person becomes far harder
 
 <!--
-Ceritakan sebagai masalah nyata: daftar hadir bertanda tangan dapat dititipkan, sehingga
-integritas akademiknya lemah. Fitur perangkat menutup celah itu.
+Tell it as a real problem: a signed attendance sheet can be signed for someone else, so
+its academic integrity is weak. Device features close that gap.
 
-Tekankan angka radius 100 meter: nilai itu menuntut akurasi High, bukan Balanced —
-inilah alasan Subbab 12.3 membahas akurasi serinci itu.
+Stress the 100-meter radius figure: that value demands High accuracy, not Balanced —
+this is why Section 12.3 discusses accuracy in such detail.
 
-Sebutkan sekali bahwa studi kasus ini adalah kandidat modul presensi pada Sistem
-Informasi Akademik Mobile di Project Akhir.
+Mention once that this case study is a candidate attendance module for the Mobile
+Academic Information System in the Final Project.
 -->
 
 ---
 
-## Sisi Lain: Dilema Privasi Data Presensi
+## The Other Side: The Attendance Data Privacy Dilemma
 
-- Data presensi menggabungkan wajah, lokasi, dan waktu keberadaan mahasiswa
-- Dari tiga titik itu, gambaran "di mana dan kapan" seseorang dapat direkonstruksi
-- Praktik penahan risikonya: izin jujur, minimasi data, unggah atas tindakan pengguna
-- Cukup koordinat titik cek-in, bukan jejak lokasi yang dicatat terus-menerus
-- Batasi masa simpan data sesuai kebijakan kampus
+![w:1120](assets/diagrams/bab-12-mengakses-fitur-perangkat-09.svg)
 
-> Tanpa praktik ini, solusi untuk melindungi integritas akademik berubah menjadi alat pengawasan yang menimbulkan masalah baru.
+- Risk-limiting practices: honest permission, data minimization, upload on user action
+- A check-in point coordinate is enough, not a location track recorded continuously
+- Limit the data retention period according to campus policy
+
+> Without these practices, a solution meant to protect academic integrity turns into a surveillance tool that creates new problems.
 
 <!--
-Slide paling penting bagi mahasiswa Sistem Informasi. Tekankan bahwa teknologi yang
-sama dapat menjadi solusi atau masalah, bergantung pada keputusan desainnya.
+Trimmed to the picture (the diagram says this):
+- Attendance data combines a student's face, location, and presence time
+- From those three points, a picture of "where and when" someone was can be reconstructed
 
-Beri contoh konkret: menyimpan riwayat koordinat setiap lima menit jauh berbeda
-akibatnya dari menyimpan satu koordinat saat tombol presensi ditekan.
+The flow is those two bullets in one direction: the three fields, the reconstruction they
+allow, and — labelled with the blockquote's own condition — what that becomes when the
+practices are missing. The three bullets that stayed are the counter-measures, which the
+picture has nowhere to put and which are the answer the slide exists to give.
 
-Tanyakan: "Kalau Anda analis sistem, syarat apa yang Anda ajukan ke vendor sebelum data
-mahasiswa diserahkan?" Ini pemicu diskusi penutup.
+The most important slide for Information Systems students. Stress that the same
+technology can be a solution or a problem, depending on its design decisions.
+
+Give a concrete example: storing a coordinate history every five minutes has a very
+different consequence from storing one coordinate when the attendance button is pressed.
+
+Ask: "If you were the systems analyst, what requirements would you put to a vendor before
+student data is handed over?" This is the trigger for the closing discussion.
 -->
 
 ---
 
-## Rangkuman (1/2)
+## Summary (1/2)
 
-1. API perangkat dijembatani paket Expo; sandbox dan izin melindungi pengguna
-2. Izin dikelola dua lapis: `plugins` di `app.json` dan permintaan saat berjalan
-3. Penolakan adalah keadaan normal; arahkan ke Pengaturan bila `canAskAgain` false
-4. `expo-image-picker` untuk satu foto, `expo-camera` untuk bidikan langsung
+1. Device APIs are bridged by Expo packages; the sandbox and permissions protect the user
+2. Permissions are handled in two layers: `plugins` in `app.json` and the request at runtime
+3. Denial is a normal state; send the user to Settings when `canAskAgain` is false
+4. `expo-image-picker` for one photo, `expo-camera` for a live shot
 
 <!--
-Jangan dibacakan. Minta mahasiswa memilih satu nomor dan menjelaskannya dengan kalimat
-sendiri — cara ini lebih efektif daripada mengulang bacaan.
+Do not read it out. Ask students to pick one number and explain it in their own words —
+this works better than repeating the reading.
 
-Bila waktu tersisa sedikit, prioritaskan nomor 2 dan 3 karena keduanya paling sering
-muncul di soal ujian dan paling sering salah dipraktikkan.
+If little time remains, prioritize numbers 2 and 3 because both appear most often
+in exam questions and are most often practiced wrongly.
 -->
 
 ---
 
-## Rangkuman (2/2)
+## Summary (2/2)
 
-1. Lokasi selalu disertai akurasi; pilih akurasi serendah yang masih memenuhi
-2. Notifikasi lokal dijadwalkan di perangkat; push memerlukan server pengirim
-3. Salin berkas dari image picker agar permanen; AsyncStorage hanya untuk teks
-4. Prinsip privasi: izin berpenjelasan, tanpa unggah diam-diam, minimasi data
+1. Location always comes with accuracy; choose the lowest accuracy that still meets the need
+2. Local notifications are scheduled on the device; push needs a sending server
+3. Copy the file from the image picker so that it becomes permanent; AsyncStorage is only for text
+4. Privacy principles: explained permission, no silent uploads, data minimization
 
 <!--
-Ulangi nomor 3 karena inilah kesalahan yang paling sering muncul pada praktikum:
-mahasiswa menyimpan uri sementara ke AsyncStorage, lalu kehilangan foto setelah
-beberapa hari.
+Repeat number 3 because this is the mistake that appears most often in the practicum:
+students save the temporary uri into AsyncStorage, then lose the photo after
+a few days.
 
-Pesan penutup bagian ini: kemampuan memanggil fitur perangkat mudah dipelajari,
-kebijakan memakainya itulah yang membedakan pengembang profesional.
+The closing message of this part: the ability to call device features is easy to learn,
+the policy for using them is what sets a professional developer apart.
 -->
 
 ---
 
-## Diskusi dan Latihan
+## Discussion and Exercises
 
 <div class="grid2">
 <div>
 
-**Diskusi kelas**
+**Class discussion**
 
-- Pernahkah Anda menolak izin sebuah aplikasi? Apa alasannya?
-- Kriteria apa yang Anda tetapkan bagi vendor aplikasi presensi?
+- Have you ever refused an app's permission? What was the reason?
+- What criteria would you set for an attendance app vendor?
 
 </div>
 <div>
 
-**Latihan**
+**Exercises**
 
-- Tampilkan nama tempat dengan `reverseGeocodeAsync()`
-- Kirim notifikasi otomatis setelah profil tersimpan
-- Tambahkan tombol "Hapus Profil"
+- Show the place name with `reverseGeocodeAsync()`
+- Send an automatic notification after the profile is saved
+- Add a "Delete Profile" button
 
 </div>
 </div>
 
 <!--
-Beri 3 menit berpasangan untuk pertanyaan pertama, lalu tampung 2 sampai 3 jawaban.
-Jawaban kuat menyebut konteks permintaan yang tidak jelas dan rasa tidak nyaman.
+Give 3 minutes in pairs for the first question, then collect 2 to 3 answers.
+A strong answer mentions an unclear request context and a feeling of discomfort.
 
-Untuk kriteria vendor, arahkan ke empat hal: data apa yang dikumpulkan, berapa lama
-disimpan, siapa yang dapat mengakses, dan bagaimana data dihapus.
+For the vendor criteria, point to four things: what data is collected, how long it is
+stored, who can access it, and how the data is deleted.
 -->
 
 ---
 
-## Referensi
+## References
 
-| Sumber | Tautan |
+| Source | Link |
 |---|---|
 | Expo documentation (2026) | docs.expo.dev |
 | Expo SDK: ImagePicker, Location, Notifications (2026) | docs.expo.dev |
@@ -921,15 +953,15 @@ disimpan, siapa yang dapat mengakses, dan bagaimana data dihapus.
 <div class="grid2">
 <div>
 
-**Bab terkait**
+**Related chapters**
 
-- Bab 11 — AsyncStorage dan serialisasi JSON
-- Bab 13 — token dan `expo-secure-store`
+- Chapter 11 — AsyncStorage and JSON serialization
+- Chapter 13 — tokens and `expo-secure-store`
 
 </div>
 <div>
 
-**Versi teknologi buku ini**
+**Technology versions in this book**
 
 - Expo SDK 57 · React Native 0.86 · React 19.2 · Node.js LTS ≥ 22
 
@@ -937,14 +969,14 @@ disimpan, siapa yang dapat mengakses, dan bagaimana data dihapus.
 </div>
 
 <!--
-Rujukan lengkap ada di Lampiran D; glosarium istilah seperti permission dan secure
-storage ada di Lampiran C.
+The complete references are in Appendix D; the glossary of terms such as permission and
+secure storage is in Appendix C.
 
-Ingatkan bahwa dokumentasi SDK sangat bergantung versi — cocokkan selalu dengan SDK 57
-yang dipakai buku ini, dan perhatikan penanda ⚠ version-sensitive di bab.
+Remind them that the SDK documentation depends heavily on the version — always match it to
+the SDK 57 used in this book, and watch for the ⚠ version-sensitive markers in the chapter.
 
-Halaman SDK yang perlu dibuka mahasiswa: ImagePicker, Location, Notifications,
-FileSystem, dan Device pada dokumentasi Expo; semuanya bernaung di docs.expo.dev.
+The SDK pages students should open: ImagePicker, Location, Notifications,
+FileSystem, and Device in the Expo documentation; all of them live under docs.expo.dev.
 -->
 
 ---
@@ -952,20 +984,20 @@ FileSystem, dan Device pada dokumentasi Expo; semuanya bernaung di docs.expo.dev
 <!-- _class: lead -->
 <!-- _paginate: skip -->
 
-# Siap Menuju Bab 13
+# Ready for Chapter 13
 
-**Praktikum:** bangun Aplikasi Profil Mahasiswa sampai foto, lokasi, dan info perangkat tetap tampil setelah aplikasi dibuka ulang.
+**Practicum:** build the Student Profile App until the photo, location, and device info are still shown after the app is reopened.
 
-Pertemuan berikutnya: Bab 13 — Autentikasi dan Keamanan Aplikasi (Pertemuan 14).
+Next meeting: Chapter 13 — App Authentication and Security (Meeting 14).
 
 <!--
-Tutup dengan satu kalimat: "Bab ini membuat aplikasi meminjam mata dan telinga ponsel;
-bab berikutnya membuatnya memastikan siapa yang sedang memakainya."
+Close with one sentence: "This chapter made the app borrow the phone's eyes and ears;
+the next chapter makes it confirm who is currently using it."
 
-Sebutkan tenggat Praktikum Bab 12 secara eksplisit dan ingatkan rubrik praktikum
-(Lampiran A): pemahaman konsep 15%, implementasi 25%, kualitas kode 15%, UI/UX 15%,
-debugging 10%, dokumentasi 20%.
+State the Chapter 12 Practicum deadline explicitly and remind them of the practicum
+rubric (Appendix A): conceptual understanding 15%, implementation 25%, code quality 15%,
+UI/UX 15%, debugging 10%, documentation 20%.
 
-Titip satu tugas persiapan: mahasiswa membawa catatan izin apa saja yang diminta
-aplikasi kampus mereka, untuk dibahas di awal Bab 13.
+Leave one preparation task: students bring notes on which permissions their campus app
+asks for, to discuss at the start of Chapter 13.
 -->

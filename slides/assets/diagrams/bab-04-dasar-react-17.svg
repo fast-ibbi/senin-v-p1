@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1160 430" width="1160" height="430" role="img"><defs><marker id="a-slate" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#94a3b8"/></marker><marker id="a-acc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#1d4ed8"/></marker><marker id="a-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b91c1c"/></marker><marker id="a-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#15803d"/></marker><marker id="a-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#111827"/></marker></defs><style>
+.t{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif;fill:#111827}
+.m{font-family:ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,'Liberation Mono',monospace}
+.mu{fill:#6b7280}
+.ac{fill:#1d4ed8}
+.rd{fill:#b91c1c}
+.gn{fill:#15803d}
+.am{fill:#b45309}
+.wh{fill:#ffffff}
+.b6{font-weight:600}
+.b7{font-weight:700}
+.mid{text-anchor:middle}
+.end{text-anchor:end}
+.s12{font-size:12px}.s13{font-size:13px}.s14{font-size:14px}.s15{font-size:15px}.s16{font-size:16px}.s17{font-size:17px}.s18{font-size:18px}.s19{font-size:19px}.s20{font-size:20px}.s21{font-size:21px}.s22{font-size:22px}.s24{font-size:24px}.s26{font-size:26px}.s28{font-size:28px}.s30{font-size:30px}.s32{font-size:32px}.s34{font-size:34px}.s36{font-size:36px}.s38{font-size:38px}
+</style>[object Object]
+<rect x="0" y="62" width="372" height="250" rx="12" fill="#ffffff" stroke="none" stroke-width="1.5"/><rect x="0" y="62" width="372" height="46" rx="12" fill="#eef2ff" stroke="none" stroke-width="1.5"/><rect x="0" y="96" width="372" height="12" rx="0" fill="#eef2ff" stroke="none" stroke-width="1.5"/><text class="t s17 b7 ac" x="18" y="91">MOUNT — first render</text><line x1="0" y1="108" x2="372" y2="108" stroke="#c7d2fe" stroke-width="1" stroke-linecap="round"/><rect x="0" y="62" width="372" height="250" rx="12" fill="none" stroke="#c7d2fe" stroke-width="1.5"/>
+<text class="t s15" x="18" y="136">The component appears on screen.</text>
+<text class="t s16 b7 ac" x="18" y="168">→</text>
+<text class="t m s14 ac b6" x="42" y="168">useEffect(fn, [])</text>
+<text class="t s14 mu" x="18" y="196">The effect runs once.</text>
+<text class="t s13 mu" x="18" y="236">Example: setTimeout 2 seconds</text>
+<text class="t s13 mu" x="18" y="258">to simulate loading data.</text>
+<line x1="376" y1="186" x2="414" y2="186" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" marker-end="url(#a-slate)"/>
+<rect x="418" y="62" width="372" height="250" rx="12" fill="#ffffff" stroke="none" stroke-width="1.5"/><rect x="418" y="62" width="372" height="46" rx="12" fill="#fffbeb" stroke="none" stroke-width="1.5"/><rect x="418" y="96" width="372" height="12" rx="0" fill="#fffbeb" stroke="none" stroke-width="1.5"/><text class="t s17 b7 am" x="436" y="91">UPDATE — dependency changes</text><line x1="418" y1="108" x2="790" y2="108" stroke="#fde68a" stroke-width="1" stroke-linecap="round"/><rect x="418" y="62" width="372" height="250" rx="12" fill="none" stroke="#fde68a" stroke-width="1.5"/>
+<text class="t s15" x="436" y="136">A value in the array changed.</text>
+<text class="t s13 b6 am" x="436" y="168">1.</text>
+<text class="t m s14 am b6" x="456" y="168">old cleanup</text>
+<text class="t s13 b6 am" x="436" y="194">2.</text>
+<text class="t m s14 am b6" x="456" y="194">new effect runs</text>
+<text class="t s13 mu" x="436" y="240">Without cleanup, the old timer stays</text>
+<text class="t s13 mu" x="436" y="262">alive and piles up.</text>
+<line x1="794" y1="186" x2="832" y2="186" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" marker-end="url(#a-slate)"/>
+<rect x="836" y="62" width="324" height="250" rx="12" fill="#ffffff" stroke="none" stroke-width="1.5"/><rect x="836" y="62" width="324" height="46" rx="12" fill="#fef2f2" stroke="none" stroke-width="1.5"/><rect x="836" y="96" width="324" height="12" rx="0" fill="#fef2f2" stroke="none" stroke-width="1.5"/><text class="t s17 b7 rd" x="854" y="91">UNMOUNT — component removed</text><line x1="836" y1="108" x2="1160" y2="108" stroke="#fecaca" stroke-width="1" stroke-linecap="round"/><rect x="836" y="62" width="324" height="250" rx="12" fill="none" stroke="#fecaca" stroke-width="1.5"/>
+<text class="t s15" x="854" y="136">The component leaves the screen.</text>
+<text class="t s16 b7 rd" x="854" y="168">→</text>
+<text class="t m s13 rd b6" x="878" y="168">final cleanup</text>
+<text class="t s13 mu" x="854" y="210">The timer is cancelled; no</text>
+<text class="t s13 mu" x="854" y="232">setState on a component</text>
+<text class="t s13 mu" x="854" y="254">that no longer exists.</text>
+<rect x="0" y="330" width="1160" height="56" rx="10" fill="#eef2ff" stroke="none" stroke-width="1.5"/>
+<rect x="0" y="330" width="6" height="56" rx="0" fill="#1d4ed8" stroke="none" stroke-width="1.5"/>
+<text class="t s15 b6" x="24" y="364">The function returned by useEffect is cleanup: run when the effect repeats or the component unmounts.</text></svg>

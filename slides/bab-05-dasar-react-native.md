@@ -2,10 +2,10 @@
 marp: true
 theme: academic
 paginate: true
-title: "Bab 5 — Dasar React Native"
-description: "Slide kuliah Pemrograman Mobile pertemuan 6: React web vs React Native, komponen inti, StyleSheet, Flexbox responsif, SafeAreaView, dan perbedaan platform."
-author: "Dosen Pengampu — Program Studi Sistem Informasi / Teknik Informatika"
-footer: "Pemrograman Mobile · Bab 5 — Dasar React Native"
+title: "Chapter 5 — React Native Basics"
+description: "Mobile Programming lecture, meeting 6: React web vs React Native, core components, StyleSheet, responsive Flexbox, SafeAreaView, and platform differences."
+author: "Course Instructor — Information Systems / Informatics Engineering Study Program"
+footer: "Mobile Programming · Chapter 5 — React Native Basics"
 size: 16:9
 ---
 
@@ -13,38 +13,39 @@ size: 16:9
 <!-- _paginate: skip -->
 <!-- _footer: "" -->
 
-# Bab 5 — Dasar React Native
+# Chapter 5 — React Native Basics
 
-Komponen inti, tata letak, dan perbedaan platform · Pertemuan 6
+Core components, layout, and platform differences · Meeting 6
 
 <!--
-Buka dengan pengait: "Bab 4 mengajarkan cara berpikir React. Hari ini kita belajar
-alfabet visualnya, dan hasilnya adalah layar sungguhan di ponsel."
+Open with a hook: "Chapter 4 taught the way of thinking in React. Today we learn its
+visual alphabet, and the result is a real screen on a phone."
 
-Pertanyaan pembuka: "Kalau cara berpikirnya sama dengan React, mengapa kodenya harus
-berbeda?" Tampung 2–3 jawaban tanpa dikoreksi, karena jawabannya baru muncul di
-Subbab 5.1 pada slide berikutnya.
+Opening question: "If the way of thinking is the same as React, why must the code be
+different?" Collect 2–3 answers without correcting them, because the answer only
+appears in Section 5.1 on the next slide.
 -->
 
 ---
 
-## Tujuan Pembelajaran
+## Learning Objectives
 
-- Menjelaskan perbedaan React untuk web dan React Native
-- Mengidentifikasi fungsi komponen inti React Native
-- Menerapkan StyleSheet, array style, dan style bersyarat
-- Menyusun tata letak responsif dengan Flexbox dan `useWindowDimensions`
-- Memilih penggulir yang tepat serta menangani perbedaan platform
+- Explain the difference between React for the web and React Native
+- Identify the role of React Native's core components
+- Apply StyleSheet, style arrays, and conditional styles
+- Compose responsive layouts with Flexbox and `useWindowDimensions`
+- Choose the right scroller and handle platform differences
 
 <!--
-Bacakan kata kerjanya saja, jangan seluruh tujuan. Butir ketiga dan keempat adalah
-inti praktikum: keduanya langsung dipakai pada layout Profil Mahasiswa.
+Read out the verbs only, not the whole objectives. The third and fourth items are the
+core of the practicum: both are used directly in the Student Profile layout.
 
-Kaitkan dengan penilaian: hasil praktikum bab ini menjadi fondasi antarmuka Bab 6
-(membangun UI) dan Bab 7 (navigasi), dan dinilai dengan rubrik praktikum Lampiran A.
+Tie it to assessment: this chapter's practicum result becomes the interface foundation
+of Chapter 6 (building UI) and Chapter 7 (navigation), and is graded with the practicum
+rubric in Appendix A.
 
-Miskonsepsi yang perlu dicegah: "belajar komponen" bukan kegiatan menghafal nama
-properti, melainkan tahu kapan memakai komponen mana.
+Misconception to prevent: "learning components" is not an exercise in memorizing
+property names, but knowing when to use which component.
 -->
 
 ---
@@ -52,88 +53,100 @@ properti, melainkan tahu kapan memakai komponen mana.
 <!-- _class: lead -->
 <!-- _paginate: skip -->
 
-# Bagian 1 — Dua Dunia React
+# Part 1 — Two React Worlds
 
-Subbab 5.1 React untuk web vs React Native
+Section 5.1 React for the web vs React Native
 
 <!--
-Bagian singkat tetapi menentukan seluruh bab. Bila waktu pertemuan mepet, bagian ini
-tetap tidak boleh dipotong, karena tanpanya komponen di Bagian 2 terasa seperti
-hafalan tanpa alasan.
+A short part, but it determines the whole chapter. If the meeting time is tight, this
+part still may not be cut, because without it the components in Part 2 feel like
+memorization with no reason.
 
-Analogi yang bisa dipakai: bahasa Indonesia yang sama, tetapi dua penerbit berbeda.
+An analogy that can be used: the same language, but two different publishers.
 -->
 
 ---
 
 ## React Web vs React Native
 
-- React lahir 2013: JSX dirender `react-dom` menjadi elemen DOM
-- Facebook meluncurkan React Native pada 2015 dengan ide yang sama
-- Yang tetap: komponen, props, state, dan hook (Bab 4)
-- Yang berganti: mediumnya, dari halaman web ke komponen native
-- Harganya: fitur platform tertentu butuh modul native tambahan
+![w:1120](assets/diagrams/bab-05-dasar-react-native-15.svg)
+
+- React was born in 2013: JSX is rendered by `react-dom` into DOM elements
+- Facebook launched React Native in 2015 with the same idea
+- The price: certain platform features need an additional native module
 
 <!--
-Tekankan bahwa yang berubah hanya target render, bukan cara berpikir. Mahasiswa yang
-sudah lulus Bab 4 karenanya sudah menempuh separuh perjalanan bab ini.
+Trimmed to the picture (the diagram says this):
+- What stays the same: components, props, state, and hooks (Chapter 4)
+- What changes: the medium, from web pages to native components
 
-Analogi: resep masakan yang sama, tetapi dapur dan peralatan masaknya berbeda,
-sehingga teknik menuangkannya harus disesuaikan.
+Stress that only the render target changes, not the way of thinking. Students who have
+passed Chapter 4 have therefore already travelled half of this chapter.
 
-Pertanyaan pemandu: "Apa nama modul React yang merender ke DOM?" (Jawaban:
-react-dom. React Native tidak memakainya.)
+Analogy: the same recipe, but the kitchen and the cooking equipment are different, so
+the technique of serving it must be adjusted.
 
-Miskonsepsi: "React Native adalah React versi baru." Bukan versi baru, melainkan
-target render berbeda.
+Guiding question: "What is the name of the React module that renders to the DOM?"
+(Answer: react-dom. React Native does not use it.)
+
+Misconception: "React Native is a new version of React." Not a new version, but a
+different render target.
 -->
 
 ---
 
-## Dari JSX ke Komponen Native
+## Diagram: React Web vs React Native
 
-![w:720](assets/diagrams/bab-05-dasar-react-native-02.svg)
+![w:1120](assets/diagrams/bab-05-dasar-react-native-07.svg)
 
-> Yang berubah hanya target rendernya: React Native merender komponen native platform.
+---
+
+## From JSX to Native Components
+
+![w:1120](assets/diagrams/bab-05-dasar-react-native-02.svg)
+
+> Only the render target changes: React Native renders the platform's native components.
 
 <!--
-Tunjukkan bahwa React Native merender komponen asli platform, yaitu UIView di iOS
-dan ViewGroup di Android. Itulah sebabnya tampilan aplikasi terasa native, bukan
-seperti halaman web yang dibungkus.
+Show that React Native renders the platform's own components, namely UIView on iOS and
+ViewGroup on Android. That is why an app's appearance feels native, not like a web page
+wrapped in a shell.
 
-Bandingkan dengan Bab 1: di sana kita membahas arsitektur dan trade-off, di sini
-konsekuensinya saat menulis kode.
+Compare it with Chapter 1: there we discussed architecture and trade-offs, here we see
+the consequence when writing code.
 
-Pertanyaan pemandu: "Kalau View menjadi ViewGroup di Android, apa artinya bagi
-pengembang?" (Jawaban: pemetaan dikerjakan framework, pengembang menulis JSX saja.)
+Guiding question: "If View becomes ViewGroup on Android, what does that mean for the
+developer?" (Answer: the framework does the mapping, the developer only writes JSX.)
 
-Ingatkan bahwa diagram ini disusun dari tabel 5.1 bab, bukan dari sumber lain.
+Remind them that this diagram is assembled from the chapter's Table 5.1, not from
+another source.
 -->
 
 ---
 
-## Tabel 5.1 — React (web) vs React Native
+## Table 5.1 — React (web) vs React Native
 
-| Aspek | React (web) | React Native |
+| Aspect | React (web) | React Native |
 |---|---|---|
-| Elemen dirender | DOM: `div`, `span`, `p`, `img` | Komponen native: `View`, `Text`, `Image` |
-| Styling | File CSS: selector, class, cascade | Objek JavaScript: `StyleSheet` |
+| Rendered element | DOM: `div`, `span`, `p`, `img` | Native components: `View`, `Text`, `Image` |
+| Styling | CSS files: selector, class, cascade | JavaScript objects: `StyleSheet` |
 | Layout | CSS Box Model + Flexbox (default `row`) | Yoga: Flexbox (default `column`) |
-| Event sentuhan | `onClick`, `onMouseEnter` | `onPress`, `onLongPress` |
-| Navigasi | URL browser atau react-router | Tidak ada URL (Bab 7: Expo Router) |
-| API browser | `document`, `window`, `localStorage` | Tidak ada (Bab 12: modul Expo) |
+| Touch event | `onClick`, `onMouseEnter` | `onPress`, `onLongPress` |
+| Navigation | Browser URL or react-router | No URL (Chapter 7: Expo Router) |
+| Browser API | `document`, `window`, `localStorage` | None (Chapter 12: Expo modules) |
 
 <!--
-Bandingkan kolom, bukan baris. Mulai dari baris Layout dan API browser, karena dua
-baris itu yang paling sering menimbulkan error di praktikum.
+Compare the columns, not the rows. Start with the Layout and Browser API rows, because
+those two rows most often cause errors in the practicum.
 
-Baris API browser adalah kunci: tidak ada browser berarti tidak ada document dan
-window, sehingga seluruh tutorial web tidak bisa disalin mentah ke React Native.
+The Browser API row is the key: no browser means no document and no window, so entire
+web tutorials cannot be copied raw into React Native.
 
-Pertanyaan pemandu: "Mengapa kode yang memakai localStorage gagal di React Native?"
-(Jawaban: localStorage bagian dari browser, tidak tersedia di runtime mobile.)
+Guiding question: "Why does code that uses localStorage fail in React Native?"
+(Answer: localStorage is part of the browser, it is not available in the mobile
+runtime.)
 
-Miskonsepsi: "React Native sama dengan web, hanya ukurannya lebih kecil."
+Misconception: "React Native is the same as the web, only smaller in size."
 -->
 
 ---
@@ -141,63 +154,69 @@ Miskonsepsi: "React Native sama dengan web, hanya ukurannya lebih kecil."
 <!-- _class: lead -->
 <!-- _paginate: skip -->
 
-# Bagian 2 — Komponen Inti
+# Part 2 — Core Components
 
-Subbab 5.2 View & Text · 5.3 Image · 5.4 Pressable · 5.5 TextInput · 5.6 daftar · 5.7 safe area
+Section 5.2 View & Text · 5.3 Image · 5.4 Pressable · 5.5 TextInput · 5.6 lists · 5.7 safe area
 
 <!--
-Bagian terpanjang dan paling praktis. Setiap komponen dibahas dengan pola yang sama:
-apa itu, kapan dipakai, dan apa kesalahan umumnya.
+The longest and most practical part. Each component is discussed with the same pattern:
+what it is, when to use it, and what its common mistakes are.
 
-Saran pengelolaan waktu: jangan lebih dari 2 menit per komponen, sisakan waktu untuk
-praktikum layout.
+Time management suggestion: no more than 2 minutes per component, and leave time for
+the layout practicum.
 -->
 
 ---
 
-## View dan Text: Alfabet Visual
+## View and Text: The Visual Alphabet
 
 <div class="grid2">
 <div>
 
-**`View` — wadah universal**
+**`View` — the universal container**
 
-- Padanan `div`: tempat menyusun dan menyarangkan layout
-- Anaknya komponen lain, bukan teks mentah
+- The `div` counterpart: a place to compose and nest layouts
+- Its children are other components, not raw text
 
 </div>
 <div>
 
-**`Text` — satu-satunya pembawa teks**
+**`Text` — the only carrier of text**
 
-- Semua tulisan, judul, label, dan angka wajib di dalam `Text`
-- Boleh disarangkan untuk mencampur gaya dalam satu kalimat
-- `numberOfLines` memotong teks panjang dengan elipsis
+- Every piece of writing, heading, label, and number must be inside `Text`
+- May be nested to mix styles within one sentence
+- `numberOfLines` truncates long text with an ellipsis
 
 </div>
 </div>
 
-> `<View>Halo!</View>` ✗ memicu error · `<View><Text>Halo!</Text></View>` ✓
+> `<View>Halo!</View>` ✗ triggers an error · `<View><Text>Halo!</Text></View>` ✓
 
 <!--
-Tekankan aturan tunggal ini: hanya Text yang boleh menampilkan teks. Mahasiswa yang
-berasal dari web hampir selalu menuliskan teks langsung di dalam View.
+Stress this single rule: only Text may display text. Students who come from the web
+almost always write text directly inside a View.
 
-Demonstrasi cepat: minta satu mahasiswa menebak apa yang terjadi saat aturan itu
-dilanggar (Jawaban: layar merah dengan error, bukan sekadar peringatan.)
+Quick demonstration: ask one student to guess what happens when that rule is broken
+(Answer: a red screen with an error, not merely a warning.)
 
-Pertanyaan pemandu: "Kalau Text boleh disarangkan, apa manfaatnya?" (Jawaban:
-menonjolkan sebagian kalimat, misalnya satu kata ditebalkan.)
+Guiding question: "If Text may be nested, what is the benefit?" (Answer: emphasizing
+part of a sentence, for example one word in bold.)
 
-Miskonsepsi: menganggap View sama dengan div dalam segala hal, padahal View tidak
-bisa menampung teks.
+Misconception: treating View as the same as div in every respect, when View cannot
+hold text.
 -->
 
 ---
 
-## Kode: View dengan Text Bersarang
+## Diagram: View and Text: The Visual Alphabet
 
-`File: App.js` — kartu dengan judul dan teks bertingkat
+![w:1120](assets/diagrams/bab-05-dasar-react-native-08.svg)
+
+---
+
+## Code: View with Nested Text
+
+`File: App.js` — a card with a title and nested text
 
 ```jsx
 import { StyleSheet, Text, View } from 'react-native';
@@ -216,46 +235,57 @@ export default function App() {
 ```
 
 <!--
-Tunjukkan tiga hal saja: gaya diambil dari objek styles, Text kedua bersarang, dan
-numberOfLines membatasi dua baris agar tinggi kartu tidak berubah.
+Show three things only: the styles come from the styles object, the second Text is
+nested, and numberOfLines limits it to two lines so the card height does not change.
 
-Jelaskan bahwa gaya lengkap ada di naskah bab (Subbab 5.2), sehingga mahasiswa
-tidak perlu mencatat dari slide.
+Explain that the complete styles are in the chapter script (Section 5.2), so students
+do not need to copy them down from the slide.
 
-Pertanyaan pemandu: "Apa akibatnya bila numberOfLines dihapus?" (Jawaban: kartu
-bertambah tinggi mengikuti panjang teks, dan layout di bawahnya bergeser.)
+Guiding question: "What happens if numberOfLines is removed?" (Answer: the card grows
+taller following the text length, and the layout below it shifts.)
 -->
 
 ---
 
-## Image: Dua Sumber Gambar
+## Image: Two Image Sources
 
-- Aset lokal: `source={require('./assets/icon.png')}` dibundel saat build
-- Gambar jarak jauh: `source={{ uri: 'https://…' }}` dimuat saat aplikasi berjalan
-- Gambar jarak jauh wajib diberi `width` dan `height` eksplisit di style
-- `resizeMode="cover"` memenuhi kotak dengan memotong bagian yang meluap
-- Bila foto belum ada, tampilkan placeholder inisial, bukan kotak kosong
+![w:1120](assets/diagrams/bab-05-dasar-react-native-16.svg)
+
+- Local asset: `source={require('./assets/icon.png')}` bundled at build time
+- Remote image: `source={{ uri: 'https://…' }}` loaded while the app runs
+- A remote image must be given an explicit `width` and `height` in the style
 
 <!--
-Alasan dimensi wajib: React Native tidak dapat menebak ukuran piksel gambar yang
-belum selesai diunduh, sehingga gambar tanpa width dan height berukuran nol.
+Trimmed to the picture (the diagram says this):
+- `resizeMode="cover"` fills the box by cropping the overflowing part
+- If a photo is not available yet, show an initials placeholder, not an empty box
 
-Pola placeholder inisial dari praktikum dijelaskan di sini secara singkat; komponen
-AvatarPlaceholder dibahas pada praktikum. Alternatif caching dengan expo-image
-disebut sebagai bahan lanjutan, bukan materi wajib bab ini.
+The reason dimensions are mandatory: React Native cannot guess the pixel size of an
+image that has not finished downloading, so an image without width and height measures
+zero.
 
-Pertanyaan pemandu: "Mengapa logo sebaiknya dibundel, bukan diambil dari server?"
-(Jawaban: selalu tampil walau tanpa internet.)
+The initials placeholder pattern from the practicum is explained here briefly; the
+AvatarPlaceholder component is discussed in the practicum. Caching alternatives with
+expo-image are mentioned as further material, not as a required topic of this chapter.
 
-Miskonsepsi: menuliskan `src` seperti pada tag img di web. Di React Native namanya
+Guiding question: "Why should a logo be bundled rather than fetched from a server?"
+(Answer: it always appears even without the internet.)
+
+Misconception: writing `src` as in an img tag on the web. In React Native it is called
 source.
 -->
 
 ---
 
-## Kode: Gambar Jarak Jauh
+## Diagram: Image: Two Image Sources
 
-`File: App.js` — gambar jaringan dengan dimensi eksplisit
+![w:1120](assets/diagrams/bab-05-dasar-react-native-09.svg)
+
+---
+
+## Code: Remote Image
+
+`File: App.js` — a network image with explicit dimensions
 
 ```jsx
 import { Image, StyleSheet } from 'react-native';
@@ -274,67 +304,75 @@ const styles = StyleSheet.create({
 });
 ```
 
-> URL `example.com` adalah placeholder — ganti dengan URL gambar sungguhan saat mencoba.
+> URL `example.com` is a placeholder — replace it with a real image URL when trying it out.
 
 <!--
-Ingatkan bahwa example.com sengaja dipakai sebagai placeholder agar tidak ada URL
-karangan yang dianggap nyata; ganti dengan URL asli saat praktik.
+Remind them that example.com is deliberately used as a placeholder so that no invented
+URL is taken as real; replace it with a real URL during practice.
 
-Tunjukkan bahwa borderRadius setengah dari lebar menghasilkan foto bulat, pola yang
-sama dengan avatar inisial pada praktikum.
+Show that a borderRadius of half the width produces a round photo, the same pattern as
+the initials avatar in the practicum.
 
-Pertanyaan pemandu: "Apa yang terjadi bila perangkat sedang tanpa internet?"
-(Jawaban: kotak gambar kosong, dan di situ placeholder inisial berguna.)
+Guiding question: "What happens if the device has no internet?" (Answer: an empty
+image box, and that is where the initials placeholder helps.)
 
-Miskonsepsi: menganggap gambar lokal juga butuh dimensi eksplisit. Untuk aset lokal,
-gambarnya bisa dibundel, tetapi dimensinya tetap perlu ditulis di style.
+Misconception: thinking a local image also needs explicit dimensions. For a local
+asset the image can be bundled, but its dimensions still need to be written in the
+style.
 -->
 
 ---
 
-## Sentuhan: Button dan Pressable
+## Touch: Button and Pressable
 
 <div class="grid2">
 <div>
 
-**`Button` — siap pakai, terbatas**
+**`Button` — ready to use, limited**
 
-- Gaya bawaan platform: teks biru di iOS, tombol berwarna di Android
-- Hanya `title`, `onPress`, `color`, `disabled`; isinya tidak bisa ditata
+- Platform default style: blue text on iOS, a colored button on Android
+- Only `title`, `onPress`, `color`, `disabled`; its content cannot be styled
 
 </div>
 <div>
 
-**`Pressable` — pilihan utama**
+**`Pressable` — the main choice**
 
-- Anak bebas: tombol disusun dari `View` dan `Text`
-- `style` berupa fungsi yang menerima status `pressed`
+- Free children: the button is composed from `View` and `Text`
+- `style` as a function that receives the `pressed` status
 - `android_ripple`, `hitSlop`, `disabled`, `onLongPress`
 
 </div>
 </div>
 
-> `Button` cukup untuk prototipe cepat; `Pressable` komponen sentuh utama di buku ini.
+> `Button` is enough for a quick prototype; `Pressable` is the main touch component in this book.
 
 <!--
-Tekankan umpan balik sentuhan: pengguna harus merasakan bahwa tombolnya merespons.
-Tanpa itu, pengguna akan menekan tombol berulang kali dan mengira aplikasi macet.
+Stress touch feedback: users must feel that the button responds. Without it, users
+press the button repeatedly and think the app has frozen.
 
-Sebutkan bahwa keluarga TouchableOpacity masih banyak di kode lama, tetapi Pressable
-menggantikan perannya. Ini contoh nyata API usang yang tidak dipakai buku ini.
+Mention that the TouchableOpacity family is still widespread in old code, but Pressable
+replaces its role. This is a real example of an outdated API that this book does not
+use.
 
-Pertanyaan pemandu: "Kapan Button tetap pilihan yang wajar?" (Jawaban: prototipe
-cepat atau tombol sekali pakai tanpa desain khusus.)
+Guiding question: "When is Button still a reasonable choice?" (Answer: a quick
+prototype or a one-off button without special design.)
 
-Miskonsepsi: menganggap Button lebih mudah sehingga lebih baik. Kemudahannya justru
-berarti gayanya tidak dapat disesuaikan sama sekali.
+Misconception: thinking Button is easier and therefore better. Its ease actually means
+its style cannot be customized at all.
 -->
 
 ---
 
-## Kode: Pressable dengan Style Fungsi
+## Diagram: Touch: Button and Pressable
 
-`File: App.js` — tombol dengan umpan balik saat ditekan
+![w:1120](assets/diagrams/bab-05-dasar-react-native-10.svg)
+
+---
+
+## Code: Pressable with a Function Style
+
+`File: App.js` — a button with feedback when pressed
 
 ```jsx
 import { Pressable, StyleSheet, Text } from 'react-native';
@@ -354,48 +392,59 @@ export default function TombolSimpan() {
 ```
 
 <!--
-Ini contoh style bersyarat pertama di bab ini: pressed bernilai benar selama jari
-menekan, sehingga gaya tombolTertekan hanya aktif saat itu.
+This is the first example of a conditional style in this chapter: pressed is true while
+a finger presses, so the tombolTertekan style is only active at that moment.
 
-Jelaskan hitSlop sebagai perluasan area sentuh tanpa mengubah tampilan visual, karena
-target sentuh yang terlalu kecil menyulitkan jari pengguna.
+Explain hitSlop as an extension of the touch area without changing the visual
+appearance, because a touch target that is too small is hard for the user's finger.
 
-Pertanyaan pemandu: "Mengapa gaya pressed diletakkan paling belakang di dalam array?"
-(Jawaban: gaya belakangan menimpa yang sebelumnya, sehingga aman menimpa gaya dasar.)
+Guiding question: "Why is the pressed style placed last in the array?" (Answer: a
+later style overrides the earlier one, so it is safe to override the base style.)
 
-Miskonsepsi: menganggap android_ripple juga muncul di iOS. Efek riak itu khas
-Android.
+Misconception: thinking android_ripple also appears on iOS. That ripple effect is
+typical of Android.
 -->
 
 ---
 
 ## TextInput: Controlled Component
 
-- Satu `state` menampung nilai; `onChangeText` memperbarui tiap ketikan
-- `value={nama}` membuat kotak selalu mencerminkan state
-- Tanpa `value`, komponen tidak terkendali dan tidak sinkron dengan state
-- Properti dasar: `keyboardType`, `secureTextEntry`, `multiline`, `maxLength`
-- Seluk-beluk keyboard dan validasi tuntas di Bab 8
+![w:1120](assets/diagrams/bab-05-dasar-react-native-17.svg)
+
+- One `state` holds the value; `onChangeText` updates it on every keystroke
+- Base properties: `keyboardType`, `secureTextEntry`, `multiline`, `maxLength`
+- Keyboard details and validation are covered fully in Chapter 8
 
 <!--
-Hubungkan dengan Bab 4: ini penerapan langsung pola state. Setiap ketikan memicu
-setNama, state berubah, komponen dirender ulang, dan teks di bawah ikut berubah.
+Trimmed to the picture (the diagram says this):
+- `value={nama}` makes the box always reflect the state
+- Without `value`, the component is uncontrolled and out of sync with the state
 
-Tekankan bahwa controlled component adalah kebiasaan yang dipakai di seluruh buku,
-termasuk form data mahasiswa pada Bab 8.
+Connect it with Chapter 4: this is a direct application of the state pattern. Every
+keystroke triggers setNama, the state changes, the component re-renders, and the text
+below changes too.
 
-Pertanyaan pemandu: "Apa yang terjadi bila value ditulis tetapi onChangeText tidak?"
-(Jawaban: kotak tidak bisa diubah pengguna, karena nilainya dikunci state.)
+Stress that a controlled component is a habit used throughout the book, including the
+student data form in Chapter 8.
 
-Miskonsepsi: menganggap value hanya nilai awal, padahal ia mengikat state sepanjang
-siklus hidup komponen.
+Guiding question: "What happens if value is written but onChangeText is not?"
+(Answer: the user cannot change the box, because its value is locked by the state.)
+
+Misconception: thinking value is only an initial value, when it binds the state
+throughout the component's lifecycle.
 -->
 
 ---
 
-## Kode: TextInput Sederhana
+## Diagram: TextInput: Controlled Component
 
-`File: App.js` — petikan bagian penting (import dan StyleSheet lengkap di buku)
+![w:1120](assets/diagrams/bab-05-dasar-react-native-11.svg)
+
+---
+
+## Code: A Simple TextInput
+
+`File: App.js` — an excerpt of the important parts (imports and the full StyleSheet are in the book)
 
 ```jsx
 export default function App() {
@@ -415,73 +464,73 @@ export default function App() {
 ```
 
 <!--
-Tunjukkan tiga baris penentu: value, onChangeText, dan baris Text yang menampilkan
-state. Ketiganya membentuk lingkaran state yang sama dengan Bab 4.
+Point out three decisive lines: value, onChangeText, and the Text line that displays
+the state. All three form the same state loop as in Chapter 4.
 
-Contoh singkat di depan kelas: minta mahasiswa menebak apa yang tampil sebelum
-pengguna mengetik apa pun (Jawaban: "Halo, belum ada nama!").
+A short example in front of the class: ask students to guess what appears before the
+user types anything (Answer: the greeting string plus the fallback text from the code,
+because nama is still empty).
 
-Peringatkan bahwa seluruh seluk-beluk keyboard, termasuk keyboard yang menutupi
-kotak isian, baru dibahas di Bab 8, sehingga mahasiswa tidak perlu menyelesaikannya
-sekarang.
+Warn that all keyboard details, including a keyboard that covers the input box, are
+only discussed in Chapter 8, so students do not need to solve that now.
 -->
 
 ---
 
-## ScrollView atau FlatList?
+## ScrollView or FlatList?
 
-| Aspek | `ScrollView` | `FlatList` |
+| Aspect | `ScrollView` | `FlatList` |
 |---|---|---|
-| Cara render | Semua anak dirender sekaligus | Virtualisasi: hanya item yang terlihat |
-| Cocok untuk | Konten pendek dan berstruktur tetap | Data apa pun yang bisa panjang |
-| Contoh | Artikel, formulir, sedikit kartu | Daftar mahasiswa, katalog produk |
-| Kelemahan | 1.000 item menghabiskan memori | Wajib `keyExtractor` yang unik |
+| How it renders | All children are rendered at once | Virtualization: only the visible items |
+| Good for | Short content with a fixed structure | Any data that can grow long |
+| Example | An article, a form, a few cards | A student list, a product catalog |
+| Weakness | 1,000 items exhaust memory | A unique `keyExtractor` is mandatory |
 
-> Aturan praktis: `ScrollView` untuk konten pendek, `FlatList` untuk data yang bisa panjang.
+> Rule of thumb: `ScrollView` for short content, `FlatList` for data that can grow long.
 
 <!--
-Jelaskan virtualisasi sebagai intinya: FlatList menyimpan beberapa item cadangan di
-atas dan bawah layar, membuang yang sudah lewat, dan membangun yang baru saat digulir.
+Explain virtualization as the core idea: FlatList keeps a few spare items above and
+below the screen, discards the ones already passed, and builds new ones as it scrolls.
 
-Analogi: ScrollView seperti mencetak seluruh buku untuk membaca satu halaman;
-FlatList seperti mencetak halaman saat dibutuhkan.
+Analogy: ScrollView is like printing the whole book to read one page; FlatList is like
+printing a page when it is needed.
 
-Pertanyaan pemandu: "Berapa biaya render daftar 1.000 item pada FlatList?"
-(Jawaban: sebanding dengan jumlah item yang terlihat di layar, bukan 1.000.)
+Guiding question: "What is the render cost of a 1,000-item list in FlatList?"
+(Answer: proportional to the number of items visible on the screen, not 1,000.)
 
-Miskonsepsi: menganggap FlatList otomatis lebih cepat untuk semua kasus, termasuk
-untuk lima kartu statis.
+Misconception: thinking FlatList is automatically faster in every case, including for
+five static cards.
 -->
 
 ---
 
 <!-- _class: center -->
 
-## Apa yang Terjadi Jika…?
+## What Happens If…?
 
-- Dua `View` ditumpuk tanpa menulis `flexDirection` sama sekali?
-- Satu halaman menampung penggulir di dalam penggulir dengan arah sama?
-- `keyExtractor` pada `FlatList` dibiarkan kosong?
+- Two `View`s are stacked without writing `flexDirection` at all?
+- One screen holds a scroller inside a scroller with the same direction?
+- `keyExtractor` on a `FlatList` is left empty?
 
-Jawaban skenario 2 dan 3 ada di dua slide berikutnya; skenario 1 di Subbab 5.9.
+The answers to scenarios 2 and 3 are in the next two slides; scenario 1 is in Section 5.9.
 
 <!--
-Minta kelas menjawab serentak atau angkat tangan sebelum lanjut. Jangan memberi
-petunjuk jawaban.
+Ask the class to answer together or raise a hand before moving on. Do not give hints to
+the answers.
 
-Skenario ketiga sengaja diulang sebagai penguatan: soal ini muncul di evaluasi bab,
-dan jawabannya adalah peringatan unique key di konsol.
+The third scenario is deliberately repeated as reinforcement: this question appears in
+the chapter evaluation, and its answer is the unique key warning in the console.
 
-Bila kelas terdiam pada pertanyaan pertama, ingatkan dengan pertanyaan pancingan:
-"Apa arah default Flexbox di web?" Jawaban skenario pertama baru datang di Subbab
-5.9, pada bagian ketiga pertemuan ini.
+If the class goes silent on the first question, prompt them with: "What is the default
+Flexbox direction on the web?" The answer to the first scenario only arrives in
+Section 5.9, in the third part of this meeting.
 -->
 
 ---
 
-## Kode: FlatList Dasar
+## Code: A Basic FlatList
 
-`File: App.js` — daftar mahasiswa (Subbab 5.6)
+`File: App.js` — a student list (Section 5.6)
 
 ```jsx
 <FlatList
@@ -496,103 +545,114 @@ Bila kelas terdiam pada pertanyaan pertama, ingatkan dengan pertanyaan pancingan
 />
 ```
 
-> Properti lain: `ItemSeparatorComponent`, `ListHeaderComponent`, `ListFooterComponent`, `ListEmptyComponent`, `numColumns`.
+> Other properties: `ItemSeparatorComponent`, `ListHeaderComponent`, `ListFooterComponent`, `ListEmptyComponent`, `numColumns`.
 
 <!--
-Bahas tiga properti wajib: data, keyExtractor, dan renderItem. Sisanya disebut
-sekadar sebagai pengaya agar mahasiswa tahu arah dokumentasinya.
+Discuss the three required properties: data, keyExtractor, and renderItem. The rest are
+mentioned only as extras so students know where the documentation goes.
 
-keyExtractor dikaitkan dengan konsep key di Bab 4: React memerlukan identitas unik
-untuk melacak baris, dan indeks array bukan identitas yang stabil. Slide ini
-sekaligus menuntaskan skenario ketiga pada slide pemantik tadi: tanpa keyExtractor,
-konsol memunculkan peringatan unique key.
+keyExtractor is tied to the key concept in Chapter 4: React needs a unique identity to
+track a row, and an array index is not a stable identity. This slide also settles the
+third scenario from the warm-up slide: without keyExtractor, the console shows a unique
+key warning.
 
-Pertanyaan pemandu: "Mengapa item.id lebih baik daripada indeks array sebagai key?"
-(Jawaban: indeks berubah saat data disaring atau diurutkan, sehingga React salah
-mencocokkan baris.)
+Guiding question: "Why is item.id better than the array index as a key?" (Answer: the
+index changes when data is filtered or sorted, so React matches rows incorrectly.)
 
-Miskonsepsi: mengisi keyExtractor dengan nilai acak yang selalu berubah, yang justru
-membuat daftar selalu dibangun ulang.
+Misconception: filling keyExtractor with a random value that always changes, which
+instead makes the list rebuild every time.
 -->
 
 ---
 
-## Satu Halaman, Satu Penggulir Utama
+## One Screen, One Main Scroller
 
-- `FlatList` di dalam `ScrollView` searah memicu peringatan VirtualizedLists
-- Keduanya berebut kontrol gulir, sehingga virtualisasi FlatList rusak
-- Solusinya: `FlatList` menjadi penggulir luar, konten tetap masuk `ListHeaderComponent`
-- Alternatifnya: satu `ScrollView` bila seluruh halaman berstruktur tetap
-- Peringatan ini nyata muncul di konsol Metro, bacalah (Bab 14)
+![w:1120](assets/diagrams/bab-05-dasar-react-native-05.svg)
+
+- A `FlatList` inside a same-direction `ScrollView` triggers the VirtualizedLists warning
+- Both fight for scroll control, so the FlatList virtualization breaks
+- The fix: `FlatList` becomes the outer scroller, fixed content goes into `ListHeaderComponent`
+- The alternative: a single `ScrollView` when the whole page has a fixed structure
+- This warning really appears in the Metro console, read it (Chapter 14)
 
 <!--
-Aturan ini diambil dari bagian troubleshooting bab dan menjadi inti jawaban soal
-analisis pada akhir bab; slide ini juga menjawab skenario kedua pada slide pemantik
-tadi. Tekankan bahwa kesalahan ini tidak membuat aplikasi langsung rusak, tetapi
-merusak performa tanpa disadari.
+This rule is taken from the chapter's troubleshooting section and is the core of the
+analysis question's answer at the end of the chapter; this slide also answers the second
+scenario from the warm-up slide. Stress that this mistake does not break the app
+immediately, but damages performance unnoticed.
 
-Tunjukkan pola Kode 5 praktikum: kartu profil ditempatkan sebagai ListHeaderComponent
-di dalam FlatList, bukan dibungkus ScrollView.
+Show the pattern from Practicum Code 5: the profile card is placed as a
+ListHeaderComponent inside the FlatList, not wrapped in a ScrollView.
 
-Pertanyaan pemandu: "Mengapa memindahkan kartu ke ListHeaderComponent menyelesaikan
-masalah?" (Jawaban: hanya ada satu penggulir, sehingga virtualisasi bekerja normal.)
+Guiding question: "Why does moving the card into ListHeaderComponent solve the
+problem?" (Answer: there is only one scroller, so virtualization works normally.)
 
-Miskonsepsi: menganggap peringatan konsol bisa diabaikan karena aplikasi tetap
-berjalan.
+Misconception: thinking a console warning can be ignored because the app still runs.
 -->
 
 ---
 
-## SafeAreaView dan Area Aman Layar
+## SafeAreaView and the Safe Area
 
-- Layar ponsel punya notch, status bar, dan home indicator
-- Safe area: area yang masih aman untuk konten, jaraknya disebut inset
-- `SafeAreaView` bawaan hanya bekerja di iOS, di Android tidak berefek
-- Pilihan modern: `react-native-safe-area-context` dan hook `useSafeAreaInsets`
-- Sejak Android 15 konten dirender edge-to-edge, dan RN 0.86 mengikutinya
+![w:1120](assets/diagrams/bab-05-dasar-react-native-18.svg)
 
-> Pemasangan: `npx expo install react-native-safe-area-context`, lalu `SafeAreaProvider` di akar dan `edges={['top', 'bottom']}`.
+- A phone screen has a notch, a status bar, and a home indicator
+- Safe area: the area that is still safe for content, its distance is called an inset
+- Since Android 15 content is rendered edge-to-edge, and RN 0.86 follows it
+
+> Installation: `npx expo install react-native-safe-area-context`, then `SafeAreaProvider` at the root and `edges={['top', 'bottom']}`.
 
 <!--
-Tunjukkan pada ponsel masing-masing di mana notch atau status bar berada, lalu
-tanyakan apa yang terjadi bila konten menabraknya.
+Trimmed to the picture (the diagram says this):
+- The built-in `SafeAreaView` only works on iOS, on Android it has no effect
+- The modern choice: `react-native-safe-area-context` and the `useSafeAreaInsets` hook
 
-Penandaan version-sensitive wajib disampaikan: status SafeAreaView bawaan dan
-kebijakan edge-to-edge dapat berubah antarrilis, jadi periksa dokumentasi resmi
-reactnative.dev dan docs.expo.dev. Bab ini memakai React Native 0.86 dalam Expo SDK 57.
+Point out on their own phones where the notch or the status bar is, then ask what
+happens if content runs into it.
 
-Pertanyaan pemandu: "Mengapa solusi Android 15 membuat safe area jadi urusan wajib,
-bukan tambahan?" (Jawaban: konten kini dirender sampai tepi layar, sehingga judul
-dapat tertutup status bar.)
+The version-sensitive marker must be stated: the status of the built-in SafeAreaView
+and the edge-to-edge policy can change between releases, so check the official
+documentation at reactnative.dev and docs.expo.dev. This chapter uses React Native 0.86
+in Expo SDK 57.
 
-Miskonsepsi: mengira SafeAreaView bawaan sudah menangani kedua platform.
+Guiding question: "Why does the Android 15 solution make the safe area a mandatory
+matter, not an extra?" (Answer: content is now rendered to the edge of the screen, so a
+title can be covered by the status bar.)
+
+Misconception: assuming the built-in SafeAreaView already handles both platforms.
 -->
+
+---
+
+## Diagram: SafeAreaView and the Safe Area
+
+![w:1120](assets/diagrams/bab-05-dasar-react-native-12.svg)
 
 ---
 
 <!-- _class: lead -->
 <!-- _paginate: skip -->
 
-# Bagian 3 — Gaya, Tata Letak & Platform
+# Part 3 — Style, Layout & Platform
 
-Subbab 5.8 StyleSheet · 5.9 Flexbox responsif · 5.10 perbedaan platform
+Section 5.8 StyleSheet · 5.9 responsive Flexbox · 5.10 platform differences
 
 <!--
-Bagian ini yang paling sering membuat mahasiswa mantan pengembang web tersandung,
-karena tidak ada CSS dan arah Flexbox berbeda.
+This is the part that most often makes students who are former web developers stumble,
+because there is no CSS and the Flexbox direction is different.
 
-Bila waktu tersisa sedikit, Subbab 5.9 tidak boleh dilewati: praktikum dan Bab 6
-bergantung padanya.
+If little time is left, Section 5.9 may not be skipped: the practicum and Chapter 6
+depend on it.
 -->
 
 ---
 
-## StyleSheet, Bukan CSS
+## StyleSheet, Not CSS
 
-- Tidak ada file CSS: gaya ditulis sebagai objek JavaScript
-- `StyleSheet.create` memvalidasi properti gaya saat aplikasi dimuat
-- Definisi gaya dipusatkan ke luar JSX sehingga komponen mudah dibaca
-- Tidak ada cascade, kecuali pewarisan teks tertentu di iOS
+- There is no CSS file: styles are written as JavaScript objects
+- `StyleSheet.create` validates style properties when the app loads
+- Style definitions are centralized outside JSX so components are easier to read
+- There is no cascade, except for certain text inheritance on iOS
 
 ```jsx
 const styles = StyleSheet.create({
@@ -606,102 +666,113 @@ const styles = StyleSheet.create({
 ```
 
 <!--
-Manfaat pertama yang paling terasa bagi mahasiswa: salah ketik nama properti gaya
-langsung terlihat saat aplikasi dimuat, bukan gagal diam-diam seperti CSS.
+The first benefit students feel most: a typo in a style property name shows up
+immediately when the app loads, instead of failing silently as in CSS.
 
-Analogi cascade: di web, gaya menetes dari induk ke anak seperti air terjun; di React
-Native setiap komponen menyatakan gayanya sendiri, sehingga satu-satunya cara
-mengubah tampilan adalah membungkusnya dengan style baru.
+The cascade analogy: on the web, styles drip from parent to child like a waterfall; in
+React Native every component declares its own style, so the only way to change the
+appearance is to wrap it with a new style.
 
-Pertanyaan pemandu: "Bagaimana menata dua View dengan gaya dasar yang sama tetapi
-ukuran berbeda?" (Jawaban: gaya dasar di StyleSheet, gaya khusus ditambahkan lewat
-array style di slide berikutnya.)
+Guiding question: "How do you style two Views with the same base style but different
+sizes?" (Answer: the base style in the StyleSheet, the special style added through a
+style array on the next slide.)
 
-Miskonsepsi: mencari berkas CSS terpisah di dalam struktur project Expo, padahal gaya
-ditulis sebagai objek JavaScript.
+Misconception: looking for a separate CSS file inside the Expo project structure, when
+styles are written as JavaScript objects.
 -->
 
 ---
 
-## Array Style dan Style Bersyarat
+## Style Arrays and Conditional Styles
 
-- Array style menggabungkan objek berurutan; gaya belakangan menimpa
-- Contoh: `style={[styles.kartu, styles.kartuBesar]}`
-- Style bersyarat memilih gaya dengan `&&` atau ternary di dalam array
-- Contoh: `style={[styles.baris, aktif && styles.barisAktif]}`
-- Nilai `false` dan `null` di dalam array gaya diabaikan React Native
+![w:1120](assets/diagrams/bab-05-dasar-react-native-19.svg)
+
+- A style array merges objects in order; a later style overrides
+- Example: `style={[styles.kartu, styles.kartuBesar]}`
+- A conditional style picks a style with `&&` or a ternary inside the array
+- Example: `style={[styles.baris, aktif && styles.barisAktif]}`
+- `false` and `null` values inside a style array are ignored by React Native
 
 <!--
-Dua pola ini akan dipakai terus sampai akhir buku, jadi tuliskan keduanya di papan
-dan minta mahasiswa mencatatnya.
+Both patterns are used continuously until the end of the book, so write them both on
+the board and ask students to note them down.
 
-Kaitkan dengan komponen BarisMahasiswa pada praktikum: satu array gaya menampung gaya
-dasar, gaya terpilih, dan gaya saat ditekan sekaligus.
+Tie it to the BarisMahasiswa component in the practicum: one style array holds the base
+style, the selected style, and the pressed style at once.
 
-Pertanyaan pemandu: "Mengapa kondisi aktif && styles.barisAktif aman ditulis, padahal
-aktif bisa bernilai false?" (Jawaban: React Native mengabaikan nilai false dan null
-di dalam array gaya.)
+Guiding question: "Why is the condition `aktif && styles.barisAktif` safe to write, when
+`aktif` can be false?" (Answer: React Native ignores false and null values inside a style
+array.)
 
-Miskonsepsi: memakai if/else untuk memilih dua variabel style terpisah; pola array
-lebih ringkas dan tidak menggandakan definisi gaya.
+Misconception: using if/else to choose two separate style variables; the array pattern
+is more concise and does not duplicate style definitions.
 -->
 
 ---
 
-## Flexbox: Arah Default `column`
+## Diagram: Style Arrays and Conditional Styles
 
-- Di web, Flexbox default `row` sehingga elemen berjajar mendatar
-- Di React Native, mesin layout Yoga: default `column`, menumpuk ke bawah
-- Alasannya: layar ponsel lebih natural dibaca dari atas ke bawah
-- Dua `View` yang ditumpuk karena itu tersusun vertikal secara otomatis
-- Titik inilah yang paling sering menjebak pengembang web
+![w:1120](assets/diagrams/bab-05-dasar-react-native-13.svg)
+
+---
+
+## Flexbox: Default Direction `column`
+
+![w:1120](assets/diagrams/bab-05-dasar-react-native-06.svg)
+
+- On the web, Flexbox defaults to `row` so elements line up horizontally
+- In React Native the layout engine is Yoga: default `column`, stacking downward
+- The reason: a phone screen is more naturally read from top to bottom
+- Two `View`s stacked on each other are therefore laid out vertically automatically
+- This is the point that most often traps web developers
 
 <!--
-Slide ini menuntaskan pertanyaan pertama pada slide pemantik di Bagian 2: arah default
-column. Dua skenario lain sudah terjawab saat membahas penggulir bersarang dan
-keyExtractor yang dibiarkan kosong.
+This slide settles the first question from the warm-up slide in Part 2: the default
+direction is column. The other two scenarios were already answered when discussing
+nested scrollers and an empty keyExtractor.
 
-Analogi: menyusun buku di rak secara vertikal. Bila ingin berjajar mendatar, arahnya
-harus dinyatakan sendiri dengan flexDirection row.
+Analogy: arranging books on a shelf vertically. To line them up horizontally, the
+direction must be stated explicitly with flexDirection row.
 
-Pertanyaan pemandu: "Bagaimana membuat dua kartu berdampingan?" (Jawaban:
-flexDirection row, sering ditambah gap dan flexWrap.)
+Guiding question: "How do you make two cards sit side by side?" (Answer: flexDirection
+row, often with gap and flexWrap added.)
 
-Miskonsepsi: mengira React Native tidak mendukung Flexbox, padahal mesinnya sama,
-hanya nilai defaultnya berbeda.
+Misconception: thinking React Native does not support Flexbox, when the engine is the
+same, only the default value differs.
 -->
 
 ---
 
-## Properti Inti Flexbox
+## Core Flexbox Properties
 
-| Properti | Arti |
+| Property | Meaning |
 |---|---|
-| `flexDirection` | Arah sumbu utama: `row` atau `column` (default) |
-| `justifyContent` | Penataan sepanjang sumbu utama |
-| `alignItems` | Penataan di sumbu silang, default `stretch` |
-| `flex` | Proporsi ruang antar saudara; `flex: 1` mengisi sisa ruang |
-| `gap` | Jarak antaranak tanpa margin berulang (sejak RN 0.71) |
-| `flexWrap` | Anak turun baris bila sumbu utama sudah penuh |
+| `flexDirection` | Direction of the main axis: `row` or `column` (default) |
+| `justifyContent` | Arrangement along the main axis |
+| `alignItems` | Arrangement on the cross axis, default `stretch` |
+| `flex` | Share of space between siblings; `flex: 1` fills the remaining space |
+| `gap` | Spacing between children without repeated margins (since RN 0.71) |
+| `flexWrap` | Children move to a new line when the main axis is full |
 
 <!--
-Cukup kuasai enam properti ini; sisanya jarang dipakai pada aplikasi buku ini.
+Mastering these six properties is enough; the rest are rarely used in this book's apps.
 
-Tekankan flex sebagai rahasia layout header tetap dan konten mengisi layar, serta gap
-sebagai pengganti marginTop yang berulang.
+Stress flex as the secret of a fixed header layout with content filling the screen, and
+gap as a replacement for a repeated marginTop.
 
-Pertanyaan pemandu: "Apa bedanya flex: 1 dan flex: 2 pada dua anak bersaudara?"
-(Jawaban: ruang sisa dibagi, anak kedua mendapat dua kali lipat.)
+Guiding question: "What is the difference between flex: 1 and flex: 2 on two sibling
+children?" (Answer: the remaining space is divided, the second child gets twice as
+much.)
 
-Miskonsepsi: menerjemahkan alignItems sebagai perataan horizontal. Nama ini menunjuk
-sumbu silang, sehingga maknanya bergantung pada flexDirection.
+Misconception: translating alignItems as horizontal alignment. The name points to the
+cross axis, so its meaning depends on flexDirection.
 -->
 
 ---
 
-## Kode: Baris, Grid, dan Kaki Halaman
+## Code: Row, Grid, and Footer
 
-`File: App.js` — petikan gaya layout halaman
+`File: App.js` — an excerpt of the page layout style
 
 ```jsx
 const styles = StyleSheet.create({
@@ -718,29 +789,30 @@ const styles = StyleSheet.create({
 });
 ```
 
-> `flex: 1` pada `kaki` mendorong seluruh isi ke atas, pola klasik footer di dasar layar.
+> `flex: 1` on `kaki` pushes all the content up, the classic pattern for a footer at the bottom of the screen.
 
 <!--
-Baca tiga pola dari kode ini: barisJudul sebagai judul kiri dan jumlah kanan, barisKartu
-sebagai grid dua kolom 48 persen, dan kaki sebagai pendorong isi ke atas.
+Read three patterns from this code: barisJudul as the title on the left and the count on
+the right, barisKartu as a two-column grid at 48 percent, and kaki as the pusher that
+lifts the content up.
 
-Tunjukkan bahwa 48 persen dipilih agar dua kartu muat dengan jarak gap tersisa,
-bukan angka 50 persen yang akan membuatnya bersentuhan.
+Show that 48 percent was chosen so two cards fit with the remaining gap, not the 50
+percent figure that would make them touch.
 
-Pertanyaan pemandu: "Apa yang terjadi bila flexWrap dihapus pada layar sempit?"
-(Jawaban: kartu tetap satu baris dan meluap keluar layar.)
+Guiding question: "What happens if flexWrap is removed on a narrow screen?" (Answer:
+the cards stay on one row and overflow off the screen.)
 
-Miskonsepsi: menambahkan margin pada setiap anak, padahal satu properti gap sudah
-mencukupi.
+Misconception: adding a margin to every child, when one gap property is enough.
 -->
 
 ---
 
-## Layout Responsif dengan `useWindowDimensions`
+## Responsive Layout with `useWindowDimensions`
 
-- Hook ini mengembalikan `{ width, height, scale, fontScale }`
-- Nilainya berubah dan memicu render ulang saat ponsel diputar
-- Pola: `const jumlahKolom = width >= 600 ? 3 : 2`, lalu dipakai `numColumns`
+![w:1120](assets/diagrams/bab-05-dasar-react-native-20.svg)
+
+- This hook returns `{ width, height, scale, fontScale }`
+- Pattern: `const jumlahKolom = width >= 600 ? 3 : 2`, then used as `numColumns`
 
 ```jsx
 const { width } = useWindowDimensions();
@@ -750,48 +822,51 @@ const jumlahKolom = width >= 600 ? 3 : 2;
 ```
 
 <!--
-Jelaskan alasan key={jumlahKolom}: saat numColumns berubah, React Native perlu
-membangun ulang daftar dari awal, dan mengubah key adalah cara standarnya.
+Trimmed to the picture (the diagram says this):
+- The value changes and triggers a re-render when the phone is rotated
 
-Latihan lisan cepat: "Pada ponsel selebar 360 piksel, berapa kolom yang tampil?"
-(Jawaban: dua kolom, karena 360 kurang dari 600.)
+Explain the reason for key={jumlahKolom}: when numColumns changes, React Native needs to
+rebuild the list from the beginning, and changing the key is the standard way.
 
-Peringatkan bahwa pemikiran desain responsif yang utuh, termasuk tipografi dan
-aksesibilitas, baru dibahas di Bab 6.
+A quick oral exercise: "On a phone 360 pixels wide, how many columns appear?"
+(Answer: two columns, because 360 is less than 600.)
 
-Miskonsepsi: mengukur lebar layar sekali di awal lalu menyimpannya di variabel;
-nilainya tidak diperbarui saat orientasi berubah.
+Warn that the complete thinking of responsive design, including typography and
+accessibility, is only discussed in Chapter 6.
+
+Misconception: measuring the screen width once at the start and storing it in a
+variable; the value is not updated when the orientation changes.
 -->
 
 ---
 
-## Tiga Alat Perbedaan Platform
+## Three Tools for Platform Differences
 
-![w:720](assets/diagrams/bab-05-dasar-react-native-03.svg)
+![w:1120](assets/diagrams/bab-05-dasar-react-native-03.svg)
 
-> Aturan sederhana: `Platform.select` untuk perbedaan kecil, ekstensi file untuk perbedaan besar.
+> A simple rule: `Platform.select` for small differences, file extensions for large differences.
 
 <!--
-Tekankan aturan pemilihannya: nilai atau gaya kecil cukup lewat Platform.select,
-sedangkan komponen utuh yang benar-benar berbeda ditulis sebagai file .ios.js dan
-.android.js agar Metro memilih yang tepat saat build.
+Stress the selection rule: a small value or style is enough through Platform.select,
+while an entirely different component is written as an .ios.js and .android.js file so
+that Metro picks the right one at build time.
 
-Sebutkan Platform.OS untuk percabangan paling sederhana. Tanyakan: "Kalau seluruh
-struktur berbeda, apakah masih memakai if di dalam satu file?" (Jawaban: tidak,
-gunakan ekstensi file.)
+Mention Platform.OS for the simplest branching. Ask: "If the whole structure differs,
+do you still use if inside one file?" (Answer: no, use file extensions.)
 
-Penandaan version-sensitive juga berlaku di sini: kebijakan edge-to-edge dan detail
-perilaku platform dapat berubah antarrilis, jadi selalu cek dokumentasi resmi.
+The version-sensitive marker also applies here: the edge-to-edge policy and the details
+of platform behavior can change between releases, so always check the official
+documentation.
 
-Miskonsepsi: menulis dua basis kode penuh untuk Android dan iOS, padahal hanya
-perbedaannya yang perlu ditangani.
+Misconception: writing two full code bases for Android and iOS, when only the
+differences need handling.
 -->
 
 ---
 
-## Kode: Gaya Bertumpuk `Platform.select`
+## Code: Layered Style with `Platform.select`
 
-`File: components/KartuMahasiswa.js` — bayangan kartu berbeda per platform
+`File: components/KartuMahasiswa.js` — a card shadow that differs per platform
 
 ```jsx
 kartu: {
@@ -810,188 +885,200 @@ kartu: {
 },
 ```
 
-> Pola `...` (spread) menyisipkan hasil `Platform.select` ke dalam objek gaya `StyleSheet`.
+> The `...` (spread) pattern inserts the result of `Platform.select` into the `StyleSheet` style object.
 
 <!--
-Tunjukkan bahwa iOS memakai empat properti shadow dan Android memakai elevation, dan
-keduanya tidak saling menggantikan. Inilah contoh paling nyata dari perbedaan
-platform yang tidak bisa disamakan.
+Show that iOS uses four shadow properties and Android uses elevation, and the two do not
+replace each other. This is the most concrete example of a platform difference that
+cannot be unified.
 
-Sebutkan juga pemakaian ringkas Platform.select langsung di dalam JSX, seperti
-komponen SalamSistem pada contoh bab, untuk memilih bagian kalimat per platform.
+Also mention the compact use of Platform.select directly inside JSX, such as the
+SalamSistem component in the chapter example, to choose part of a sentence per
+platform.
 
-Pertanyaan pemandu: "Mengapa default perlu diisi?" (Jawaban: sebagai cadangan bila
-platform tidak dikenali, agar gaya tetap valid.)
+Guiding question: "Why does default need to be filled?" (Answer: as a fallback when the
+platform is not recognized, so the style stays valid.)
 
-Miskonsepsi: menulis elevation di iOS atau shadowColor di Android lalu menyimpulkan
-gaya tidak bekerja.
+Misconception: writing elevation on iOS or shadowColor on Android and then concluding
+that the style does not work.
 -->
 
 ---
 
-## Studi Kasus: Daftar Lambat Saat Digulir
+## Case Study: A List That Lags While Scrolling
 
-**Kasus fiktif dengan pola nyata.** Sistem Informasi Akademik sebuah universitas.
+![w:1120](assets/diagrams/bab-05-dasar-react-native-21.svg)
 
-- Bagian Akademik menampilkan ratusan hingga ribuan baris per dosen wali
-- Tabel web menyusut tak terbaca di ponsel, dan gulirannya tersendat
-- Keputusan 1: `FlatList` agar hanya baris yang terlihat yang dirender
-- Keputusan 2: layout kartu dengan `useWindowDimensions`, satu sampai dua kolom
-- Keputusan 3: `Platform.select` dan safe area untuk iOS maupun Android
+**A fictional case with a real pattern.** The Information System of a university.
 
-> Praktikum bab ini adalah miniatur kasus tersebut — dan tumbuh menjadi Project Akhir.
+- A web table shrinks to unreadable on a phone, and its scrolling stutters
+- Decision 2: a card layout with `useWindowDimensions`, one to two columns
+- Decision 3: `Platform.select` and the safe area for both iOS and Android
+
+> The practicum in this chapter is a miniature of that case — and it grows into the Final Project.
 
 <!--
-Bacakan sebagai cerita, bukan daftar: dosen wali mengeluh, rektorat memutuskan
-membangun versi mobile, tim menghadapi tiga keputusan.
+Trimmed to the picture (the diagram says this):
+- The Academic Office displays hundreds to thousands of rows per academic advisor
+- Decision 1: `FlatList` so that only the visible rows are rendered
 
-Tekankan bahwa ketiga keputusan itu persis tiga pokok bab: komponen inti, tata letak,
-dan perbedaan platform; bab ini bukan kumpulan komponen tanpa kaitan.
+Read it as a story, not a list: academic advisors complain, the rectorate decides to
+build a mobile version, the team faces three decisions.
 
-Pertanyaan pemandu: "Alternatif (b) pada soal analisis bab adalah ScrollView berisi
-kartu dan FlatList. Apa risiko utamanya?" (Jawaban: virtualisasi rusak karena
-penggulir bersarang, dan performa kembali buruk.)
+Stress that those three decisions are exactly the three subjects of the chapter: core
+components, layout, and platform differences; this chapter is not a collection of
+unrelated components.
 
-Kasus ini fiktif dengan pola nyata, sampaikan itu secara eksplisit agar mahasiswa
-tidak mencarinya sebagai berita.
+Guiding question: "Alternative (b) in the chapter's analysis question is a ScrollView
+holding cards and a FlatList. What is its main risk?" (Answer: virtualization breaks
+because of nested scrollers, and performance is bad again.)
+
+This case is fictional with a real pattern, state that explicitly so students do not
+look for it as news.
 -->
 
 ---
 
-## Praktikum: Layout Profil Mahasiswa
+## Diagram: Case Study: A List That Lags While Scrolling
 
-![w:720](assets/diagrams/bab-05-dasar-react-native-04.svg)
-
-> Data mengalir ke bawah lewat props, sentuhan mengalir ke atas lewat `padaPilih` (Bab 9).
-
-<!--
-Rangkum arsitektur praktikum: data terpisah di data/mahasiswa.js, komponen kecil
-seperti AvatarPlaceholder dan BarisInfo, lalu App sebagai perakit yang memegang state.
-
-Tekankan satu arah alur data: App menyimpan terpilih, mengirimnya sebagai props, dan
-menerima pilihan kembali lewat callback padaPilih.
-
-Pertanyaan pemandu: "Komponen mana yang memiliki state pada aplikasi ini?" (Jawaban:
-hanya App, dengan satu state terpilih berisi mahasiswa pertama, Budi Santoso.)
-
-Miskonsepsi: menaruh state di setiap BarisMahasiswa sehingga kartu di atas tidak
-mungkin ikut berubah.
--->
+![w:1120](assets/diagrams/bab-05-dasar-react-native-14.svg)
 
 ---
 
-<!-- _class: center -->
+## Practicum: Student Profile Layout
 
-## Uji Pemahaman
+![w:1120](assets/diagrams/bab-05-dasar-react-native-04.svg)
 
-- Mengapa teks tidak boleh ditulis langsung di dalam `View`?
-- Komponen apa yang tepat untuk daftar 1.000 mahasiswa, dan mengapa?
-- Properti `FlatList` apa yang menentukan identitas unik tiap baris?
-- Di Android, gaya bayangan memakai properti apa?
-- Apa arah default `flexDirection` di React Native?
+> Data flows down through props, touches flow up through `padaPilih` (Chapter 9).
 
 <!--
-Kuis lisan 5 menit: tampilkan pertanyaan, minta kelas menjawab serentak atau angkat
-tangan, baru lanjut ke slide jawaban. Jangan membocorkan jawaban di slide ini.
+Summarize the practicum architecture: data separated in data/mahasiswa.js, small
+components such as AvatarPlaceholder and BarisInfo, then App as the assembler that holds
+the state.
 
-Bila jawaban beragam pada pertanyaan keempat, ulangi pembeda iOS dan Android sebelum
-menutup pertemuan.
+Stress the single direction of the data flow: App stores `terpilih`, sends it as props,
+and receives the choice back through the `padaPilih` callback.
 
-Catat pertanyaan yang paling banyak salah; itu bahan pengulangan singkat pada
-pertemuan berikutnya.
+Guiding question: "Which component holds the state in this app?" (Answer: only App,
+with one terpilih state containing the first student, Budi Santoso.)
+
+Misconception: putting state in every BarisMahasiswa so that the card above can never
+change.
 -->
 
 ---
 
 <!-- _class: center -->
 
-## Jawaban
+## Comprehension Check
 
-- Karena `View` hanya menerima komponen sebagai anak, bukan teks
-- `FlatList`, karena virtualisasi hanya merender item yang terlihat
-- `keyExtractor`, diisi nilai unik dan stabil seperti `item.id`
-- `elevation`; di iOS memakai `shadowColor` beserta `shadowOpacity`, `shadowRadius`, `shadowOffset`
-- `column`, berbeda dari web yang default-nya `row`
-
-<!--
-Ulangi pembeda yang paling sering tertukar: bayangan iOS memakai empat properti
-shadow, Android memakai elevation.
-
-Jika jawaban ketiga banyak yang keliru, tekankan bahwa keyExtractor adalah kewajiban,
-bukan pelengkap, dan indeks array bukan identitas yang stabil.
-
-Tutup kuis dengan satu kalimat penguat: kelima jawaban ini adalah pola yang akan
-dipakai kembali di Bab 6 sampai Bab 8.
--->
-
----
-
-## Rangkuman (1/2)
-
-1. React Native merender komponen native, bukan DOM, dan tanpa CSS serta API browser
-2. `View` wadah universal; `Text` satu-satunya komponen pembawa teks
-3. `Pressable` komponen sentuh utama; `TextInput` memakai controlled component
-4. `Image` jarak jauh wajib berdimensi eksplisit, dan placeholder inisial jadi solusinya
-5. `ScrollView` merender semua anak, `FlatList` memvirtualisasi daftar panjang
+- Why may text not be written directly inside a `View`?
+- Which component is right for a list of 1,000 students, and why?
+- Which `FlatList` property determines the unique identity of each row?
+- On Android, which property does a shadow style use?
+- What is the default `flexDirection` in React Native?
 
 <!--
-Jangan dibacakan. Minta mahasiswa memilih satu nomor dan menjelaskannya dengan kalimat
-sendiri, lalu lengkapi dari catatan penyaji bila kurang.
+A five-minute oral quiz: show the questions, ask the class to answer together or raise a
+hand, then move to the answers slide. Do not leak the answers on this slide.
 
-Tekankan nomor 1 sebagai kalimat kunci bab: seluruh perbedaan lain mengalir dari
-kenyataan bahwa React Native tidak berjalan di dalam browser.
--->
+If answers vary on the fourth question, repeat the iOS and Android distinction before
+closing the meeting.
 
----
-
-## Rangkuman (2/2)
-
-1. Satu halaman, satu penggulir utama; penggulir bersarang merusak virtualisasi
-2. `SafeAreaView` bawaan hanya untuk iOS, pustaka safe area untuk keduanya
-3. `StyleSheet`, array style, dan style bersyarat adalah pola gaya sepanjang buku
-4. Flexbox default `column`; `useWindowDimensions` membuat layout responsif
-5. Perbedaan platform ditangani `Platform.OS`, `Platform.select`, atau ekstensi file
-
-<!--
-Ulangi penandaan version-sensitive pada nomor 2: status SafeAreaView bawaan dan
-kebijakan edge-to-edge Android dapat berubah antarrilis, sehingga dokumentasi resmi
-selalu menjadi rujukan terakhir.
-
-Pertanyaan penutup cepat: "Mana dari lima poin ini yang paling mungkin membuat
-aplikasi Anda tersendat?" (Jawaban yang diharapkan: penggulir bersarang atau daftar
-panjang yang dirender seluruhnya.)
-
-Sampaikan bahwa rangkuman ini menjadi daftar periksa saat mengerjakan tantangan bab.
+Note the questions most often answered wrongly; they are the material for a short
+review at the next meeting.
 -->
 
 ---
 
 <!-- _class: center -->
 
-## Diskusi Kelas dan Latihan
+## Answers
 
-- Konsep React mana yang tetap sama, dan mana yang berubah wujud? Mengapa?
-- Bagaimana Anda menjelaskan kepada rekan tim alasan memilih `FlatList`?
-- Skenario: `ScrollView` berisi kartu statistik dan `FlatList` di bawahnya
-
-**Pertanyaan:** alternatif mana yang Anda rekomendasikan untuk halaman 2.000 data dengan kartu ringkasan di atas, dan apa risikonya?
+- Because `View` only accepts components as children, not text
+- `FlatList`, because virtualization only renders the visible items
+- `keyExtractor`, filled with a unique and stable value such as `item.id`
+- `elevation`; on iOS it uses `shadowColor` along with `shadowOpacity`, `shadowRadius`, `shadowOffset`
+- `column`, unlike the web where the default is `row`
 
 <!--
-Diskusi kelas 5 menit: minta mahasiswa berpasangan, lalu tampung 2–3 jawaban.
+Repeat the distinction most often confused: the iOS shadow uses four shadow properties,
+Android uses elevation.
 
-Jawaban kuat menyebut pola kartu sebagai ListHeaderComponent, alasan virtualisasi, dan
-risiko masing-masing alternatif. Jawaban yang hanya menyebut nama komponen belum
-menjawab, minta alasannya.
+If many got the third answer wrong, stress that keyExtractor is an obligation, not an
+optional extra, and that an array index is not a stable identity.
 
-Ingatkan bahwa tantangan bab (daftar responsif dan mode ringkas kartu profil) dinilai
-pada praktikum berikutnya, dan rubriknya ada di Lampiran A.
+Close the quiz with one reinforcing sentence: these five answers are patterns that will
+be used again from Chapter 6 to Chapter 8.
 -->
 
 ---
 
-## Referensi
+## Summary (1/2)
 
-| Sumber | Tautan |
+1. React Native renders native components, not the DOM, and without CSS or browser APIs
+2. `View` is the universal container; `Text` is the only text-carrying component
+3. `Pressable` is the main touch component; `TextInput` uses a controlled component
+4. A remote `Image` must have explicit dimensions, and the initials placeholder is the answer
+5. `ScrollView` renders all children, `FlatList` virtualizes long lists
+
+<!--
+Do not read it out. Ask students to pick one number and explain it in their own words,
+then complete it from the presenter notes if it falls short.
+
+Stress number 1 as the chapter's key sentence: every other difference flows from the
+fact that React Native does not run inside a browser.
+-->
+
+---
+
+## Summary (2/2)
+
+1. One screen, one main scroller; nested scrollers break virtualization
+2. The built-in `SafeAreaView` is iOS only, the safe area library is for both
+3. `StyleSheet`, style arrays, and conditional styles are the styling patterns throughout the book
+4. Flexbox defaults to `column`; `useWindowDimensions` makes the layout responsive
+5. Platform differences are handled by `Platform.OS`, `Platform.select`, or file extensions
+
+<!--
+Repeat the version-sensitive marker on number 2: the status of the built-in
+SafeAreaView and the Android edge-to-edge policy can change between releases, so the
+official documentation is always the final reference.
+
+A quick closing question: "Which of these five points is most likely to make your app
+stutter?" (The expected answer: nested scrollers or a long list rendered entirely.)
+
+State that this summary becomes the checklist when working on the chapter challenge.
+-->
+
+---
+
+<!-- _class: center -->
+
+## Class Discussion and Exercises
+
+- Which React concepts stay the same, and which change their form? Why?
+- How would you explain to a teammate the reason for choosing `FlatList`?
+- Scenario: a `ScrollView` holding statistic cards and a `FlatList` below it
+
+**Question:** which alternative do you recommend for a page with 2,000 records and a summary card at the top, and what are the risks?
+
+<!--
+A five-minute class discussion: ask students to pair up, then collect 2–3 answers.
+
+A strong answer names the card-as-ListHeaderComponent pattern, the reason for
+virtualization, and the risk of each alternative. An answer that only names a component
+has not answered, ask for the reason.
+
+Remind them that the chapter challenge (a responsive list and a compact mode for the
+profile card) is graded in the next practicum, and its rubric is in Appendix A.
+-->
+
+---
+
+## References
+
+| Source | Link |
 |---|---|
 | React Native documentation (2026) | reactnative.dev |
 | Expo documentation (2026) | docs.expo.dev |
@@ -1002,15 +1089,15 @@ pada praktikum berikutnya, dan rubriknya ada di Lampiran A.
 <div class="grid2">
 <div>
 
-**Bacaan lanjutan**
+**Further reading**
 
-- Bab 4 — Dasar React
-- Bab 6 — Membangun antarmuka
+- Chapter 4 — React Basics
+- Chapter 6 — Building a mobile user interface
 
 </div>
 <div>
 
-**Versi teknologi buku ini**
+**Technology versions in this book**
 
 - Expo SDK 57 · React Native 0.86 · React 19.2 · Node.js LTS ≥ 22
 
@@ -1018,14 +1105,14 @@ pada praktikum berikutnya, dan rubriknya ada di Lampiran A.
 </div>
 
 <!--
-Rujukan lengkap ada di Lampiran D, dan istilah seperti virtualisasi, inset, serta
-controlled component ada di glosarium Lampiran C.
+The complete references are in Appendix D, and terms such as virtualization, inset, and
+controlled component are in the glossary in Appendix C.
 
-Sumber utama bab ini tetap dokumentasi resmi reactnative.dev dan docs.expo.dev,
-bukan blog atau video yang mungkin sudah usang.
+The main source for this chapter remains the official documentation at reactnative.dev
+and docs.expo.dev, not a blog or a video that may already be outdated.
 
-Ingatkan kembali penandaan version-sensitive: SafeAreaView bawaan dan kebijakan
-edge-to-edge Android perlu diverifikasi ulang terhadap dokumentasi rilis.
+Repeat the version-sensitive marker: the built-in SafeAreaView and the Android
+edge-to-edge policy need to be re-verified against the release documentation.
 -->
 
 ---
@@ -1033,20 +1120,20 @@ edge-to-edge Android perlu diverifikasi ulang terhadap dokumentasi rilis.
 <!-- _class: lead -->
 <!-- _paginate: skip -->
 
-# Siap Menuju Bab 6
+# Ready for Chapter 6
 
-**Tugas:** selesaikan praktikum layout Profil Mahasiswa dan tantangan daftar dua kolom responsif.
+**Assignment:** complete the Student Profile layout practicum and the responsive two-column list challenge.
 
-Pertemuan berikutnya: membangun antarmuka yang rapi dan konsisten.
+Next meeting: building a tidy and consistent interface.
 
 <!--
-Tutup dengan satu kalimat: "Hari ini Anda belajar alfabet visual React Native; mulai
-Bab 6 kita belajar menatanya dengan indah dan konsisten."
+Close with one sentence: "Today you learned the visual alphabet of React Native; from
+Chapter 6 we learn to arrange it beautifully and consistently."
 
-Sebutkan tenggat praktikum secara eksplisit: kapan dikumpulkan, format apa, dan
-dinilai dari aspek apa (Lampiran A — rubrik praktikum: pemahaman konsep 15%,
-implementasi 25%, kualitas kode 15%, UI/UX 15%, debugging 10%, dokumentasi 20%).
+State the practicum deadline explicitly: when it is collected, in what format, and which
+aspects it is graded on (Appendix A — practicum rubric: conceptual understanding 15%,
+implementation 25%, code quality 15%, UI/UX 15%, debugging 10%, documentation 20%).
 
-Ingatkan mahasiswa agar menyimpan project profil-mahasiswa, karena dilanjutkan pada
-bab-bab berikutnya.
+Remind students to keep the profil-mahasiswa project, because it continues in the
+following chapters.
 -->

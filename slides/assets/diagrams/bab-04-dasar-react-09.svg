@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1160 460" width="1160" height="460" role="img"><defs><marker id="a-slate" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#94a3b8"/></marker><marker id="a-acc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#1d4ed8"/></marker><marker id="a-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b91c1c"/></marker><marker id="a-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#15803d"/></marker><marker id="a-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#111827"/></marker></defs><style>
+.t{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif;fill:#111827}
+.m{font-family:ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,'Liberation Mono',monospace}
+.mu{fill:#6b7280}
+.ac{fill:#1d4ed8}
+.rd{fill:#b91c1c}
+.gn{fill:#15803d}
+.am{fill:#b45309}
+.wh{fill:#ffffff}
+.b6{font-weight:600}
+.b7{font-weight:700}
+.mid{text-anchor:middle}
+.end{text-anchor:end}
+.s12{font-size:12px}.s13{font-size:13px}.s14{font-size:14px}.s15{font-size:15px}.s16{font-size:16px}.s17{font-size:17px}.s18{font-size:18px}.s19{font-size:19px}.s20{font-size:20px}.s21{font-size:21px}.s22{font-size:22px}.s24{font-size:24px}.s26{font-size:26px}.s28{font-size:28px}.s30{font-size:30px}.s32{font-size:32px}.s34{font-size:34px}.s36{font-size:36px}.s38{font-size:38px}
+</style><rect x="0" y="0" width="1160" height="112" rx="10" fill="#f8fafc" stroke="none" stroke-width="1.5"/>
+<text class="t m s17 mu" x="150" y="58">const [</text>
+<rect x="225.6" y="34" width="153" height="31" rx="7" fill="#fffbeb" stroke="#fde68a" stroke-width="1"/><text class="m s17 am" x="235.6" y="55.6">kategoriProdi</text>
+<line x1="302.1" y1="68" x2="302.1" y2="82" stroke="#e5e7eb" stroke-width="1" stroke-linecap="round"/>
+<text class="t s13 b6 mu mid" x="302.1" y="96">state value</text>
+<text class="t m s17 mu" x="378.6" y="58">, </text>
+<rect x="400.2" y="34" width="184" height="31" rx="7" fill="#eef2ff" stroke="#c7d2fe" stroke-width="1"/><text class="m s17 ac" x="410.2" y="55.6">setKategoriProdi</text>
+<line x1="492.2" y1="68" x2="492.2" y2="82" stroke="#1d4ed8" stroke-width="1" stroke-linecap="round"/>
+<text class="t s13 b6 mu mid" x="492.2" y="96">setter · updater</text>
+<text class="t m s17 mu" x="584.2" y="58">] = useState(</text>
+<rect x="724.6" y="34" width="71" height="31" rx="7" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="1"/><text class="m s17 gn" x="734.6" y="55.6">'All'</text>
+<line x1="760.1" y1="68" x2="760.1" y2="82" stroke="#15803d" stroke-width="1" stroke-linecap="round"/>
+<text class="t s13 b6 mu mid" x="760.1" y="96">initial value</text>
+<text class="t m s17 mu" x="795.6" y="58">)</text>
+<rect x="0" y="160" width="250" height="104" rx="12" fill="#ffffff" stroke="none" stroke-width="1.5"/><rect x="0" y="160" width="250" height="46" rx="12" fill="#fffbeb" stroke="none" stroke-width="1.5"/><rect x="0" y="194" width="250" height="12" rx="0" fill="#fffbeb" stroke="none" stroke-width="1.5"/><text class="t s17 b7 am" x="18" y="189">state</text><line x1="0" y1="206" x2="250" y2="206" stroke="#fde68a" stroke-width="1" stroke-linecap="round"/><rect x="0" y="160" width="250" height="104" rx="12" fill="none" stroke="#fde68a" stroke-width="1.5"/>
+<text class="t s15 b6" x="16" y="210">kategoriProdi = 'All'</text>
+<text class="t s14 mu" x="16" y="234">kept by React per component</text>
+<rect x="303" y="160" width="250" height="104" rx="12" fill="#ffffff" stroke="none" stroke-width="1.5"/><rect x="303" y="160" width="250" height="46" rx="12" fill="#eef2ff" stroke="none" stroke-width="1.5"/><rect x="303" y="194" width="250" height="12" rx="0" fill="#eef2ff" stroke="none" stroke-width="1.5"/><text class="t s17 b7 ac" x="321" y="189">render</text><line x1="303" y1="206" x2="553" y2="206" stroke="#c7d2fe" stroke-width="1" stroke-linecap="round"/><rect x="303" y="160" width="250" height="104" rx="12" fill="none" stroke="#c7d2fe" stroke-width="1.5"/>
+<text class="t s15 b6" x="319" y="210">the component runs again</text>
+<text class="t s14 mu" x="319" y="234">new JSX is computed</text>
+<rect x="606" y="160" width="250" height="104" rx="12" fill="#ffffff" stroke="none" stroke-width="1.5"/><rect x="606" y="160" width="250" height="46" rx="12" fill="#f8fafc" stroke="none" stroke-width="1.5"/><rect x="606" y="194" width="250" height="12" rx="0" fill="#f8fafc" stroke="none" stroke-width="1.5"/><text class="t s17 b7 " x="624" y="189">screen</text><line x1="606" y1="206" x2="856" y2="206" stroke="#e5e7eb" stroke-width="1" stroke-linecap="round"/><rect x="606" y="160" width="250" height="104" rx="12" fill="none" stroke="#e5e7eb" stroke-width="1.5"/>
+<text class="t s15 b6" x="622" y="210">student list</text>
+<text class="t s14 mu" x="622" y="234">follows state</text>
+<rect x="909" y="160" width="250" height="104" rx="12" fill="#ffffff" stroke="none" stroke-width="1.5"/><rect x="909" y="160" width="250" height="46" rx="12" fill="#f8fafc" stroke="none" stroke-width="1.5"/><rect x="909" y="194" width="250" height="12" rx="0" fill="#f8fafc" stroke="none" stroke-width="1.5"/><text class="t s17 b7 " x="927" y="189">user</text><line x1="909" y1="206" x2="1159" y2="206" stroke="#e5e7eb" stroke-width="1" stroke-linecap="round"/><rect x="909" y="160" width="250" height="104" rx="12" fill="none" stroke="#e5e7eb" stroke-width="1.5"/>
+<text class="t s15 b6" x="925" y="210">clicks the 'TI' button</text>
+<text class="t s14 mu" x="925" y="234">calls the setter</text>
+<line x1="252" y1="212" x2="297" y2="212" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" marker-end="url(#a-slate)"/>
+<line x1="555" y1="212" x2="600" y2="212" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" marker-end="url(#a-slate)"/>
+<line x1="858" y1="212" x2="903" y2="212" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" marker-end="url(#a-slate)"/>
+<path d="M 1034 264 L 1034 340 L 126 340 L 126 268" fill="none" stroke="#1d4ed8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#a-acc)"/>
+<text class="t m s15 ac b6" x="420" y="330">setKategoriProdi('TI')</text>
+<rect x="0" y="380" width="1160" height="56" rx="10" fill="#eef2ff" stroke="none" stroke-width="1.5"/>
+<rect x="0" y="380" width="6" height="56" rx="0" fill="#1d4ed8" stroke="none" stroke-width="1.5"/>
+<text class="t s18 b6" x="24" y="414">Calling the setter = asking React to re-render. No manual screen manipulation.</text></svg>

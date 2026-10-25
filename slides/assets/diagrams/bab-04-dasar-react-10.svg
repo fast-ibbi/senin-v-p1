@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1160 440" width="1160" height="440" role="img"><defs><marker id="a-slate" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#94a3b8"/></marker><marker id="a-acc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#1d4ed8"/></marker><marker id="a-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b91c1c"/></marker><marker id="a-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#15803d"/></marker><marker id="a-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#111827"/></marker></defs><style>
+.t{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif;fill:#111827}
+.m{font-family:ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,'Liberation Mono',monospace}
+.mu{fill:#6b7280}
+.ac{fill:#1d4ed8}
+.rd{fill:#b91c1c}
+.gn{fill:#15803d}
+.am{fill:#b45309}
+.wh{fill:#ffffff}
+.b6{font-weight:600}
+.b7{font-weight:700}
+.mid{text-anchor:middle}
+.end{text-anchor:end}
+.s12{font-size:12px}.s13{font-size:13px}.s14{font-size:14px}.s15{font-size:15px}.s16{font-size:16px}.s17{font-size:17px}.s18{font-size:18px}.s19{font-size:19px}.s20{font-size:20px}.s21{font-size:21px}.s22{font-size:22px}.s24{font-size:24px}.s26{font-size:26px}.s28{font-size:28px}.s30{font-size:30px}.s32{font-size:32px}.s34{font-size:34px}.s36{font-size:36px}.s38{font-size:38px}
+</style><rect x="0" y="0" width="560" height="330" rx="12" fill="#ffffff" stroke="none" stroke-width="1.5"/><rect x="0" y="0" width="560" height="46" rx="12" fill="#fef2f2" stroke="none" stroke-width="1.5"/><rect x="0" y="34" width="560" height="12" rx="0" fill="#fef2f2" stroke="none" stroke-width="1.5"/><text class="t s17 b7 rd" x="18" y="29">MUTATION — never</text><line x1="0" y1="46" x2="560" y2="46" stroke="#fecaca" stroke-width="1" stroke-linecap="round"/><rect x="0" y="0" width="560" height="330" rx="12" fill="none" stroke="#fecaca" stroke-width="1.5"/>
+<text class="t s15 mu" x="18" y="74">The same array, contents changed.</text>
+<text class="t s13 b6 mu ls" x="18" y="104">data → #a1b2</text>
+<rect x="18" y="114" width="208" height="76" rx="8" fill="#fff" stroke="#fecaca" stroke-width="1.5"/><rect x="28" y="126" width="188" height="22" rx="5" fill="#f8fafc" stroke="#e5e7eb" stroke-width="1"/><text class="m s13 mu" x="36" y="141">'Budi'</text><rect x="28" y="154" width="188" height="22" rx="5" fill="#f8fafc" stroke="#e5e7eb" stroke-width="1"/><text class="m s13 mu" x="36" y="169">'Siti'</text>
+<line x1="230" y1="150" x2="292" y2="150" stroke="#b91c1c" stroke-width="2" stroke-linecap="round" marker-end="url(#a-red)"/>
+<text class="t m s13 rd b6" x="238" y="138">push</text>
+<text class="t s13 b6 rd ls" x="318" y="104">still #a1b2</text>
+<rect x="318" y="114" width="208" height="104" rx="8" fill="#fff" stroke="#fecaca" stroke-width="1.5"/><rect x="328" y="126" width="188" height="22" rx="5" fill="#f8fafc" stroke="#e5e7eb" stroke-width="1"/><text class="m s13 mu" x="336" y="141">'Budi'</text><rect x="328" y="154" width="188" height="22" rx="5" fill="#f8fafc" stroke="#e5e7eb" stroke-width="1"/><text class="m s13 mu" x="336" y="169">'Siti'</text><rect x="328" y="182" width="188" height="22" rx="5" fill="#fef2f2" stroke="#fecaca" stroke-width="1"/><text class="m s13 rd b6" x="336" y="197">'Andi' ← new</text>
+<rect x="18" y="216" width="222" height="25" rx="7" fill="#fef2f2" stroke="#fecaca" stroke-width="1"/><text class="m s14 rd" x="28" y="233.5">data.push(mahasiswaBaru)</text>
+<text class="t s15 b6" x="18" y="268">Array reference unchanged →</text>
+<text class="t s15 b6 rd" x="18" y="290">React does not see state change.</text>
+<text class="t s14 mu" x="18" y="314">The screen is not updated.</text>
+<rect x="600" y="0" width="560" height="330" rx="12" fill="#ffffff" stroke="none" stroke-width="1.5"/><rect x="600" y="0" width="560" height="46" rx="12" fill="#f0fdf4" stroke="none" stroke-width="1.5"/><rect x="600" y="34" width="560" height="12" rx="0" fill="#f0fdf4" stroke="none" stroke-width="1.5"/><text class="t s17 b7 gn" x="618" y="29">NEW VALUE — do this</text><line x1="600" y1="46" x2="1160" y2="46" stroke="#bbf7d0" stroke-width="1" stroke-linecap="round"/><rect x="600" y="0" width="560" height="330" rx="12" fill="none" stroke="#bbf7d0" stroke-width="1.5"/>
+<text class="t s15 mu" x="618" y="74">A new array is made; the old one stays.</text>
+<text class="t s13 b6 mu ls" x="618" y="104">data → #a1b2</text>
+<rect x="618" y="114" width="208" height="76" rx="8" fill="#fff" stroke="#bbf7d0" stroke-width="1.5"/><rect x="628" y="126" width="188" height="22" rx="5" fill="#f8fafc" stroke="#e5e7eb" stroke-width="1"/><text class="m s13 mu" x="636" y="141">'Budi'</text><rect x="628" y="154" width="188" height="22" rx="5" fill="#f8fafc" stroke="#e5e7eb" stroke-width="1"/><text class="m s13 mu" x="636" y="169">'Siti'</text>
+<line x1="830" y1="150" x2="892" y2="150" stroke="#15803d" stroke-width="2" stroke-linecap="round" marker-end="url(#a-green)"/>
+<text class="t s13 b6 gn ls" x="918" y="104">new → #c3d4</text>
+<rect x="918" y="114" width="208" height="104" rx="8" fill="#fff" stroke="#bbf7d0" stroke-width="1.5"/><rect x="928" y="126" width="188" height="22" rx="5" fill="#f8fafc" stroke="#e5e7eb" stroke-width="1"/><text class="m s13 mu" x="936" y="141">'Budi'</text><rect x="928" y="154" width="188" height="22" rx="5" fill="#f8fafc" stroke="#e5e7eb" stroke-width="1"/><text class="m s13 mu" x="936" y="169">'Siti'</text><rect x="928" y="182" width="188" height="22" rx="5" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="1"/><text class="m s13 gn b6" x="936" y="197">'Andi' ← new</text>
+<rect x="618" y="216" width="298" height="25" rx="7" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="1"/><text class="m s14 gn" x="628" y="233.5">setData([...data, mahasiswaBaru])</text>
+<text class="t s15 b6" x="618" y="268">New array reference →</text>
+<text class="t s15 b6 gn" x="618" y="290">React detects the change.</text>
+<text class="t s14 mu" x="618" y="314">The screen re-renders.</text>
+<rect x="0" y="352" width="1160" height="56" rx="10" fill="#eef2ff" stroke="none" stroke-width="1.5"/>
+<rect x="0" y="352" width="6" height="56" rx="0" fill="#1d4ed8" stroke="none" stroke-width="1.5"/>
+<text class="t s18 b6" x="24" y="386">What is forbidden is mutating state — not using operations that return a new value.</text></svg>
