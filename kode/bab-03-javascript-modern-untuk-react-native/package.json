@@ -1,0 +1,23 @@
+{
+  "name": "siakad-mobile",
+  "version": "1.0.0",
+  "main": "index.js",
+  "private": true,
+  "type": "module",
+  "description": "SIAKAD Mobile — bab 3: JavaScript modern untuk React Native",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web",
+    "latihan:predikat": "node latihan-predikat.js",
+    "latihan:cari": "node latihan-cari.js",
+    "latihan:async": "node latihan-async.js"
+  },
+  "dependencies": {
+    "expo": "~57.0.31",
+    "expo-status-bar": "~57.0.1",
+    "react": "19.2.3",
+    "react-native": "0.86.3"
+  }
+}

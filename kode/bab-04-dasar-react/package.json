@@ -1,0 +1,22 @@
+{
+  "name": "siakad-mobile",
+  "version": "1.0.0",
+  "main": "index.js",
+  "private": true,
+  "type": "module",
+  "description": "SIAKAD Mobile — bab 4: dasar React (komponen, props, state, hooks)",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web"
+  },
+  "dependencies": {
+    "expo": "~57.0.31",
+    "expo-status-bar": "~57.0.1",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "react-native": "0.86.3",
+    "react-native-web": "^0.21.2"
+  }
+}

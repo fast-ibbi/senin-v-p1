@@ -1,0 +1,56 @@
+{
+  "expo": {
+    "name": "siakad-mobile",
+    "slug": "siakad-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0f172a"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "ac.id.ibbi.siakad",
+      "buildNumber": "1"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "package": "ac.id.ibbi.siakad",
+      "versionCode": 1
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "scheme": "siakad-mobile",
+    "plugins": [
+      "expo-router",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Aplikasi memakai galeri untuk memilih foto profil.",
+          "cameraPermission": "Aplikasi memakai kamera untuk memotret foto profil."
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Aplikasi memakai lokasi saat presensi di area kampus."
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "00000000-0000-0000-0000-000000000000"
+      },
+      "catatan": "Ganti projectId dengan hasil `eas init`. Application ID ac.id.ibbi.siakad bersifat permanen setelah rilis pertama."
+    }
+  }
+}

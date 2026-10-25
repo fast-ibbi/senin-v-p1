@@ -1,0 +1,334 @@
+{
+  "mahasiswa": [
+    {
+      "id": "mhs-1",
+      "nim": "20230001",
+      "nama": "Nadia Putri Ramadhani",
+      "email": "nadia.putri@student.ibbi.ac.id",
+      "prodi": "Sistem Informasi",
+      "angkatan": 2023,
+      "semester": 5,
+      "kelas": "SI-5A",
+      "password": "rahasia123",
+      "telepon": "0812-3456-7801",
+      "alamat": "Jl. Sutomo No. 12, Medan",
+      "foto": null
+    },
+    {
+      "id": "mhs-2",
+      "nim": "20230002",
+      "nama": "Bagas Prasetyo",
+      "email": "bagas.prasetyo@student.ibbi.ac.id",
+      "prodi": "Sistem Informasi",
+      "angkatan": 2023,
+      "semester": 5,
+      "kelas": "SI-5A",
+      "password": "rahasia123",
+      "telepon": "0812-3456-7802",
+      "alamat": "Jl. Gatot Subroto No. 45, Medan",
+      "foto": null
+    },
+    {
+      "id": "mhs-3",
+      "nim": "20240003",
+      "nama": "Salsabila Aulia",
+      "email": "salsabila.aulia@student.ibbi.ac.id",
+      "prodi": "Teknik Informatika",
+      "angkatan": 2024,
+      "semester": 3,
+      "kelas": "TI-3B",
+      "password": "rahasia123",
+      "telepon": "0812-3456-7803",
+      "alamat": "Jl. Diponegoro No. 8, Medan",
+      "foto": null
+    }
+  ],
+  "matakuliah": [
+    {
+      "kode": "SI501",
+      "nama": "Pemrograman Mobile",
+      "sks": 3,
+      "semester": 5,
+      "dosen": "Rizky Ananda, M.Kom.",
+      "hari": "Senin",
+      "jam": "08.00-10.30",
+      "ruang": "Lab Mobile 3",
+      "kuota": 40,
+      "terisi": 34,
+      "deskripsi": "Membangun aplikasi mobile lintas platform dengan React Native dan Expo, dari komponen dasar sampai build dan distribusi."
+    },
+    {
+      "kode": "SI502",
+      "nama": "Sistem Informasi Manajemen",
+      "sks": 3,
+      "semester": 5,
+      "dosen": "Dr. Hendra Wijaya, M.M.",
+      "hari": "Senin",
+      "jam": "13.00-15.30",
+      "ruang": "Ruang 2.4",
+      "kuota": 45,
+      "terisi": 45,
+      "deskripsi": "Perancangan dan pengelolaan sistem informasi untuk pengambilan keputusan manajerial."
+    },
+    {
+      "kode": "SI503",
+      "nama": "Basis Data Lanjut",
+      "sks": 3,
+      "semester": 5,
+      "dosen": "Fitri Handayani, M.Kom.",
+      "hari": "Selasa",
+      "jam": "08.00-10.30",
+      "ruang": "Lab Basis Data",
+      "kuota": 40,
+      "terisi": 31,
+      "deskripsi": "Optimasi query, indeks, transaksi, dan perancangan basis data untuk aplikasi berskala."
+    },
+    {
+      "kode": "SI504",
+      "nama": "Analisis Proses Bisnis",
+      "sks": 3,
+      "semester": 5,
+      "dosen": "Maya Kartika, M.M.",
+      "hari": "Selasa",
+      "jam": "13.00-15.30",
+      "ruang": "Ruang 3.1",
+      "kuota": 45,
+      "terisi": 29,
+      "deskripsi": "Pemodelan proses bisnis dengan BPMN dan analisis perbaikan proses."
+    },
+    {
+      "kode": "SI505",
+      "nama": "Keamanan Informasi",
+      "sks": 3,
+      "semester": 5,
+      "dosen": "Ir. Doni Saputra, M.T.",
+      "hari": "Rabu",
+      "jam": "08.00-10.30",
+      "ruang": "Ruang 2.2",
+      "kuota": 40,
+      "terisi": 38,
+      "deskripsi": "Kontrol keamanan, manajemen risiko, dan prinsip least privilege pada sistem informasi."
+    },
+    {
+      "kode": "SI506",
+      "nama": "Manajemen Proyek TI",
+      "sks": 2,
+      "semester": 5,
+      "dosen": "Ade Rizki, M.M.",
+      "hari": "Rabu",
+      "jam": "13.00-14.40",
+      "ruang": "Ruang 1.3",
+      "kuota": 50,
+      "terisi": 42,
+      "deskripsi": "Perencanaan, penjadwalan, dan pengendalian proyek teknologi informasi."
+    },
+    {
+      "kode": "SI507",
+      "nama": "Data Mining",
+      "sks": 3,
+      "semester": 5,
+      "dosen": "Fitri Handayani, M.Kom.",
+      "hari": "Kamis",
+      "jam": "08.00-10.30",
+      "ruang": "Lab Data",
+      "kuota": 35,
+      "terisi": 35,
+      "deskripsi": "Praproses data, klasifikasi, klasterisasi, dan evaluasi model."
+    },
+    {
+      "kode": "SI508",
+      "nama": "Technopreneurship",
+      "sks": 2,
+      "semester": 5,
+      "dosen": "Maya Kartika, M.M.",
+      "hari": "Kamis",
+      "jam": "13.00-14.40",
+      "ruang": "Auditorium",
+      "kuota": 60,
+      "terisi": 51,
+      "deskripsi": "Pengembangan ide usaha berbasis teknologi dan penyusunan model bisnis."
+    },
+    {
+      "kode": "SI301",
+      "nama": "Struktur Data",
+      "sks": 3,
+      "semester": 3,
+      "dosen": "Rizky Ananda, M.Kom.",
+      "hari": "Senin",
+      "jam": "08.00-10.30",
+      "ruang": "Lab Programming 2",
+      "kuota": 40,
+      "terisi": 40,
+      "deskripsi": "Array, senarai, tumpukan, antrean, dan pohon beserta analisis kompleksitasnya."
+    },
+    {
+      "kode": "SI302",
+      "nama": "Pemrograman Web",
+      "sks": 3,
+      "semester": 3,
+      "dosen": "Ir. Doni Saputra, M.T.",
+      "hari": "Selasa",
+      "jam": "10.30-13.00",
+      "ruang": "Lab Web",
+      "kuota": 40,
+      "terisi": 37,
+      "deskripsi": "HTML, CSS, JavaScript, dan arsitektur aplikasi web berbasis klien-server."
+    },
+    {
+      "kode": "SI303",
+      "nama": "Jaringan Komputer",
+      "sks": 3,
+      "semester": 3,
+      "dosen": "Ade Rizki, M.M.",
+      "hari": "Rabu",
+      "jam": "10.30-13.00",
+      "ruang": "Lab Jaringan",
+      "kuota": 35,
+      "terisi": 33,
+      "deskripsi": "Model OSI, TCP/IP, pengalamatan, dan dasar keamanan jaringan."
+    },
+    {
+      "kode": "SI401",
+      "nama": "Basis Data",
+      "sks": 3,
+      "semester": 4,
+      "dosen": "Fitri Handayani, M.Kom.",
+      "hari": "Kamis",
+      "jam": "10.30-13.00",
+      "ruang": "Lab Basis Data",
+      "kuota": 40,
+      "terisi": 39,
+      "deskripsi": "Model relasional, SQL, normalisasi, dan perancangan skema."
+    }
+  ],
+  "krs": [
+    {
+      "id": "krs-1",
+      "nim": "20230001",
+      "kode": "SI501",
+      "kelas": "A",
+      "status": "terdaftar",
+      "createdAt": "2026-02-02T02:15:00.000Z"
+    },
+    {
+      "id": "krs-2",
+      "nim": "20230001",
+      "kode": "SI503",
+      "kelas": "A",
+      "status": "terdaftar",
+      "createdAt": "2026-02-02T02:16:00.000Z"
+    },
+    {
+      "id": "krs-3",
+      "nim": "20230001",
+      "kode": "SI506",
+      "kelas": "B",
+      "status": "terdaftar",
+      "createdAt": "2026-02-02T02:17:00.000Z"
+    }
+  ],
+  "nilai": [
+    {
+      "id": "nilai-1",
+      "nim": "20230001",
+      "kode": "SI301",
+      "semester": 3,
+      "tahunAkademik": "2024/2025 Ganjil",
+      "sks": 3,
+      "nilaiAngka": 4.0,
+      "nilaiHuruf": "A"
+    },
+    {
+      "id": "nilai-2",
+      "nim": "20230001",
+      "kode": "SI302",
+      "semester": 3,
+      "tahunAkademik": "2024/2025 Ganjil",
+      "sks": 3,
+      "nilaiAngka": 3.7,
+      "nilaiHuruf": "A-"
+    },
+    {
+      "id": "nilai-3",
+      "nim": "20230001",
+      "kode": "SI303",
+      "semester": 3,
+      "tahunAkademik": "2024/2025 Ganjil",
+      "sks": 3,
+      "nilaiAngka": 3.3,
+      "nilaiHuruf": "B+"
+    },
+    {
+      "id": "nilai-4",
+      "nim": "20230001",
+      "kode": "SI304",
+      "semester": 3,
+      "tahunAkademik": "2024/2025 Ganjil",
+      "sks": 2,
+      "nilaiAngka": 4.0,
+      "nilaiHuruf": "A"
+    },
+    {
+      "id": "nilai-5",
+      "nim": "20230001",
+      "kode": "SI305",
+      "semester": 3,
+      "tahunAkademik": "2024/2025 Genap",
+      "sks": 3,
+      "nilaiAngka": 3.0,
+      "nilaiHuruf": "B"
+    },
+    {
+      "id": "nilai-6",
+      "nim": "20230001",
+      "kode": "SI306",
+      "semester": 3,
+      "tahunAkademik": "2024/2025 Genap",
+      "sks": 3,
+      "nilaiAngka": 4.0,
+      "nilaiHuruf": "A"
+    },
+    {
+      "id": "nilai-7",
+      "nim": "20230001",
+      "kode": "SI401",
+      "semester": 4,
+      "tahunAkademik": "2025/2026 Ganjil",
+      "sks": 3,
+      "nilaiAngka": 4.0,
+      "nilaiHuruf": "A"
+    },
+    {
+      "id": "nilai-8",
+      "nim": "20230001",
+      "kode": "SI402",
+      "semester": 4,
+      "tahunAkademik": "2025/2026 Ganjil",
+      "sks": 2,
+      "nilaiAngka": 3.7,
+      "nilaiHuruf": "A-"
+    }
+  ],
+  "presensi": [
+    {
+      "id": "presensi-1",
+      "nim": "20230001",
+      "kode": "SI501",
+      "tanggal": "2026-02-16",
+      "jam": "08:04",
+      "latitude": 3.5952,
+      "longitude": 98.6722,
+      "status": "hadir"
+    },
+    {
+      "id": "presensi-2",
+      "nim": "20230001",
+      "kode": "SI503",
+      "tanggal": "2026-02-17",
+      "jam": "08:11",
+      "latitude": 3.5952,
+      "longitude": 98.6722,
+      "status": "hadir"
+    }
+  ]
+}
