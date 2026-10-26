@@ -157,13 +157,30 @@ kesamaan slide ke-N.
 | 10 | Slide tanpa catatan penyaji | 0 |
 | 11 | Kunci frontmatter berubah | tidak ada |
 | 12 | CRLF / BOM / mojibake | 0 |
+| 13 | Isi menabrak footer (`check-slide-overflow.mjs`) | 0 slide ditandai |
+| 14 | `<div class="grid2">` | 0 |
 
 ```bash
 node scripts/verify-slides-id.mjs            # semua bab
 node scripts/verify-slides-id.mjs 01 --verbose
 ```
 
-Skrip hanya membuktikan **bentuk**. Yang tidak bisa diperiksa skrip:
+Skrip hanya membuktikan **bentuk dan bahasa**, bukan tata letak. Untuk tata letak ada alat
+kedua:
+
+```bash
+# render dulu, lalu pindai pita footer
+npx marp slides/bab-05-*.md --images png --allow-local-files -o /tmp/ovf05/s.png
+node scripts/check-slide-overflow.mjs /tmp/ovf05
+```
+
+`check-slide-overflow.mjs` (macOS, memakai `sips`) memindai baris 670–702 dari 720: bila ada
+piksel bukan-latar di luar area teks footer dan nomor halaman, slide itu meluber. Ambang
+`MIN_RUN = 40` hasil kalibrasi — ekor teks footer paling panjang ~18px, overflow nyata
+≥55px. **Ini yang menangkap 19 slide yang lolos dari pemeriksaan mata** (§8.6). Keluaran
+harus `0 ditandai` sebelum bab dianggap selesai.
+
+Yang tidak bisa diperiksa skrip mana pun:
 
 - **kata serapan yang wajar.** Pemeriksaan bocor-EN memakai daftar kata fungsi Inggris
   (`the`, `and`, `you`, …). Kata seperti `mobile`, `web`, `data`, `sensor`, `codebase`
@@ -172,9 +189,9 @@ Skrip hanya membuktikan **bentuk**. Yang tidak bisa diperiksa skrip:
   harus ditangkap dengan mata, bukan regex;
 - **membaca setiap bab** — kesalahan tingkat huruf (kata tertukar/hilang) hanya ketemu
   dengan membaca; ini pelajaran dari `REVISI-CASUAL.md` §11.9;
-- **render** `npx marp <berkas> --images png --allow-local-files` untuk slide padat:
-  tabel 6 baris dan slide yang selnya membungkus dua baris adalah yang paling sering
-  menabrak footer.
+- **memutuskan isi mana yang boleh pindah ke catatan.** Skrip bisa memastikan tidak ada
+  kata yang hilang dari bab, tetapi tidak bisa menilai apakah kalimat itu masih layak
+diucapkan penyaji.
 
 ## 8. Cacat pra-ada yang ditemukan
 
@@ -202,10 +219,10 @@ ini, jadi SVG tidak bisa dibangun ulang. Keputusan: diagram dibiarkan Inggris da
 dipindahkan. Untuk 3 diagram yang menyebut nama kasus lain (Bab 4, 7, 14), teks slide
 membingkainya sebagai "aplikasi lain yang melakukan hal yang sama".
 
-### 8.4 `grid2` per bab sudah selesai; 35 tempat sisa di Bab 5–15
+### 8.4 `grid2` sudah bersih di 15 bab
 
-Status pembersihan `grid2`: Bab 1 (2), Bab 2 (3), Bab 3 (2), Bab 4 (2) sudah bersih.
-Sisa: Bab 5 (3), 6 (3), 7 (2), 8 (3), 9 (4), 10 (5), 11 (3), 12 (2), 13 (3), 14 (4), 15 (3).
+Status pembersihan `<div class="grid2">` (44 tempat di 15 bab): **0 sisa**. Penggantinya
+tabel atau dua blok tebal berurutan, seperti di Bab 1 slide 6 dan slide Referensi.
 
 ### 8.5 RPS dan deck tidak sinkron soal Tujuan Pembelajaran
 
@@ -213,6 +230,23 @@ Di `readme.md`, Pertemuan 4 mencantumkan **4** butir tujuan, sedangkan deck Bab 
 mempunyai **7** (versi Inggris 8). Selisih ini sudah ada sebelum penerjemahan, jadi tidak
 diubah: RPS adalah dokumen kurikulum dan perlu keputusan pemilik, bukan editor slide.
 Bab 1 sendiri sinkron (5 butir di keduanya).
+
+### 8.6 19 slide meluber ke footer, dan mata manusia tidak menemukannya
+
+Setelah 15 bab dinyatakan `lulus` oleh `verify-slides-id.mjs`, render 592 slide
+menunjukkan **19 slide** yang isinya menabrak footer pada 9 bab: Bab 3 (2), 5 (2), 7 (4),
+8 (3), 9 (1), 10 (1), 11 (3), 13 (1), 14 (1), 15 (1). Tiga di antaranya sudah ada sejak
+batch 1 — termasuk **Bab 3 slide 18, yang diagramnya terpotong tepi bawah** dan tetap
+lolos karena saya hanya memeriksa sebagian slide dengan mata.
+
+Penyebabnya seragam: bahasa Indonesia 10–25% lebih panjang, sel tabel yang tadinya satu
+baris menjadi dua, lalu blok berikutnya (blockquote, diagram, blok kode) terdorong keluar
+bingkai. Urutan perbaikan yang dipakai: `compact` → pendekkan sel/kutipan → pindahkan
+blockquote ke catatan dengan label "Dipotong ke catatan (tidak muat di slide):" → pecah
+slide menjadi (1/2)(2/2) hanya bila tiga cara pertama gagal.
+
+Pelajaran: **pemeriksaan teks tidak menggantikan pemeriksaan tampilan.** Karena itu
+`check-slide-overflow.mjs` sekarang menjadi gerbang kedua, bukan opsional.
 
 ## 9. Alur kerja
 
@@ -225,8 +259,17 @@ branch slides-id
 → merge ke main (situs GitHub Pages baru berubah di sini)
 ```
 
-Bab 1 dikerjakan sendiri, lalu dibaca pemilik repo sebagai baseline gaya. Bab 2–15
-dikerjakan per batch 3–4 bab dengan workflow multi-agen yang memakai kontrak ini.
+Tiga putaran kerja:
+
+| Putaran | Isi | Cara |
+|---|---|---|
+| 1 | Bab 1 | dikerjakan sendiri, lalu dibaca pemilik sebagai baseline gaya |
+| 2 | Bab 2–4 | workflow 3 tahap per bab: tulis → visual (render) → isi (bandingkan baseline) |
+| 3 | Bab 5–15 | workflow yang sama, 11 bab sekaligus (33 agen) |
+| 4 | Perbaikan tata letak | workflow 10 agen, satu per bab terdampak, gerbang `check-slide-overflow.mjs` + `verify-slides-id.mjs` |
+
+Setiap tahap digerbangi perintah, bukan penilaian agen: gate gagal = agen gagal, sehingga
+tidak ada bab yang dianggap selesai hanya karena agennya merasa selesai.
 
 ## 10. Laporan pelaksanaan
 
@@ -234,8 +277,22 @@ dikerjakan per batch 3–4 bab dengan workflow multi-agen yang memakai kontrak i
 bab     status  slide  kode   gambar  kata       istilah  slang  bocor-EN  Anda
 bab 01  lulus   40     1/1    15/15   1702/1784  0        0      0         0
 bab 02  lulus   40     5/5    14/14   1731/1987  0        0      0         0
-bab 03  lulus   35     12/12  10/10   1038/1177  0        0      0         0
+bab 03  lulus   35     12/12  10/10   1017/1177  0        0      0         0
 bab 04  lulus   37     4/4    22/22   887/989    0        0      0         0
+bab 05  lulus   42     9/9    20/20   1466/1575  0        0      0         0
+bab 06  lulus   38     5/5    13/13   1624/1808  0        0      0         0
+bab 07  lulus   41     10/10  8/8     1753/1918  0        0      0         0
+bab 08  lulus   42     9/9    10/10   1690/1847  0        0      0         0
+bab 09  lulus   41     8/8    10/10   1746/1907  0        0      0         0
+bab 10  lulus   39     6/6    11/11   1621/1883  0        0      0         0
+bab 11  lulus   41     9/9    12/12   1655/1904  0        0      0         0
+bab 12  lulus   39     9/9    8/8     1564/1755  0        0      0         0
+bab 13  lulus   40     5/5    15/15   1573/1692  0        0      0         0
+bab 14  lulus   40     6/6    7/7     1763/2072  0        0      0         0
+bab 15  lulus   38     2/2    13/13   1700/1915  0        0      0         0
+
+total  15 bab · 593 slide · 100% blok kode identik · 100% baris gambar utuh
+       grid2 = 0 · slide meluber = 0 · setiap bab ≤ anggaran kata Inggris
 ```
 
 ### 10.1 Bab 1
@@ -249,7 +306,29 @@ bab 04  lulus   37     4/4    22/22   887/989    0        0      0         0
 | Spine | `Aplikasi Manajemen Data Mahasiswa` diperkenalkan di slide studi kasus keputusan (slide 27) |
 | Render | 40/40 diperiksa; 2 tabel overflow diperbaiki (`compact` + sel satu baris), slide Referensi diperbaiki (grid2 dibuang) |
 
-### 10.2 Bab 2–4 (batch pertama, workflow 3 tahap)
+### 10.3 Batch ketiga: Bab 5–15
+
+33 agen (3 tahap × 11 bab). Temuan isi yang diperbaiki agen, contoh yang paling penting:
+
+| Bab | Temuan isi |
+|---|---|
+| 05 | Tabel 5.1 salah menyebut elemen DOM (`div, span, img` → ada `p`; `View, Text` → ada `Image`), dicocokkan dengan `buku/bab-05` |
+| 05 | `Ringkasan` yang memadatkan 10 butir Inggris menjadi 6 kehilangan TextInput-controlled, beda render ScrollView/FlatList, SafeAreaView-iOS, dan `Platform.OS` → dipulihkan jadi 7 butir |
+| 06 | Aturan "navigasi bawah hanya untuk bagian utama" hilang padahal catatannya mengklaim ada di slide; rujukan `(6.6)` → `(6.4, 6.6)` |
+| 07 | Catatan menunjuk slide yang judulnya sudah tidak ada setelah retitling |
+| 08–15 | pemulihan butir yang hilang, perbaikan rujukan bab, penyelarasan istilah dengan `buku/` |
+
+Lalu putaran perbaikan tata letak: **19 slide** di 9 bab (lihat §8.6), semuanya diperbaiki
+tanpa mengubah satu pun blok kode atau baris gambar, lalu diverifikasi ulang dengan
+`check-slide-overflow.mjs` (593 slide, 0 ditandai).
+
+### 10.4 Yang tidak bisa diklaim
+
+- Kode contoh belum pernah dijalankan terhadap `kode/` (folder `kode/bab-02` dan
+  `kode/bab-03` bahkan tidak ada). Verifikasi hanya membuktikan kode **tidak berubah**,
+  bukan bahwa kode itu **benar**.
+- 171 diagram masih berbahasa Inggris dan tidak bisa dibangun ulang (kit hilang).
+- Label `alt`/`aria` di dalam SVG tidak diterjemahkan.
 
 Dikerjakan tiga agen per bab: tulis → periksa visual (render PNG) → baca isi terhadap
 baseline Inggris. Setiap tahap digerbangi `verify-slides-id.mjs`.
@@ -266,8 +345,8 @@ diperbaiki dengan memendekkan sel. Frase versi teknologi diseragamkan lintas emp
 
 ## 11. Yang masih terbuka
 
-1. **`slide:` di spec diagram** sudah diselaraskan untuk Bab 1–4 lewat
-   `scripts/sync-diagram-slides.mjs`. Bab 5–15 menyusul saat babnya dikerjakan.
+1. **`slide:` di 171 spec diagram** sudah diselaraskan untuk 15 bab lewat
+   `scripts/sync-diagram-slides.mjs` (0 judul Inggris tersisa).
 2. **README 15 subfolder diagram** dibiarkan sebagai catatan sejarah; judul di dalamnya
    merujuk versi Inggris.
 3. **`buku/` tidak diselaraskan.** Slides memakai `Aplikasi Manajemen Data Mahasiswa`;
@@ -277,4 +356,7 @@ diperbaiki dengan memendekkan sel. Frase versi teknologi diseragamkan lintas emp
    penerjemahan, tetapi membuat praktikum tidak bisa diikuti apa adanya.
 5. **Skrip penghasil `hasil-rekap.json`** (Bab 3) tidak ada di repo.
 6. **RPS vs deck soal Tujuan Pembelajaran** — lihat §8.5; butuh keputusan pemilik.
-7. **Bab 5–15 belum disentuh.** Kontrak ini yang dipakai saat mengerjakannya.
+7. **`Ringkasan` tidak seragam jumlah butirnya** (5–7 antar bab), karena jumlah butir
+   mengikuti isi bab, bukan kerangka baku.
+8. **Label Inggris di dalam diagram** membuat: slide Indonesia + gambar Inggris. Bila kit
+   `slide-diagrams` dibangun ulang, ini pekerjaan terpisah yang layak.
