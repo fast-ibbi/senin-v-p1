@@ -846,7 +846,7 @@ sungguhan.
 | yarn di satu laptop, npm di laptop lain | **Satu pengelola paket**: npm seragam, hindari beda lockfile |
 | Jalan di satu laptop, gagal di laptop lain | **npx, bukan pemasangan global**: versi selalu dari registry |
 
-> Reproducibility berarti proyek yang sama bisa dipasang ulang di komputer lain.
+> **Reproducibility** berarti proyek yang sama bisa dipasang ulang di komputer lain.
 
 <!--
 Bacakan kolom masalah lebih dulu, minta kelas menebak senjata yang cocok untuk setiap masalah,
