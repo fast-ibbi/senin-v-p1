@@ -2,10 +2,10 @@
 marp: true
 theme: academic
 paginate: true
-title: "Chapter 8 — Forms, Input, and Validation"
-description: "Mobile Programming lecture, meeting 9: TextInput and keyboard handling, the controlled component, single-object form state, validation with pure functions, error message UX, the FormField component, and the implementation of three application forms."
-author: "Course Instructor — Information Systems / Informatics Engineering Study Program"
-footer: "Mobile Programming · Chapter 8 — Forms, Input, and Validation"
+title: "Bab 8 — Formulir, Input, dan Validasi"
+description: "Slide kuliah Pemrograman Mobile, pertemuan 9: TextInput dan penanganan papan ketik, controlled component, form state satu objek, validasi dengan fungsi murni, UX pesan error, component FormField, dan implementasi tiga formulir aplikasi."
+author: "Dosen Mata Kuliah — Program Studi Sistem Informasi / Teknik Informatika"
+footer: "Pemrograman Mobile · Bab 8 — Formulir, Input, dan Validasi"
 size: 16:9
 ---
 
@@ -13,36 +13,43 @@ size: 16:9
 <!-- _paginate: skip -->
 <!-- _footer: "" -->
 
-# Chapter 8 — Forms, Input, and Validation
+# Bab 8 — Formulir, Input, dan Validasi
 
-From user typing to data worth storing · Meeting 9 · Sub-CPMK 4.3
+Dari ketikan pengguna menjadi data yang layak disimpan · Pertemuan 9 · Sub-CPMK 4.3
 
 <!--
-Opening hook: "Chapter 7 gave the app an address; today we give that address its
-contents — and make sure the contents are correct before they are sent."
+Buka dengan satu kalimat: "Bab 7 sudah memberi aplikasi ini alamat; hari ini kita isi alamat
+itu, dan pastikan isinya benar sebelum dikirim."
 
-Mention the RPS link: meeting 9 covers Chapter 8 (Sub-CPMK 4.3) and continues with
-Chapter 9 (Sub-CPMK 4.2) in a separate deck. The three forms in this chapter are a
-direct continuation of the routes created in Chapter 7.
+Sebutkan kaitan RPS: pertemuan 9 membahas Bab 8 (Sub-CPMK 4.3) lalu berlanjut ke Bab 9
+(Sub-CPMK 4.2) pada deck terpisah. Tiga formulir di bab ini melanjutkan langsung rute yang
+sudah kamu buat di Bab 7.
+
+Aplikasi yang kita bangun sepanjang mata kuliah ini bernama Aplikasi Manajemen Data
+Mahasiswa; hari ini ia belajar menerima isian.
 -->
 
 ---
 
-## Learning Objectives
+## Tujuan Pembelajaran
 
-- Explain the main `TextInput` props and strategies for handling the mobile keyboard
-- Analyze the `controlled component` and state as the single source of truth
-- Design a single-object form state with a reusable `handleChange`
-- Implement validation with pure functions and per-field error messages
-- Evaluate the trade-off of a disabled submit button and design `FormField`
+Setelah bab ini, kamu bisa:
+
+- Menjelaskan props utama `TextInput` dan strategi penanganan papan ketik mobile
+- Menganalisis *controlled component* dan state sebagai sumber kebenaran tunggal
+- Merancang form state satu objek dengan `handleChange` yang bisa dipakai ulang
+- Mengimplementasikan validasi fungsi murni dan pesan error per field
+- Mengevaluasi trade-off tombol submit nonaktif dan merancang `FormField`
 
 <!--
-Read out only the verbs. Objectives 4 and 5 are the core of this meeting; objective 5
-deliberately uses the word "evaluate" because students must be able to explain the
-reason behind a choice, not merely copy code.
+Bacakan hanya kata kerjanya. Butir keempat dan kelima adalah inti pertemuan ini; butir kelima
+sengaja memakai kata mengevaluasi karena mahasiswa harus bisa menjelaskan alasan sebuah
+pilihan, bukan sekadar menyalin kode.
 
-Ask as an opener: "Who has ever pressed a save button and nothing happened?" Keep that
-question for the disabled button trade-off slide.
+Pertanyaan pembuka: "Siapa yang pernah menekan tombol simpan lalu tidak terjadi apa-apa?"
+Simpan pertanyaan itu untuk slide trade-off tombol nonaktif di Bagian 3.
+
+Kaitkan dengan penilaian: pertemuan ini dinilai lewat rubrik Praktikum 8 (Lampiran A).
 -->
 
 ---
@@ -50,149 +57,164 @@ question for the disabled button trade-off slide.
 <!-- _class: lead -->
 <!-- _paginate: skip -->
 
-# Part 1 — TextInput and Keyboard Handling
+# Bagian 1 — TextInput dan Papan Ketik
 
-Section 8.1 · Main props, `keyboardType`, and the virtual keyboard
+subbab 8.1 · Props utama, `keyboardType`, dan papan ketik virtual
 
 <!--
-This part looks technical, yet this is where most user complaints come from: fields
-covered by the keyboard and buttons that must be pressed twice.
+Bagian ini terlihat teknis, tetapi di sinilah sebagian besar keluhan pengguna lahir: field
+tertutup papan ketik dan tombol yang harus ditekan dua kali.
 
-If meeting time is tight, compress the props table (students can read it themselves),
-but do not skip the "Handling the Virtual Keyboard" slide.
+Kalau waktu pertemuan sempit, padatkan tabel props (mahasiswa bisa membacanya sendiri), tetapi
+jangan lewati slide "Papan Ketik Virtual Menutupi Setengah Layar".
 -->
 
 ---
 
-## Context: Bad Data Is a Cost
+## Data yang Salah Masuk Adalah Biaya
 
 ![w:1120](assets/diagrams/bab-08-form-input-dan-validasi-05.svg)
 
-**Garbage in, garbage out** — bad data that goes in will produce bad output as well.
+**Garbage in, garbage out** — data buruk yang masuk akan menghasilkan keluaran yang buruk pula.
 
-- A wrongly formatted NIM → the database report has to be corrected again and again
-- Form validation is the first line of defense, not the only one
+- NIM yang salah format → laporan basis data harus diperbaiki berulang kali
+- Validasi formulir adalah pertahanan pertama, bukan satu-satunya
 
-> Defense in depth: the client (this chapter), the server (Chapter 10 and Chapter 13), and the database schema.
+> Pertahanan berlapis: klien (bab ini), server (Bab 10 dan Bab 13), dan skema basis data.
 
 <!--
-Do not start from code. Start from cost: every data correction at the academic office
-consumes administrative time and can delay the issuing of a KRS or a transcript.
+Jangan mulai dari kode. Mulai dari biaya: setiap koreksi data di bagian akademik memakan waktu
+administrasi dan bisa menunda penerbitan KRS atau transkrip.
 
-Guiding question: "If one student mistypes an email during re-registration, who is
-harmed?" (The student, the academic advisor, the academic staff — a chain.)
+Pertanyaan penuntun: "Kalau satu mahasiswa salah mengetik email saat daftar ulang, siapa yang
+dirugikan?" (Mahasiswa, dosen wali, staf akademik — satu rantai.)
 
-Warning: students often assume client validation is enough. Stress that the app is not
-the only entry point for data.
+Peringatan: mahasiswa sering menganggap validasi klien sudah cukup. Tegaskan bahwa aplikasi
+bukan satu-satunya pintu masuk data.
 
-Trimmed to the picture (the diagram says this):
-- A misspelled email → academic information does not reach the student
-- A phone number short of digits → the academic advisor cannot reach the parents
+Dipotong ke gambar (diagram yang mengatakan ini):
+- Email yang salah eja → informasi akademik tidak sampai ke mahasiswa
+- Nomor telepon yang kurang digit → dosen wali tidak dapat menghubungi orang tua
 -->
 
 ---
 
-## TextInput: It Does Not Store Its Own Value
+## TextInput Tidak Menyimpan Nilainya Sendiri
 
 ![w:1120](assets/diagrams/bab-08-form-input-dan-validasi-06.svg)
 
-**TextInput** is the core React Native component for accepting one-line or multi-line typing (`multiline`) from the user.
+**TextInput** adalah component inti React Native untuk menerima ketikan satu baris atau banyak baris (`multiline`) dari pengguna.
 
-- Every keystroke fires an `onChangeText` event with the new text
-- The typed value must be stored by another component, usually React state
-- This characteristic is what gives rise to the *controlled component* (Section 8.2)
+- Setiap ketikan memicu event `onChangeText` berisi teks baru
+- Nilai yang diketik harus disimpan component lain, biasanya state React
+- Sifat inilah yang melahirkan *controlled component* (subbab 8.2)
 
-> `value`, `onChangeText`, and `placeholder` are a mandatory conceptual pair in every form field.
+> `value`, `onChangeText`, dan `placeholder` adalah pasangan konseptual wajib di setiap field formulir.
 
 <!--
-Analogy: TextInput is like a whiteboard that stores nothing — if nobody writes it down,
-the writing disappears when the board is erased.
+Analogi: TextInput seperti papan tulis yang tidak menyimpan apa pun — kalau tidak ada yang
+mencatat, tulisannya hilang begitu papan dihapus.
 
-Guiding question: "If TextInput does not store its value, who does?" (React state —
-that is the essence of the controlled component.)
+Pertanyaan penuntun: "Kalau TextInput tidak menyimpan nilainya, siapa yang menyimpan?"
+(State React — itulah inti controlled component.)
 
-Warning: students often assume `value` only displays an initial value, when in fact
-`value` binds the field to state at all times.
+Peringatan: mahasiswa sering menganggap `value` hanya menampilkan nilai awal, padahal `value`
+mengikat field ke state sepanjang waktu.
 -->
 
 ---
 
-## Table 8.1 — Main TextInput Props (1/2)
+<!-- _class: compact -->
 
-| Prop | Function | Example value |
+## Tabel 8.1 — Props Utama TextInput (1/2)
+
+| Prop | Fungsi | Contoh nilai |
 |---|---|---|
-| `value` | The text value displayed, controlled from outside | `{form.email}` |
-| `onChangeText` | Called every time the text changes | `(teks) => handleChange('email', teks)` |
-| `placeholder` | Example text shown while the field is empty | `"example: 2201001"` |
-| `keyboardType` | Type of virtual keyboard that appears | `"email-address"`, `"number-pad"` |
-| `secureTextEntry` | Masks the typing for a password | `secureTextEntry` |
-| `autoCapitalize` | Automatic capitalization of text | `"none"`, `"sentences"`, `"words"` |
+| `value` | Nilai teks dari luar | `{form.email}` |
+| `onChangeText` | Dipanggil tiap teks berubah | `handleChange('email', teks)` |
+| `placeholder` | Teks contoh saat kosong | `"contoh: 2201001"` |
+| `keyboardType` | Jenis papan ketik | `"email-address"`, `"number-pad"` |
+| `secureTextEntry` | Menyamarkan kata sandi | `secureTextEntry` |
+| `autoCapitalize` | Kapitalisasi otomatis | `"none"`, `"sentences"`, `"words"` |
 
 <!--
-Do not read them one by one. Show that the first three rows are the mandatory pair
-for every field, then go straight to `keyboardType`.
+Jangan dibaca satu per satu. Tunjukkan bahwa tiga baris pertama adalah pasangan wajib setiap
+field, lalu langsung ke `keyboardType`.
 
-Guiding question: "Why should NIM preferably use `number-pad`?" (It brings up the
-numeric keypad, so typing errors are fewer.)
+Pertanyaan penuntun: "Kenapa NIM sebaiknya memakai `number-pad`?" (Papan angka muncul, sehingga
+kesalahan ketik berkurang.)
 
-Warning: this chapter's email field uses `autoCapitalize="none"` and `autoCorrect={false}`
-because email is case-sensitive — do not copy the `"words"` value from the name field.
+Peringatan: field email di bab ini memakai `autoCapitalize="none"` dan `autoCorrect={false}`
+karena email peka huruf — jangan menyalin nilai `"words"` dari field nama.
+
+Dipotong ke catatan (tidak muat di slide): sel Fungsi dibaca lengkap sebagai "Nilai teks yang
+tampil, dikontrol dari luar", "Dipanggil setiap teks berubah", "Teks contoh saat field kosong",
+"Jenis papan ketik yang muncul", "Menyamarkan ketikan kata sandi", dan "Kapitalisasi otomatis
+teks". Contoh nilai `onChangeText` bentuk penuhnya: `(teks) => handleChange('email', teks)`.
 -->
 
 ---
 
-## Table 8.1 — Main TextInput Props (2/2)
+<!-- _class: compact -->
 
-| Prop | Function | Example value |
+## Tabel 8.1 — Props Utama TextInput (2/2)
+
+| Prop | Fungsi | Contoh nilai |
 |---|---|---|
-| `autoCorrect` | Automatic spelling correction | `autoCorrect={false}` |
-| `returnKeyType` | Label of the Enter button on the keyboard | `"next"`, `"done"` |
-| `maxLength` | Limit on the number of characters that can be typed | `maxLength={10}` |
-| `multiline` | Allows more than one line | `multiline` |
-| `onSubmitEditing` | Called when the Enter button is pressed | `onSubmitEditing={handleSubmit}` |
-| `editable` | Locks the field so that it cannot be edited | `editable={false}` |
+| `autoCorrect` | Koreksi ejaan otomatis | `autoCorrect={false}` |
+| `returnKeyType` | Label tombol Enter di papan ketik | `"next"`, `"done"` |
+| `maxLength` | Batas jumlah karakter | `maxLength={10}` |
+| `multiline` | Mengizinkan lebih dari satu baris | `multiline` |
+| `onSubmitEditing` | Dipanggil saat Enter ditekan | `{handleSubmit}` |
+| `editable` | Mengunci field agar tidak diedit | `editable={false}` |
 
-> Email uses `autoCapitalize="none"` and `autoCorrect={false}` because email addresses are case-sensitive.
+> Email memakai `autoCapitalize="none"` dan `autoCorrect={false}` karena alamat email peka huruf.
 
 <!--
-Tie `autoCorrect` to a real case: spelling correction often damages email addresses.
+Hubungkan `autoCorrect` dengan kasus nyata: koreksi ejaan sering merusak alamat email.
 
-Guiding question: "Which field deserves `editable={false}`?" (NIM in edit mode — the
-identity key must not change.)
+Pertanyaan penuntun: "Field mana yang layak mendapat `editable={false}`?" (NIM pada mode edit —
+kunci identitas tidak boleh berubah.)
 
-Warning: `maxLength` limits the number of characters; it does not validate the content.
-NIM still needs `validasiNim` so that it contains only digits.
+Peringatan: `maxLength` membatasi jumlah karakter; ia tidak memvalidasi isinya. NIM tetap butuh
+`validasiNim` supaya hanya berisi angka.
+
+Dipotong ke catatan (tidak muat di slide): contoh nilai `onSubmitEditing` bentuk penuhnya
+`onSubmitEditing={handleSubmit}`.
 -->
 
 ---
 
-## Handling the Virtual Keyboard
+## Papan Ketik Virtual Menutupi Setengah Layar
 
 ![w:1120](assets/diagrams/bab-08-form-input-dan-validasi-07.svg)
 
-- The virtual keyboard takes up half the screen and covers the lower fields
-- The `returnKeyType` chain `"next"` → `"next"` → `"done"` without touching the screen
+- Papan ketik virtual mengambil separuh layar dan menutupi field bawah
+- `returnKeyType` `"next"` → `"next"` → `"done"` melewati field tanpa menyentuh layar
 
 ```jsx
 // behavior berbeda antar platform, jadi polanya disesuaikan Platform.OS
 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
 ```
 
-> Without `keyboardShouldPersistTaps`, the first tap only closes the keyboard and the button must be pressed twice.
+> Tanpa `keyboardShouldPersistTaps`, tombol harus ditekan dua kali.
 
 <!--
-Demonstrate live: open the form, type in the bottom field, then watch whether the save
-button stays visible and responds to a single tap.
+Demonstrasikan langsung: buka formulir, ketik di field paling bawah, lalu perhatikan apakah tombol
+simpan tetap terlihat dan merespons satu ketukan.
 
-Guiding question: "Why does the device not provide a natural way to close the
-keyboard?" (There is no physical button; the only way is the system back button.)
+Pertanyaan penuntun: "Kenapa perangkat tidak menyediakan cara alami untuk menutup papan ketik?"
+(Tidak ada tombol fisik; satu-satunya jalan adalah tombol kembali sistem.)
 
-⚠ version-sensitive: `keyboardType` values and `behavior` behavior can differ slightly
-between SDK versions and platforms — check reactnative.dev for the current values.
+⚠ sensitif versi: nilai `keyboardType` dan perilaku `behavior` bisa berbeda tipis antar versi SDK
+dan platform — periksa reactnative.dev untuk nilai terkini.
 
-Trimmed to the picture (the diagram says this):
-- `KeyboardAvoidingView` shifts the content so the field stays visible
-- `keyboardShouldPersistTaps="handled"` makes a button respond to a single tap
+Dipotong ke gambar (diagram yang mengatakan ini):
+- `KeyboardAvoidingView` menggeser konten supaya field tetap terlihat
+- `keyboardShouldPersistTaps="handled"` membuat tombol merespons satu ketukan
+
+Kalimat lengkapnya untuk diucapkan: "Tanpa `keyboardShouldPersistTaps`, ketukan pertama hanya
+menutup papan ketik dan tombol harus ditekan dua kali."
 -->
 
 ---
@@ -200,25 +222,25 @@ Trimmed to the picture (the diagram says this):
 <!-- _class: lead -->
 <!-- _paginate: skip -->
 
-# Part 2 — Controlled Component and Form State
+# Bagian 2 — Controlled Component dan Form State
 
-Sections 8.2 and 8.3 · State as the single source of truth
+subbab 8.2 dan 8.3 · State sebagai sumber kebenaran tunggal
 
 <!--
-This part is the conceptual core of the chapter. If students understand only one thing
-from this meeting, let it be this part: every form pattern in later chapters stands on it.
+Bagian ini inti konseptual bab. Kalau mahasiswa hanya boleh memahami satu hal dari pertemuan ini,
+biarlah bagian ini: seluruh pola formulir di bab-bab berikutnya berdiri di atasnya.
 
-Stress that the controlled pattern is not a matter of writing style but a prerequisite
-for making validation and form reset possible.
+Tegaskan bahwa pola terkendali bukan soal gaya menulis kode, melainkan prasyarat supaya validasi
+dan reset formulir mungkin dilakukan.
 -->
 
 ---
 
-## Controlled Component: Single Source of Truth
+## Satu Sumber Kebenaran, Tanpa Salinan Kedua
 
 ![w:1120](assets/diagrams/bab-08-form-input-dan-validasi-08.svg)
 
-**Controlled component** is a pattern in which the input value is fully determined by React state: `value` holds the contents of state, and every keystroke only changes it through `onChangeText`.
+**Controlled component** adalah pola di mana nilai input sepenuhnya ditentukan state React: `value` berisi isi state, dan setiap ketikan hanya mengubahnya lewat `onChangeText`.
 
 ```jsx
 <TextInput
@@ -228,25 +250,25 @@ for making validation and form reset possible.
 />
 ```
 
-- The text displayed and the application state are always identical — with no second copy
-- The value in state can be read, validated, changed, and reset at any time
+- Teks yang tampil dan state aplikasi selalu identik, tanpa salinan kedua
+- Nilai di state bisa dibaca, divalidasi, diubah, dan direset kapan saja
 
 <!--
-Analogy: an input value is like a bank balance — there is no "second record book" that
-may differ; whatever is displayed must come from one source.
+Analogi: nilai input itu seperti saldo rekening — tidak ada "buku catatan kedua" yang boleh
+berbeda; apa yang tampil harus berasal dari satu sumber.
 
-Guiding question: "What makes edit mode possible on a form?" (Because the form value
-lives in state, it can be refilled programmatically from old data.)
+Pertanyaan penuntun: "Apa yang membuat mode edit mungkin pada sebuah formulir?" (Karena nilai
+formulir hidup di state, ia bisa diisi ulang secara programatik dari data lama.)
 
-Warning: the uncontrolled pattern with `defaultValue` is still valid for very simple
-cases, but a validated form almost always uses the controlled pattern.
+Peringatan: pola tak terkendali dengan `defaultValue` masih sah untuk kasus sangat sederhana,
+tetapi formulir yang divalidasi hampir selalu memakai pola terkendali.
 -->
 
 ---
 
-## Form State: One Object, One handleChange
+## Satu Objek State, Satu `handleChange` untuk Tujuh Field
 
-`File: screens/FormMahasiswa.js`
+`screens/FormMahasiswa.js`
 
 ```jsx
 const [form, setForm] = useState({
@@ -262,80 +284,72 @@ function handleChange(namaField, nilai) {
 }
 ```
 
-- One function serves every field through the computed key `[namaField]`
-- The object keys exactly match the field names and the student data structure
+- Satu fungsi melayani semua field lewat kunci terhitung `[namaField]`
+- Kunci objek persis sama dengan nama field dan struktur data mahasiswa
 
 <!--
-Slide quote (moved here to keep the slide inside the page): The standard structure:
-`{ nim, nama, prodi, angkatan, ipk, email, telepon }` — used from Chapter 4 through Chapter 8.
+Kutipan yang dulu ada di slide ini, dipindah ke catatan supaya slide tetap muat satu halaman:
+struktur bakunya `{ nim, nama, prodi, angkatan, ipk, email, telepon }` — dipakai sejak Bab 4
+sampai Bab 8.
 
-Stress that `[namaField]` is the computed key from Chapter 3: the key name is only
-determined while the function runs, so one function is enough for seven fields.
+Tegaskan bahwa `[namaField]` adalah kunci terhitung dari Bab 3: nama kuncinya baru ditentukan saat
+fungsi berjalan, sehingga satu fungsi cukup untuk tujuh field.
 
-Guiding question: "How many `handleChange` functions are needed for seven fields?"
-(One — that is the main benefit of this pattern.)
+Pertanyaan penuntun: "Berapa fungsi `handleChange` yang dibutuhkan untuk tujuh field?" (Satu —
+itulah manfaat utama pola ini.)
 
-Warning: `...sebelumnya` is mandatory; without it every other field is erased. This
-mistake is discussed on the "What Happens If…?" slide after the next one.
+Peringatan: `...sebelumnya` wajib ada; tanpa itu semua field lain terhapus. Kesalahan ini dibahas
+di slide "Apa yang Terjadi Jika…?" dua slide lagi.
 -->
 
 ---
 
-## Pros and Cons of a Single Object
+## Satu Objek Cepat Direset, tetapi Rapuh Kalau Lupa Menyebar
 
-<div class="grid2">
-<div>
+**Kelebihan**
 
-**Pros**
+- Reset formulir cukup dengan mengisi ulang objeknya
+- Kirim ke server hanya perlu mengirim `form` (Bab 10)
+- Validasi berjalan atas satu objek utuh
 
-- Resetting the form only means refilling the object
-- Sending to the server only needs sending `form` (Chapter 10)
-- Validation runs against one whole object
+**Kekurangan**
 
-</div>
-<div>
+- Setiap ketikan harus menyebar objek lama
+- Lupa menyebar berarti field lain ikut tertimpa
 
-**Cons**
-
-- Every keystroke must spread the old object
-- Risk of overwriting other fields if the spread is forgotten
-
-</div>
-</div>
-
-> For small to medium-sized forms, readability and ease of reset beat the complexity of the code lines.
+> Untuk formulir kecil sampai sedang, keterbacaan dan kemudahan reset mengalahkan kerumitan barisnya.
 
 <!--
-Show that this decision is not right-versus-wrong but a trade-off — just like the
-trade-off analysis in Chapter 1.
+Tunjukkan bahwa keputusan ini bukan benar-salah, melainkan trade-off — seperti analisis trade-off
+di Bab 1.
 
-Guiding question: "If there are only two fields, is one object still better?" (For
-pattern consistency, yes; the limits of the pattern show up when a form gets very big.)
+Pertanyaan penuntun: "Kalau field hanya dua, apakah satu objek tetap lebih baik?" (Untuk
+konsistensi pola, ya; batas pola ini baru terasa saat formulir menjadi sangat besar.)
 
-Warning: the "forgot to spread" mistake raises no error on screen — the value vanishes
-silently, which makes it hard to trace while debugging.
+Peringatan: kesalahan "lupa menyebar" tidak memunculkan error di layar — nilainya hilang diam-diam,
+sehingga sulit dilacak saat debugging.
 -->
 
 ---
 
 <!-- _class: center -->
 
-## What Happens If…?
+## Apa yang Terjadi Jika…?
 
-- …`handleChange` writes `setForm({ [namaField]: nilai })` without spreading the old object?
-- …`value` is given fixed text (`value="budi.santoso@students.univ.ac.id"`), not from state?
-- …the user presses save before touching a single field?
+- …`handleChange` menulis `setForm({ [namaField]: nilai })` tanpa menyebar objek lama?
+- …`value` diberi teks tetap (`value="budi.santoso@students.univ.ac.id"`), bukan dari state?
+- …pengguna menekan simpan sebelum menyentuh satu field pun?
 
-Discuss for 2 minutes in pairs, then tie it back to validation in Part 3.
+Diskusikan 2 menit berpasangan, lalu hubungkan dengan validasi di Bagian 3.
 
 <!--
-Do not leak the answers; let the class reason. Expected answers: (1) the other six
-fields are erased, only the field that was typed remains; (2) the field becomes
-read-only — typing does not appear because state never changes; (3) all fields report
-"This field is required" at once because full validation runs on submit.
+Jangan bocorkan jawabannya; biarkan kelas bernalar. Jawaban yang diharapkan: (1) enam field lain
+terhapus, hanya field yang diketik yang tersisa; (2) field menjadi hanya-baca — ketikan tidak
+muncul karena state tidak pernah berubah; (3) semua field melaporkan "Field ini wajib diisi"
+sekaligus karena validasi penuh berjalan saat submit.
 
-This is not a quiz, so the answers may be discussed right in the classroom; the question
-prepares students for the validation pattern in Part 3.
+Ini bukan kuis, jadi jawabannya boleh dibahas langsung di kelas; pertanyaannya menyiapkan
+mahasiswa untuk pola validasi di Bagian 3.
 -->
 
 ---
@@ -343,49 +357,49 @@ prepares students for the validation pattern in Part 3.
 <!-- _class: lead -->
 <!-- _paginate: skip -->
 
-# Part 3 — Validation, Error, and Form UX
+# Bagian 3 — Validasi, Pesan Error, dan UX Formulir
 
-Sections 8.4 to 8.6 · Pure functions, error messages, and `FormField`
+subbab 8.4 sampai 8.6 · Fungsi murni, pesan error, dan `FormField`
 
 <!--
-This is the longest part and the part assessed in the practicum. If the meeting is split
-in two, this part is the one that most deserves full time.
+Ini bagian terpanjang dan bagian yang dinilai di praktikum. Kalau pertemuan dipecah dua, bagian
+inilah yang paling layak mendapat waktu penuh.
 
-Keep linking back to Chapter 14: pure functions were chosen deliberately so that
-validation rules are easy to test automatically without running the interface.
+Terus kaitkan dengan Bab 14: fungsi murni dipilih dengan sengaja supaya aturan validasi mudah
+diuji otomatis tanpa menjalankan antarmuka.
 -->
 
 ---
 
-## Validation: Definition and the Pure Function Contract
+## Validasi: Nilai Masuk, Pesan Error Keluar
 
 ![w:1120](assets/diagrams/bab-08-form-input-dan-validasi-09.svg)
 
-**Validation** is the process of making sure the data the user enters meets the rules before it is used.
+**Validasi** memastikan data yang masuk memenuhi aturan sebelum dipakai.
 
-- Written as a **pure function**: same input, same output, no side effects
-- All validation functions live in one file, `utils/validators.js`
-- Contract: a value comes in → an error message (string) or the empty string `''` comes out
-- A one-way contract makes the function easy to reuse and to test (Chapter 14)
+- Ditulis sebagai **fungsi murni**: masukan sama, keluaran sama, tanpa efek samping
+- Semua fungsi validasi tinggal di satu file, `utils/validators.js`
+- Kontrak: nilai masuk → pesan error (string) atau string kosong `''` keluar
+- Kontrak satu arah membuat fungsi mudah dipakai ulang dan mudah diuji (Bab 14)
 
-> Adding a new rule means adding one function, not adding validation logic inside the screen.
+> Menambah aturan baru berarti menambah satu fungsi, bukan menambah logika validasi di dalam layar.
 
 <!--
-Stress the word "pure": the function does not change state, does not call an API, does
-not write anything. It only answers one question: "is this value acceptable?"
+Tekankan kata murni: fungsi tidak mengubah state, tidak memanggil API, tidak menulis apa pun. Ia
+hanya menjawab satu pertanyaan: "apakah nilai ini layak diterima?"
 
-Guiding question: "Why is the error message returned as a string, not a boolean?"
-(So the screen can simply display the message — no message translation table is needed.)
+Pertanyaan penuntun: "Kenapa pesan error dikembalikan sebagai string, bukan boolean?" (Supaya layar
+tinggal menampilkan pesannya — tidak perlu tabel penerjemah pesan.)
 
-Warning: students often put validation inside the screen's `handleChange`. That makes
-the rules impossible to re-test and impossible for other forms to reuse.
+Peringatan: mahasiswa sering menaruh validasi di dalam `handleChange` layar. Akibatnya aturan tidak
+bisa diuji ulang dan tidak bisa dipakai ulang oleh formulir lain.
 -->
 
 ---
 
-## Code: Three Core Functions in validators.js
+## Tiga Fungsi Inti di `validators.js`
 
-`File: utils/validators.js`
+`utils/validators.js`
 
 ```js
 export function wajibDiisi(nilai = '') {
@@ -403,75 +417,78 @@ export function validasiPassword(nilai = '') {
 }
 ```
 
-> All three follow the same contract, including the `if (teks === '') return ''` line.
+> Ketiganya mengikuti kontrak yang sama, termasuk baris `if (teks === '') return ''`.
 
 <!--
-Show only three things: `trim()` makes spaces count as empty, the regular pattern is
-deliberately simple (not the RFC 5322 specification), and each function returns an empty
-string when the value is empty — so the "required" rule that comes first is the one shown.
+Tunjukkan hanya tiga hal: `trim()` membuat spasi dihitung sebagai kosong, pola reguler sengaja
+sederhana (bukan spesifikasi RFC 5322), dan setiap fungsi mengembalikan string kosong saat nilainya
+kosong — sehingga aturan "wajib diisi" yang lebih dulu yang tampil.
 
-Guiding question: "Why does `validasiEmail('')` return an empty string rather than an
-error message?" (So that the emptiness check is the job of `wajibDiisi`, and the rule
-order determines which message appears.)
+Pertanyaan penuntun: "Kenapa `validasiEmail('')` mengembalikan string kosong, bukan pesan error?"
+(Supaya pemeriksaan kosong menjadi tugas `wajibDiisi`, dan urutan aturan yang menentukan pesan mana
+yang muncul.)
 
-Warning: this pattern catches 99% of typos, but it is not a fully specification-compliant
-email validation — state this limit honestly in class.
+Peringatan: pola ini menangkap 99% salah ketik, tetapi bukan validasi email yang sepenuhnya
+mengikuti spesifikasi — nyatakan batas ini dengan jujur di kelas.
 -->
 
 ---
 
-## Table 8.2 — Validation Rules (1/2)
+<!-- _class: compact -->
 
-| Function | Rule | Example error message |
+## Tabel 8.2 — Aturan Validasi (1/2)
+
+| Fungsi | Aturan | Contoh pesan error |
 |---|---|---|
-| `wajibDiisi` | The value must not be empty (spaces ignored) | "This field is required" |
-| `validasiEmail` | A simple email pattern | "Invalid email format" |
-| `validasiPassword` | At least 6 characters | "Password must be at least 6 characters" |
-| `validasiKonfirmasiPassword` | Must match the password | "Password confirmation does not match" |
-| `validasiTelepon` | 10–13 numeric digits | "Phone number must be 10 to 13 digits" |
+| `wajibDiisi` | Nilai tidak boleh kosong (spasi diabaikan) | "Field ini wajib diisi" |
+| `validasiEmail` | Pola email sederhana | "Format email tidak valid" |
+| `validasiPassword` | Minimal 6 karakter | "Kata sandi minimal 6 karakter" |
+| `validasiKonfirmasiPassword` | Harus sama dengan kata sandi | "Konfirmasi kata sandi tidak cocok" |
+| `validasiTelepon` | 10–13 digit angka | "Nomor telepon harus 10–13 digit" |
 
 <!--
-Do not read it line by line. Group it: the first two rules are "the basic rules that are
-almost always there", the rest are more specific rules.
+Jangan dibaca baris per baris. Kelompokkan: dua aturan pertama adalah "aturan dasar yang hampir
+selalu ada", sisanya aturan yang lebih khusus.
 
-Guiding question: "Which rule takes two arguments, and why?" (Password confirmation — it
-needs the value of another field as a comparison.)
+Pertanyaan penuntun: "Aturan mana yang butuh dua argumen, dan kenapa?" (Konfirmasi kata sandi — ia
+perlu nilai field lain sebagai pembanding.)
 
-Warning: `validasiPassword` only enforces a minimum length of 6 characters. Stricter
-password-strength rules are a security policy decision in Chapter 13.
+Peringatan: `validasiPassword` hanya menegakkan panjang minimal 6 karakter. Aturan kekuatan kata
+sandi yang lebih ketat adalah keputusan kebijakan keamanan di Bab 13.
 -->
 
 ---
 
-## Table 8.2 — Validation Rules (2/2)
+<!-- _class: compact -->
 
-| Function | Rule | Example error message |
+## Tabel 8.2 — Aturan Validasi (2/2)
+
+| Fungsi | Aturan | Contoh pesan error |
 |---|---|---|
-| `validasiPanjang` | Does not exceed the maximum length | "Maximum 50 characters" |
-| `validasiNim` | Digits only, at most 10 | "NIM may only contain digits" |
-| `validasiAngkatan` | 4 digits, range 2000–2030 | "Cohort is 4 digits, example: 2024" |
-| `validasiIpk` | A decimal number 0.00–4.00 | "GPA must be between 0.00 and 4.00" |
+| `validasiPanjang` | Tidak melebihi panjang maksimal | "Maksimal 50 karakter" |
+| `validasiNim` | Hanya angka, paling banyak 10 | "NIM hanya boleh berisi angka" |
+| `validasiAngkatan` | 4 digit, rentang 2000–2030 | "Angkatan 4 digit, contoh: 2024" |
+| `validasiIpk` | Angka desimal 0.00–4.00 | "IPK harus antara 0.00 dan 4.00" |
 
-> `validasiTelepon` strips every non-digit character first, so `0812-3456-7890` counts as 12 digits and is declared valid.
+> `validasiTelepon` membuang setiap karakter bukan angka lebih dulu, sehingga `0812-3456-7890` terhitung 12 digit dan dinyatakan valid.
 
 <!--
-Read the blockquote slowly — the principle matters: what is validated is the intent of
-the data, not the style of typing it. Users write a number in different styles, but the
-system only needs the digit count to be right.
+Bacakan blockquote perlahan — prinsipnya penting: yang divalidasi adalah maksud datanya, bukan gaya
+mengetiknya. Pengguna menulis nomor dengan gaya berbeda, tetapi sistem hanya perlu jumlah digitnya
+benar.
 
-Guiding question: "What would happen if we forced the format `08xx-xxxx-xxxx`?" (Users
-who write `+62 812...` are rejected even though the number is right — frustration for no
-reason.)
+Pertanyaan penuntun: "Apa yang terjadi kalau kita memaksa format `08xx-xxxx-xxxx`?" (Pengguna yang
+menulis `+62 812...` ditolak padahal nomornya benar — kekecewaan tanpa alasan.)
 
-Warning: `validasiIpk` normalizes the Indonesian decimal comma into a dot before the
-numeric conversion; without that, `3,45` becomes `NaN`.
+Peringatan: `validasiIpk` menormalkan koma desimal Indonesia menjadi titik sebelum konversi angka;
+tanpa itu `3,45` menjadi `NaN`.
 -->
 
 ---
 
-## jalankanAturan: Stop at the First Message
+## `jalankanAturan`: Berhenti di Pesan Pertama
 
-`File: utils/validators.js`
+`utils/validators.js`
 
 ```js
 export function jalankanAturan(aturan, nilai, konteks) {
@@ -483,185 +500,184 @@ export function jalankanAturan(aturan, nilai, konteks) {
 }
 ```
 
-- The rules table per field: `email: [wajibDiisi, validasiEmail]`
-- The first error message found is returned immediately
-- The `konteks` argument is used by rules that need another field's value
+- Tabel aturan per field: `email: [wajibDiisi, validasiEmail]`
+- Pesan error pertama yang ditemukan langsung dikembalikan
+- Argumen `konteks` dipakai aturan yang butuh nilai field lain
 
-> The order of the rules determines which message appears first — "required" is always in front.
+> Urutan aturan menentukan pesan mana yang muncul lebih dulu — "wajib diisi" selalu paling depan.
 
 <!--
-Explain that this is the "rules as data" pattern: the rules table lists functions, and
-one small engine runs them. Adding a new rule does not touch the display code.
+Jelaskan bahwa ini pola "aturan sebagai data": tabel aturan berisi fungsi, dan satu mesin kecil
+menjalankannya. Menambah aturan baru tidak menyentuh kode tampilan.
 
-Guiding question: "Why does the check stop at the first message instead of collecting
-every message for one field?" (One field needs only one message so the screen does not
-get crowded; the user fixes one problem at a time.)
+Pertanyaan penuntun: "Kenapa pemeriksaan berhenti di pesan pertama, bukan mengumpulkan semua pesan
+untuk satu field?" (Satu field cukup satu pesan agar layar tidak sesak; pengguna memperbaiki satu
+masalah setiap kali.)
 
-Warning: the `konteks` argument is optional — only the password confirmation rule
-currently uses it.
+Peringatan: argumen `konteks` bersifat opsional — hanya aturan konfirmasi kata sandi yang memakainya
+saat ini.
 -->
 
 ---
 
-## When Validation Runs, and the Pattern Chosen
+## Kapan Validasi Berjalan, dan Pola yang Dipilih
 
-| Moment | Character |
+| Momen | Karakter |
 |---|---|
-| On submit | A complete list of errors, without disturbing the typing |
-| When the field is left (*on blur*) | Feedback after the user has finished filling it in |
-| While typing (*real-time*) | Responsive, but annoying on a field that was just touched |
+| Saat submit | Daftar error lengkap, tanpa mengganggu ketikan |
+| Saat field ditinggalkan (*on blur*) | Umpan balik setelah pengguna selesai mengisi |
+| Saat mengetik (*real-time*) | Responsif, tetapi mengganggu pada field yang baru disentuh |
 
-> The choice in this chapter: full validation on submit, then real-time validation per keystroke after the first submit attempt (the `sudahDikirim` state).
+> Pilihan bab ini: validasi penuh saat submit, lalu validasi real-time per ketikan setelah percobaan submit pertama (state `sudahDikirim`).
 
 <!--
-Stress the phrase "after the first submit attempt": before that, no error message
-appears while typing. This is what separates a form that helps from a form that nags.
+Tekankan frasa "setelah percobaan submit pertama": sebelum itu, tidak ada pesan error yang muncul
+saat mengetik. Inilah yang membedakan formulir yang menolong dari formulir yang mengomeli.
 
-Guiding question: "What is the value of `sudahDikirim` before and after the first
-submit?" (`false` then `true` — and only after that does `handleChange` re-validate.)
+Pertanyaan penuntun: "Berapa nilai `sudahDikirim` sebelum dan sesudah submit pertama?" (`false` lalu
+`true` — dan hanya setelah itu `handleChange` memvalidasi ulang.)
 
-Warning: students often compute errors in `handleChange` unconditionally. The result is
-that the "required" message appears as soon as the user touches the first field.
+Peringatan: mahasiswa sering menghitung error di `handleChange` tanpa syarat. Hasilnya, pesan "wajib
+diisi" muncul begitu pengguna menyentuh field pertama.
 -->
 
 ---
 
-## Flow: from Keystroke to Error Message
+## Satu Ketukan Tombol Memeriksa Semua Field
 
 ![w:1120](assets/diagrams/bab-08-form-input-dan-validasi-02.svg)
 
-> One keystroke updates state; one button press checks every field at once.
+> Satu ketikan memperbarui state; satu tekanan tombol memeriksa semua field sekaligus.
 
 <!--
-This diagram summarizes Section 8.7 in one picture; Additional note: the 1–4b numbering
-exists to ease following it during a presentation, it is not part of the source code.
+Diagram ini merangkum subbab 8.7 dalam satu gambar; penomoran 1–4b ada supaya mudah diikuti saat
+presentasi, bukan bagian dari kode sumber.
 
-Walk through it with the class: start from the left, and stress the last branch —
-validation decides whether data is reported via `onSubmit` or stops as an error message.
+Telusuri bersama kelas: mulai dari kiri, dan tekankan cabang terakhir — validasi menentukan apakah
+data dilaporkan lewat `onSubmit` atau berhenti sebagai pesan error.
 
-Warning: paths 4a and 4b do not run at the same time. If even one field fails, `onSubmit`
-is never called.
+Peringatan: jalur 4a dan 4b tidak berjalan bersamaan. Kalau satu field gagal, `onSubmit` tidak
+pernah dipanggil.
 -->
 
 ---
 
-## UX Principles for Error Messages
+## Pesan Error: Spesifik, Dekat, Dua Sinyal
 
 ![w:1120](assets/diagrams/bab-08-form-input-dan-validasi-10.svg)
 
-- **Specific and close to the field** — "Invalid email format (example: …)"
-- **Two signals at once** — a red border *and* the message text
+- **Spesifik dan dekat dengan field** — "Format email tidak valid (contoh: …)"
+- **Dua sinyal sekaligus** — border merah *dan* teks pesan
 
-> Color alone is not enough: some users are color-blind and screen readers do not read it.
+> Warna saja tidak cukup: sebagian pengguna buta warna dan screen reader tidak membacanya.
 
 <!--
-Tie the "two signals" principle to the accessibility of Chapter 6: color is an extra
-signal, the message text is the main signal.
+Kaitkan prinsip "dua sinyal" dengan aksesibilitas di Bab 6: warna adalah sinyal tambahan, teks pesan
+adalah sinyal utama.
 
-Guiding question: "Why must a field that fails validation not be cleared?" (The user
-would have to retype from scratch and would actually add new mistakes.)
+Pertanyaan penuntun: "Kenapa field yang gagal validasi tidak boleh dikosongkan?" (Pengguna harus
+mengetik ulang dari awal dan justru akan menambah kesalahan baru.)
 
-Warning: these four principles are numbered in Section 8.5; the label and placeholder
-rules come from a separate paragraph and are discussed on the next slide.
+Peringatan: keempat prinsip ini bernomor di subbab 8.5; aturan label dan placeholder berasal dari
+paragraf terpisah dan dibahas di slide berikutnya.
 
-Trimmed to the picture (the diagram says this):
-- **Consistent and brief** — short sentences, without excessive exclamation marks
-- **The value is not cleared** — the user only fixes the part that is wrong
+Dipotong ke gambar (diagram yang mengatakan ini):
+- **Konsisten dan ringkas** — kalimat pendek, tanpa tanda seru berlebihan
+- **Nilai tidak dihapus** — pengguna hanya memperbaiki bagian yang salah
 -->
 
 ---
 
-## Permanent Label vs Placeholder
+## Placeholder Bukan Pengganti Label
 
-- A **label** ("Email") explains the name of the field and is always visible
-- A **placeholder** (`nama.kecil@students.univ.ac.id`) gives an example value, then disappears
-- A placeholder must not replace the label
-- As soon as the user types, that hint vanishes and the field is left without a name
+- **Label** ("Email") menjelaskan nama field dan selalu tampil
+- **Placeholder** (`nama.kecil@students.univ.ac.id`) memberi contoh nilai, lalu hilang
+- Placeholder tidak boleh menggantikan label
+- Begitu pengguna mengetik, petunjuknya lenyap dan field kehilangan nama
 
-> `FormField` always renders the label above the field, separate from the placeholder (Section 8.6).
+> `FormField` selalu merender label di atas field, terpisah dari placeholder (subbab 8.6).
 
 <!--
-Stress the distinction between the two roles: a label explains what the field is for,
-while a placeholder only gives an example value. Only the label survives after typing.
+Tekankan pembedaan dua perannya: label menjelaskan field itu untuk apa, sedangkan placeholder hanya
+memberi contoh nilai. Hanya label yang bertahan setelah pengguna mengetik.
 
-Guiding question: "What disappears from the screen as soon as the user types in a field
-that only uses a placeholder?" (The field name — the user loses the hint for its contents.)
+Pertanyaan penuntun: "Apa yang hilang dari layar begitu pengguna mengetik di field yang hanya punya
+placeholder?" (Nama field — pengguna kehilangan petunjuk isinya.)
 
-Warning: placeholders are often used in place of labels because they look tidy; stress
-that the hint vanishes as soon as the user starts typing.
+Peringatan: placeholder sering dipakai menggantikan label karena terlihat rapi; tegaskan bahwa
+petunjuknya lenyap begitu pengguna mulai mengetik.
 -->
 
 ---
 
-## Diagram: Permanent Label vs Placeholder
+## Label Selalu Tampil, Placeholder Menghilang
 
 ![w:1120](assets/diagrams/bab-08-form-input-dan-validasi-04.svg)
 
 <!--
-The picture is the previous slide written as three matched rows: what each thing is for,
-when it is on screen, and how the two relate. Read it top-down on the left, then top-down
-on the right — row 1 against row 1, row 2 against row 2 — rather than left panel then
-right panel.
+Gambar ini adalah slide sebelumnya yang ditulis sebagai tiga baris berpasangan: untuk apa masing-
+masing, kapan ia ada di layar, dan bagaimana keduanya berhubungan. Bacakan atas ke bawah di kiri,
+lalu atas ke bawah di kanan — baris satu lawan baris satu, baris dua lawan baris dua — bukan panel
+kiri lalu panel kanan.
 
-Row 2 carries the lesson: the label is always visible, the placeholder disappears. When a
-field has only a placeholder, its name is gone the moment the user starts typing.
+Baris kedua membawa pelajarannya: label selalu terlihat, placeholder menghilang. Kalau sebuah field
+hanya punya placeholder, namanya lenyap begitu pengguna mulai mengetik.
 -->
 
 ---
 
 <!-- _class: center -->
 
-## Think-Pair-Share: A Frustrating Form
+## Think-Pair-Share: Formulir yang Pernah Menjengkelkanmu
 
-- Pick one form in an app that has ever frustrated you
-- Decide: when does its validation run, and how are its error messages presented
-- Score those findings against the four principles just discussed
+- Pilih satu formulir di aplikasi yang pernah membuatmu kesal
+- Tentukan: kapan validasinya berjalan, dan bagaimana pesan errornya disajikan
+- Nilai temuanmu dengan empat prinsip yang baru dibahas
 
-2 minutes in pairs, then 2–3 pairs report their findings.
+2 menit berpasangan, lalu 2–3 pasangan melaporkan temuannya.
 
 <!--
-Give a real 2 minutes and walk around the room. The aim of this exercise is to get
-students used to judging a form as a designer, not merely as a user.
+Beri waktu benar-benar 2 menit dan berkeliling. Tujuan latihan ini adalah membiasakan mahasiswa
+menilai formulir sebagai perancang, bukan sekadar sebagai pengguna.
 
-Strong answers mention: an "input is wrong" message with no hint for fixing it (breaking
-the specific principle), real-time validation that barks the moment a field is just
-touched, or a button that does not respond because the keyboard is still open.
+Jawaban kuat menyebut: pesan "input salah" tanpa petunjuk perbaikan (melanggar prinsip spesifik),
+validasi real-time yang langsung membentak saat field baru disentuh, atau tombol yang tidak
+merespons karena papan ketik masih terbuka.
 
-Warning: if an answer stops at "the app is bad", steer it toward a technical question —
-"when does its validation run, and what signal does it give?"
+Peringatan: kalau jawaban berhenti di "aplikasinya jelek", arahkan ke pertanyaan teknis — "kapan
+validasinya berjalan, dan sinyal apa yang diberikannya?"
 -->
 
 ---
 
-## Trade-off: Disabled Button vs Submit Validation
+## Trade-off: Tombol Nonaktif atau Validasi Saat Submit
 
-| Strategy | When it wins | Weakness |
+| Strategi | Kapan unggul | Kelemahan |
 |---|---|---|
-| Disabled submit button | Sending is expensive, for example calling an API directly | No error message ever appears when the button is refused |
-| Disabled + *on blur* validation | Feedback still exists without pressing the button | Two mechanisms run at the same time |
-| Validation on submit | The form requirements need to be transparent with per-field messages | The button is always active, so invalid data is still attempted |
+| Tombol submit nonaktif | Pengiriman mahal, misalnya memanggil API langsung | Pesan error tidak pernah muncul saat tombol ditolak |
+| Nonaktif + validasi *on blur* | Umpan balik tanpa menekan tombol | Dua mekanisme berjalan bersamaan |
+| Validasi saat submit | Syarat formulir transparan lewat pesan per field | Tombol selalu aktif, data salah tetap dicoba |
 
-- An example of the disabled pattern: `FormSaran` with `disabled={!formValid}` and `onBlur`
+- Contoh pola nonaktif: `FormSaran` dengan `disabled={!formValid}` dan `onBlur`
 
-> This chapter chooses validation on submit + real-time after the first attempt.
+> Bab ini memilih validasi saat submit + real-time setelah percobaan pertama.
 
 <!--
-Present it as an honest debate, not as "one is right, one is wrong". A disabled button
-guarantees that the data sent always passes client validation — that is a real advantage.
+Sajikan sebagai perdebatan yang jujur, bukan sebagai "satu benar, satu salah". Tombol nonaktif
+menjamin data yang dikirim selalu lolos validasi klien — itu keunggulan nyata.
 
-Guiding question: "When does a gray button actually harm the user?" (The user does not
-know which requirement is unmet, especially on a long form; a gray button is also less
-accessible.)
+Pertanyaan penuntun: "Kapan tombol kelabu justru merugikan pengguna?" (Pengguna tidak tahu syarat
+mana yang belum terpenuhi, apalagi di formulir panjang; tombol kelabu juga kurang aksesibel.)
 
-Warning: the forms in this chapter are small to medium-sized and the goal is mastering
-the error handling pattern, not preventing submission. State that reason to the class.
+Peringatan: formulir di bab ini berukuran kecil sampai sedang dan tujuannya menguasai pola
+penanganan error, bukan mencegah pengiriman. Nyatakan alasan itu ke kelas.
 -->
 
 ---
 
-## FormField: One Component, Many Uses
+<!-- _class: compact -->
 
-`File: components/FormField.js`
+## Satu Component FormField Melayani Tiga Formulir
 
 ```jsx
 export default function FormField({ label, error, ...propsLain }) {
@@ -678,19 +694,21 @@ export default function FormField({ label, error, ...propsLain }) {
 }
 ```
 
-- `...propsLain` forwards the remaining props to `TextInput`
-- Usage: `<FormField label="Email" error={errors.email} />`
-- One source of styles for three forms — visual consistency is guaranteed
+- `...propsLain` meneruskan sisa props ke `TextInput`
+- Pemakaian: `<FormField label="Email" error={errors.email} />`
 
 <!--
-Show the two Chapter 3 techniques meeting here: the rest operator collects the remaining
-props, and spread passes them back to TextInput — the key to this component's reusability.
+Tunjukkan dua teknik Bab 3 yang bertemu di sini: operator sisa mengumpulkan props yang tersisa, dan
+spread mengirimkannya kembali ke TextInput — itulah kunci component ini bisa dipakai ulang.
 
-Guiding question: "What has to change if the error border color changes?" (One place:
-`styles.inputError` — not three form screens.)
+Pertanyaan penuntun: "Apa yang harus diubah kalau warna border error berubah?" (Satu tempat:
+`styles.inputError` — bukan tiga layar formulir.)
 
-Warning: `label` and `error` are deliberately "consumed" by FormField so they are not
-forwarded to TextInput; the other props arrive automatically without being registered.
+Peringatan: `label` dan `error` sengaja "dikonsumsi" oleh FormField supaya tidak diteruskan ke
+TextInput; props lain sampai otomatis tanpa perlu didaftarkan.
+
+Dipotong ke catatan (tidak muat di slide): berkas `components/FormField.js`, dan butir "Satu
+sumber gaya untuk tiga formulir — konsistensi visual terjamin".
 -->
 
 ---
@@ -698,90 +716,89 @@ forwarded to TextInput; the other props arrive automatically without being regis
 <!-- _class: lead -->
 <!-- _paginate: skip -->
 
-# Part 4 — Implementation and Case Study
+# Bagian 4 — Implementasi dan Studi Kasus
 
-Section 8.7 · Login, Registration, and Student Data forms
+subbab 8.7 · Formulir login, registrasi, dan data mahasiswa
 
 <!--
-This part assembles all the material into three whole forms. Once one form is
-understood, the other two read without new effort — that is the main message of this part.
+Bagian ini merakit seluruh materi menjadi tiga formulir utuh. Begitu satu formulir dipahami, dua
+lainnya terbaca tanpa usaha baru — itulah pesan utama bagian ini.
 
-Remind them that this meeting's practicum centers on FormMahasiswa and the
-`app/(app)/mahasiswa/tambah.js` route from Chapter 7.
+Ingatkan bahwa praktikum pertemuan ini berpusat pada FormMahasiswa dan rute
+`app/(app)/mahasiswa/tambah.js` dari Bab 7.
 -->
 
 ---
 
-## File Map and Responsibilities
+## Empat Lapisan dengan Tanggung Jawab Masing-Masing
 
 ![w:1120](assets/diagrams/bab-08-form-input-dan-validasi-03.svg)
 
-> Four layers: validation rules, field appearance, form logic, and the data owner.
+> Empat lapisan: aturan validasi, tampilan field, logika formulir, dan pemilik data.
 
 <!--
-Explain the separation of responsibilities: the route arranges the screen's position in
-navigation, the screen arranges its contents and behavior, FormField arranges the field
-appearance, and validators.js arranges the rules.
+Jelaskan pemisahan tanggung jawab: rute mengatur posisi layar di navigasi, layar mengatur isi dan
+perilakunya, FormField mengatur tampilan field, dan validators.js mengatur aturannya.
 
-Additional note: this diagram summarizes the four layers named in the Code Explanation
-part of the chapter, it is not a figure from the book.
+Catatan tambahan: diagram ini merangkum empat lapisan yang disebut di bagian Penjelasan Kode pada
+buku, bukan gambar dari buku.
 
-Guiding question: "When is this separation felt to pay off?" (When local storage is
-replaced by an API in Chapter 10 — the form code needs no change.)
+Pertanyaan penuntun: "Kapan pemisahan ini terasa manfaatnya?" (Saat penyimpanan lokal diganti API di
+Bab 10 — kode formulirnya tidak perlu berubah.)
 -->
 
 ---
 
-## Table 8.3 — Mapping Forms to Routes
+## Tabel 8.3 — Pemetaan Formulir ke Rute
 
-| Form | Screen file | Route (created in Chapter 7) |
+| Formulir | File layar | Rute (dibuat di Bab 7) |
 |---|---|---|
-| Login | `screens/FormLogin.js` | `app/login.js` — placeholder replaced |
-| Registration | `screens/FormRegistrasi.js` | `app/registrasi.js` — new route |
-| Student Data | `screens/FormMahasiswa.js` | `app/(app)/mahasiswa/tambah.js` |
+| Login | `screens/FormLogin.js` | `app/login.js` — placeholder diganti |
+| Registrasi | `screens/FormRegistrasi.js` | `app/registrasi.js` — rute baru |
+| Data Mahasiswa | `screens/FormMahasiswa.js` | `app/(app)/mahasiswa/tambah.js` |
 
-> A route arranges the *position* of the screen in navigation; the screen arranges its *contents* and behavior.
+> Rute mengatur *posisi* layar di navigasi; layar mengatur *isi* dan perilakunya.
 
 <!--
-Stress that separating the `screens/` folder from the route files is an application of
-the separation of responsibilities, not merely folder tidiness.
+Tekankan bahwa pemisahan folder `screens/` dari file rute adalah penerapan pemisahan tanggung jawab,
+bukan sekadar kerapian folder.
 
-Guiding question: "Why is `app/registrasi.js` called a new route?" (Chapter 7 had not
-prepared it; the pattern is the same as `app/login.js`.)
+Pertanyaan penuntun: "Kenapa `app/registrasi.js` disebut rute baru?" (Bab 7 belum menyiapkannya;
+polanya sama dengan `app/login.js`.)
 
-Warning: route file names are written all lowercase, following the Chapter 7 convention.
+Peringatan: nama file rute ditulis huruf kecil semua, mengikuti konvensi Bab 7.
 -->
 
 ---
 
-## The Same Internal Pattern in Three Forms
+## Satu Pola Internal Melayani Ketiga Formulir
 
-1. `ATURAN_*` — the rules table per field
-2. `validasiSatuField` — runs `jalankanAturan` for one field
-3. `validasiSemuaField` — collects the messages into an `errors` object
-4. `handleChange` — updates the form; real-time when `sudahDikirim`
-5. `handleSubmit` — validates, fills `errors`, calls `onSubmit`
+1. `ATURAN_*` — tabel aturan per field
+2. `validasiSatuField` — menjalankan `jalankanAturan` untuk satu field
+3. `validasiSemuaField` — mengumpulkan pesan menjadi objek `errors`
+4. `handleChange` — memperbarui formulir; real-time saat `sudahDikirim`
+5. `handleSubmit` — memvalidasi, mengisi `errors`, memanggil `onSubmit`
 
-> The three differ only in the list of fields and the rules.
+> Ketiganya hanya berbeda pada daftar field dan tabel aturannya.
 
 <!--
-This is the key slide for reading the code quickly: if students have mastered FormLogin,
-FormRegistrasi and FormMahasiswa are only longer lists of fields.
+Ini slide kunci untuk membaca kode dengan cepat: kalau mahasiswa sudah menguasai FormLogin,
+FormRegistrasi dan FormMahasiswa hanya berisi daftar field yang lebih panjang.
 
-Guiding question: "Which part differs between FormLogin and FormMahasiswa?" (The list of
-fields and the rules table; the other five mechanisms are identical.)
+Pertanyaan penuntun: "Bagian mana yang berbeda antara FormLogin dan FormMahasiswa?" (Daftar field
+dan tabel aturan; lima mekanisme lainnya identik.)
 
-Warning: `Object.values(hasil).every((pesan) => pesan === '')` is the whole-form check —
-one failed field means the form is not valid yet.
+Peringatan: `Object.values(hasil).every((pesan) => pesan === '')` adalah pemeriksaan seluruh
+formulir — satu field gagal berarti formulir belum valid.
 -->
 
 ---
 
-## FormRegistrasi: Validation That Needs Another Field
+## FormRegistrasi: Validasi yang Membaca Field Lain
 
 ![w:1120](assets/diagrams/bab-08-form-input-dan-validasi-11.svg)
 
-`File: screens/FormRegistrasi.js`
+`screens/FormRegistrasi.js`
 
 ```jsx
 const ATURAN_KONFIRMASI = [wajibDiisi, validasiKonfirmasiPassword];
@@ -791,30 +808,30 @@ if (namaField === 'konfirmasiPassword') {
 }
 ```
 
-- If `password` changes, the `konfirmasiPassword` error is recomputed too
-- Cross-field synchronization is only possible thanks to the single source of truth
+- Kalau `password` berubah, error `konfirmasiPassword` ikut dihitung ulang
+- Sinkronisasi lintas field hanya mungkin berkat sumber kebenaran tunggal
 
 <!--
-This is the only place in the chapter where validation needs the value of another field.
-Explain the scenario: the user types "confirmation" first, then changes the password —
-a confirmation that was correct becomes wrong.
+Ini satu-satunya tempat di bab ini di mana validasi membutuhkan nilai field lain. Jelaskan
+skenarionya: pengguna mengetik konfirmasi lebih dulu, lalu mengubah kata sandi — konfirmasi yang
+tadinya benar menjadi salah.
 
-Guiding question: "Why must the confirmation error be recomputed when the password
-changes?" (Because its comparison changes, so the old conclusion no longer holds.)
+Pertanyaan penuntun: "Kenapa error konfirmasi harus dihitung ulang saat kata sandi berubah?" (Karena
+pembandingnya berubah, sehingga kesimpulan lama tidak lagi berlaku.)
 
-Warning: a rule named `ATURAN_NAMA` uses the arrow function
-`(nilai) => validasiPanjang(nilai, 50)` so that a parameterized rule still fits
+Peringatan: aturan bernama `ATURAN_NAMA` memakai fungsi panah
+`(nilai) => validasiPanjang(nilai, 50)` supaya aturan berparameter tetap cocok dengan
 `jalankanAturan`.
 
-Trimmed to the picture (the diagram says this):
-- `validasiKonfirmasiPassword` takes the password as the comparison context
+Dipotong ke gambar (diagram yang mengatakan ini):
+- `validasiKonfirmasiPassword` menerima kata sandi sebagai konteks pembanding
 -->
 
 ---
 
-## FormMahasiswa: Program Chips and Numeric Fields
+## Chip Menggantikan Dropdown, Angka Dapat Papan Ketik
 
-`File: screens/FormMahasiswa.js`
+`screens/FormMahasiswa.js`
 
 ```jsx
 <Pressable
@@ -826,26 +843,28 @@ Trimmed to the picture (the diagram says this):
 </Pressable>
 ```
 
-- Chips are friendlier to a touchscreen than a dropdown: no scrolling, generous area
-- The NIM, cohort, and GPA fields use a matching `keyboardType` + `maxLength`
-- The phone field closes the chain with `returnKeyType="done"` and `onSubmitEditing`
+- Chip lebih ramah layar sentuh daripada dropdown: tanpa menggulir, area ketuk luas
+- Field NIM, angkatan, dan IPK memakai `keyboardType` + `maxLength` yang sesuai
+- Field telepon menutup rantai dengan `returnKeyType="done"` dan `onSubmitEditing`
 
 <!--
-Explain why chips were chosen: on a small screen, a dropdown list needs extra scrolling
-and its touch area is narrow.
+Jelaskan alasan chip dipilih: di layar kecil, daftar dropdown butuh gulir tambahan dan area ketuknya
+sempit.
 
-Guiding question: "How is the selected program value stored?" (Through
-`handleChange('prodi', prodi)`, so that it is validated like any other field.)
+Pertanyaan penuntun: "Bagaimana nilai prodi yang dipilih disimpan?" (Lewat
+`handleChange('prodi', prodi)`, sehingga ia divalidasi seperti field lain.)
 
-Warning: the program field does not use FormField because it is not a text input. Its
-error message is rendered separately, and students often forget to add that part.
+Peringatan: field prodi tidak memakai FormField karena bukan input teks. Pesan errornya dirender
+terpisah, dan bagian itu sering lupa ditambahkan mahasiswa.
 -->
 
 ---
 
-## A Thin Route as Data Owner
+<!-- _class: compact -->
 
-`File: app/(app)/mahasiswa/tambah.js`
+## Rute Tipis sebagai Pemilik Data
+
+`app/(app)/mahasiswa/tambah.js`
 
 ```jsx
 export default function TambahMahasiswa() {
@@ -861,152 +880,188 @@ export default function TambahMahasiswa() {
 }
 ```
 
-- The form screen only reports valid data through `onSubmit`
-- Replacing local storage with an API (Chapter 10) does not touch the form code
+- Layar formulir hanya melaporkan data valid lewat `onSubmit`
+- Mengganti penyimpanan lokal dengan API (Bab 10) tidak menyentuh kode formulir
 
-> This list disappears when the app is closed — the reason Chapters 9, 10, and 11 exist.
+> Daftar ini hilang saat aplikasi ditutup — itulah alasan Bab 9, 10, dan 11 ada.
 
 <!--
-Stress the separation of roles: the route owns the data, the form only reports valid data.
-The form does not know, and does not need to know, how that data is used.
+Tekankan pemisahan peran: rute memiliki datanya, formulir hanya melaporkan data yang valid. Formulir
+tidak tahu, dan tidak perlu tahu, data itu dipakai untuk apa.
 
-Guiding question: "What is `id: Date.now()` for here?" (It gives a unique id for the demo;
-a real database will generate its own id.)
+Pertanyaan penuntun: "Untuk apa `id: Date.now()` di sini?" (Memberi id unik untuk demo; basis data
+sungguhan akan membuat id-nya sendiri.)
 
-Warning: the form really is cleared deliberately after a successful submit. That is
-designed behavior, not a bug — the new data is read from `daftarMahasiswa`.
+Peringatan: formulir memang sengaja dikosongkan setelah submit berhasil. Itu perilaku yang
+dirancang, bukan bug — data barunya dibaca dari `daftarMahasiswa`.
 -->
 
 ---
 
-## Case Study: Data Quality in the Academic Portal
+## Studi Kasus: Kualitas Data di Portal Akademik
 
-<div class="grid2">
-<div>
+**Keluhan yang sampai ke helpdesk**
 
-**Complaints reaching the helpdesk**
+- Email salah ketik saat daftar ulang → informasi tidak sampai
+- Nomor telepon kurang digit → dosen wali tidak bisa menghubungi
+- NIM dan angkatan tidak konsisten → laporan PDDikti diperbaiki berulang kali
 
-- Email mistyped during re-registration → information does not arrive
-- Phone number short of digits → the academic advisor cannot make contact
-- NIM and cohort inconsistent → the PDDikti report is corrected again and again
+**Pertahanan berlapis**
 
-</div>
-<div>
+- Klien (bab ini): `wajibDiisi`, `validasiEmail`, `validasiTelepon`, `validasiNim`
+- Server (Bab 10 dan Bab 13), skema basis data, dan *data cleansing* berkala
 
-**Defense in depth**
-
-- Client (this chapter): `wajibDiisi`, `validasiEmail`, `validasiTelepon`, `validasiNim`
-- Server (Chapter 10 and Chapter 13), the database schema, and periodic *data cleansing*
-
-</div>
-</div>
-
-> Client validation makes mistakes detected earlier; it does not replace server validation.
+> Validasi klien membuat kesalahan terdeteksi lebih awal; ia tidak menggantikan validasi server. Formulir di **Aplikasi Manajemen Data Mahasiswa** adalah prototipe langsung solusinya.
 
 <!--
-Read it as a story of loss, not as a list of features: every data correction consumes
-academic staff time and can delay official documents such as the KRS and the transcript.
+Bacakan sebagai kisah kerugian, bukan sebagai daftar fitur: setiap koreksi data memakan waktu staf
+akademik dan bisa menunda dokumen resmi seperti KRS dan transkrip.
 
-Guiding question: "Why are users given per-field messages instead of a disabled button on
-a portal serving thousands of students?" (Because explicit messages teach the form
-requirements, while a gray button leaves users guessing.)
+Pertanyaan penuntun: "Kenapa pengguna diberi pesan per field, bukan tombol nonaktif, di portal yang
+melayani ribuan mahasiswa?" (Karena pesan eksplisit mengajarkan syarat formulir, sedangkan tombol
+kelabu membiarkan pengguna menebak-nebak.)
 
-Warning: the app is not the only data entry point, so old data still needs to be cleaned
-up periodically.
+Peringatan: aplikasi bukan satu-satunya pintu masuk data, jadi data lama tetap perlu dibersihkan
+berkala.
+
+Kaitkan dengan spine: tiga formulir yang kamu bangun hari ini adalah versi kecil dari layar
+tambah-mahasiswa di Aplikasi Manajemen Data Mahasiswa; di Project Akhir ia disambungkan ke server
+dan autentikasi sungguhan.
+-->
+
+---
+
+## Praktikum: Yang Dibangun Pertemuan Ini
+
+- Buat `utils/validators.js` berisi seluruh fungsi validasi murni
+- Buat `components/FormField.js` dengan label, border error, dan pesan
+- Buat `screens/FormMahasiswa.js`: form state satu objek, `ATURAN_MAHASISWA`, chip prodi
+- Ubah `app/(app)/mahasiswa/tambah.js` menjadi rute tipis yang menyimpan data
+- Jalankan `npx expo start`, lalu uji keadaan kosong, tidak valid, dan valid
+
+> Tidak ada dependency baru: seluruh materi bab ini memakai component inti React Native. Formulir ini melengkapi rute yang kamu buat di Bab 7 pada **Aplikasi Manajemen Data Mahasiswa**.
+
+<!--
+Ingatkan bahwa keempat file ini harus berada di folder yang benar sejak awal: `utils/`,
+`components/`, `screens/`, dan rute di dalam `app/`. Salah folder adalah penyebab error impor
+paling sering di praktikum ini.
+
+Beri waktu untuk menyalin kode lebih dulu, baru menguji; jangan menguji sambil mengetik ulang.
+
+Peringatan: jangan menambah dependency untuk formulir ini. Semua yang dibutuhkan sudah ada di React
+Native inti, dan menambah library validasi justru menyembunyikan pola yang sedang dipelajari.
+-->
+
+---
+
+## Yang Harus Teramati
+
+Untuk praktikum ini, catat lima hal:
+
+- Tujuh field menampilkan "Field ini wajib diisi" saat tombol ditekan tanpa isi
+- Email salah format dan telepon 9 digit memberi pesan berbeda per field
+- Memperbaiki satu field menghapus error field itu tanpa menekan tombol lagi
+- Data Budi Santoso yang valid memunculkan Alert "Data Tersimpan"
+- Field Telepon tetap terlihat saat papan ketik terbuka dan tombol merespons satu ketukan
+
+> Laporan yang baik menyertakan tangkapan layar tiap keadaan, bukan hanya tulisan "berhasil".
+
+<!--
+Jadikan daftar ini lembar centang: mahasiswa mencentang setiap butir lalu melampirkan tangkapan layar
+sebagai bukti praktikum sesuai rubrik.
+
+Butir ketiga adalah bukti paling penting bahwa `sudahDikirim` bekerja; minta mahasiswa menunjukkan
+butir itu secara langsung, bukan hanya melaporkannya.
+
+Pertanyaan penuntun: "Kenapa error satu field bisa hilang tanpa menekan tombol?" (Karena
+`handleChange` memvalidasi ulang field itu ketika `sudahDikirim` bernilai `true`.)
 -->
 
 ---
 
 <!-- _class: center -->
 
-## Mini Quiz
+## Kuis Kilat
 
-- Where does the value displayed by `TextInput` in a controlled component come from?
-- Which combination of props is most appropriate for a password field?
-- Why is `validasiTelepon("0812-3456-7890")` declared valid?
-- Why can a field's error disappear automatically after the first submit?
+- Dari mana nilai yang ditampilkan `TextInput` pada controlled component berasal?
+- Kombinasi props apa yang paling tepat untuk field kata sandi?
+- Kenapa `validasiTelepon("0812-3456-7890")` dinyatakan valid?
+- Kenapa error sebuah field bisa hilang otomatis setelah submit pertama?
 
 <!--
-Five-minute oral quiz: show the questions, ask the class to answer together or raise a
-hand, then move on to the answer slide. Do not leak the answers on this slide.
+Kuis lisan 5 menit: tampilkan pertanyaan, minta kelas menjawab serempak atau dengan mengangkat
+tangan, lalu lanjut ke slide kunci. Jangan bocorkan jawaban di slide ini.
 
-If the class answers vary on the third question, repeat the principle "validate the
-intent, not the typing style" before closing the meeting.
+Keempat pertanyaan ini diambil dari bagian pilihan ganda Evaluasi Bab 8 di buku; pakai sebagai
+pemeriksaan cepat sebelum menutup pertemuan.
+
+Kalau jawaban kelas beragam di pertanyaan ketiga, ulangi prinsip "validasi maksudnya, bukan gaya
+mengetiknya" sebelum menutup pertemuan.
 -->
 
 ---
 
 <!-- _class: center -->
 
-## Answers
+## Kunci Kuis Kilat
 
-- From the React state connected through the `value` prop
-- `secureTextEntry` and `autoCapitalize="none"`
-- The digit count is 12 once the hyphens are removed, inside the 10–13 range
-- `handleChange` re-validates the field that changed while `sudahDikirim` is `true`
+- Dari state React yang disambungkan lewat prop `value`
+- `secureTextEntry` dan `autoCapitalize="none"`
+- Jumlah digitnya 12 setelah tanda hubung dibuang, masih di rentang 10–13
+- `handleChange` memvalidasi ulang field yang berubah selama `sudahDikirim` bernilai `true`
 
 <!--
-Repeat the distinction most often confused: `value` holds state, not TextInput's internal
-value.
+Ulangi pembedaan yang paling sering tertukar: `value` memegang state, bukan nilai internal TextInput.
 
-If many students miss the fourth question, return to the "When Validation Runs" slide
-before closing the meeting.
+Kalau banyak mahasiswa salah di pertanyaan keempat, kembali ke slide "Kapan Validasi Berjalan"
+sebelum menutup pertemuan.
 -->
 
 ---
 
-## Summary
+## Ringkasan
 
-1. TextInput does not store its own value; state becomes the single source of truth
-2. Single-object form state + a generic `handleChange` simplify reset and validation
-3. Validation is written as pure functions: a value comes in, an error message or empty string comes out
-4. Error messages must be specific, close to the field, give two signals, and not clear the user's value
-5. `FormField` makes fields uniform; the form data continues in Chapter 9, Chapter 10, and Chapter 11
+1. TextInput tidak menyimpan nilainya sendiri; state menjadi sumber kebenaran tunggal
+2. Form state satu objek + `handleChange` generik menyederhanakan reset dan validasi
+3. Validasi ditulis sebagai fungsi murni: nilai masuk, pesan error atau string kosong keluar
+4. Pesan error harus spesifik, dekat field, memberi dua sinyal, dan tidak menghapus nilai pengguna
+5. `FormField` menyeragamkan field; data formulir berlanjut di Bab 9, Bab 10, dan Bab 11
 
 <!--
-Do not read it out. Ask students to pick one number and explain it in their own words —
-this works better than repeating the reading.
+Jangan dibacakan. Minta mahasiswa memilih satu nomor dan menjelaskannya dengan kata-kata sendiri —
+ini bekerja lebih baik daripada mengulang bacaan.
 
-Items that are not in the summary but remain important: keyboard handling
-(`KeyboardAvoidingView`, `keyboardShouldPersistTaps`) and the `returnKeyType` chain.
-Mention them orally so they are not lost.
+Hal yang tidak masuk ringkasan tetapi tetap penting: penanganan papan ketik (`KeyboardAvoidingView`,
+`keyboardShouldPersistTaps`) dan rantai `returnKeyType`. Sebutkan secara lisan supaya tidak hilang.
+
+Pesan penutup: bab ini membuat data masuk dengan benar; bab berikutnya menentukan siapa yang boleh
+membacanya.
 -->
 
 ---
 
-## References
+<!-- _class: compact -->
 
-| Source | Link |
+## Referensi
+
+| Sumber | Link |
 |---|---|
-| React Native documentation (2026) | reactnative.dev |
+| Dokumentasi React Native (2026) | reactnative.dev |
 | TextInput (React Native) | reactnative.dev/docs/textinput |
-| Expo documentation (2026) | docs.expo.dev |
-| React documentation (2026) | react.dev |
+| Dokumentasi Expo (2026) | docs.expo.dev |
+| Dokumentasi React (2026) | react.dev |
 | JavaScript, MDN Web Docs (2026) | developer.mozilla.org |
 
-<div class="grid2">
-<div>
+**Bacaan lanjutan:** Bab 9 — State Management
 
-**Related chapters**
-
-- Chapter 7 — the form routes used in this chapter
-
-</div>
-<div>
-
-**Technology versions in this book**
-
-- Expo SDK 57 · React Native 0.86 · React 19.2 · Node.js LTS ≥ 22
-
-</div>
-</div>
+**Versi teknologi:** Expo SDK 57 · React Native 0.86 · React 19.2 · Node.js ≥ 22
 
 <!--
-The complete references are in Appendix D; the terms controlled component, validation,
-and TextInput are explained in Appendix C (glossary).
+Rujukan lengkap ada di Lampiran D; istilah controlled component, validasi, dan TextInput dijelaskan
+di Lampiran C (glosarium).
 
-Remind them that `keyboardType` and `behavior` are version-sensitive: always match them
-against the official reactnative.dev documentation for the version in use.
+Ingatkan bahwa `keyboardType` dan `behavior` sensitif versi: selalu cocokkan dengan dokumentasi
+resmi reactnative.dev untuk versi yang dipakai.
 -->
 
 ---
@@ -1014,26 +1069,25 @@ against the official reactnative.dev documentation for the version in use.
 <!-- _class: lead -->
 <!-- _paginate: skip -->
 
-# Ready for Chapter 9
+# Siap ke Bab 9
 
-**Practicum:** build `utils/validators.js`, `components/FormField.js`, and `screens/FormMahasiswa.js`, then connect them to the `app/(app)/mahasiswa/tambah.js` route.
+**Praktikum:** bangun `utils/validators.js`, `components/FormField.js`, dan `screens/FormMahasiswa.js`, lalu sambungkan ke rute `app/(app)/mahasiswa/tambah.js`.
 
-Continuation of meeting 9 (separate deck): Chapter 9 — State Management (Sub-CPMK 4.2). Meeting 10: Chapter 10 — REST API (Sub-CPMK 5.1 and 5.2).
+Lanjutan pertemuan 9 (deck terpisah): Bab 9 — State Management (Sub-CPMK 4.2). Pertemuan 10: Bab 10 — REST API (Sub-CPMK 5.1 dan 5.2).
 
-Final Project groups are formed starting in meeting 9.
+Kelompok Project Akhir dibentuk mulai pertemuan 9.
 
-> Exercises: extend `FormSaran` (Example 1), apply edit mode to `FormMahasiswa`, and add a character counter in `FormField`.
+> Latihan: kembangkan `FormSaran` (Contoh 1), terapkan mode edit pada `FormMahasiswa`, dan tambahkan penghitung karakter di `FormField`.
 
 <!--
-Close with one sentence: "This chapter makes data come in correctly; the next chapter
-determines who may read it."
+Tutup dengan satu kalimat: "Bab ini membuat data masuk dengan benar; bab berikutnya menentukan siapa
+yang boleh membacanya."
 
-State the follow-up explicitly: Practicum 8 is assessed with the practicum rubric
-(conceptual understanding 15%, implementation 25%, code quality 15%, UI/UX 15%, debugging
-10%, documentation 20% — Appendix A), and the Final Project groups are formed according
-to the RPS for meeting 9.
+Sebutkan tindak lanjutnya secara eksplisit: Praktikum 8 dinilai dengan rubrik praktikum (pemahaman
+konsep 15%, implementasi 25%, kualitas kode 15%, UI/UX 15%, debugging 10%, dokumentasi 20% —
+Lampiran A), dan kelompok Project Akhir dibentuk sesuai RPS pertemuan 9.
 
-Point to the three exercise items on the slide as homework: Practice Questions 1 to 3 in
-the chapter, while Challenges 1 to 3 are provided for students who want to take up the
-security, static data, and API integration areas.
+Tunjuk ketiga butir latihan di slide sebagai pekerjaan rumah: Soal Praktik 1 sampai 3 di buku,
+sedangkan Tantangan 1 sampai 3 disediakan untuk mahasiswa yang ingin mengambil area keamanan, data
+statis, dan integrasi API.
 -->

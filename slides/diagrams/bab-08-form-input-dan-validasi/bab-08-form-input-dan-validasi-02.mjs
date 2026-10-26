@@ -18,7 +18,7 @@
 // ("paths 4a and 4b do not run at the same time").
 export default {
   id: '02',
-  slide: 'Flow: from Keystroke to Error Message',
+  slide: 'Satu Ketukan Tombol Memeriksa Semua Field',
   pattern: 'flow',
   alt:
     'One keystroke fires onChangeText, handleChange updates the form state; then one button ' +

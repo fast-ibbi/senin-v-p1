@@ -23,7 +23,7 @@
 // second and third chips are the ones carrying the accent and the code names.
 export default {
   id: '08',
-  slide: 'Controlled Component: Single Source of Truth',
+  slide: 'Satu Sumber Kebenaran, Tanpa Salinan Kedua',
   pattern: 'flow',
   alt:
     'The controlled round trip drawn as a chain: React state is the single source and ' +

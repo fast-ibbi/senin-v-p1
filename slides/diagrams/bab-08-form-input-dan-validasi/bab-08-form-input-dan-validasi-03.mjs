@@ -16,7 +16,7 @@
 // The screen then fans out to the two components it uses.
 export default {
   id: '03',
-  slide: 'File Map and Responsibilities',
+  slide: 'Empat Lapisan dengan Tanggung Jawab Masing-Masing',
   pattern: 'tree',
   alt:
     'The file map: app/(app)/mahasiswa/tambah.js is the thin route and the data owner; it ' +

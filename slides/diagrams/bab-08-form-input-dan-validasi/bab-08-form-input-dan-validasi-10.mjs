@@ -20,7 +20,7 @@
 // does not. It is a rule and what the rule looks like.
 export default {
   id: '10',
-  slide: 'UX Principles for Error Messages',
+  slide: 'Pesan Error: Spesifik, Dekat, Dua Sinyal',
   pattern: 'beforeAfter',
   alt:
     'Four error-message principles and the form each takes: specific and close to the ' +

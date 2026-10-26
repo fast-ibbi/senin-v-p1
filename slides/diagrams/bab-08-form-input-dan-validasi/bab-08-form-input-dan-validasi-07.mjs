@@ -16,7 +16,7 @@
 // fields, but only the bullet says it takes up half the screen.
 export default {
   id: '07',
-  slide: 'Handling the Virtual Keyboard',
+  slide: 'Papan Ketik Virtual Menutupi Setengah Layar',
   pattern: 'beforeAfter',
   alt:
     'Two symptoms against their mechanisms: without the fix the keyboard covers the lower ' +

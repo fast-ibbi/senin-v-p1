@@ -21,7 +21,7 @@
 // pagination row.
 export default {
   id: '11',
-  slide: 'FormRegistrasi: Validation That Needs Another Field',
+  slide: 'FormRegistrasi: Validasi yang Membaca Field Lain',
   pattern: 'flow',
   alt:
     'A chain with three stages: form.password is the comparison context, ' +

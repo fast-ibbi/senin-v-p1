@@ -22,7 +22,7 @@
 // pagination row.
 export default {
   id: '06',
-  slide: 'TextInput: It Does Not Store Its Own Value',
+  slide: 'TextInput Tidak Menyimpan Nilainya Sendiri',
   pattern: 'flow',
   alt:
     'The value leaves the field on every keystroke: TextInput holds no value of its own, ' +

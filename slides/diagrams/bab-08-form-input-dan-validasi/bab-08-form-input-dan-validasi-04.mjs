@@ -13,7 +13,7 @@
 // slide's objection is only that it must not take the label's job.
 export default {
   id: '04',
-  slide: 'Diagram: Permanent Label vs Placeholder',
+  slide: 'Label Selalu Tampil, Placeholder Menghilang',
   pattern: 'beforeAfter',
   alt:
     'A permanent label explains the name of the field, is always visible, and is separate ' +

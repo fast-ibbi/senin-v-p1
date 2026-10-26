@@ -23,7 +23,7 @@
 // the SVG if anything falls outside the shorter canvas.
 export default {
   id: '09',
-  slide: 'Validation: Definition and the Pure Function Contract',
+  slide: 'Validasi: Nilai Masuk, Pesan Error Keluar',
   pattern: 'flow',
   alt:
     'The contract in one direction: a value comes in, a pure function in ' +

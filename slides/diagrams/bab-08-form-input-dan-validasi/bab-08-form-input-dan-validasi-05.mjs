@@ -21,7 +21,7 @@
 // alternatives.
 export default {
   id: '05',
-  slide: 'Context: Bad Data Is a Cost',
+  slide: 'Data yang Salah Masuk Adalah Biaya',
   pattern: 'beforeAfter',
   alt:
     'Each typo and its price, in two matched rows: a misspelled email means academic ' +
