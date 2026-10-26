@@ -35,7 +35,7 @@
 // between neighbouring chips allows.
 export default {
   id: '03',
-  slide: 'Permission Request Flow',
+  slide: 'Alur Permintaan Izin Punya Tiga Pintu Keluar',
   pattern: 'stateMachine',
   alt:
     'Permission modes: from Check, "if needed" moves to Request and a granted permission ' +

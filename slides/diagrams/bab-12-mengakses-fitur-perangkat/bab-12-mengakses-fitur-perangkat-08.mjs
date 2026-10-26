@@ -28,7 +28,7 @@
 // picture needs the pair named in four words each; a sentence would not fit the band.
 export default {
   id: '08',
-  slide: 'Case Study: Photo and Location Attendance',
+  slide: 'Studi Kasus: Presensi Foto dan Lokasi Menutup Celah Kecurangan',
   pattern: 'beforeAfter',
   alt:
     'A signed attendance sheet can be signed for someone else; with photo, location and ' +

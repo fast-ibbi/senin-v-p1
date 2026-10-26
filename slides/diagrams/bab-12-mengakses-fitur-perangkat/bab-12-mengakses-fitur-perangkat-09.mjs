@@ -33,7 +33,7 @@
 // answer the slide exists to give.
 export default {
   id: '09',
-  slide: 'The Other Side: The Attendance Data Privacy Dilemma',
+  slide: 'Sisi Lain: Presensi yang Sama Bisa Menjadi Alat Pengawasan',
   pattern: 'flow',
   alt:
     'Attendance data — a student\'s face, location and presence time — combines into a ' +

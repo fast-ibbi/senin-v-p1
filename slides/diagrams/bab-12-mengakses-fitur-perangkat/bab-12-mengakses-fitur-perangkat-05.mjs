@@ -22,7 +22,7 @@
 // reads as a rendering accident rather than intent.
 export default {
   id: '05',
-  slide: 'Sandbox: Why Permissions Exist',
+  slide: 'Sandbox: Kenapa Izin Harus Ada',
   pattern: 'beforeAfter',
   alt:
     'Without permissions, any app could photograph you without your knowledge. With ' +

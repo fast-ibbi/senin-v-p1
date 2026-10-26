@@ -28,7 +28,7 @@
 // say.
 export default {
   id: '06',
-  slide: 'Location: Two Sources of Position',
+  slide: 'Lokasi Datang dari Dua Sumber yang Berbeda',
   pattern: 'tree',
   alt:
     'expo-location unites two sources of position: GPS, and network-based position, which ' +

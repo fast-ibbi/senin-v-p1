@@ -27,7 +27,7 @@
 // is the same inversion diagram 05 documents for "WITH PERMISSIONS".
 export default {
   id: '07',
-  slide: 'Notification Channels and Permission on Android',
+  slide: 'Kanal Notifikasi Bukan Pilihan Gaya, Melainkan Syarat',
   pattern: 'beforeAfter',
   alt:
     'Without a channel, notifications may be dropped by the system on Android; with a ' +

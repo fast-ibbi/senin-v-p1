@@ -20,7 +20,7 @@
 // three file names share one voice instead of one chip looking accidental.
 export default {
   id: '04',
-  slide: 'Mini Project: Student Profile App',
+  slide: 'Modul Profil: Empat Kelompok Data, Satu Layar',
   pattern: 'tree',
   alt:
     'The Student Profile App file structure: App.js holds screens/ProfilMahasiswa.js, and ' +

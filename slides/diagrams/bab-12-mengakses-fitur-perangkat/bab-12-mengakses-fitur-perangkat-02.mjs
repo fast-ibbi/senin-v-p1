@@ -17,7 +17,7 @@
 // build reports it, and it is the connector between the package and the OS API.
 export default {
   id: '02',
-  slide: 'What Is a Device API?',
+  slide: 'API Perangkat: JavaScript yang Menyuruh Perangkat Keras',
   pattern: 'flow',
   alt:
     'The device API chain: your JavaScript calls an Expo package, which bridges to the ' +
