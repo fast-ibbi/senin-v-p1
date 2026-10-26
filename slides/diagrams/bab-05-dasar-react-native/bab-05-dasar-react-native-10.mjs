@@ -4,7 +4,7 @@
 // instead of two lists of traits.
 export default {
   id: '10',
-  slide: 'Diagram: Touch: Button and Pressable',
+  slide: 'Tombol Harus Terasa Merespons Sentuhan',
   pattern: 'beforeAfter',
   alt:
     'Button uses the platform default style and only accepts title, onPress, color, and ' +

@@ -11,7 +11,7 @@
 //      (nested Text, numberOfLines) so the containment is really visible.
 export default {
   id: '08',
-  slide: 'Diagram: View and Text: The Visual Alphabet',
+  slide: 'Satu View, Dua Text, dan Satu Kalimat Bersarang',
   pattern: 'tree',
   alt:
     'View only accepts components as children, not raw text; the only carrier of text ' +

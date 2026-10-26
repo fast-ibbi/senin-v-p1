@@ -5,7 +5,7 @@
 // like, and what must be written for the opposite direction.
 export default {
   id: '06',
-  slide: 'Flexbox: Default Direction `column`',
+  slide: 'Flexbox di React Native Dimulai dari column',
   pattern: 'beforeAfter',
   alt:
     'On the web Flexbox defaults to row so elements line up horizontally; in React Native ' +

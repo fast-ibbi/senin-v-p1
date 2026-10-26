@@ -12,7 +12,7 @@
 // the slide: the picture does not show them.
 export default {
   id: '15',
-  slide: 'React Web vs React Native',
+  slide: 'React 2013, React Native 2015: Gagasan Sama, Media Beda',
   pattern: 'beforeAfter',
   alt:
     'What stays the same between the two libraries: the way of thinking, and components, ' +

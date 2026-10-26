@@ -5,7 +5,7 @@
 // pair of examples; adding a third layer would mean inventing one.
 export default {
   id: '13',
-  slide: 'Diagram: Style Arrays and Conditional Styles',
+  slide: 'Lapisan Paling Atas Selalu yang Dipakai',
   pattern: 'layers',
   alt:
     'A style array merges objects in order: styles.kartu as the base style, then ' +

@@ -8,7 +8,7 @@
 // notes.
 export default {
   id: '02',
-  slide: 'From JSX to Native Components',
+  slide: 'JSX yang Sama Berakhir di Component Native',
   pattern: 'tree',
   alt:
     'The same JSX branches two ways: react-dom renders it into DOM elements, ' +

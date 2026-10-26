@@ -19,7 +19,7 @@
 // still has its 47 units of headroom, and the bullets move 63px clear.
 export default {
   id: '19',
-  slide: 'Style Arrays and Conditional Styles',
+  slide: 'Array Style Menggabungkan Gaya Secara Berurutan',
   pattern: 'stateMachine',
   alt:
     'A row starts in the baris style; while aktif holds, the style array adds barisAktif '

@@ -11,7 +11,7 @@
 // never a counterpart to anything on the left.
 export default {
   id: '05',
-  slide: 'One Screen, One Main Scroller',
+  slide: 'Satu Layar, Satu Scroller Utama',
   pattern: 'beforeAfter',
   alt:
     'Nested scrollers between ScrollView and FlatList break virtualization; one main ' +

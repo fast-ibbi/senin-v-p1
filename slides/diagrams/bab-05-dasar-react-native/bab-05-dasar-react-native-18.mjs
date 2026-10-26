@@ -12,7 +12,7 @@
 // edge-to-edge policy stay on the slide: the picture does not show them.
 export default {
   id: '18',
-  slide: 'SafeAreaView and the Safe Area',
+  slide: 'Safe Area Bukan Tambahan, tetapi Syarat',
   pattern: 'beforeAfter',
   alt:
     'The built-in SafeAreaView only works on iOS and has no effect on Android; the modern '

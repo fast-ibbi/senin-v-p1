@@ -21,7 +21,7 @@
 // re-renders"), which is short enough to leave a real gap.
 export default {
   id: '11',
-  slide: 'Diagram: TextInput: Controlled Component',
+  slide: 'Satu Ketikan Memutar Rantai yang Sama',
   pattern: 'flow',
   alt:
     'A keystroke reaches onChangeText, setNama updates the state nama, that change '

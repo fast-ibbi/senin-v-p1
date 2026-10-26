@@ -5,7 +5,7 @@
 // instead of lost.
 export default {
   id: '04',
-  slide: 'Practicum: Student Profile Layout',
+  slide: 'Praktikum: Yang Dibangun Pertemuan Ini',
   pattern: 'sequence',
   alt:
     'Student data flows down through props from App to ProfilMahasiswa and ' +

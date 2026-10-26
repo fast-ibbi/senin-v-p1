@@ -14,7 +14,7 @@
 // idea and the kit gives its bands equal height, so the crop is named in the row instead.
 export default {
   id: '16',
-  slide: 'Image: Two Image Sources',
+  slide: 'Kotak Kosong Selama Foto Masih Diunduh',
   pattern: 'beforeAfter',
   alt:
     'While a remote photo is not available yet the box shows an initials placeholder, not ' +

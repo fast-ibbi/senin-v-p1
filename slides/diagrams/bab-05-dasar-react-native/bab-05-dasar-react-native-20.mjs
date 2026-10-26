@@ -14,7 +14,7 @@
 // circle; the threshold now sits on the stage that computes it.
 export default {
   id: '20',
-  slide: 'Responsive Layout with `useWindowDimensions`',
+  slide: 'Lebar Layar Berubah, Jumlah Kolom Ikut Berubah',
   pattern: 'flow',
   alt:
     'Rotating the phone changes the width that useWindowDimensions returns, the new width '

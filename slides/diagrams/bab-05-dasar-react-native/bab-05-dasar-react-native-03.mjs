@@ -12,7 +12,7 @@
 // is added to the content: the deck's own sentence names ".ios.js and .android.js".
 export default {
   id: '03',
-  slide: 'Three Tools for Platform Differences',
+  slide: 'Beda Kecil Cukup Ditangani Platform.select',
   pattern: 'tree',
   alt:
     'A small difference — a value, a text, or a style — is handled by Platform.OS or ' +

@@ -4,7 +4,7 @@
 // resolution — not three pieces of advice standing on their own.
 export default {
   id: '14',
-  slide: 'Diagram: Case Study: A List That Lags While Scrolling',
+  slide: 'Tiga Keputusan, Satu Rantai Penyelesaian',
   pattern: 'flow',
   alt:
     'A complaint about a slow list is answered by three decisions in order: FlatList so ' +

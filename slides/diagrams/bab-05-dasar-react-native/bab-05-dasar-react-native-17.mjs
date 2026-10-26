@@ -12,7 +12,7 @@
 // two different kinds of list.
 export default {
   id: '17',
-  slide: 'TextInput: Controlled Component',
+  slide: 'Kotak Isian Terikat ke State, Bukan ke Dirinya Sendiri',
   pattern: 'beforeAfter',
   alt:
     'A controlled TextInput has value={nama} bound, so the box always reflects the state; ' +

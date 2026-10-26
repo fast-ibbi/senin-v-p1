@@ -4,7 +4,7 @@
 // given the red tone because they are precisely not safe areas.
 export default {
   id: '12',
-  slide: 'Diagram: SafeAreaView and the Safe Area',
+  slide: 'Notch dan Status Bar Mengurangi Ruang yang Aman',
   pattern: 'layers',
   alt:
     'From top to bottom: the notch and status bar, then the safe area whose width is ' +

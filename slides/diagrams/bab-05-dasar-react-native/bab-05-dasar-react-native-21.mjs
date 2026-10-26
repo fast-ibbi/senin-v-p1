@@ -13,7 +13,7 @@
 // because no band shows them.
 export default {
   id: '21',
-  slide: 'Case Study: A List That Lags While Scrolling',
+  slide: 'Studi Kasus: Daftar yang Tersendat Saat Digulir',
   pattern: 'layers',
   alt:
     'The FlatList sits above the data it has to show: it renders only the visible rows while '

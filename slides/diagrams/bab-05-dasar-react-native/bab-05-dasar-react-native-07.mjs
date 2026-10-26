@@ -11,7 +11,7 @@
 // and 10px clear of each chip.
 export default {
   id: '07',
-  slide: 'Diagram: React Web vs React Native',
+  slide: 'Gagasan 2015 Itu Masih Sama Sampai Hari Ini',
   pattern: 'flow',
   alt:
     'React 2013 renders JSX into the DOM through react-dom; React Native 2015 uses the ' +

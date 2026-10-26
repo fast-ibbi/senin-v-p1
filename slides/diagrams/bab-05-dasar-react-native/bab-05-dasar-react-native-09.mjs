@@ -4,7 +4,7 @@
 // reads horizontally instead of being scattered across five items.
 export default {
   id: '09',
-  slide: 'Diagram: Image: Two Image Sources',
+  slide: 'Satu Gambar, Dua Sumber: Aset Lokal atau URL',
   pattern: 'beforeAfter',
   alt:
     'A local asset uses require and is bundled at build time; a remote image uses a uri, ' +
