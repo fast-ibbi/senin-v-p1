@@ -28,7 +28,7 @@
 // hierarchy starts there. `acc` marks global state, the new idea on this slide.
 export default {
   id: '06',
-  slide: 'Local State and Global State: Two Scopes',
+  slide: 'Cakupan State Menentukan di Mana Ia Disimpan',
   pattern: 'beforeAfter',
   alt:
     'Local state against global state, one instance each: text being typed in one search ' +

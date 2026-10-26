@@ -29,7 +29,7 @@
 // left-to-right without a legend.
 export default {
   id: '09',
-  slide: 'Three Signs Global State Is Not Needed',
+  slide: 'Tiga Tanda Data Tidak Perlu Global',
   pattern: 'beforeAfter',
   alt:
     'The three kinds of data that must not be made global, each with its own home: data that can ' +

@@ -26,7 +26,7 @@
 // holds up when requirements change, not when you start at the top.
 export default {
   id: '11',
-  slide: 'Class Discussion: Where Does the Cart Live?',
+  slide: 'Diskusi: Di Mana Keranjang Seharusnya Tinggal?',
   pattern: 'flow',
   alt:
     'The cart’s three possible homes in the order a project climbs them: in memory for this ' +

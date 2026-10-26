@@ -17,7 +17,7 @@
 // that word: the code's name for the callback is what a student has to recognise.
 export default {
   id: '02',
-  slide: 'Lifting State Up: Definition and Flow',
+  slide: 'Lifting State Up: State Naik, Data Turun',
   pattern: 'sequence',
   alt:
     'Lifting state up as an exchange: LayarPesan holds the ukuran state and passes it to both ' +

@@ -36,7 +36,7 @@
 // wraps onto a line starting with "· empty", which reads as a stray mark rather than a list.
 export default {
   id: '10',
-  slide: 'Designing the Cart State',
+  slide: 'Rancang Dulu State-nya, Baru Menulis Kode',
   pattern: 'tree',
   alt:
     'The cart state split into three parts: the stored item list, whose fields are id, nama, harga ' +

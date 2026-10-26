@@ -14,7 +14,7 @@
 // longer word would be pushed to two lines or refused. Step labels carry the names.
 export default {
   id: '05',
-  slide: 'The Flow of a Single "Add" Button Press',
+  slide: 'Satu Ketukan "Tambah", Satu Rantai Sampai Badge',
   pattern: 'flow',
   alt:
     'One add press, one way: the Add button in app/index.js fires onPress, tambahItem in ' +

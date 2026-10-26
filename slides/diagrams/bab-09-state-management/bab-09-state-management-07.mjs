@@ -30,7 +30,7 @@
 // which is too long for a 44px note line.
 export default {
   id: '07',
-  slide: 'The Limit of Lifting State Up: Prop Drilling',
+  slide: 'Lifting State Up Punya Batas: Prop Drilling',
   pattern: 'flow',
   alt:
     'Prop drilling in one line: the state owner passes props down to an intermediary ' +

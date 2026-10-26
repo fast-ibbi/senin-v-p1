@@ -21,7 +21,7 @@
 // `Local state` is tinted instead — the default you should only leave when forced.
 export default {
   id: '03',
-  slide: 'State Decision Hierarchy',
+  slide: 'Tangga Keputusan: Berhenti di Tingkat Paling Sederhana',
   pattern: 'flow',
   alt:
     'The state decision ladder, simplest first: local state for one component, lifting state up ' +

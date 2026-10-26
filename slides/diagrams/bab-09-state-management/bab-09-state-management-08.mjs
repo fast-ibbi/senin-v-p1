@@ -31,7 +31,7 @@
 // diagram in the deck where red is literally right.
 export default {
   id: '08',
-  slide: 'When to Use Context — and When Not To',
+  slide: 'Kapan Context Dipakai, Kapan Justru Dihindari',
   pattern: 'beforeAfter',
   alt:
     'When to use Context against when not to, on two paired rows. Use it when many ' +

@@ -20,7 +20,7 @@
 // `tree` silently drops a node's `note`, so the mount point cannot live there.
 export default {
   id: '04',
-  slide: 'Provider Structure and Its Scope',
+  slide: 'Cakupan Provider Menentukan Banyaknya Re-render',
   pattern: 'tree',
   alt:
     'Provider structure: CartProvider mounted in app/_layout.js wraps every route, and both ' +

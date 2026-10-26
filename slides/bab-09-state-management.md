@@ -2,10 +2,10 @@
 marp: true
 theme: academic
 paginate: true
-title: "Chapter 9 — State Management"
-description: "Mobile Programming lecture, meeting 9: local state vs global state, lifting state up, prop drilling, Context API, custom hooks, when data deserves to be global, Zustand and Redux Toolkit, and the shopping cart practicum."
-author: "Course Instructor — Information Systems / Informatics Engineering Study Program"
-footer: "Mobile Programming · Chapter 9 — State Management"
+title: "Bab 9 — State Management"
+description: "Kuliah Pemrograman Mobile, pertemuan 9: state lokal vs state global, lifting state up, prop drilling, Context API, custom hook, kapan data layak menjadi global, Zustand dan Redux Toolkit, serta praktikum keranjang belanja."
+author: "Dosen Mata Kuliah — Program Studi Sistem Informasi / Teknik Informatika"
+footer: "Pemrograman Mobile · Bab 9 — State Management"
 size: 16:9
 ---
 
@@ -13,34 +13,41 @@ size: 16:9
 <!-- _paginate: skip -->
 <!-- _footer: "" -->
 
-# Chapter 9 — State Management
+# Bab 9 — State Management
 
-Local and global state, Context API, custom hook · Meeting 9 · Sub-CPMK 4.2
+State lokal dan global, Context API, custom hook · Pertemuan 9 · Sub-CPMK 4.2
 
 <!--
-Opening hook: "Chapter 4 taught one component to remember its own data; today that data
-has to be shared by many screens."
+Buka dengan satu kalimat: "Bab 4 mengajari satu komponen mengingat datanya sendiri; hari ini
+data itu harus dipakai bersama oleh banyak layar."
 
-RPS link: meeting 9 covers Chapter 8 (Sub-CPMK 4.3) and Chapter 9 (Sub-CPMK 4.2); this deck
-covers Chapter 9 only, and its practicum builds the TokoKu app on the Chapter 7 project.
+Kaitan RPS: pertemuan 9 mencakup Bab 8 (Sub-CPMK 4.3) dan Bab 9 (Sub-CPMK 4.2). Deck ini
+hanya membahas Bab 9, dan praktikumnya adalah keranjang belanja yang berdiri di atas project
+Bab 7.
 -->
 
 ---
 
-## Learning Objectives
+## Tujuan Pembelajaran
 
-- Explain the difference between local state and global state along with its trade-offs
-- Identify the conditions that call for lifting state up or the Context API
-- Assess when data stays local and when it deserves to become global state
-- Implement the Context API with plain JavaScript
-- Design the `useCart` custom hook and evaluate Zustand and Redux Toolkit
+Setelah bab ini, kamu bisa:
+
+- Menjelaskan perbedaan state lokal dan state global beserta trade-off-nya
+- Mengidentifikasi kondisi yang membutuhkan lifting state up atau Context API
+- Mengevaluasi kapan data tetap lokal dan kapan layak menjadi global
+- Mengimplementasikan Context API dengan JavaScript polos
+- Merancang custom hook `useCart` serta mengevaluasi Zustand dan Redux Toolkit
 
 <!--
-Read out only the verbs. Items 4 and 5 are the core of the practicum and the rubric
-assessment material: conceptual understanding 15% and implementation 25% (Appendix A).
+Bacakan hanya kata kerjanya. Butir 4 dan 5 adalah inti praktikum dan bahan penilaian rubrik:
+pemahaman konsep 15% dan implementasi 25% (Lampiran A).
 
-Stress that item 3 is the engineering question most often answered wrongly: putting all
-data into global state from the start is not a solution, it is debt.
+Tegaskan bahwa butir 3 adalah pertanyaan rekayasa yang paling sering dijawab keliru: menaruh
+semua data ke global state sejak awal bukan solusi, melainkan utang.
+
+Catatan untuk pengajar: RPS pertemuan 9 menulis tiga butir untuk Bab 9, sedangkan deck ini
+memecahnya menjadi lima supaya ujung yang berbeda tidak digabung dalam satu butir. Jangan
+dibacakan kecuali ada yang bertanya.
 -->
 
 ---
@@ -48,161 +55,153 @@ data into global state from the start is not a solution, it is debt.
 <!-- _class: lead -->
 <!-- _paginate: skip -->
 
-# Part 1 — From Local State to Global State
+# Bagian 1 — Dari State Lokal ke State Global
 
-Section 9.1 local vs global state · 9.2 lifting state up
+subbab 9.1 state lokal vs global · 9.2 lifting state up
 
 <!--
-This part is conceptual and becomes the basis for the whole chapter. If time is tight,
-Section 9.1 still may not be skipped because its terms are used through Chapter 13.
+Bagian ini konseptual dan menjadi dasar seluruh bab. Kalau waktu sempit, subbab 9.1 tetap
+tidak boleh dilewati karena istilahnya dipakai sampai Bab 13.
 -->
 
 ---
 
-## Local State and Global State: Two Scopes
+## Cakupan State Menentukan di Mana Ia Disimpan
 
 ![w:1120](assets/diagrams/bab-09-state-management-06.svg)
 
-**State** is data that changes with user interaction and affects the display (Chapter 4). This chapter separates the two by the scope of their use.
+**State** adalah data yang berubah karena interaksi pengguna dan memengaruhi tampilan (Bab 4). Bab ini memisahkannya menurut cakupan pemakaian.
 
-<div class="grid2">
-<div>
+| Cakupan | Ciri pemakaian | Contoh |
+|---|---|---|
+| **Lokal** | Satu komponen dan anak-anaknya | Status panel, pilihan satu tombol |
+| **Global** | Banyak komponen, biasanya lintas layar | Keranjang: badge, daftar, pembayaran |
 
-**Local state** — lives inside one component
-
-- Open/closed panel status and the selection on a single button
-- Known only to that component and its children
-
-</div>
-<div>
-
-**Global state** — used by many components, usually across screens
-
-- If each screen keeps its own copy, the data can go out of sync
-
-</div>
-</div>
+> Kalau setiap layar menyimpan salinannya sendiri, data bisa tidak sinkron.
 
 <!--
-Trimmed to the picture (the diagram says this):
-- Example: text being typed in the search field
-- Example: cart contents in the badge, the list, and the payment screen
+Dipotong ke gambar (diagram yang mengatakan ini):
+- Contoh: teks yang sedang diketik di kolom pencarian
+- Contoh: isi keranjang di badge, layar daftar, dan layar pembayaran
 
-Those two bullets are the picture's one row, one instance per scope. What stays below it is
-prose the picture does not draw: a second local example, the rule about who can see a
-component's own state, and the failure mode that makes the cart global in the first place.
+Dua butir itu adalah satu baris gambar, satu contoh per cakupan. Yang tinggal di bawahnya
+adalah prosa yang tidak digambar: contoh lokal kedua, aturan siapa yang boleh melihat state
+sebuah komponen, dan mode kegagalan yang membuat keranjang harus global.
 
-Analogy from the chapter: local state is like a small note on your own desk, global state is
-like the office notice board. The board helps many people, but its contents must be
-maintained and its writers must be disciplined.
+Analogi dari buku: state lokal seperti catatan kecil di mejamu sendiri, state global seperti
+papan pengumuman kantor. Papan menolong banyak orang, tetapi isinya harus dirawat dan
+penulisnya harus disiplin.
 
-Ask: "If two screens each keep their own copy of the cart, which screen is
-right?" (Answer: none can be certain; that is where the bug begins.)
+Tanya: "Kalau dua layar masing-masing menyimpan salinan keranjang, layar mana yang benar?"
+(Jawaban: tidak ada yang bisa memastikan; di situlah bug dimulai.)
 
-Misconception warning: global state is not about "the data is big", but about the wide
-scope of its users.
+Peringatan salah paham: global state bukan soal "datanya besar", melainkan soal luas cakupan
+pemakainya.
 -->
 
 ---
 
 <!-- _class: center -->
 
-## Exercise: Local or Global?
+## Latihan: Lokal atau Global?
 
-- **A.** Text being typed in the product search field
-- **B.** Cart contents read by the product screen and the cart screen
-- **C.** Drink size selection used by two components on one screen
-- **D.** Cart total price
+- **A.** Teks yang sedang diketik di kolom pencarian produk
+- **B.** Isi keranjang yang dibaca layar produk dan layar keranjang
+- **C.** Pilihan ukuran minuman yang dipakai dua komponen di satu layar
+- **D.** Total harga keranjang
 
-Decide the right state level for each case, then state the reason.
+Tentukan tingkat state yang tepat untuk setiap kasus, lalu sebutkan alasannya.
 
 <!--
-Think-pair-share 3 minutes, then collect 2 to 3 answers. The answers are not on this slide;
-they are discussed on the next slide.
+Think-pair-share 3 menit, lalu tampung 2–3 jawaban. Jawabannya tidak ada di slide ini;
+pembahasannya di slide berikutnya.
 
-Prompt if the class hesitates on case D: "Does the total price need to be stored, or can it
-be recomputed at any time from the item list?"
+Pancing kalau kelas ragu di kasus D: "Total harga perlu disimpan, atau bisa dihitung ulang
+kapan saja dari daftar item?"
 -->
 
 ---
 
-## Answer: Local or Global
+<!-- _class: compact -->
 
-| Case | State level | Reason |
+## Kuncinya: Lokal, Global, atau Diangkat ke Induk
+
+| Kasus | Tingkat state | Alasan |
 |---|---|---|
-| A. Search text | Local (`useState`) | Only one component uses it |
-| B. Cart contents | Global (Context API) | Read across screens; the shared parent is the root layout |
-| C. Size selection | Lifting state up | Two sibling components on one screen |
-| D. Total price | Derived state | Recomputed from `items`, not stored |
+| A. Teks pencarian | Lokal (`useState`) | Satu komponen saja |
+| B. Isi keranjang | Global (Context API) | Dibaca lintas layar; induk bersama layout akar |
+| C. Pilihan ukuran | Diangkat ke induk | Dua komponen bersaudara di satu layar |
+| D. Total harga | Nilai turunan | Dihitung dari `items`, tidak disimpan |
 
-> Practicum 9 uses the same pattern: the cart becomes global state, while the total price is always computed.
+> Praktikum 9 memakai pola yang sama: keranjang menjadi global state, sedangkan total harga selalu dihitung.
 
 <!--
-Connect the class answers to the practicum: case B gives rise to CartProvider, case C
-appears in Example 1 (drink ordering), and case D explains why totalHarga is not
-state.
+Hubungkan jawaban kelas dengan praktikum: kasus B melahirkan CartProvider, kasus C muncul di
+Contoh 1 (pemesanan minuman), dan kasus D menjelaskan kenapa totalHarga bukan state.
 
-The most common mistake: making the total price separate state and then forgetting
-to update it in one of the operations.
+Kesalahan paling sering: menjadikan total harga state terpisah, lalu lupa memperbaruinya pada
+salah satu operasi.
 -->
 
 ---
 
-## Lifting State Up: Definition and Flow
+## Lifting State Up: State Naik, Data Turun
 
-**Lifting state up** is moving state to the nearest parent that is the common ancestor of every component that needs that data.
+**Lifting state up** adalah memindahkan state ke induk terdekat yang menjadi nenek moyang bersama semua komponen yang membutuhkannya.
 
 ![w:1120](assets/diagrams/bab-09-state-management-02.svg)
 
-> The parent holds the state, passes it down through **props**, and every change is sent back through a **callback** function.
+> Induk memegang state, menurunkannya lewat **props**, dan setiap perubahan dikirim balik lewat fungsi **callback**.
 
 <!--
-React data flow is one-way: from parent to child. To raise data up, React uses a
-callback pattern, and lifting state up is its simplest application.
+Aliran data React satu arah: dari induk ke anak. Untuk menaikkan data, React memakai pola
+callback, dan lifting state up adalah penerapan paling sederhananya.
 
-Ask: "If the size state lived inside PilihUkuran, how would RingkasanPesanan know the
-user's choice?" (Answer: it would never know; that is why the state is raised.)
+Tanya: "Kalau state ukuran tinggal di dalam PilihUkuran, bagaimana RingkasanPesanan tahu
+pilihan pengguna?" (Jawaban: tidak akan pernah tahu; karena itulah state dinaikkan.)
 
-Stress the term single source of truth: one store, many readers.
+Tegaskan istilah single source of truth: satu penyimpanan, banyak pembaca.
 -->
 
 ---
 
-## The Limit of Lifting State Up: Prop Drilling
+## Lifting State Up Punya Batas: Prop Drilling
 
 ![w:1120](assets/diagrams/bab-09-state-management-07.svg)
 
-**Prop drilling** is passing props in a chain through intermediary components that do not use that data at all.
+**Prop drilling** adalah mengoper props berantai lewat komponen perantara yang sama sekali tidak memakai data itu.
 
-- Adding one new piece of data means changing the whole row of intermediary components
-- The code becomes noisy and hard to maintain
+- Menambah satu data baru berarti mengubah seluruh deret perantara
+- Kode menjadi berisik dan sulit dirawat
 
-> The appearance of prop drilling is the signal to switch to the next mechanism: the Context API.
+> Munculnya prop drilling adalah tanda untuk beralih ke mekanisme berikutnya: Context API.
 
 <!--
-Trimmed to the picture (the diagram says this):
-- It happens when data has to pass through many component levels
+Dipotong ke gambar (diagram yang mengatakan ini):
+- Terjadi saat data harus melewati banyak tingkat komponen
 
-The picture's whole shape is that bullet: the value starts at its owner and crosses two
-components that never read it before reaching the one that does. What stays on the slide is
-what a chain cannot show — that a single new field rewrites the row, and that the row is
-noisy to keep.
+Seluruh bentuk gambar adalah butir itu: nilai berangkat dari pemiliknya, melewati dua
+komponen yang tidak pernah membacanya, baru sampai ke komponen yang memakainya. Yang tinggal
+di slide adalah yang tidak bisa ditunjukkan rantai: satu field baru menulis ulang seluruh
+deret, dan deret itu berisik untuk dirawat.
 
-How to explain it: imagine passing a message through five people, and four of them do
-not care. Lifting state up is enough for two to three component levels.
+Cara menjelaskan: bayangkan menyampaikan pesan lewat lima orang, empat di antaranya tidak
+peduli. Lifting state up cukup untuk dua sampai tiga tingkat komponen.
 
-Ask: "What symptom in the code tells us we have caught prop drilling?" (Answer: the same
-props show up in components that do not use them.)
+Tanya: "Gejala apa di kode yang menandakan kita sudah kena prop drilling?" (Jawaban: props
+yang sama muncul di komponen yang tidak memakainya.)
 
-Warning: do not rush to conclude that every prop is prop drilling; explicit props
-remain the easiest thing to read for two or three levels.
+Peringatan: jangan buru-buru menyimpulkan setiap prop adalah prop drilling; props eksplisit
+tetap yang paling mudah dibaca untuk dua atau tiga tingkat.
 -->
 
 ---
 
-## Example 1: Lifting State Up for Drink Ordering
+<!-- _class: compact -->
 
-`screens/LayarPesan.js` — owner of the `ukuran` state
+## Contoh 1: Induk Menyimpan Ukuran, Dua Anak Membacanya
+
+`screens/LayarPesan.js` — pemilik state `ukuran`
 
 ```js
 import { useState } from 'react';
@@ -221,20 +220,49 @@ export default function LayarPesan() {
 const styles = StyleSheet.create({ layar: { flex: 1, padding: 16 } });
 ```
 
-> `PilihUkuran` sends the choice through a callback; `RingkasanPesanan` reads it through props.
+<!--
+Dipotong ke catatan (tidak muat di slide):
+> `PilihUkuran` mengirim pilihan lewat callback; `RingkasanPesanan` membacanya lewat props.
+
+Contoh lengkapnya tiga file: components/PilihUkuran.js (tombol S/M/L),
+components/RingkasanPesanan.js (tabel HARGA: S 8000, M 10000, L 12000), dan LayarPesan.js di
+slide ini. Hanya baris judul <Text style={styles.judul}> dan kunci judul di
+StyleSheet.create yang dipotong; sisanya bisa diketik apa adanya, dan versi utuhnya ada di
+buku, Contoh 1. Berkas praktikum keranjang ada di kode/bab-09-state-management/.
+
+Tegaskan baris onPilihUkuran={setUkuran}: setter dari useState dipakai langsung sebagai
+callback karena bentuknya (nilaiBaru) => void.
+
+Salah paham yang sering: mahasiswa menaruh state di komponen anak lalu "mengirim nilainya ke
+atas" lewat props. Aliran seperti itu tidak ada di React.
+-->
+
+---
+
+## Studi Kasus: Satu Keranjang KRS yang Harus Sama di Dua Layar
+
+**Kasus fiktif dengan pola nyata.** Aplikasi Manajemen Data Mahasiswa (`siakad-mobile`) yang kamu bangun sejak Bab 5.
+
+- Layar KRS memilih mata kuliah; layar ringkasan menjumlahkan SKS
+- Keduanya bukan saudara — induk bersamanya adalah layout akar aplikasi
+- Disimpan lokal di layar KRS, pilihan itu tidak pernah sampai ke layar ringkasan
+- Diangkat ke layout akar lewat props, setiap layar harus meneruskan props yang sama
+
+> Jawabannya Context API: satu sumber kebenaran, dua pembaca.
 
 <!--
-The complete example is three files: components/PilihUkuran.js (the S/M/L buttons),
-components/RingkasanPesanan.js (the HARGA table: S 8000, M 10000, L 12000), and
-LayarPesan.js on this slide. Only the title line <Text style={styles.judul}> and the
-judul key in StyleSheet.create are cut; the rest of the snippet can be typed as is, and the
-full version is in the chapter, Example 1. The cart practicum files are in kode/bab-09-state-management/.
+Bacakan sebagai cerita, bukan sebagai daftar. Tujuannya agar mahasiswa melihat bahwa masalah
+bab ini muncul di aplikasi yang mereka bangun sendiri, bukan di aplikasi orang lain.
 
-Stress the line onPilihUkuran={setUkuran}: the state setter from useState is used directly
-as a callback because its shape is (nilaiBaru) => void.
+Sebutkan sekali di sini: pada project mata kuliah ini keranjang belanja adalah pilihan KRS,
+sehingga context-nya bernama KrsContext dan hook-nya useKrs. Polanya sama persis, hanya nama
+domainnya yang berbeda.
 
-A common misconception: students put state in the child component and then "send its
-value up" with props. That flow does not exist in React.
+Pertanyaan sebelum bagian berikutnya: "Kalau layout akar yang memegang state, bagaimana
+prop drilling bisa dihindari?" Biarkan mereka menebak dulu.
+
+Kaitkan dengan Project Akhir: keputusan yang sama akan mereka ambil untuk fitur lain, misalnya
+sesi pengguna di Bab 13.
 -->
 
 ---
@@ -242,44 +270,43 @@ value up" with props. That flow does not exist in React.
 <!-- _class: lead -->
 <!-- _paginate: skip -->
 
-# Part 2 — Context API & Custom Hook
+# Bagian 2 — Context API & Custom Hook
 
-Section 9.3 Context API · 9.4 custom hook · 9.5 when global · 9.6 modern libraries
+subbab 9.3 Context API · 9.4 custom hook · 9.5 kapan global · 9.6 pustaka modern
 
 <!--
-This part is the core of the chapter and the part most likely to be tested. If little
-time is left, Section 9.6 (Zustand and Redux Toolkit) may be read out briefly because it
-is purely conceptual.
+Bagian ini inti bab dan bagian yang paling mungkin keluar di ujian. Kalau waktu menipis,
+subbab 9.6 (Zustand dan Redux Toolkit) boleh dibacakan sekilas karena sifatnya konseptual.
 -->
 
 ---
 
-## Context API: Three Main Parts
+## Context API Bekerja Lewat Tiga Bagian
 
-**Context API** is React's built-in mechanism for sharing data across every branch of the component tree without passing it down one by one through props.
+**Context API** adalah mekanisme bawaan React untuk membagikan data ke seluruh cabang pohon komponen tanpa menurunkannya satu per satu lewat props.
 
-| Part | Role |
+| Bagian | Perannya |
 |---|---|
-| `createContext` | Creates the context object along with its initial value |
-| `Provider` | Supplies a value to the whole subtree through the `value` prop |
-| `useContext` | Hook for reading the context value from inside the subtree |
+| `createContext` | Membuat objek context beserta nilai awalnya |
+| `Provider` | Memasok nilai ke seluruh subtree lewat prop `value` |
+| `useContext` | Hook untuk membaca nilai dari dalam subtree |
 
 <!--
-Fill the initial value with null so components outside the provider are easy to detect;
-that is the pattern useCart uses on the next slide.
+Isi nilai awal dengan null supaya komponen di luar provider mudah dideteksi; itulah pola yang
+nanti dipakai useCart.
 
-Guiding question: "If context changes the way data is distributed, does the way state is
-stored change too?" (Answer: no, state is still declared with useState.)
+Pertanyaan penuntun: "Kalau context mengubah cara data didistribusikan, apakah cara state
+disimpan ikut berubah?" (Jawaban: tidak, state tetap dideklarasikan dengan useState.)
 
-Misconception warning: context is not a general replacement for props, but a direct
-channel for data that is truly cross-region.
+Peringatan salah paham: context bukan pengganti props secara umum, melainkan jalur langsung
+untuk data yang benar-benar lintas wilayah.
 -->
 
 ---
 
-## The Basic Context API Pattern
+## Polanya Cuma Tiga Baris: Wadah, Provider, Nilai Awal
 
-`context/BahasaContext.js` — the container, the provider, and its initial value
+`context/BahasaContext.js` — wadah, provider, dan nilai awalnya
 
 ```js
 import { createContext, useContext, useState } from 'react';
@@ -296,71 +323,58 @@ export function BahasaProvider({ children }) {
 }
 ```
 
-> `value={{ bahasa, setBahasa }}` shares the value **and** its setter function in one object.
+> `value={{ bahasa, setBahasa }}` membagikan nilai **dan** fungsi pengubahnya dalam satu objek.
 
 <!--
-Read out only three lines: createContext(null), useState, and value={{ ... }}.
+Bacakan hanya tiga baris: createContext(null), useState, dan value={{ ... }}.
 
-How to explain it: a provider is like a notice board mounted on one floor; every
-room on that floor (children, however deep) can read it without props being handed down.
+Cara menjelaskan: provider itu seperti papan pengumuman yang dipasang di satu lantai; setiap
+ruangan di lantai itu (children, sedalam apa pun) bisa membacanya tanpa props dioper.
 
-Misconception: students often write useMemo or state outside the provider. Remind them that
-context changes distribution, not the place of storage.
+Salah paham: mahasiswa sering menulis useMemo atau state di luar provider. Ingatkan bahwa
+context mengubah distribusi, bukan tempat penyimpanan.
 -->
 
 ---
 
-## When to Use Context — and When Not To
+## Kapan Context Dipakai, Kapan Justru Dihindari
 
 ![w:1120](assets/diagrams/bab-09-state-management-08.svg)
 
-<div class="grid2">
-<div>
+| Pakai Context kalau | Hindari Context kalau |
+|---|---|
+| Prop drilling sudah terasa menyakitkan | Komponen sulit dipakai ulang karena nilainya tersembunyi |
 
-**Use Context when**
-
-- Prop drilling already feels painful
-
-</div>
-<div>
-
-**Avoid Context when**
-
-- Components become hard to reuse because their value is hidden
-
-</div>
-</div>
-
-> When the context value changes, **every** component that calls `useContext` re-renders as well.
+> Saat nilai context berubah, **setiap** komponen yang memanggil `useContext` ikut di-render ulang.
 
 <!--
-Trimmed to the picture (the diagram says this):
-- Data is used by many components far apart (theme, language, cart)
-- Data changes across screens
-- Data is used by only one or two neighboring components
+Dipotong ke gambar (diagram yang mengatakan ini):
+- Data dipakai banyak komponen yang berjauhan (tema, bahasa, keranjang)
+- Data berubah lintas layar
+- Data dipakai hanya satu atau dua komponen bertetangga
 
-The picture took the one axis the two columns really share — how far apart the readers are —
-plus the second signal on the use side. The bullets that stayed are the ones a picture cannot
-carry: the pain signal that makes you switch, and the cost of hiding a value. The line below
-keeps the re-render warning, so the picture does not repeat it.
+Gambar mengambil satu sumbu yang benar-benar dipakai kedua kolom — seberapa jauh pembacanya —
+plus satu sinyal tambahan di sisi pemakaian. Butir yang tinggal adalah yang tidak bisa dibawa
+gambar: rasa sakit yang membuat orang beralih, dan harga karena menyembunyikan nilai. Baris di
+bawah slide tetap memuat peringatan re-render, jadi gambar tidak mengulanginya.
 
-Name real uses of context: light/dark theme, interface language, the signed-in user
-profile (Chapter 13), and the shopping cart.
+Sebutkan pemakaian nyata context: tema terang/gelap, bahasa antarmuka, profil pengguna yang
+sudah masuk (Bab 13), dan keranjang belanja.
 
-Stress the sentence under the slide: whole-tree re-rendering is fine for data
-that rarely changes, such as theme or language, but heavy for data that changes often.
+Tegaskan kalimat di bawah slide: render ulang seluruh cabang tidak masalah untuk data yang
+jarang berubah, seperti tema atau bahasa, tetapi berat untuk data yang sering berubah.
 
-Ask: "If the entire app were wrapped in one giant provider, what is the risk?"
-(Answer: every change triggers a re-render of all consumers.)
+Tanya: "Kalau seluruh aplikasi dibungkus satu provider raksasa, apa risikonya?" (Jawaban:
+setiap perubahan memicu render ulang semua pembacanya.)
 -->
 
 ---
 
-## Custom Hook: Wrapping State Logic
+## Custom Hook Membungkus State agar Bisa Dipakai Ulang
 
-**Custom hook** is a JavaScript function whose name starts with `use` and that calls one or more built-in hooks inside it.
+**Custom hook** adalah fungsi JavaScript yang namanya diawali `use` dan memanggil satu atau lebih hook bawaan di dalamnya.
 
-`hooks/useTampilSembunyi.js` — the smallest useful hook
+`hooks/useTampilSembunyi.js` — hook terkecil yang berguna
 
 ```js
 import { useState } from 'react';
@@ -372,27 +386,27 @@ export function useTampilSembunyi(awal = false) {
 }
 ```
 
-- The function name must start with the word `use`
-- Built-in hooks are called only at the top level of the function
-- They may not be called inside a branch or a loop
+- Nama fungsi wajib diawali kata `use`
+- Hook bawaan hanya dipanggil di tingkat atas fungsi
+- Tidak boleh dipanggil di dalam percabangan atau perulangan
 
 <!--
-Three benefits must be named: components are shorter and focus on the view, the logic
-can be reused without copying code, and isolated logic is easier to test
-(used again in Chapter 14).
+Tiga manfaat yang harus disebut: komponen menjadi lebih pendek dan fokus pada tampilan, logika
+bisa dipakai ulang tanpa menyalin kode, dan logika yang terisolasi lebih mudah diuji (dipakai
+lagi di Bab 14).
 
-The hook rules in items 2 and 3 are the same as Chapter 4 §4.8; mention that React tracks
-the order of hook calls, so that order may not change.
+Aturan hook di butir 2 dan 3 sama dengan Bab 4 §4.8; sebutkan bahwa React melacak urutan
+pemanggilan hook, sehingga urutannya tidak boleh berubah.
 
-Follow-up question: "Does a custom hook keep its own state?" (Answer: yes, the state
-belongs to the component that calls it; every caller gets its own copy.)
+Pertanyaan lanjutan: "Apakah custom hook menyimpan state-nya sendiri?" (Jawaban: state itu
+milik komponen yang memanggilnya; setiap pemanggil mendapat salinan sendiri.)
 -->
 
 ---
 
-## useCart: One Door into Context
+## useCart: Satu Pintu ke Context, Layar Tak Perlu Tahu Namanya
 
-`hooks/useCart.js` — wraps context access and checks for errors at the same time
+`hooks/useCart.js` — membungkus akses context sekaligus memeriksa error
 
 ```js
 import { useContext } from 'react';
@@ -407,110 +421,111 @@ export function useCart() {
 }
 ```
 
-> Components need not know the context name, only call `useCart()`.
+> Komponen tidak perlu tahu nama context, cukup memanggil `useCart()`.
 
 <!--
-Explain the ctx === null check: the context initial value is indeed null, so a call
-outside the provider is detected and the error message explains the fix. That message
-is far easier to trace than "cannot read null".
+Jelaskan pemeriksaan ctx === null: nilai awal context memang null, sehingga pemanggilan di luar
+provider terdeteksi dan pesan errornya menyebut perbaikannya. Pesan itu jauh lebih mudah
+ditelusuri daripada "cannot read null".
 
-Compare with Example 2 in the chapter (dark mode): there the component calls useContext
-directly. Both are valid; a custom hook is chosen when the usage repeats and a
-consistent error message is wanted.
+Bandingkan dengan Contoh 2 di buku (mode gelap): di sana komponen memanggil useContext
+langsung. Keduanya sah; custom hook dipilih ketika pemakaiannya berulang dan pesan error
+seragam dibutuhkan.
 
-Warning: this hook must be used inside the CartProvider subtree, not beside it.
+Peringatan: hook ini harus dipakai di dalam subtree CartProvider, bukan di sampingnya.
 -->
 
 ---
 
-## Three Checks Before Making Data Global
+## Tiga Pertanyaan Menyaring Data yang Layak Global
 
-- How many users? One component means local is enough
-- Used across screens? Written on one screen and read on another means it deserves to be global
-- Many parties writing the same data? One place prevents copies from clashing
+- Berapa pemakainya? Satu komponen berarti lokal sudah cukup
+- Dipakai lintas layar? Ditulis di satu layar dan dibaca di layar lain — data itu layak global
+- Banyak pihak menulis data yang sama? Satu tempat mencegah salinan bertabrakan
 
-> If the users are several neighboring components, try lifting state up first; the cart only needs Context because it is read across screens.
+> Kalau pemakainya beberapa komponen bertetangga, coba lifting state up lebih dulu; keranjang baru butuh Context karena dibaca lintas layar.
 
 <!--
-Order them as a filter, not a list to memorize: the first check filters out most
-cases, and only what passes reaches the third check.
+Urutkan sebagai penyaring, bukan daftar hafalan: pertanyaan pertama menyaring sebagian besar
+kasus, dan hanya yang lolos sampai ke pertanyaan ketiga.
 
-Tie it to the cart: the shared parent of two screens is the root layout, so raising
-state through props means every screen has to pass the same props along.
+Kaitkan dengan keranjang: induk bersama dua layar adalah layout akar, jadi menaikkan state
+lewat props berarti setiap layar harus meneruskan props yang sama.
 -->
 
 ---
 
-## Three Signs Global State Is Not Needed
+## Tiga Tanda Data Tidak Perlu Global
 
 ![w:1120](assets/diagrams/bab-09-state-management-09.svg)
 
-- Data owned by the server — better fetched and cached by one dedicated layer (Chapters 10 and 11)
-- Temporary data for one screen — form contents before saving are enough as local state
+- Data milik server — lebih baik diambil dan di-cache oleh satu lapisan khusus (Bab 10 dan 11)
+- Data sementara satu layar — isi formulir sebelum disimpan cukup menjadi state lokal
 
-> Storing derived state opens the door to going out of sync: one operation that forgets to update it is enough to break the display.
+> Menyimpan nilai turunan membuka pintu ketidaksinkronan: satu operasi yang lupa memperbaruinya sudah cukup merusak tampilan.
 
 <!--
-Trimmed to the picture (the diagram says this):
-- Data that can be recomputed — derived state such as `totalHarga` and `jumlahItem`
+Dipotong ke gambar (diagram yang mengatakan ini):
+- Data yang bisa dihitung ulang — nilai turunan seperti `totalHarga` dan `jumlahItem`
 
-The picture's first row is this bullet and the home it does not name on the slide: derived
-values are computed from `items` on every render, so they cannot fall behind. The other two
-signs also stay on the slide next to the same picture — their destinations repeat what their
-own sentences already say, which is why the pairing reads.
+Baris pertama gambar adalah butir itu beserta rumah yang tidak disebut di slide: nilai turunan
+dihitung dari `items` pada setiap render, jadi tidak mungkin tertinggal. Dua tanda lain juga
+tetap di slide di samping gambar yang sama — tujuan masing-masing hanya mengulang kalimatnya
+sendiri, dan itulah sebabnya pasangannya enak dibaca.
 
-A concrete example from the chapter: the cart total price need not be stored because it
-can always be computed from the item list.
+Contoh nyata dari buku: total harga keranjang tidak perlu disimpan karena selalu bisa dihitung
+dari daftar item.
 
-Mention that beginners often copy server data raw into global state, even though its
-source of truth stays on the server (Chapter 10).
+Sebutkan bahwa pemula sering menyalin data server mentah-mentah ke global state, padahal
+sumber kebenarannya tetap di server (Bab 10).
 
-Guiding question: "If the total price is computed on every render, does the app become
-slow?" (Answer: not for a list as short as a cart; early optimization is not needed.)
+Pertanyaan penuntun: "Kalau total harga dihitung pada setiap render, apakah aplikasi jadi
+lambat?" (Jawaban: tidak untuk daftar sependek keranjang; optimasi dini belum perlu.)
 -->
 
 ---
 
-## State Decision Hierarchy
+## Tangga Keputusan: Berhenti di Tingkat Paling Sederhana
 
 ![w:1120](assets/diagrams/bab-09-state-management-03.svg)
 
-> Stop at the simplest level that still meets the need, and climb only when there is a new user.
+> Berhenti di tingkat paling sederhana yang masih memenuhi kebutuhan, dan naik hanya ketika ada pemakai baru.
 
 <!--
-Read this ladder from left to right and stress its direction: simple to complex, not
-sophisticated to outdated. This is where this chapter's "decision ladder" lies.
+Bacakan tangga ini dari kiri ke kanan dan tegaskan arahnya: dari sederhana ke rumit, bukan dari
+canggih ke ketinggalan. Di sinilah "tangga keputusan" bab ini berada.
 
-The chapter's closing analogy: putting all data into global state from the start is the
-same as making a notice board so full of notes that nobody wants to read it.
+Analogi penutup dari buku: menaruh semua data ke global state sejak awal sama dengan membuat
+papan pengumuman begitu penuh tempelan sehingga tidak ada yang mau membacanya.
 
-The misconception to stamp out: "professional apps always use Redux".
+Salah paham yang harus diberantas: "aplikasi profesional selalu memakai Redux".
 -->
 
 ---
 
-## Modern Libraries: Zustand and Redux Toolkit
+<!-- _class: compact -->
 
-| Aspect | Zustand | Redux Toolkit |
+## Zustand dan Redux Toolkit: Bukan untuk Skala Kuliah
+
+| Aspek | Zustand | Redux Toolkit |
 |---|---|---|
-| Store shape | Created with the `create` function | One global store, actions and reducers |
-| How to use | Through a hook, without a provider | `createSlice` and `configureStore` |
-| Strength | Concise, minimal code | Mature devtools, predictable flow |
-| Cost | A pattern outside the component tree | A steep learning curve, more code |
+| Bentuk store | Dibuat dengan fungsi `create` | Satu store global, action dan reducer |
+| Cara pakai | Lewat hook, tanpa provider | `createSlice` dan `configureStore` |
+| Keunggulan | Ringkas, kode minim | Devtools matang, alur terprediksi |
+| Biaya | Pola di luar pohon komponen | Kurva belajar curam, kode lebih banyak |
 
-> **Neither is used in this book** — the Context API plus a custom hook is already enough for a course project.
+> **Keduanya tidak dipakai buku ini** — Context API plus custom hook sudah cukup untuk project kuliah.
 
 <!--
-⚠ version-sensitive: the syntax of both libraries can change between versions; this chapter
-flags it and asks students to check the official zustand and Redux Toolkit documentation
-before using them.
+⚠ sensitif versi: sintaks kedua pustaka bisa berubah antarversi; bab ini menandainya dan
+meminta mahasiswa memeriksa dokumentasi resmi zustand dan Redux Toolkit sebelum memakainya.
 
-Choosing a library is not about "which is best", but about matching it to the
-application's complexity and the team size: Context for small to medium scale, Zustand for
-teams that want brevity, Redux Toolkit for large apps with many collaborators.
+Memilih pustaka bukan soal "mana yang terbaik", melainkan mencocokkan dengan kompleksitas
+aplikasi dan ukuran tim: Context untuk skala kecil-menengah, Zustand untuk tim yang ingin
+ringkas, Redux Toolkit untuk aplikasi besar dengan banyak kolaborator.
 
-Guiding question: "For one screen that only needs one toggle, is Redux Toolkit
-worth it?" (Answer: no; this chapter calls it a cannon for shooting a mosquito.)
+Pertanyaan penuntun: "Untuk satu layar yang hanya butuh satu toggle, apakah Redux Toolkit
+sepadan?" (Jawaban: tidak; buku ini menyebutnya kanon untuk menembak nyamuk.)
 -->
 
 ---
@@ -518,51 +533,53 @@ worth it?" (Answer: no; this chapter calls it a cannon for shooting a mosquito.)
 <!-- _class: lead -->
 <!-- _paginate: skip -->
 
-# Part 3 — Case Study & Practicum: The Shopping Cart
+# Bagian 3 — Merancang State dan Membangun Keranjang
 
-Section 9.7 state design · Practicum 9 the TokoKu app
+subbab 9.7 merancang state · Praktikum 9 aplikasi TokoKu
 
 <!--
-This part is a full practicum. If the meeting has two sessions, do Practicum 9
-in the second session and use the state design slide to open the group work.
+Bagian ini praktikum penuh. Kalau pertemuan punya dua sesi, kerjakan Praktikum 9 di sesi kedua
+dan pakai slide rancangan state untuk membuka kerja kelompok.
 -->
 
 ---
 
-## Designing the Cart State
+## Rancang Dulu State-nya, Baru Menulis Kode
 
-Five questions that must be answered before writing code:
+Lima pertanyaan yang harus dijawab sebelum menulis kode:
 
 ![w:1000](assets/diagrams/bab-09-state-management-10.svg)
 
-- Where should the state live? In `CartProvider` inside `app/_layout.js`, wrapping every route
-- What about permanent storage? Still in memory; there is a TODO for Chapter 11
+- Di mana state harus hidup? Di `CartProvider` dalam `app/_layout.js`, membungkus setiap rute
+- Bagaimana penyimpanan permanennya? Masih di memori; ada TODO untuk Bab 11
 
 <!--
-Trimmed to the picture (the diagram says this):
-- What data is stored? The item list `{ id, nama, harga, qty }`
-- What operations are needed? Add, decrease qty, remove, and empty
-- What value is computed, not stored? `jumlahItem` and `totalHarga`
+Dipotong ke gambar (diagram yang mengatakan ini):
+- Data apa yang disimpan? Daftar item `{ id, nama, harga, qty }`
+- Operasi apa yang dibutuhkan? Tambah, kurangi qty, hapus, dan kosongkan
+- Nilai apa yang dihitung, bukan disimpan? `jumlahItem` dan `totalHarga`
 
-The picture answers the first three of the five questions: what is stored, what operations
-are needed, and what is computed instead of stored. The two questions left on the slide are
-the two no picture can hold — where the state lives is the provider tree, and permanence is
-a plan for Chapter 11.
+Gambar menjawab tiga dari lima pertanyaan: apa yang disimpan, operasi apa yang dibutuhkan, dan
+apa yang dihitung alih-alih disimpan. Dua pertanyaan yang tinggal di slide adalah dua yang
+tidak bisa dimuat gambar — di mana state hidup adalah pohon provider, dan penyimpanan permanen
+adalah rencana untuk Bab 11.
 
-Stress that designing state first is a thinking exercise that separates a
-developer from a code copier.
+Tegaskan bahwa merancang state lebih dulu adalah latihan berpikir yang membedakan pengembang
+dari penyalin kode.
 
-Name the important decision: the product catalog (data/produk.js) is static data, not
-state, because it never changes while the app runs.
+Sebutkan keputusan penting: katalog produk (data/produk.js) adalah data statis, bukan state,
+karena isinya tidak berubah selama aplikasi berjalan.
 
-Give 5 minutes in pairs to answer all five questions before the code is opened.
+Beri 5 menit berpasangan untuk menjawab kelima pertanyaan sebelum kode dibuka.
 -->
 
 ---
 
-## CartContext.js: Provider and the Add Operation
+<!-- _class: compact -->
 
-`context/CartContext.js` — the cart's single source of truth
+## Tambah Item Menyalin Daftar, Bukan Mengubahnya
+
+`context/CartContext.js` — sumber kebenaran tunggal keranjang
 
 ```js
 export const CartContext = createContext(null);
@@ -581,26 +598,28 @@ export function CartProvider({ children }) {
   };
 ```
 
-> The functional update `setItems((sekarang) => …)` computes from the latest value.
+> Pembaruan fungsional `setItems((sekarang) => …)` menghitung dari nilai terbaru.
 
 <!--
-This file also imports createContext and useState from react; the import lines are cut from
-the slide so the code stays short, and the provider's return block is on the next slide.
-The full version is in kode/bab-09-state-management/context/KrsContext.js — in this project the cart is the KRS selection, so the context is called `KrsContext` and the hook `useKrs` (same pattern, domain name).
+File ini juga mengimpor createContext dan useState dari react; baris impornya dipotong dari
+slide supaya kode tetap pendek, dan blok return provider ada dua slide setelah ini. Versi utuhnya
+ada di kode/bab-09-state-management/context/KrsContext.js — pada project mata kuliah ini
+keranjang adalah pilihan KRS, jadi context-nya bernama KrsContext dan hook-nya useKrs (pola
+sama, nama domain berbeda).
 
-Three decisions must be named: the functional update so it is safe when several updates
-come in a row, find + map to raise the qty of an existing item, and the spread
-{ ...produk, qty: 1 } for a new item.
+Tiga keputusan yang harus disebut: pembaruan fungsional supaya aman ketika beberapa pembaruan
+datang berurutan, find + map untuk menaikkan qty item yang sudah ada, dan spread
+{ ...produk, qty: 1 } untuk item baru.
 
-Guiding question: "Why must the item lookup use id, not name?" (Answer:
-id is unique and stable, while the name can change.)
+Pertanyaan penuntun: "Kenapa pencarian item harus memakai id, bukan nama?" (Jawaban: id unik dan
+stabil, sedangkan nama bisa berubah.)
 -->
 
 ---
 
-## CartContext.js: Decrease, Remove, and Derived Values
+## Kurangi dan Hapus Menjaga Qty Tetap Positif
 
-`context/CartContext.js` — the continuation snippet: operations and derived values computed on every render
+`context/CartContext.js` — potongan lanjutan: operasi dan nilai turunan
 
 ```js
   const kurangiItem = (id) => {
@@ -616,25 +635,24 @@ id is unique and stable, while the name can change.)
   const totalHarga = items.reduce((total, i) => total + i.qty * i.harga, 0);
 ```
 
-> `jumlahItem` and `totalHarga` are recomputed from `items` on every render — there is no derived state that can fall behind.
+> `jumlahItem` dan `totalHarga` dihitung ulang dari `items` pada setiap render — tidak ada nilai turunan yang bisa tertinggal.
 
 <!--
-Stress the order map then filter in kurangiItem: map lowers the qty, filter discards the
-item whose qty becomes 0, so the qty is never zero or negative.
+Tegaskan urutan map lalu filter di kurangiItem: map menurunkan qty, filter membuang item yang
+qty-nya menjadi 0, sehingga qty tidak pernah nol atau negatif.
 
-hapusItem is just one filtering line with filter; jumlahItem and totalHarga are computed
-with reduce straight from items on every render, so they cannot fall behind the cart
-contents.
+hapusItem hanya satu baris filter; jumlahItem dan totalHarga dihitung dengan reduce langsung
+dari items pada setiap render, jadi tidak mungkin tertinggal dari isi keranjang.
 
-Guiding question: "If totalHarga is computed on every render, can its value go out of sync
-with items?" (Answer: no; the value always comes from the same items.)
+Pertanyaan penuntun: "Kalau totalHarga dihitung pada setiap render, bisakah nilainya tidak
+sinkron dengan items?" (Jawaban: tidak; nilainya selalu berasal dari items yang sama.)
 -->
 
 ---
 
-## CartContext.js: The Value the Provider Shares
+## Tanpa `value`, Keranjang Tidak Sampai ke Layar
 
-`context/CartContext.js` — the close of the provider function: the persistence TODO comment and the `value` prop
+`context/CartContext.js` — penutup provider, komentar TODO, dan prop `value`
 
 ```js
   // TODO (Bab 11): muat items dari AsyncStorage saat provider dibuat,
@@ -651,24 +669,25 @@ with items?" (Answer: no; the value always comes from the same items.)
 }
 ```
 
-> The provider shares `items`, `tambahItem`, `kurangiItem`, `hapusItem`, `jumlahItem`, and `totalHarga` through the `value` prop.
+> `value` adalah satu-satunya jalan agar layar bisa membaca isi keranjang.
 
 <!--
-This return block is what makes the cart truly shared: without the value prop, the items
-state lives only inside the provider function and no screen can read it.
+Blok return inilah yang membuat keranjang benar-benar dibagikan: tanpa prop value, state items
+hanya hidup di dalam fungsi provider dan tidak ada layar yang bisa membacanya.
 
-Show the shape of value as an object with six keys, then compare it with the two-screens
-slide: each screen takes only the part it needs through useCart().
+Tunjukkan bentuk value sebagai objek dengan enam kunci — items, tambahItem, kurangiItem,
+hapusItem, jumlahItem, dan totalHarga — lalu bandingkan dengan slide dua layar: setiap layar
+hanya mengambil bagian yang dibutuhkannya lewat useCart().
 
-The TODO comment marks the insertion point for Chapter 11 persistence: load items from
-AsyncStorage when the provider is created, and save every time they change.
+Komentar TODO menandai titik penyisipan penyimpanan di Bab 11: muat items dari AsyncStorage
+saat provider dibuat, dan simpan setiap kali berubah.
 -->
 
 ---
 
-## app/_layout.js: The Provider at the Root
+## Satu Provider di Akar Membungkus Setiap Rute
 
-`app/_layout.js` — one provider wraps every route (see Chapter 7 for the route structure)
+`app/_layout.js` — satu provider membungkus setiap rute (struktur rute di Bab 7)
 
 ```js
 import { Stack } from 'expo-router';
@@ -683,350 +702,365 @@ export default function RootLayout() {
 }
 ```
 
-> Because the provider wraps `<Stack>`, every route is inside its subtree.
+> Karena provider membungkus `<Stack>`, setiap rute berada di dalam subtree-nya.
 
 <!--
-This is what makes the cart legitimately global state: not because the data is big,
-but because the scope of its use covers every screen.
+Inilah yang membuat keranjang sah menjadi global state: bukan karena datanya besar, melainkan
+karena cakupan pemakainya mencakup semua layar.
 
-Name its consistency with Chapter 7: this file is the root layout of the Expo Router app,
-and `<Stack>` registers every route from the app/ folder automatically.
+Sebutkan kesinambungannya dengan Bab 7: file ini adalah layout akar aplikasi Expo Router, dan
+<Stack> mendaftarkan setiap rute dari folder app/ secara otomatis.
 
-Guiding question: "If the app later has a help page that does not need the
-cart, what can be done?" (Answer: move the provider lower so that
-re-rendering is not excessive.)
+Pertanyaan penuntun: "Kalau nanti ada halaman bantuan yang tidak membutuhkan keranjang, apa
+yang bisa dilakukan?" (Jawaban: memindahkan provider lebih ke dalam supaya render ulang tidak
+berlebihan.)
 
-⚠ version-sensitive: the Expo Router supporting packages and configuration steps can
-change between Expo SDK versions; use the list written in Chapter 7 §7.2 to 7.3.
+⚠ sensitif versi: paket pendukung dan langkah konfigurasi Expo Router bisa berubah antarversi
+Expo SDK; pakai daftar yang tertulis di Bab 7 §7.2 sampai 7.3.
 -->
 
 ---
 
-## Two Screens, One Data Source
+## Dua Layar Membaca Satu Sumber Data
 
-| Screen | Reads from `useCart()` | Writes through |
+| Layar | Membaca dari `useCart()` | Menulis lewat |
 |---|---|---|
 | `app/index.js` | `jumlahItem` | `tambahItem` |
 | `app/keranjang.js` | `items`, `jumlahItem`, `totalHarga` | `tambahItem`, `kurangiItem`, `hapusItem` |
 
-**Additional explanation:** no screen calls `setItems`; every change goes through the provider's own functions, so the cart's behavior is easy to predict and to test.
+**Penjelasan tambahan:** tidak ada layar yang memanggil `setItems`; setiap perubahan lewat fungsi milik provider, jadi perilaku keranjang mudah diprediksi dan diuji.
 
-> A third screen, for example a payment screen, only needs to call `useCart()` with no change to the provider.
+> Layar ketiga, misalnya layar pembayaran, cukup memanggil `useCart()` tanpa mengubah provider.
 
 <!--
-This table summarizes the practicum code, it is not new material; open the files
-app/index.js and app/keranjang.js on screen so students see the useCart call directly.
+Tabel ini merangkum kode praktikum, bukan materi baru; buka file app/index.js dan
+app/keranjang.js di layar supaya mahasiswa melihat pemanggilan useCart langsung.
 
-The product screen needs only two values (one reader, one writer), while the cart
-screen needs six. Compare the two so students see the benefit of the hook.
+Layar produk hanya butuh dua nilai (satu pembaca, satu penulis), sedangkan layar keranjang
+butuh enam. Bandingkan keduanya agar mahasiswa melihat manfaat hook.
 
-Misconception: students often copy items into the screen's local state. Remind them that
-the copy is exactly what creates two different carts.
+Salah paham: mahasiswa sering menyalin items ke state lokal layar. Ingatkan bahwa salinan
+itulah yang menciptakan dua keranjang yang berbeda.
 -->
 
 ---
 
-## Provider Structure and Its Scope
+## Cakupan Provider Menentukan Banyaknya Re-render
 
 ![w:1120](assets/diagrams/bab-09-state-management-04.svg)
 
-> The right provider scope reduces unnecessary re-renders.
+> Cakupan provider yang tepat mengurangi render ulang yang tidak perlu.
 
 <!--
-Explain the diagram from left to right: the root layout mounts CartProvider, the provider
-holds the items state, both screens read through useCart(), and CartContext is the
-container that unites the two.
+Jelaskan gambar dari kiri ke kanan: layout akar memasang CartProvider, provider memegang state
+items, kedua layar membaca lewat useCart(), dan CartContext adalah wadah yang menyatukan
+keduanya.
 
-Stress that there is no arrow from a screen straight to CartContext: the only door
-is useCart(), and that is why the context name can be changed without touching the screens.
+Tegaskan bahwa tidak ada panah dari layar langsung ke CartContext: satu-satunya pintu adalah
+useCart(), dan itulah sebabnya nama context bisa diganti tanpa menyentuh layar.
 
-Ask: "If CartContext.js is recreated with a different letter case, what is the symptom?"
-(Answer: no badge increase and no error; that is the next troubleshooting topic.)
+Tanya: "Kalau CartContext.js dibuat ulang dengan huruf besar-kecil yang berbeda, apa
+gejalanya?" (Jawaban: badge tidak bertambah dan tidak ada error; itu topik troubleshooting
+berikutnya.)
 -->
 
 ---
 
-## The Flow of a Single "Add" Button Press
+## Satu Ketukan "Tambah", Satu Rantai Sampai Badge
 
 ![w:1120](assets/diagrams/bab-09-state-management-05.svg)
 
-> After 2 Buku and 1 Tipe-X: the badge "Cart (3)" and the total "Rp 102.000".
+> Setelah 2 Buku dan 1 Tipe-X: badge "Keranjang (3)" dan total "Rp 102.000".
 
 <!--
-Read this one-way flow as a story: the touch calls tambahItem, the provider
-updates the state, the context value changes, and then React re-renders the components that
-use useCart(). The badge and the cart list change with it.
+Bacakan alur satu arah ini sebagai cerita: ketukan memanggil tambahItem, provider memperbarui
+state, nilai context berubah, lalu React me-render ulang komponen yang memakai useCart().
+Badge dan daftar keranjang ikut berubah.
 
-The expected result in the practicum: the badge "(0)" becomes "(2)" after pressing
-Add twice; the cart row shows "Rp 45.000 x 2 = Rp 90.000" and "Rp 12.000 x 1
-= Rp 12.000"; pressing "-" at qty 1 removes the row; the empty cart shows "Cart is
-still empty."
+Hasil yang diharapkan di praktikum: badge "(0)" menjadi "(2)" setelah tombol Tambah ditekan
+dua kali; baris keranjang menampilkan "Rp 45.000 x 2 = Rp 90.000" dan "Rp 12.000 x 1 =
+Rp 12.000"; menekan "-" pada qty 1 menghapus barisnya; keranjang kosong menampilkan
+"Keranjang masih kosong."
 
-Remind them that closing and reopening the app returns the cart to the empty
-state, and that is expected because the storage is still in memory (Chapter 11).
+Ingatkan bahwa menutup lalu membuka aplikasi mengembalikan keranjang ke keadaan kosong, dan itu
+wajar karena penyimpanannya masih di memori (Bab 11).
 -->
 
 ---
 
 <!-- _class: center -->
 
-## What Happens If…?
+## Apa yang Terjadi Jika…?
 
-- The "Cart (0)" badge does not increase even though the "Add" button is pressed many times
-- No error message appears either on the screen or in the terminal
+- Badge "Keranjang (0)" tidak bertambah padahal tombol "Tambah" ditekan berkali-kali
+- Tidak ada pesan error, baik di layar maupun di terminal
 
-What is the most likely cause, and how would you prove it?
+Apa penyebab paling mungkin, dan bagaimana kamu membuktikannya?
 
 <!--
-This case is taken from Troubleshooting 9 and usually shows up in the practicum. Give 3
-minutes in pairs to build a guess and a way to prove it.
+Kasus ini diambil dari Troubleshooting 9 dan sering muncul di praktikum. Beri 3 menit
+berpasangan untuk menyusun dugaan dan cara membuktikannya.
 
-Guide the reasoning: no error means the code runs, but writes to a different
-context. Ask students to name the proof tool, not just the guess.
+Arahkan penalarannya: tidak ada error berarti kode berjalan, tetapi menulis ke context yang
+berbeda. Minta mahasiswa menyebut alat buktinya, bukan hanya dugaannya.
 
-Do not leak the answer; it is discussed on the next slide.
+Jangan bocorkan jawabannya; pembahasannya di slide berikutnya.
 -->
 
 ---
 
-## Answer: Why the Badge Stays Empty
+## Jawabannya: Badge Kosong Tanpa Pesan Error
 
-| Possible cause | How to prove it |
+| Kemungkinan penyebab | Cara membuktikannya |
 |---|---|
-| Two copies of `CartContext` in different files | Make sure there is only one `context/CartContext.js` |
-| The screen uses a different context from the provider | Compare the path and letter case of every `import` |
-| An old bundle is still loaded by Metro | Press `r`, then restart with `npx expo start --clear` |
+| Ada dua salinan `CartContext` di file berbeda | Pastikan hanya ada satu `context/CartContext.js` |
+| Layar memakai context yang berbeda dari provider | Bandingkan path dan huruf besar-kecil setiap `import` |
+| Bundle lama masih dimuat Metro | Tekan `r`, lalu mulai ulang dengan `npx expo start --clear` |
 
-> Prevention: one location and one naming convention for every project file.
+> Pencegahan: satu lokasi dan satu kebiasaan penamaan untuk setiap file project.
 
 <!--
-Rows 1 and 3 are the two causes from the single Troubleshooting 9 entry whose symptom is
-a badge that does not increase without an error message (two copies of CartContext, or an
-old bundle still loaded by Metro). The way to prove row 2 comes from the "Unable to resolve
-../hooks/useCart" entry: compare the path and letter case of every import with the file
-name on disk.
+Baris 1 dan 3 adalah dua penyebab dari satu entri Troubleshooting 9 yang gejalanya badge tidak
+bertambah tanpa pesan error (dua salinan CartContext, atau bundle lama yang masih dimuat Metro).
+Cara membuktikan baris 2 berasal dari entri "Unable to resolve ../hooks/useCart": bandingkan
+path dan huruf besar-kecil setiap import dengan nama file di disk.
 
-The provider-missing error that useCart throws appears when the provider is mounted on one
-screen, not in app/_layout.js. That error is a help, not a nuisance.
+Error provider-missing yang dilempar useCart muncul ketika provider dipasang di satu layar,
+bukan di app/_layout.js. Error itu pertolongan, bukan gangguan.
 
-The habit to instill: create files through VS Code so import paths resolve
-automatically, and test the edge case (qty 1 then decrease) after rewriting any function.
+Kebiasaan yang harus ditanamkan: buat file lewat VS Code supaya path import terselesaikan
+otomatis, dan uji kasus batas (qty 1 lalu dikurangi) setiap kali menulis ulang sebuah fungsi.
 -->
 
 ---
 
-## Expected Result of the Practicum
+<!-- _class: compact -->
 
-- The badge "Cart (0)" becomes "(2)" after the "Add" button is pressed twice on Buku
-- Line detail: "Rp 45.000 x 2 = Rp 90.000" and "Rp 12.000 x 1 = Rp 12.000"
-- Bottom summary: "Total (3 items): Rp 102.000"
-- Qty never becomes 0 or negative when the "-" button is pressed
-- After every item is removed, the message "Cart is still empty." appears
+## Antrean Kasir Primadona Lahir dari Total yang Dihitung Tangan
 
-<!--
-Make this slide the practicum checklist: ask students to tick it off item by item and
-take a screenshot as evidence for the rubric assessment.
+**Kasus fiktif dengan pola nyata.** Koperasi alat tulis kampus melayani ribuan mahasiswa.
 
-Step 8 in this chapter's Work Steps contains the same test scenario, including emptying
-the cart as an extra exercise (Practice Question 1).
-
-Remind them that this result is observed in the app's flow; do not promise anything that
-students have not tested themselves.
--->
-
----
-
-## IS/IT Case Study: the "Primadona" Cooperative
-
-**A fictional case with a real pattern.** A campus cooperative stationery shop serves thousands of students.
-
-| Symptom | Root cause |
+| Gejala | Akar masalah |
 |---|---|
-| A 15–20 minute cashier queue | The shopping total is computed manually with a calculator |
-| Cash discrepancies | Miscounting or wrong entry |
-| Stock quietly running low | Sales are recorded in a book, not captured in a structured way |
-| Monthly reports arriving late | Manual recap from the daily book |
+| Antrean kasir 15–20 menit | Total belanja dihitung manual dengan kalkulator |
+| Uang kas tidak cocok | Salah hitung atau salah ketik |
+| Stok diam-diam menipis | Penjualan dicatat di buku, tidak terekam rapi |
+| Laporan bulanan terlambat | Rekap manual dari buku harian |
 
-> The solution is a mobile cashier app: pick a product, the app computes the total, the transaction is sent to the server.
+> Solusinya aplikasi kasir mobile: pilih produk, aplikasi menghitung total, transaksi dikirim ke server.
 
 <!--
-Read it as a story, not as a table. The aim is to make students see that
-the shopping cart is the bridge between the cashier's interaction and the transaction data.
+Bacakan sebagai cerita, bukan sebagai tabel. Tujuannya agar mahasiswa melihat bahwa keranjang
+adalah jembatan antara interaksi kasir dan data transaksi.
 
-Map it to the material: the automatically computed total removes miscounting (the second
-root cause), and useCart separates the logic so it can be tested and reused elsewhere.
+Petakan ke materi: total yang dihitung otomatis menghapus salah hitung (akar masalah kedua),
+dan useCart memisahkan logikanya sehingga bisa diuji dan dipakai ulang di tempat lain.
 
-A question before the next slide: "Should the cart be stored on the device or on the
-server?" Let students guess first.
+Pertanyaan sebelum slide berikutnya: "Keranjang sebaiknya disimpan di perangkat atau di server?"
+Biarkan mahasiswa menebak dulu.
+
+Ingatkan bahwa Primadona adalah kasus koperasi, berbeda dari Aplikasi Manajemen Data Mahasiswa
+yang mereka bangun sendiri.
 -->
 
 ---
 
-## Client-side or Server-side?
+<!-- _class: compact -->
 
-| Consideration | Client-side cart | Server-side cart |
+## Keranjang di HP atau di Server?
+
+| Pertimbangan | Keranjang di HP | Keranjang di server |
 |---|---|---|
-| Response speed | Fast, no waiting for the network | Depends on the connection |
-| When the network drops | Keeps working | Cannot be used |
-| Data risk | Lost if the device breaks | Stored centrally |
-| Across devices | The cart does not move | The customer finds the same cart |
+| Kecepatan respons | Cepat, tanpa menunggu jaringan | Bergantung koneksi |
+| Saat jaringan putus | Tetap berjalan | Tidak bisa dipakai |
+| Risiko data | Hilang bila perangkat rusak | Tersimpan terpusat |
+| Pindah perangkat | Keranjang tidak ikut pindah | Pelanggan menemukan keranjang yang sama |
 
-> The practicum chooses client-side in memory; migration to permanent storage (Chapter 11) and server sync (Chapter 10) does not change the state design.
+> Praktikum memilih keranjang di HP dan di memori; pindah ke penyimpanan permanen (Bab 11) dan sinkronisasi server (Bab 10) tidak mengubah rancangan state-nya.
 
 <!--
-The most interesting architecture decision in this case: a shop with an unstable network
-and cheap devices benefits from a client-side cart, while a large online shop chooses
-server-side so that customers switch devices without losing the cart.
+Keputusan arsitektur paling menarik di kasus ini: toko dengan jaringan tidak stabil dan
+perangkat murah diuntungkan keranjang di HP, sedangkan toko daring besar memilih sisi server
+supaya pelanggan berganti perangkat tanpa kehilangan keranjang.
 
-Stress the essence of state design: it is not choosing one technology forever, but
-understanding the trade-off and designing so the decision can change at low cost.
+Tegaskan inti perancangan state: bukan memilih satu teknologi selamanya, melainkan memahami
+trade-off dan merancang agar keputusan itu bisa diubah dengan biaya murah.
 
-Guiding question: "If cashier A creates a cart and it is continued at cashier B, is the
-Context API still enough?" (Answer: no; a server draft is needed, the analysis question.)
+Pertanyaan penuntun: "Kalau kasir A membuat keranjang dan dilanjutkan kasir B, apakah Context
+API masih cukup?" (Jawaban: tidak; perlu draf di server, dan itu soal analisis.)
+-->
+
+---
+
+## Praktikum: Yang Dibangun Pertemuan Ini
+
+- `context/CartContext.js` — context, provider, dan seluruh operasi keranjang
+- `hooks/useCart.js` — satu pintu masuk ke context
+- `app/_layout.js` — `CartProvider` membungkus setiap rute
+- `app/index.js` — daftar produk, tombol "Tambah", dan badge keranjang
+- `app/keranjang.js` — isi keranjang, kendali qty, dan total harga
+- Fitur "Kosongkan Keranjang" beserta kondisi keranjang kosong sebagai latihan
+
+> Jalankan `npx expo start`, lalu ikuti langkah kerja Praktikum 9 di buku satu per satu.
+
+<!--
+Sebutkan prasyaratnya dengan suara keras: project Expo berbasis JavaScript dengan Expo Router
+terpasang, seperti yang dikerjakan di Bab 7 §7.2–7.3.
+
+Ingatkan bahwa katalog produk (data/produk.js) adalah data statis, bukan state — isinya tidak
+berubah selama aplikasi berjalan.
+
+Beri tenggat pengumpulan tangkapan layar secara eksplisit dan kaitkan dengan rubrik praktikum
+(Lampiran A): pemahaman konsep 15%, implementasi 25%, kualitas kode 15%, UI/UX 15%, debugging
+10%, dokumentasi 20%.
+-->
+
+---
+
+## Yang Harus Teramati
+
+- Badge "Keranjang (0)" menjadi "(2)" setelah tombol "Tambah" ditekan dua kali pada Buku
+- Rincian baris: "Rp 45.000 x 2 = Rp 90.000" dan "Rp 12.000 x 1 = Rp 12.000"
+- Ringkasan bawah: "Total (3 item): Rp 102.000"
+- Qty tidak pernah menjadi 0 atau negatif saat tombol "-" ditekan
+- Setelah semua item dihapus, pesan "Keranjang masih kosong." muncul
+
+> Laporan yang baik menyertakan tangkapan layar setiap butir, bukan hanya tulisan "berhasil".
+
+<!--
+Jadikan slide ini lembar centang: minta mahasiswa mencentang butir satu per satu dan mengambil
+tangkapan layar sebagai bukti penilaian rubrik.
+
+Langkah 8 pada Langkah Kerja buku memuat skenario uji yang sama, termasuk mengosongkan
+keranjang sebagai latihan tambahan (Soal Latihan 1).
+
+Ingatkan bahwa hasil ini diamati pada alur aplikasinya; jangan menjanjikan apa pun yang belum
+diuji mahasiswa sendiri.
 -->
 
 ---
 
 <!-- _class: center -->
 
-## Mini Quiz
+## Kuis Kilat
 
-- If state is used by only one component, how should it be stored?
-- What is the correct order of use for the Context API?
-- Which of these is a derived value (derived state) in the cart?
-- Why is `CartProvider` placed in `app/_layout.js`?
+- Kalau state hanya dipakai satu komponen, bagaimana sebaiknya disimpan?
+- Bagaimana urutan pemakaian Context API yang benar?
+- Mana yang merupakan nilai turunan (derived state) pada keranjang?
+- Kenapa `CartProvider` diletakkan di `app/_layout.js`?
 
 <!--
-A four-minute oral quiz: show the questions, ask the class to answer together or raise a
-hand, then move to the answer slide. Do not leak the answers on this slide.
+Kuis lisan 4 menit: tampilkan pertanyaan, minta kelas menjawab serempak atau mengangkat tangan,
+lalu lanjut ke slide kunci. Jangan bocorkan jawaban di slide ini.
 
-The four items are taken from the Chapter 9 Evaluation multiple-choice section
-(numbers 1, 3, 5, and 8), so they can also serve as a warm-up before the written exercises.
+Keempat butir diambil dari bagian pilihan ganda Evaluasi Bab 9 (nomor 1, 3, 5, dan 8), jadi bisa
+juga dipakai sebagai pemanasan sebelum soal uraian.
 -->
 
 ---
 
 <!-- _class: center -->
 
-## Answers
+## Kunci Kuis Kilat
 
-- Local state with `useState` — only one component uses it
-- `createContext` → `Provider` → `useContext` — container, provider, then reader
-- `totalHarga` — computed from `items`, so it need not be stored
-- So that every route sits inside the provider subtree and can call `useCart()`
+- State lokal dengan `useState` — hanya satu komponen yang memakainya
+- `createContext` → `Provider` → `useContext` — wadah, penyedia, lalu pembaca
+- `totalHarga` — dihitung dari `items`, jadi tidak perlu disimpan
+- Agar setiap rute berada di dalam subtree provider dan bisa memanggil `useCart()`
 
 <!--
-Repeat the distinction most often confused: derived state (computed) versus state (stored).
+Ulangi pembedaan yang paling sering tertukar: nilai turunan (dihitung) versus state (disimpan).
 
-If many get the fourth item wrong, repeat the app/_layout.js slide and the provider scope
-diagram before closing the meeting.
+Kalau banyak yang salah di butir keempat, ulangi slide app/_layout.js dan diagram cakupan
+provider sebelum menutup pertemuan.
 
-A quick correction for the answer "so the app loads faster": speed is not the reason,
-the scope of use is the reason.
+Koreksi cepat untuk jawaban "supaya aplikasi lebih cepat": kecepatan bukan alasannya, cakupan
+pemakaianlah alasannya.
 -->
 
 ---
 
-## Summary
+## Ringkasan
 
-1. Start from local state; raise it only when another consumer truly needs it
-2. Lifting state up creates a single source of truth through props and callbacks
-3. Painful prop drilling is the signal to switch to the Context API
-4. The Context API uses `createContext`, `Provider`, and `useContext`, wrapped by the `useCart` custom hook
-5. Derived values are computed, not stored; Zustand and Redux are for large scale
+1. Mulai dari state lokal; angkat hanya ketika ada pemakai lain yang benar-benar membutuhkannya
+2. Lifting state up menciptakan sumber kebenaran tunggal lewat props dan callback
+3. Prop drilling yang menyakitkan adalah tanda untuk beralih ke Context API
+4. Context API memakai `createContext`, `Provider`, dan `useContext`, dibungkus custom hook `useCart`
+5. Nilai turunan dihitung, bukan disimpan; Zustand dan Redux untuk skala besar
 
-> The cart in this chapter lives in memory; making it survive after the app is closed is Chapter 11 material.
+> Keranjang di bab ini hidup di memori; membuatnya bertahan setelah aplikasi ditutup adalah materi Bab 11.
 
 <!--
-Do not read it out. Ask students to pick one number and explain it in their own words;
-this works better than repeating the reading.
+Jangan dibacakan. Minta mahasiswa memilih satu nomor dan menjelaskannya dengan kata-kata
+sendiri; ini bekerja lebih baik daripada mengulang bacaan.
 
-The chapter's closing message: the hierarchy of local state, lifting state up, Context API,
-then libraries is a sequence of discipline, not a ladder of prestige.
+Pesan penutup bab: hierarki state lokal, lifting state up, Context API, lalu pustaka adalah
+urutan kedisiplinan, bukan tangga gengsi.
 -->
 
 ---
 
-## Class Discussion: Where Does the Cart Live?
+<!-- _class: compact -->
 
-<div class="grid2">
-<div>
-
-**Questions**
-
-- Where should the campus shop's cart be stored, and what is the risk?
-- What sign in the code shows that the Context API is already overused?
-
-</div>
-<div>
-
-**What is assessed**
-
-- Accuracy in connecting the storage choice to the network and device context
-- The ability to recognize the symptom in the code, not just to quote theory
-
-</div>
-</div>
+## Diskusi: Di Mana Keranjang Seharusnya Tinggal?
 
 ![w:1120](assets/diagrams/bab-09-state-management-11.svg)
 
+**Pertanyaan**
+
+- Di mana keranjang toko kampus sebaiknya disimpan, dan apa risikonya?
+- Tanda apa di kode bahwa Context API sudah dipakai berlebihan?
+
+**Yang dinilai**
+
+- Ketepatan menghubungkan pilihan penyimpanan dengan jaringan dan perangkat
+- Kemampuan mengenali gejala di kode, bukan sekadar mengutip teori
+
 <!--
-Trimmed to the picture (the diagram says this):
+Dipotong ke gambar (diagram yang mengatakan ini):
 
-> A good state design holds up when requirements change: from memory to local storage, and then to the server.
+> Rancangan state yang baik bertahan saat kebutuhan berubah: dari memori ke penyimpanan lokal, lalu ke server.
 
-The picture is that sentence and the risk on every arrow: memory is lost when the app is
-closed, local storage does not move between devices, and the server is what lets cashier B
-open the cart cashier A started. It is on the slide in place of the quote because the
-ladder gives the discussion its vocabulary — the class can point at a step instead of
-arguing in the abstract. Say the sentence out loud as you close the discussion.
+Gambar itulah kalimat tersebut beserta risiko di setiap panah: memori hilang saat aplikasi
+ditutup, penyimpanan lokal tidak berpindah perangkat, dan server yang membuat kasir B bisa
+membuka keranjang yang dimulai kasir A. Gambar itu di slide menggantikan kutipan karena tangga
+di gambar memberi kosakata untuk diskusi — kelas bisa menunjuk satu tingkat, bukan berdebat
+dalam gagasan abstrak. Ucapkan kalimat itu dengan suara saat menutup diskusi.
 
-Give 3 minutes in pairs, then collect 2 to 3 answers. A strong answer names a combination:
-a local cart that is synced when online.
+Beri 3 menit berpasangan, lalu tampung 2–3 jawaban. Jawaban kuat menyebut kombinasi:
+keranjang lokal yang disinkronkan saat online.
 
-If the answer stops at "just use the server", redirect to the cooperative's unstable
-network and its cheap cashier devices.
+Kalau jawaban berhenti di "pakai server saja", arahkan ke jaringan koperasi yang tidak stabil
+dan perangkat kasirnya yang murah.
 
-This is also the moment to mention Reflection 3: how to explain a technical decision to a
-shop owner who does not understand technology.
+Ini juga saat yang tepat menyebut Refleksi 3: bagaimana menjelaskan keputusan teknis kepada
+pemilik toko yang tidak paham teknologi.
 -->
 
 ---
 
-## References
+<!-- _class: compact -->
 
-| Source | Link |
+## Referensi
+
+| Sumber | Link |
 |---|---|
-| React documentation (2026) — Context and hooks | react.dev |
-| React Native documentation (2026) | reactnative.dev |
-| Expo documentation (2026) | docs.expo.dev |
+| Dokumentasi React (2026) — Context dan hook | react.dev |
+| Dokumentasi React Native (2026) | reactnative.dev |
+| Dokumentasi Expo (2026) | docs.expo.dev |
 | Banks & Porcello, *Learning React* (2020) | O'Reilly Media |
-| MDN Web Docs — JavaScript (2026) | developer.mozilla.org |
+| JavaScript, MDN Web Docs (2026) | developer.mozilla.org |
 
-<div class="grid2">
-<div>
+**Bacaan lanjutan:** Bab 4 — `useState` dan aturan hook · Bab 10–11 — data server dan penyimpanan lokal
 
-**Related chapters**
-
-- Chapter 4 — `useState` and the rules of hooks
-- Chapters 10 and 11 — server data and local storage
-
-</div>
-<div>
-
-**Technology versions in this book**
-
-- Expo SDK 57 · React Native 0.86 · React 19.2 · Node.js LTS ≥ 22
-
-</div>
-</div>
+**Versi teknologi:** Expo SDK 57 · React Native 0.86 · React 19.2 · Node.js ≥ 22
 
 <!--
-The complete references are in Appendix D; terms such as Context API, state, and hook
-are explained in Appendix C (glossary).
+Rujukan lengkap ada di Lampiran D; istilah seperti Context API, state, dan hook dijelaskan di
+Lampiran C (glosarium).
 
-Remind them of the version-sensitive marker: the Zustand and Redux Toolkit syntax can
-change, so always match it against the official documentation before real use.
+Ingatkan penanda sensitif versi: sintaks Zustand dan Redux Toolkit bisa berubah, jadi selalu
+cocokkan dengan dokumentasi resmi sebelum dipakai sungguhan.
 -->
 
 ---
@@ -1034,17 +1068,17 @@ change, so always match it against the official documentation before real use.
 <!-- _class: lead -->
 <!-- _paginate: skip -->
 
-# Ready for Chapter 10
+# Siap ke Bab 10
 
-**Practicum:** complete Chapter 8 and Chapter 9, including the "Empty Cart" feature and the 2 Buku + 1 Tipe-X test scenario.
+**Tugas:** selesaikan Bab 8 dan Bab 9, termasuk fitur "Kosongkan Keranjang" dan skenario uji 2 Buku + 1 Tipe-X.
 
-Meeting 10: Chapter 10 — REST API (concepts and GET) with the book's `backend/` server. Final Project groups start forming at meeting 9.
+Pertemuan 10: Bab 10 — REST API (konsep dan GET) dengan server `backend/` buku. Kelompok Project Akhir mulai terbentuk pada pertemuan 9.
 
 <!--
-Close with one sentence: "This chapter teaches the app to remember data; the next chapter
-teaches the app to fetch data from somewhere else."
+Tutup dengan satu kalimat: "Bab ini mengajari aplikasi mengingat data; bab berikutnya mengajari
+aplikasi mengambil data dari tempat lain."
 
-State the practicum deadline and the screenshot evidence submission explicitly, and
-tie it to the practicum rubric (Appendix A): conceptual understanding 15%,
-implementation 25%, code quality 15%, UI/UX 15%, debugging 10%, documentation 20%.
+Sebutkan tenggat praktikum dan pengumpulan bukti tangkapan layar secara eksplisit, lalu kaitkan
+dengan rubrik praktikum (Lampiran A): pemahaman konsep 15%, implementasi 25%, kualitas kode
+15%, UI/UX 15%, debugging 10%, dokumentasi 20%.
 -->
