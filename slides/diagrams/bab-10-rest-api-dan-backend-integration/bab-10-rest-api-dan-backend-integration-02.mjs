@@ -18,7 +18,7 @@
 // build reports them as provenance misses — expected, and the reason the picture exists.
 export default {
   id: '02',
-  slide: 'HTTP: The Request–Response Pattern',
+  slide: 'HTTP: Satu Permintaan, Satu Tanggapan',
   pattern: 'sequence',
   alt:
     'One HTTP round trip: the client sends a request carrying a method, a URL, headers and ' +

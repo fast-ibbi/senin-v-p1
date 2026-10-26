@@ -28,7 +28,7 @@
 // chapter's word; "200 OK" comes from the status-code tables earlier in the chapter.
 export default {
   id: '06',
-  slide: 'Diagram: Introduction to API Authentication',
+  slide: 'Token Menumpang di Header Setiap Permintaan',
   pattern: 'sequence',
   alt:
     'The token flow: the client logs in, the server issues a token, the client sends the ' +

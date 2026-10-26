@@ -19,7 +19,7 @@
 // an Express program in backend/, port 3000).
 export default {
   id: '08',
-  slide: 'The Client–Server Concept',
+  slide: 'Dua Program Terpisah: Satu Meminta, Satu Menyimpan',
   pattern: 'tree',
   alt:
     'One client–server architecture with two separate branches: the client composes the ' +

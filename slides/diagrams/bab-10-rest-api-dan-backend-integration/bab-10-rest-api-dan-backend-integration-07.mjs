@@ -17,7 +17,7 @@
 // GPAs are updated, data is deleted", which are facts the picture does not show.
 export default {
   id: '07',
-  slide: 'From Static Data to Dynamic Data',
+  slide: 'Data Statis Tidak Pernah Tahu IPK Sudah Berubah',
   pattern: 'beforeAfter',
   alt:
     'Two models on the same axis, when a data change reaches the other users: static data ' +

@@ -32,7 +32,7 @@
 // is drawn at scale 1 and a 16px node label stays 16px on the projector.
 export default {
   id: '12',
-  slide: 'Application: Three Systems That Are Not in Sync',
+  slide: 'Studi Kasus: Tiga Sistem, Tiga Angka IPK yang Berbeda',
   pattern: 'tree',
   alt:
     'The same record held in three places: one copy of the data lives in the academic web, ' +

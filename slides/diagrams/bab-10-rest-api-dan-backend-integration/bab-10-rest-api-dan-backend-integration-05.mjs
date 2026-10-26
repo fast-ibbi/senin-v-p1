@@ -16,7 +16,7 @@
 // response going the wrong way.
 export default {
   id: '05',
-  slide: 'Integration Flow: Form → Server → List',
+  slide: 'Alur Integrasi: Formulir, Server, Lalu Daftar',
   pattern: 'flow',
   alt:
     'One save transaction: the form holds the state and disables Save, the POST goes out ' +

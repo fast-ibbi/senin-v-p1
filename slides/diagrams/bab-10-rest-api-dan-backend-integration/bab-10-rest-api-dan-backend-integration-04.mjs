@@ -15,7 +15,7 @@
 // Indonesian; the English wording comes from the References slide of this chapter.
 export default {
   id: '04',
-  slide: 'From Chapter 10 to the Next Chapters',
+  slide: 'Pola Ini Bertahan Sampai Project Akhir',
   pattern: 'tree',
   alt:
     'Chapter 10 feeds three later destinations: Chapter 11 for local data storage, ' +

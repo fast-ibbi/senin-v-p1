@@ -23,7 +23,7 @@
 // the slide never shows.
 export default {
   id: '09',
-  slide: 'REST: Resource, Endpoint, and Stateless',
+  slide: 'REST Memandang Data sebagai Resource Beralamat',
   pattern: 'beforeAfter',
   alt:
     'Two endpoints of the same resource: GET /api/mahasiswa addresses the collection, ' +

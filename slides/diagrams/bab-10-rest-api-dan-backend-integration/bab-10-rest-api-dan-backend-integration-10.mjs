@@ -22,7 +22,7 @@
 // the picture exists.
 export default {
   id: '10',
-  slide: 'fetch Fails Only When the Network Is in Trouble',
+  slide: 'fetch Tidak Melempar Error saat Server Menjawab 500',
   pattern: 'beforeAfter',
   alt:
     'A fetch call has two very different failure surfaces: when the network is in trouble ' +

@@ -24,7 +24,7 @@
 // because this slide carries a heading and a picture and no prose at all.
 export default {
   id: '03',
-  slide: 'The Three Interface States',
+  slide: 'Tiga State Antarmuka Menjawab Dua Pertanyaan Pengguna',
   pattern: 'stateMachine',
   alt:
     'Three interface states and how the screen moves between them: loading can end in the ' +

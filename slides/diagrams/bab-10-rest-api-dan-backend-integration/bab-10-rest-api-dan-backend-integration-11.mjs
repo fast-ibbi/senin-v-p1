@@ -24,7 +24,7 @@
 // Add one with the Add button.") and the whole pull-to-refresh mechanism.
 export default {
   id: '11',
-  slide: 'Empty State and Pull-to-Refresh',
+  slide: 'Daftar Kosong Bukan Berarti Aplikasi Rusak',
   pattern: 'beforeAfter',
   alt:
     'Two empty lists with two different causes. When the request succeeds and the list is ' +
