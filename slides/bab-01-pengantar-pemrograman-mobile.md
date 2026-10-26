@@ -2,10 +2,10 @@
 marp: true
 theme: academic
 paginate: true
-title: "Chapter 1 — Introduction to Mobile Programming"
-description: "Mobile Programming lecture, meeting 1: mobile app characteristics, four development approaches, Android & iOS, evolution, React Native, Expo, and app architecture."
-author: "Course Instructor — Information Systems / Informatics Engineering Study Program"
-footer: "Mobile Programming · Chapter 1 — Introduction to Mobile Programming"
+title: "Bab 1 — Pengantar Pemrograman Mobile"
+description: "Kuliah Pemrograman Mobile, pertemuan 1: karakteristik aplikasi mobile, empat pendekatan pengembangan, Android & iOS, evolusi teknologi, React Native, Expo, dan arsitektur aplikasi."
+author: "Dosen Mata Kuliah — Program Studi Sistem Informasi / Teknik Informatika"
+footer: "Pemrograman Mobile · Bab 1 — Pengantar Pemrograman Mobile"
 size: 16:9
 ---
 
@@ -13,34 +13,37 @@ size: 16:9
 <!-- _paginate: skip -->
 <!-- _footer: "" -->
 
-# Chapter 1 — Introduction to Mobile Programming
+# Bab 1 — Pengantar Pemrograman Mobile
 
-Conceptual foundations before writing code · Meeting 1
+Fondasi konsep sebelum menulis kode · Pertemuan 1
 
 <!--
-Open with one hook: "Today we write no code at all, but today's decisions determine the
-next 14 chapters."
+Buka dengan satu kalimat: "Hari ini kita belum menulis kode sama sekali, tapi keputusan
+hari ini menentukan 14 bab berikutnya."
 
-Opening question: "If the academic data is already on the campus website, why does the
-campus still need a mobile app?" Collect 2–3 answers without correcting them yet.
+Pertanyaan pembuka: "Kalau data akademik sudah ada di website kampus, kenapa kampus
+masih butuh aplikasi mobile?" Tampung 2–3 jawaban tanpa dikoreksi dulu.
 -->
 
 ---
 
-## Learning Objectives
+## Tujuan Pembelajaran
 
-- Explain the definition and characteristics of mobile apps
-- Distinguish native, web, hybrid, and cross-platform
-- Explain the position of Android & iOS and the evolution of mobile technology
-- Explain how React Native works and the role of Expo
-- Analyze React Native trade-offs and mobile app architecture
+Setelah bab ini, kamu bisa:
+
+- Menjelaskan pengertian dan karakteristik aplikasi mobile
+- Membedakan native, web, hybrid, dan cross-platform
+- Menjelaskan posisi Android & iOS dan evolusi teknologi mobile
+- Menjelaskan cara kerja React Native dan peran Expo
+- Menganalisis trade-off React Native dan arsitektur aplikasi mobile
 
 <!--
-Read out only the verbs. Emphasize that the fifth objective is the core of professional
-thinking: technology decisions are always trade-offs, not a matter of taste.
+Bacakan kelima butir dengan tempo cepat, jangan dijelaskan satu per satu sekarang.
+Tegaskan bahwa butir kelima adalah inti berpikir profesional: keputusan teknologi selalu
+trade-off, bukan soal selera.
 
-Connect it to the assessment: this meeting is assessed through discussion participation
-and Assignment 1 (an observation report on three mobile apps).
+Kaitkan dengan penilaian: pertemuan ini dinilai lewat partisipasi diskusi dan Tugas 1
+(laporan pengamatan tiga aplikasi mobile).
 -->
 
 ---
@@ -48,321 +51,312 @@ and Assignment 1 (an observation report on three mobile apps).
 <!-- _class: lead -->
 <!-- _paginate: skip -->
 
-# Part 1 — Characteristics, Types & Platforms
+# Bagian 1 — Karakteristik, Jenis & Platform
 
-Section 1.1 Characteristics · 1.2 Four Approaches · 1.3 Android & iOS · 1.4 Evolution
+subbab 1.1 Karakteristik · 1.2 Empat Pendekatan · 1.3 Android & iOS · 1.4 Evolusi
 
 <!--
-This part is conceptual. If time is tight, this is the part that may be condensed, but
-Section 1.1 must not be skipped because every later chapter refers back to it.
+Bagian ini konseptual. Kalau waktu sempit, bagian inilah yang boleh dipadatkan, tetapi
+subbab 1.1 tidak boleh dilewati karena semua bab sesudahnya merujuk kembali ke situ.
 -->
 
 ---
 
-## What Is a Mobile App?
+## Aplikasi Mobile Bukan Website yang Diperkecil
 
 ![w:1120](assets/diagrams/bab-01-pengantar-pemrograman-mobile-07.svg)
 
-**A mobile app** is software designed for mobile devices, especially smartphones and tablets.
+**Aplikasi mobile** adalah perangkat lunak yang dirancang untuk perangkat bergerak, terutama smartphone dan tablet.
 
-- The term *mobile* points to mobility: used while on the move
-- Sessions are short and often interrupted, so the app must survive stop-and-resume
+- Istilah *mobile* menunjuk mobilitas: dipakai sambil bergerak
+- Sesi pendek dan sering terputus, jadi aplikasi harus tahan berhenti lalu lanjut lagi
 
 <!--
-Trimmed to the picture (the diagram says this):
-- **Not just a shrunken website**
-- Installed on the device, not opened through a browser
-- Lives inside the app store ecosystem
-- Draws on the physical capabilities of the device
-- **Where its value comes from**
+Dipotong ke gambar (diagram yang mengatakan ini):
+- **Bukan website yang diperkecil**
+- Dipasang di perangkat, tidak dibuka lewat browser
+- Hidup dalam ekosistem toko aplikasi
+- Memanfaatkan kemampuan fisik perangkat
+- **Dari mana nilainya lahir**
 
-The two columns of the grid that used to be here are diagram 07 now. The sub-lead "Where
-its value comes from" went with them — it is the picture's second branch label — and the
-two bullets below the definition are the only prose left, because neither fits a node box
-without losing the clause "so the app must survive stop-and-resume".
+Dua kolom grid yang dulu ada di sini sekarang menjadi diagram 07. Subjudul "dari mana
+nilainya lahir" ikut pindah — itu label cabang kedua gambar — dan dua butir di bawah
+definisi adalah satu-satunya prosa yang tersisa, karena keduanya tidak muat di kotak node
+tanpa kehilangan anak kalimat "tahan berhenti lalu lanjut lagi".
 
-Analogy: a web app is like walking to a service counter every time you want to be
-served; a mobile app is like a service clerk who lives in the user's pocket.
+Analogi: aplikasi web seperti berjalan ke loket setiap kali ingin dilayani; aplikasi
+mobile seperti petugas loket yang tinggal di kantong pengguna.
 
-Ask students to name one app and one website they opened today, then compare how each
-"feels".
+Minta mahasiswa menyebut satu aplikasi dan satu website yang mereka buka hari ini, lalu
+bandingkan bagaimana rasanya masing-masing.
 -->
 
 ---
 
-## Mobile App Characteristics (1–4)
+## Tujuh Hal yang Membuat Aplikasi Mobile Berbeda (1–4)
 
-| # | Characteristic | Design consequence |
+| # | Karakteristik | Konsekuensi desain |
 |---|---|---|
-| 1 | **Mobility & user context** | Short, often interrupted sessions → must resume without losing data |
-| 2 | **Touch-based interface** | Finger size, swipe and pinch gestures, limited screen width |
-| 3 | **Access to sensors & device features** | Camera, microphone, GPS, accelerometer, always-on notifications |
-| 4 | **Fluctuating connectivity** | Wi-Fi switches to cellular data, sometimes disappears → the *offline-first* principle |
+| 1 | **Mobilitas & konteks pengguna** | Sesi pendek dan sering terputus → harus lanjut tanpa kehilangan data |
+| 2 | **Antarmuka berbasis sentuhan** | Ukuran jari, gesture geser dan cubit, lebar layar terbatas |
+| 3 | **Akses sensor & fitur perangkat** | Kamera, mikrofon, GPS, akselerometer, notifikasi yang selalu aktif |
+| 4 | **Konektivitas yang berubah-ubah** | Wi-Fi berganti ke data seluler, kadang hilang → prinsip *offline-first* |
 
 <!--
-Do not have them memorize it; connect each item to the students' own experience. Ask:
-"When did an app on your phone last feel slow or lose data?"
+Jangan minta dihafal; hubungkan tiap butir dengan pengalaman mahasiswa sendiri. Tanya:
+"Kapan terakhir kali aplikasi di HP-mu terasa lambat atau kehilangan data?"
 
-Characteristic 1 is why state and local storage are treated seriously in Chapter 9 and
-Chapter 11 — not merely as theory.
+Karakteristik 1 adalah alasan state dan penyimpanan lokal dibahas serius di Bab 9 dan
+Bab 11 — bukan sekadar teori.
 -->
 
 ---
 
-## Mobile App Characteristics (5–7)
+## Tujuh Hal yang Membuat Aplikasi Mobile Berbeda (5–7)
 
-| # | Characteristic | Design consequence |
+| # | Karakteristik | Konsekuensi desain |
 |---|---|---|
-| 5 | **Distribution through app stores** | Google Play & App Store guarantee basic security, but there is a *review* process |
-| 6 | **Limited device resources** | Battery and memory are limited → avoid unnecessary repeated processing |
-| 7 | **Lifecycle controlled by the system** | The system can freeze the app → the app must save its state |
+| 5 | **Distribusi lewat toko aplikasi** | Google Play & App Store menjamin keamanan dasar, tetapi ada proses *review* |
+| 6 | **Sumber daya perangkat terbatas** | Baterai dan memori terbatas → hindari pemrosesan berulang yang tidak perlu |
+| 7 | **Siklus hidup diatur sistem** | Sistem bisa membekukan aplikasi → aplikasi harus menyimpan state-nya |
 
-> Almost every modern information system has a "mobile face": e-learning, attendance, academic services, hospital queue systems.
+> Hampir setiap sistem informasi modern punya "wajah mobile": e-learning, presensi, layanan akademik, hingga sistem antrean rumah sakit.
 
 <!--
-Characteristic 7 is the one most often overlooked. Demonstration: open an app, press
-Home, wait, then reopen it — in a poor app the user's position is lost.
+Karakteristik 7 paling sering terlewat. Demonstrasi: buka satu aplikasi, tekan Home,
+tunggu, lalu buka lagi — di aplikasi yang buruk posisi terakhir pengguna hilang.
 
-Comprehension check: "If the app is closed and reopened tomorrow, what should happen to
-the data being entered?" (Answer: it is saved, not lost.)
+Cek pemahaman: "Kalau aplikasi ditutup lalu dibuka besok pagi, data yang tadi sedang
+diisi seharusnya bagaimana?" (Jawaban: tersimpan, bukan hilang.)
 -->
 
 ---
 
-## From Characteristics to Design Decisions
+<!-- _class: compact -->
 
-| Characteristic | Design consequence | Practiced in |
+## Setiap Karakteristik Menjadi Keputusan Desain
+
+| Karakteristik | Konsekuensi desain | Diterapkan di |
 |---|---|---|
-| Mobility & lifecycle | State and storage so data is not lost | Chapter 9, Chapter 11 |
-| Touch interface | Mobile-specific components and layout | Chapters 5, 6 |
-| Sensors & device features | Camera, location, notifications through Expo | Chapter 12 |
-| Changing connectivity | The *offline-first* pattern and synchronization | Chapter 11 |
-| Store distribution | *Build* and app publishing | Chapter 15 |
-| Limited resources | Habits for writing frugal code | Every chapter |
+| Mobilitas & siklus hidup | State & penyimpanan agar data aman | Bab 9, 11 |
+| Antarmuka sentuh | Komponen & layout khusus mobile | Bab 5, 6 |
+| Sensor & fitur perangkat | Kamera, lokasi, notifikasi via Expo | Bab 12 |
+| Konektivitas berubah | Pola *offline-first* & sinkronisasi | Bab 11 |
+| Distribusi lewat toko | *Build* dan publikasi aplikasi | Bab 15 |
+| Sumber daya terbatas | Kebiasaan menulis kode hemat | Semua bab |
 
 <!--
-This slide is the hidden roadmap: characteristics that look theoretical turn into lines
-of code in a specific chapter.
+Slide ini adalah peta jalan tersembunyi: karakteristik yang terlihat teoretis berubah
+menjadi baris kode di bab tertentu.
 
-If someone asks "why theory first instead of coding right away?", answer with this
-slide — without characteristics 1 and 4, the app will lose data when the network drops
-and its developer will not know why that is wrong.
+Kalau ada yang bertanya "kenapa teori dulu, bukan langsung ngoding?", jawab dengan slide
+ini — tanpa karakteristik 1 dan 4, aplikasi akan kehilangan data saat jaringan putus dan
+pembuatnya tidak tahu itu salah.
 -->
 
 ---
 
-## Four Approaches (1): Native & Web Mobile
+## Empat Pendekatan (1): Native & Web Mobile
 
 ![w:1120](assets/diagrams/bab-01-pengantar-pemrograman-mobile-08.svg)
 
-<div class="grid2">
-<div>
+**Aplikasi native**
 
-**Native app**
+- Performa tertinggi, akses fitur perangkat paling lengkap
 
-- Highest performance, most complete access to device features
+**Aplikasi web mobile**
 
-</div>
-<div>
-
-**Mobile web app**
-
-- Limited sensor and notification access, performance below native
-
-</div>
-</div>
+- Akses sensor dan notifikasi terbatas, performa di bawah native
 
 <!--
-Trimmed to the picture (the diagram says this):
-- The official language and tools of one platform: Kotlin/Java, Swift
-- Weakness: one codebase per platform, doubled cost
-- A website optimized for small screens, opened through a browser
+Dipotong ke gambar (diagram yang mengatakan ini):
+- Bahasa dan alat resmi satu platform: Kotlin/Java, Swift
+- Kelemahan: satu codebase per platform, biaya berlipat
+- Website yang dioptimalkan untuk layar kecil, dibuka lewat browser
 
-And the mobile-web column's closing line, which is the picture's bottom-right cell:
-- One codebase, no app store gatekeeping, updates take effect immediately
+Dan penutup kolom web mobile, yaitu sel kanan bawah gambar:
+- Satu codebase, tanpa gerbang toko aplikasi, pembaruan langsung berlaku
 
-The picture carries the two rows the prose does not: what each approach is made with, and
-what it costs to ship. The row left to prose is what each one gives the user (performance
-and device access), because that pair is the one worth reading as sentences. The split is
-deliberate — no bullet below is a cell above.
+Gambar memuat dua baris yang tidak ada di prosa: pendekatan ini dibuat dengan apa, dan
+apa harganya saat dirilis. Yang ditinggal di prosa adalah apa yang diterima pengguna
+(performa dan akses perangkat), karena pasangan itu paling enak dibaca sebagai kalimat.
+Pembagian ini disengaja — tidak ada butir di bawah yang mengulang sel di atas.
 
-Emphasize two things that are often confused: (a) native is not always "better", it is
-only more expensive; (b) mobile web is the cheapest, but it loses on mobile's main
-weapons — notifications and a presence on the home screen.
+Tegaskan dua hal yang sering tertukar: (a) native bukan selalu "lebih baik", hanya lebih
+mahal; (b) web mobile paling murah, tetapi kalah di senjata utama mobile — notifikasi dan
+kehadiran di layar utama.
 
-Guiding question: "If the budget only covers one app, which do you choose and what is
-the risk?"
+Pertanyaan penuntun: "Kalau anggaran hanya cukup untuk satu aplikasi, mana yang kamu
+pilih dan apa risikonya?"
 -->
 
 ---
 
-## Four Approaches (2): Hybrid & Cross-platform
+## Empat Pendekatan (2): Hybrid & Cross-platform
 
 ![w:1120](assets/diagrams/bab-01-pengantar-pemrograman-mobile-09.svg)
 
-- Never feels native — popular in 2012–2015, then abandoned
+- Tidak pernah terasa native — populer 2012–2015, lalu ditinggalkan
 
-**Modern cross-platform**
+**Cross-platform modern**
 
-- One language: JavaScript (React Native) or Dart (Flutter)
-- Translated into a genuine native interface, not web pages
+- Satu bahasa: JavaScript (React Native) atau Dart (Flutter)
+- Diterjemahkan menjadi antarmuka native sungguhan, bukan halaman web
 
 <!--
-Trimmed to the picture (the diagram says this):
-- The interface is written in HTML, CSS, JavaScript
-- Wrapped in a native container through a WebView, with a bridge to some features
-- **Hybrid app** — the lead-in: the picture directly above this bullet is the hybrid app
-- "Write once, run anywhere that *deserves* it." — the pull-quote; say it aloud here
+Dipotong ke gambar (diagram yang mengatakan ini):
+- Antarmukanya ditulis dengan HTML, CSS, JavaScript
+- Dibungkus kontainer native lewat WebView, dengan bridge ke sebagian fitur
+- **Aplikasi hybrid** — pengantar: gambar tepat di atas butir ini adalah aplikasi hybrid
+- "Tulis sekali, jalankan di mana-mana yang *layak*." — kutipan kunci; ucapkan di sini
 
-The distinguishing question students must be able to answer: "is the end result a web
-page or a UI component owned by the operating system?" Hybrid = web page; modern
-cross-platform = native component.
+Pertanyaan pembeda yang harus bisa dijawab mahasiswa: "hasil akhirnya halaman web atau
+komponen UI milik sistem operasi?" Hybrid = halaman web; cross-platform modern = komponen
+native.
 
-The most common misconception: "cross-platform is the same as hybrid". The Table 1.1
-slide that follows is used to break it.
+Salah paham tersering: "cross-platform itu sama dengan hybrid". Slide Tabel 1.1 sesudah
+ini dipakai untuk mematahkannya.
 -->
 
 ---
 
-## Table 1.1 — Comparing the Approaches (1/2)
+## Tabel 1.1 — Bahasa, Codebase, Distribusi, Performa
 
-| Aspect | Native | Mobile web | Hybrid | Cross-platform |
+| Aspek | Native | Web mobile | Hybrid | Cross-platform |
 |---|---|---|---|---|
-| **Language** | Kotlin/Java, Swift | HTML, CSS, JS | HTML, CSS, JS | JavaScript/JSX |
-| **Codebase** | Two (per platform) | One | One | One |
-| **Distribution** | App store | Web browser | App store | App store |
-| **Performance** | Highest | Low–medium | Medium | High, close to native |
+| **Bahasa** | Kotlin/Java, Swift | HTML, CSS, JS | HTML, CSS, JS | JavaScript/JSX |
+| **Codebase** | Dua (per platform) | Satu | Satu | Satu |
+| **Distribusi** | Toko aplikasi | Browser | Toko aplikasi | Toko aplikasi |
+| **Performa** | Tertinggi | Rendah–sedang | Sedang | Tinggi, mendekati native |
 
 <!--
-Compare the two most contrasting columns (native vs mobile web) first, do not read row
-by row.
+Bandingkan dulu dua kolom yang paling kontras (native vs web mobile), jangan dibaca baris
+per baris.
 
-Ask: "Which column fits a campus app best?" Let the students discover for themselves
-that the answer is cross-platform, then prove it on the next slide.
+Tanya: "Kolom mana yang paling cocok untuk aplikasi kampus?" Biarkan mahasiswa yang
+menemukan bahwa jawabannya cross-platform, lalu buktikan di slide berikutnya.
 -->
 
 ---
 
-## Table 1.1 — Comparing the Approaches (2/2)
+## Tabel 1.1 — Fitur Perangkat, Tampilan, Biaya
 
-| Aspect | Native | Mobile web | Hybrid | Cross-platform |
+| Aspek | Native | Web mobile | Hybrid | Cross-platform |
 |---|---|---|---|---|
-| **Access to device features** | Full | Limited | Partial (via bridge) | Broad (via modules) |
-| **Appearance** | Platform-native | Not native | Not native | Close to native |
-| **Development cost** | Highest | Low | Medium | Medium |
+| **Akses fitur perangkat** | Penuh | Terbatas | Sebagian (lewat bridge) | Luas (lewat module) |
+| **Tampilan** | Native platform | Tidak native | Tidak native | Mendekati native |
+| **Biaya pengembangan** | Tertinggi | Rendah | Sedang | Sedang |
 
-> No approach wins outright. Every choice is a trade between cost, performance, and user experience.
+> Tidak ada pendekatan yang menang mutlak. Setiap pilihan adalah trade-off antara biaya, performa, dan pengalaman pengguna.
 
 <!--
-The most important discussion point: the last two columns are both "one codebase", yet
-on the Appearance row hybrid is "not native" while cross-platform is "close to native".
+Poin diskusi terpenting: dua kolom terakhir sama-sama "satu codebase", tetapi di baris
+Tampilan hybrid "tidak native" sedangkan cross-platform "mendekati native".
 
-That is the heart of the difference between hybrid and modern cross-platform — ask the
-class again before moving on.
+Itulah inti perbedaan hybrid dan cross-platform modern — tanyakan lagi ke kelas sebelum
+melanjutkan.
 -->
 
 ---
 
-## When to Choose Which?
+## Prioritas Pasar Menentukan Urutan Platform
 
 ![w:1120](assets/diagrams/bab-01-pengantar-pemrograman-mobile-02.svg)
 
-> Market priority sets the order: broad reach (typical for Indonesia) → Android first; premium Apple-ecosystem users → do not skip iOS.
+> Jangkauan luas (umum di Indonesia) → Android dulu; pengguna ekosistem Apple → jangan lewatkan iOS.
 
 <!--
-This chart is a set of guiding criteria, not an absolute rule. Real cases are often
-mixed: a cross-platform app with one heavy module written natively.
+Grafik ini kumpulan kriteria penuntun, bukan aturan mutlak. Kasus nyata sering campuran:
+aplikasi cross-platform dengan satu modul berat yang ditulis native.
 
-Follow-up question: "Which branch does an attendance app with a selfie photo and
-location fall into?" (Answer: cross-platform — forms, data, and standard device
-features.)
+Pertanyaan lanjutan: "Aplikasi presensi dengan foto selfie dan lokasi masuk cabang mana?"
+(Jawaban: cross-platform — formulir, data, dan fitur perangkat standar.)
 -->
 
 ---
 
 <!-- _class: center -->
 
-## Exercise: Choosing an Approach
+## Latihan: Dua Mahasiswa Magang, Dua Platform
 
-- Your campus will build an app to view schedules and grades
-- The team is only **two student interns**, with basic JavaScript skills and a limited budget
-- Target users: **lower mid-range Android** and **iPhone**
-- Task: choose one approach and name at least **four criteria**
+- Kampusmu akan membuat aplikasi untuk melihat jadwal dan nilai
+- Timnya hanya **dua mahasiswa magang**, kemampuan JavaScript dasar, anggaran terbatas
+- Target pengguna: **Android kelas menengah bawah** dan **iPhone**
+- Tugas: pilih satu pendekatan dan sebutkan minimal **empat kriteria**
 
 <!--
-Think-pair-share for 5 minutes, then discuss. A strong answer mentions: the limits of
-low-end devices (app size and memory), the need for two platforms with a small team,
-and the role of Expo Go in speeding up development.
+Think-pair-share 5 menit, lalu bahas. Jawaban kuat menyebut: batas perangkat kelas bawah
+(ukuran aplikasi dan memori), kebutuhan dua platform dengan tim kecil, dan peran Expo Go
+dalam mempercepat pengembangan.
 
-An answer that only says "cross-platform because it is modern" has not answered — ask
-for the reasoning.
+Jawaban yang hanya berbunyi "cross-platform karena modern" belum menjawab — minta
+alasannya.
 -->
 
 ---
 
-## Android and iOS: A Comparison
+## Android dan iOS: Dua Model yang Berbeda
 
-| Aspect | Android (Google, 2008) | iOS (Apple, 2007) |
+| Aspek | Android (Google, 2008) | iOS (Apple, 2007) |
 |---|---|---|
-| Source model | Open (AOSP) | Closed |
-| Devices | Hundreds of brands | Apple devices only |
-| Native language | Kotlin (Java) | Swift |
-| App store | Google Play & other sources | App Store |
-| App review | Looser | Strict |
-| Development tools | Android Studio (any OS) | Xcode (macOS only) |
+| Model sumber | Terbuka (AOSP) | Tertutup |
+| Perangkat | Ratusan merek | Hanya perangkat Apple |
+| Bahasa native | Kotlin (Java) | Swift |
+| Toko aplikasi | Google Play & sumber lain | App Store |
+| Review aplikasi | Lebih longgar | Ketat |
+| Alat pengembangan | Android Studio (semua OS) | Xcode (hanya macOS) |
 
 <!--
-Connect it to the practicum: every practicum in this book runs on Android (Expo Go or
-an emulator) because it does not require a Mac, while the same code can still run on
-iOS.
+Hubungkan dengan praktikum: semua praktikum buku ini berjalan di Android (Expo Go atau
+emulator) karena tidak menuntut Mac, sementara kode yang sama tetap bisa jalan di iOS.
 
-Guiding question: "Why do small developers in Indonesia almost always start from
-Android?" (Market share, device price range, no Mac needed.)
+Pertanyaan penuntun: "Kenapa pengembang kecil di Indonesia hampir selalu mulai dari
+Android?" (Pangsa pasar, rentang harga perangkat, tidak perlu Mac.)
 -->
 
 ---
 
-## Fragmentation vs Consistency
+## Kebebasan Android Ditukar dengan Fragmentasi
 
 ![w:1120](assets/diagrams/bab-01-pengantar-pemrograman-mobile-10.svg)
 
-**Consequences for iOS**
+**Konsekuensi untuk iOS**
 
-- App behavior is predictable
-- Developer and device entry costs are relatively high; the rules are stricter
+- Perilaku aplikasi mudah diprediksi
+- Biaya masuk pengembang dan perangkat relatif tinggi; aturannya lebih ketat
 
 <!--
-Trimmed to the picture (the diagram says this):
-- **Consequences for Android**
-- The app must be tested on a variety of devices
-- Behavior can differ from phone to phone
-- Distribution is not always through a store (APK files)
+Dipotong ke gambar (diagram yang mengatakan ini):
+- **Konsekuensi untuk Android**
+- Aplikasi harus diuji di berbagai perangkat
+- Perilaku bisa berbeda dari HP ke HP
+- Distribusi tidak selalu lewat toko (file APK)
 
-The premise that used to run above the two columns moved here, because the picture's left
-panel is that column now. Say it before the picture, in these words:
+Premis yang dulu berjalan di atas dua kolom pindah ke sini, karena panel kiri gambar
+adalah kolom itu sekarang. Ucapkan sebelum gambar, dengan kata-kata ini:
 
-  Android is open and holds the majority of the market, but it brings fragmentation:
-  thousands of models with different screen sizes, performance, and system versions.
+  Android terbuka dan menguasai mayoritas pasar, tetapi membawa fragmentasi: ribuan model
+  dengan ukuran layar, performa, dan versi sistem yang berbeda.
 
-From this a natural reaction is born: if building native for two platforms means two
-languages, two tools, two review processes, then developers look for a way to build
-once for both platforms — that is the birth point of React Native.
+Dari sini lahir reaksi wajar: kalau membangun native untuk dua platform berarti dua
+bahasa, dua alat, dua proses review, pengembang mencari cara membangun sekali untuk dua
+platform — di situlah React Native lahir.
 
-Store and privacy policies are covered in Chapter 12 and Chapter 13.
+Kebijakan toko dan privasi dibahas di Bab 12 dan Bab 13.
 -->
 
 ---
 
-## The Evolution of Mobile Technology
+## Setiap Era Lahir dari Keterbatasan Era Sebelumnya
 
 ![w:1120](assets/diagrams/bab-01-pengantar-pemrograman-mobile-03.svg)
 
 <!--
-Do not memorize dates. What must be understood is the pattern: each generation is born
-as an answer to the limitations of the previous one.
+Jangan menghafal tanggal. Yang harus dipahami adalah polanya: setiap generasi lahir
+sebagai jawaban atas keterbatasan generasi sebelumnya.
 
-Quick question: "What limitation did the app store answer?" (Distribution that was
-previously controlled by mobile operators.)
+Pertanyaan cepat: "Keterbatasan apa yang dijawab oleh toko aplikasi?" (Distribusi yang
+dulu dikendalikan operator seluler.)
 -->
 
 ---
@@ -370,358 +364,382 @@ previously controlled by mobile operators.)
 <!-- _class: lead -->
 <!-- _paginate: skip -->
 
-# Part 2 — React Native, Expo & Architecture
+# Bagian 2 — React Native, Expo & Arsitektur
 
-Section 1.5 React Native · 1.6 Expo · 1.7 Trade-offs · 1.8 Architecture · 1.9–1.10
+subbab 1.5 React Native · 1.6 Expo · 1.7 Trade-off · 1.8 Arsitektur · 1.9–1.10
 
 <!--
-This part is the core of the chapter and the part most likely to appear on the exam. If
-little time remains in this meeting, move Sections 1.8–1.10 to the next meeting.
+Bagian ini inti bab dan bagian yang paling mungkin keluar di ujian. Kalau waktu pertemuan
+menipis, pindahkan subbab 1.8–1.10 ke pertemuan berikutnya.
 -->
 
 ---
 
-## React Native: Core Concepts
+## Ditulis Sekali, Digambar Native di Dua Platform
 
 ![w:1120](assets/diagrams/bab-01-pengantar-pemrograman-mobile-04.svg)
 
 **React Native (RN)**
 
-- An open-source framework from Meta, using JavaScript
-- A descendant of React: components, props, and state carried over intact
-- Write the interface once, drawn as native components
+- Framework open-source dari Meta, berbahasa JavaScript
+- Turunan React: komponen, props, dan state ikut terbawa
+- Antarmuka ditulis sekali, digambar sebagai komponen native
 
 <!--
-This book's version: React Native 0.86 in Expo SDK 57, with React 19.2 as its interface
-library (technology versions are summarized in the book's introduction).
+Versi yang dipakai buku ini: React Native 0.86 di Expo SDK 57, dengan React 19.2 sebagai
+library antarmukanya (ringkasan versi ada di pengantar buku).
 
-This is the biggest difference from hybrid: the View component becomes ViewGroup on
-Android and UIView on iOS — interface elements owned by the operating system, not boxes
-inside a web page.
+Di sinilah beda terbesarnya dengan hybrid: komponen View menjadi ViewGroup di Android dan
+UIView di iOS — elemen antarmuka milik sistem operasi, bukan kotak di dalam halaman web.
 
-Guiding question: "If JavaScript code still runs as JavaScript, what exactly is native?"
-(Answer: the interface it displays.)
+Pertanyaan penuntun: "Kalau kodenya tetap JavaScript, apa yang sebenarnya jadi native?"
+(Jawaban: antarmuka yang ditampilkan.)
 -->
 
 ---
 
-## How React Native Works
+## JavaScript Memerintah, Native yang Menggambar
 
 ![w:1120](assets/diagrams/bab-01-pengantar-pemrograman-mobile-05.svg)
 
-> **Hot reload** makes code changes visible immediately without rebuilding the app.
+> **Hot reload** membuat perubahan kode langsung terlihat tanpa membangun ulang aplikasi.
 
 <!--
-The flow is easy to picture: JavaScript issues the command "create a green button here",
-the native layer translates it into a real button, then reports the user's tap back to
-JavaScript.
+Alurnya mudah dibayangkan: JavaScript memberi perintah "buat tombol hijau di sini",
+lapisan native menerjemahkannya menjadi tombol sungguhan, lalu melaporkan ketukan
+pengguna kembali ke JavaScript.
 
-Connect the bridge to the performance limitations in Section 1.7: cross-layer
-communication adds overhead, so heavy graphics are still better done natively.
+Hubungkan bridge dengan batasan performa di subbab 1.7: komunikasi lintas lapisan menambah
+beban, jadi grafis berat tetap lebih baik dikerjakan native.
 -->
 
 ---
 
-## What React Native Is Not
+## React Native Bukan Penerjemah Kode
 
 ![w:1120](assets/diagrams/bab-01-pengantar-pemrograman-mobile-11.svg)
 
-- Not a translator of code into Kotlin or Swift
-- Not a wrapper of web pages inside a WebView
+- Bukan penerjemah kode menjadi Kotlin atau Swift
+- Bukan pembungkus halaman web di dalam WebView
 
-> The consequence: RN excels at data-driven apps — forms, lists, server integration — not at graphics-heavy games.
+> Konsekuensinya: RN unggul untuk aplikasi berbasis data — formulir, daftar, integrasi server — bukan untuk game berat.
 
 <!--
-Trimmed to the picture (the diagram says this):
-- What is native is **the interface it displays**, not the JavaScript code
+Dipotong ke gambar (diagram yang mengatakan ini):
+- Yang native adalah **antarmuka yang ditampilkan**, bukan kode JavaScript-nya
 
-Show the title, ask the class to guess first, then click to reveal each statement. These
-two misconceptions are the ones that come up most often in class.
+Tampilkan judul, minta kelas menebak dulu, lalu buka satu per satu. Dua salah paham ini
+yang paling sering muncul di kelas.
 
-Follow-up question: "If RN is not a web wrapper, why can its app be bigger than a native
-app?" (Because it carries a JavaScript runtime.)
+Pertanyaan lanjutan: "Kalau RN bukan pembungkus web, kenapa aplikasinya bisa lebih besar
+dari aplikasi native?" (Karena membawa runtime JavaScript.)
 -->
 
 ---
 
-## Expo: Three Main Components
+## Expo: Tiga Komponen Utama
 
 ![w:1120](assets/diagrams/bab-01-pengantar-pemrograman-mobile-12.svg)
 
-- **Expo Go** — runs the project on a phone without a native *build*: scan a QR code
-- **EAS** — a cloud service for *build* and publishing the app to app stores
+- **Expo Go** — menjalankan project di HP tanpa *build* native: pindai kode QR
+- **EAS** — layanan cloud untuk *build* dan publikasi ke toko aplikasi
 
-Its main command is `npx expo start`; it is practiced in Chapter 2, publishing is explained in Chapter 15.
+Perintah utamanya `npx expo start`; dipraktikkan di Bab 2, publikasi dijelaskan di Bab 15.
 
 <!--
-Trimmed to the picture (the diagram says this):
-- **Expo SDK 57** — one JavaScript API for camera, location, notifications, storage
+Dipotong ke gambar (diagram yang mengatakan ini):
+- **Expo SDK 57** — satu API JavaScript untuk kamera, lokasi, notifikasi, penyimpanan
 
-The analogy: if React Native is "the language and the engine", Expo is "the workshop
-that makes that engine easy to use".
+Analogi: kalau React Native adalah "bahasa dan mesinnya", Expo adalah "bengkel yang
+membuat mesin itu mudah dipakai".
 
-The biggest benefit for students is the learning curve: from zero to an app running on a
-phone takes only a few steps, without installing Android Studio first.
+Manfaat terbesar bagi mahasiswa adalah kurva belajarnya: dari nol sampai aplikasi jalan di
+HP hanya butuh beberapa langkah, tanpa memasang Android Studio lebih dulu.
 -->
 
 ---
 
-## Expo: The Price You Pay
+## Setiap Kemudahan Expo Punya Harganya
 
 ![w:1120](assets/diagrams/bab-01-pengantar-pemrograman-mobile-13.svg)
 
-- Native modules not yet supported by Expo require a *prebuild* or a *development build*
-- Cutting-edge device features only become available after Expo adapts to the latest SDK
+- Native module yang belum didukung Expo butuh *prebuild* atau *development build*
+- Fitur perangkat terbaru baru tersedia setelah Expo menyesuaikan SDK terbaru
 
-> For the majority of information-system apps, these three limitations are not blockers. For specialized projects, this is the trade-off consideration.
+> Untuk sebagian besar aplikasi sistem informasi, tiga batasan ini bukan penghalang. Untuk proyek khusus, inilah yang dihitung dalam trade-off.
 
 <!--
-Trimmed to the picture (the diagram says this):
-- Expo app size tends to be larger
+Dipotong ke gambar (diagram yang mengatakan ini):
+- Ukuran aplikasi Expo cenderung lebih besar
 
-Every technology decision has a price. Ask students to judge: which limitation is the
-riskiest for their campus app (usually: app size on low-end devices).
+Setiap keputusan teknologi punya harga. Minta mahasiswa menilai: batasan mana yang paling
+berisiko untuk aplikasi kampus mereka (biasanya: ukuran aplikasi di perangkat kelas bawah).
 
-Naming this cost in front of the class is not a weakness, it is part of an honest
-analysis.
+Menyebut biaya ini di depan kelas bukan kelemahan, melainkan bagian dari analisis yang
+jujur.
 -->
 
 ---
 
-## React Native: Advantages and Limitations
+<!-- _class: compact -->
 
-| Advantage | Limitation |
+## Keunggulan dan Keterbatasan React Native
+
+| Keunggulan | Keterbatasan |
 |---|---|
-| One codebase for Android and iOS | Performance below native under extreme load |
-| A JavaScript team can be productive immediately | The app is larger and uses more memory |
-| A very broad npm ecosystem | The newest platform features are sometimes adopted late |
-| *Hot reload* speeds up iteration | *Debugging* across the JS and native layers is more complicated |
-| Updates without rebuilding the app | Custom native modules still require native expertise |
-| A large community and plenty of learning material | Depends on the stability of third-party libraries |
+| Satu codebase untuk Android dan iOS | Performa di bawah native saat beban berat |
+| Tim JavaScript langsung produktif | Aplikasi lebih besar dan boros memori |
+| Ekosistem npm sangat luas | Fitur platform baru kadang terlambat |
+| *Hot reload* mempercepat iterasi | *Debugging* lintas lapisan lebih rumit |
+| Pembaruan tanpa membangun ulang | Native module khusus butuh keahlian native |
+| Komunitas besar, bahan belajar banyak | Bergantung pada library pihak ketiga |
 
 <!--
-How to present it: every advantage has another side. "One codebase" saves long-term
-maintenance, but dependence on third-party libraries is the price.
+Cara menyampaikannya: setiap keunggulan punya sisi lain. "Satu codebase" menghemat
+perawatan jangka panjang, tetapi ketergantungan pada library pihak ketiga adalah harganya.
 
-Closing question: "Name one limitation that is riskiest for a campus app." (Usually:
-low-end Android devices with limited memory.)
+Pertanyaan penutup: "Sebutkan satu keterbatasan yang paling berisiko untuk aplikasi
+kampus." (Biasanya: perangkat Android kelas bawah dengan memori terbatas.)
 -->
 
 ---
 
-## When Is React Native the Right Fit?
+## Kapan React Native Tepat Dipakai?
 
 ![w:1120](assets/diagrams/bab-01-pengantar-pemrograman-mobile-14.svg)
 
-- 3D games and video editors are still better written natively
-- The decision is made through trade-off analysis, not because of trends
+- Game 3D dan video editor masih lebih baik ditulis native
+- Keputusan diambil lewat analisis trade-off, bukan karena tren
 
 <!--
-Trimmed to the picture (the diagram says this):
-- Interface- and data-rich apps, not heavyweight graphics rendering
-- Business apps, e-commerce, services, and information systems
+Dipotong ke gambar (diagram yang mengatakan ini):
+- Aplikasi kaya antarmuka dan data, bukan rendering grafis berat
+- Aplikasi bisnis, e-commerce, layanan, dan sistem informasi
 
-Emphasize that the biggest savings are in long-term maintenance, not in the initial
-writing — this is the strongest argument when debating with stakeholders.
+Tegaskan bahwa penghematan terbesar ada di perawatan jangka panjang, bukan di penulisan
+awal — ini argumen terkuat saat berdebat dengan pemangku kepentingan.
 
-Remind them that this mindset is what they will use in the workplace, whatever framework
-is current at the time.
+Ingatkan bahwa pola pikir inilah yang akan mereka pakai di dunia kerja, apa pun framework
+yang sedang populer saat itu.
 -->
 
 ---
 
-## General Architecture of a Mobile App
+## Satu Aplikasi, Tiga Lapisan
 
 ![w:1120](assets/diagrams/bab-01-pengantar-pemrograman-mobile-06.svg)
 
-> Example flow: a grade-checking app → the request "show my grades" → the server answers with JSON → the app draws the grade table.
+> Contoh alur: aplikasi cek nilai → permintaan "tampilkan nilai saya" → server menjawab dengan JSON → aplikasi menggambar tabel nilai.
 
 <!--
-The most common pattern is client–server: the device displays the interface and collects
-input, the server provides data and business rules.
+Pola paling umum adalah client–server: perangkat menampilkan antarmuka dan menampung
+masukan, server menyediakan data dan aturan bisnis.
 
-Emphasize that separating the three layers is not just tidiness: separated layers can be
-tested, maintained, and replaced independently.
+Tegaskan bahwa memisahkan tiga lapisan bukan sekadar kerapian: lapisan yang terpisah bisa
+diuji, dirawat, dan diganti sendiri-sendiri.
 -->
 
 ---
 
-## Three Client Layers and Their Chapters
+## Tiga Lapisan Client dan Babnya
 
-| Layer | In React Native/Expo | Covered in |
+| Lapisan | Di React Native/Expo | Dibahas di |
 |---|---|---|
-| **Presentation** | React components, `View`, `Text`, `FlatList`, Flexbox, navigation | Chapters 4, 5, 6, 7 |
-| **Business** | Local and global state, form validation, tested logic | Chapters 8, 9, 14 |
-| **Data** | `fetch` to a REST API, local storage, authentication tokens | Chapters 10, 11, 13 |
+| **Presentasi** | Komponen React, `View`, `Text`, `FlatList`, Flexbox, navigasi | Bab 4–7 |
+| **Bisnis** | State lokal dan global, validasi formulir, logika yang teruji | Bab 8, 9, 14 |
+| **Data** | `fetch` ke REST API, penyimpanan lokal, token autentikasi | Bab 10, 11, 13 |
 
-> In the Final Project, you build an app that applies this three-layer architecture.
+> Di Project Akhir, kamu membangun aplikasi yang memakai arsitektur tiga lapisan ini.
 
 <!--
-This slide answers the question "when will I use all of this?". Every chapter has a
-"home" inside the architecture, so the material does not feel disconnected.
+Slide ini menjawab pertanyaan "kapan semua ini dipakai?". Setiap bab punya "rumah" di
+dalam arsitektur, jadi materinya tidak terasa terpisah-pisah.
 
-Invite guesses: "Which layers does a login form with validation and an API call touch?"
-(Presentation: the display; business: the validation; data: the request to the server.)
+Minta mereka menebak: "Formulir login dengan validasi dan panggilan API menyentuh lapisan
+apa saja?" (Presentasi: tampilannya; bisnis: validasinya; data: permintaan ke server.)
 -->
 
 ---
 
-## Real-World App Examples (1/2)
+## Aplikasi Nyata di Sekitar Kita (1/2)
 
-| Category | Example | Device features used |
+| Kategori | Contoh | Fitur perangkat yang dipakai |
 |---|---|---|
-| Online transport | Online motorcycle taxis, online taxis | GPS, camera, order status notifications |
-| Online shopping | Marketplaces, online stores | Promo notifications, QR code scan payment |
-| Banking and payments | Bank apps, digital wallets | Fingerprint, camera, transaction notifications |
-| Communication | Messaging apps, video calls | Microphone, camera, *real-time* notifications |
+| Transportasi online | Ojek dan taksi online | GPS, kamera, notifikasi status pesanan |
+| Belanja online | Marketplace, toko online | Notifikasi promo, pembayaran pindai kode QR |
+| Perbankan dan pembayaran | Aplikasi bank, dompet digital | Sidik jari, kamera, notifikasi transaksi |
+| Komunikasi | Aplikasi pesan, panggilan video | Mikrofon, kamera, notifikasi *real-time* |
 
 <!--
-Ask students to pick the row closest to their daily life and name which Section 1.1
-characteristic dominates in that app.
+Minta mahasiswa memilih baris yang paling dekat dengan hidup sehari-hari, lalu menyebut
+karakteristik subbab 1.1 mana yang paling dominan di aplikasi itu.
 
-Example: a digital wallet scans a QR code with the camera while locking access with a
-fingerprint — context, sensors, and notifications working together.
+Contoh: dompet digital memindai kode QR dengan kamera sambil mengunci akses dengan sidik
+jari — konteks, sensor, dan notifikasi bekerja bersama.
 -->
 
 ---
 
-## Real-World App Examples (2/2)
+## Aplikasi Nyata di Sekitar Kita (2/2)
 
-| Category | Example | Device features used |
+| Kategori | Contoh | Fitur perangkat yang dipakai |
 |---|---|---|
-| Social media | Social networks, video sharing | Camera, gallery, GPS for location tags |
-| Education | Online courses, campus apps | Schedule notifications, offline material downloads |
-| Health | Pedometer, teleconsultation | Motion sensors, GPS, camera |
-| Productivity | Notes, calendars | Reminder notifications, cross-device synchronization |
+| Media sosial | Media sosial, berbagi video | Kamera, galeri, GPS untuk tag lokasi |
+| Pendidikan | Kursus daring, aplikasi kampus | Notifikasi jadwal, unduh materi offline |
+| Kesehatan | Penghitung langkah, telekonsultasi | Sensor gerak, GPS, kamera |
+| Produktivitas | Catatan, kalender | Notifikasi pengingat, sinkronisasi antar perangkat |
 
-> An interesting pattern: many large apps **started as the web**, added a mobile app, then made mobile their main product.
+> Pola yang menarik: banyak aplikasi besar **mulai dari web**, menambah aplikasi mobile, lalu menjadikan mobile produk utamanya.
 
 <!--
-This slide is the bridge to the Practicum: observing three apps, estimating their type
-(Section 1.2), identifying device features, and assessing the user experience.
+Slide ini jembatan ke praktikum: mengamati tiga aplikasi, menaksir jenisnya (subbab 1.2),
+mengenali fitur perangkat yang dipakai, dan menilai pengalaman penggunanya.
 
-The ability to "dissect" an app like this will keep being used when designing your own
-apps in later chapters.
+Kemampuan "membedah" aplikasi seperti ini akan terus dipakai saat merancang aplikasi
+sendiri di bab-bab berikutnya.
 -->
 
 ---
 
-## Case Study: Campus Needs
+## Studi Kasus: Delapan Ribu Mahasiswa, Satu Aplikasi
 
 ![w:1120](assets/diagrams/bab-01-pengantar-pemrograman-mobile-15.svg)
 
-**A fictional case with a real pattern.** Wijaya Nusantara University, ± 8,000 students.
+**Kasus fiktif dengan pola nyata.** Universitas Wijaya Nusantara, ± 8.000 mahasiswa.
 
-- Students need schedules, grades, course registration, announcements
-- Lecturers and academic staff: teaching schedules, a reduced service burden
+- Mahasiswa butuh jadwal, nilai, KRS, pengumuman
+- Dosen dan staf akademik: jadwal mengajar, beban layanan berkurang
 
-> The root of the problem is **not the data**, but the channel that delivers it.
+> Akar masalahnya **bukan datanya**, tetapi saluran yang mengantarkannya.
 
 <!--
-Trimmed to the picture (the diagram says this):
-- Class schedules are only posted on the notice board
-- Room changes are announced through unofficial chat groups
-- Grades are only at the academic office during office hours; course registration always queues
+Dipotong ke gambar (diagram yang mengatakan ini):
+- Jadwal kuliah hanya ditempel di papan pengumuman
+- Perubahan ruang diumumkan lewat grup chat tidak resmi
+- Nilai hanya di kantor akademik pada jam kerja; KRS selalu mengantre
 
-Read it as a story, not as a list. The goal is to make students feel that requirements
-analysis starts from the user, not from the technology.
+Bacakan sebagai cerita, bukan sebagai daftar. Tujuannya agar mahasiswa merasa bahwa
+analisis kebutuhan dimulai dari pengguna, bukan dari teknologi.
 
-A question before the next slide: "If you were the systems analyst at this campus, what
-would your first decision be?" Let them guess first.
+Pertanyaan sebelum slide berikutnya: "Kalau kamu analis sistem di kampus ini, apa
+keputusan pertamamu?" Biarkan mereka menebak dulu.
 -->
 
 ---
 
-## Case Study: The Architecture Decision
+## Studi Kasus: Keputusan Arsitekturnya
 
-| Option | Consideration | Outcome |
+| Opsi | Pertimbangan | Hasil |
 |---|---|---|
-| Mobile website | Cheap, but with no proactive notifications and no icon on the home screen | Rejected |
-| Native for two platforms | The best quality, but a small team must maintain two codebases | Rejected |
-| **React Native + Expo** | One codebase, notifications through Expo SDK, a learning curve the interns can manage | **Chosen** |
+| Website mobile | Murah, tetapi tanpa notifikasi proaktif dan tanpa ikon di layar utama | Ditolak |
+| Native untuk dua platform | Kualitas terbaik, tetapi tim kecil harus memelihara dua codebase | Ditolak |
+| **React Native + Expo** | Satu codebase, notifikasi lewat Expo SDK, kurva belajar yang sanggup diikuti mahasiswa magang | **Dipilih** |
 
-> The architecture follows Section 1.8: a three-layer client, with the server providing a REST API. Authentication (Chapter 13), local storage (Chapter 11), and notifications (Chapter 12).
+> Aplikasi yang lahir dari keputusan ini kita sebut **Aplikasi Manajemen Data Mahasiswa** — yang akan kamu bangun sedikit demi sedikit sampai Bab 15.
 
 <!--
-Emphasize the decision-making pattern: the first two options are not "wrong", they lost
-because they did not fit the context — the need for proactive notifications and the
-team's capacity.
+Tegaskan pola pengambilan keputusannya: dua opsi pertama bukan "salah", keduanya kalah
+karena tidak cocok dengan konteks — kebutuhan notifikasi proaktif dan kapasitas tim.
 
-This is the form of trade-off analysis that is this meeting's learning objective, and the
-pattern is the same as the Final Project.
+Inilah bentuk analisis trade-off yang menjadi tujuan pembelajaran pertemuan ini, dan
+polanya sama dengan Project Akhir.
+
+Perkenalkan namanya di sini, sekali saja: Aplikasi Manajemen Data Mahasiswa, dengan slug
+project `siakad-mobile` yang akan dipakai di Bab 7. Sesudah ini cukup sebut "aplikasi
+kita".
 -->
 
 ---
 
 <!-- _class: center -->
 
-## Class Discussion: Technology vs Process
+## Diskusi: Masalah Teknologi atau Masalah Proses?
 
-- The course registration queue shrinks because of the app — but it remains if the process itself is convoluted
-- Unmaintained data stays wrong, however beautiful the app
-- A mature systems analyst separates technology problems from process problems
+- Antrean KRS menyusut karena aplikasi — tetapi tetap panjang kalau prosesnya berbelit
+- Data yang tidak dirawat tetap salah, secantik apa pun aplikasinya
+- Analis sistem yang matang memisahkan masalah teknologi dari masalah proses
 
-**Question:** name one problem on your campus that looks like a technology problem but is actually a process or data problem.
+**Pertanyaan:** sebutkan satu masalah di kampusmu yang terlihat seperti masalah teknologi, tetapi sebenarnya masalah proses atau data.
 
 <!--
-The most important slide for Information Systems students: putting technology in its
-place. Give 3 minutes in pairs, then collect 2–3 answers.
+Slide terpenting bagi mahasiswa Sistem Informasi: menempatkan teknologi pada tempatnya.
+Beri 3 menit berpasangan, lalu tampung 2–3 jawaban.
 
-If the answers are weak, give direction: an attendance system whose data is never
-verified (a data problem), or a leave procedure with layers of signatures (a process
-problem) — not a problem with the app.
+Kalau jawaban lemah, beri arahan: sistem presensi yang datanya tidak pernah diverifikasi
+(masalah data), atau prosedur izin dengan berlapis tanda tangan (masalah proses) — bukan
+masalah aplikasinya.
 -->
 
 ---
 
-## Competencies and the Map of 15 Chapters
+## Peta 15 Bab: Setiap Bab Satu Bata
 
 ![w:1120](assets/diagrams/bab-01-pengantar-pemrograman-mobile-16.svg)
 
-**Competencies gained**
+**Kompetensi yang didapat**
 
-- Explain the concepts and architecture of mobile apps
-- Build apps with React Native and Expo, including UI and navigation
+- Menjelaskan konsep dan arsitektur aplikasi mobile
+- Membangun aplikasi dengan React Native dan Expo, termasuk UI dan navigasi
 
 <!--
-Trimmed to the picture (the diagram says this):
-- Chapters 2–7: environment, JavaScript, React, React Native, UI, navigation
-- Chapters 8–11: forms, state, REST API, local storage
-- Chapters 12–15: device features, security, testing, release
-- The peak: the **Final Project** — a mobile academic information system.
+Dipotong ke gambar (diagram yang mengatakan ini):
+- Bab 2–7: lingkungan, JavaScript, React, React Native, UI, navigasi
+- Bab 8–11: formulir, state, REST API, penyimpanan lokal
+- Bab 12–15: fitur perangkat, keamanan, testing, rilis
+- Puncaknya: **Project Akhir** — sistem informasi akademik berbasis mobile
 
-Show that every chapter is a brick: Chapter 3 (JavaScript) becomes the foundation of
-Chapter 4 (React), which becomes the foundation of Chapter 5 (React Native).
+Tunjukkan bahwa setiap bab adalah bata: Bab 3 (JavaScript) menjadi fondasi Bab 4 (React),
+yang menjadi fondasi Bab 5 (React Native).
 
-Emphasize the professional habits that accompany the whole journey: reading the official
-documentation, reading the error message before asking, and noting down obstacles.
+Tegaskan kebiasaan profesional yang menyertai seluruh perjalanan: membaca dokumentasi
+resmi, membaca pesan error sebelum bertanya, dan mencatat kendala.
 -->
 
 ---
 
-## This Meeting's Practicum
+## Praktikum: Yang Dibangun Pertemuan Ini
 
-- Download and install **Node.js LTS** from nodejs.org — choose the LTS label, not Current
-- Install **Visual Studio Code** as the code editor
-- Create an **Expo account** at expo.dev as a requirement for the development services
-- Run the `cek-lingkungan.js` script and read its output
-- Write an **observation report** on three mobile apps you use daily
+- Unduh dan pasang **Node.js LTS** dari nodejs.org — pilih label LTS, bukan Current
+- Pasang **Visual Studio Code** sebagai editor kode
+- Buat **akun Expo** di expo.dev sebagai syarat layanan pengembangan
+- Jalankan skrip `cek-lingkungan.js` dan baca hasilnya
+- Tulis **laporan pengamatan** tiga aplikasi mobile yang kamu pakai sehari-hari
 
-> If a step fails, do not move on — resolve it first through the chapter's Troubleshooting section.
+> Kalau satu langkah gagal, jangan lanjut — selesaikan dulu lewat bagian Troubleshooting bab ini.
 
 <!--
-Remind them to choose LTS, not Current: the most common mistake in the practicum, because
-npm and Expo CLI behavior can differ from what the book discusses.
+Ingatkan memilih LTS, bukan Current: kesalahan paling umum di praktikum, karena perilaku
+npm dan Expo CLI bisa berbeda dari yang dibahas buku.
 
-Students using campus lab computers must coordinate with the lab manager before the
-practicum schedule (Node.js LTS and VS Code are required).
+Mahasiswa yang memakai komputer laboratorium kampus harus berkoordinasi dengan pengelola
+lab sebelum jadwal praktikum (Node.js LTS dan VS Code wajib tersedia).
 -->
 
 ---
 
-## Code Example: cek-lingkungan.js
+## Yang Harus Teramati
 
-`kode/bab-01-pengantar-pemrograman-mobile/cek-lingkungan.js` — the assessment part
+Untuk tiap aplikasi yang kamu amati, catat tiga hal:
+
+- **Jenisnya** — native, web mobile, hybrid, atau cross-platform? (subbab 1.2)
+- **Fitur perangkat** yang dipakai — kamera, GPS, notifikasi, sidik jari
+- **Pengalaman pengguna** — di mana terasa lambat, di mana terasa janggal
+
+> Laporan yang baik menyebut bukti yang bisa diperiksa, bukan kesan: "tombol Simpan tertutup papan ketik di layar 5,5 inci", bukan "aplikasinya kurang enak".
+
+<!--
+Tiga hal ini yang dinilai di Tugas 1, jadi bacakan perlahan. Yang paling sering hilang
+adalah butir ketiga: mahasiswa menulis kesan, bukan pengamatan.
+
+Beri satu contoh buruk dan satu contoh baik di papan tulis, lalu minta mereka menilai
+mana yang bisa diperiksa ulang oleh orang lain.
+-->
+
+---
+
+## Contoh Kode: cek-lingkungan.js
+
+`kode/bab-01-pengantar-pemrograman-mobile/cek-lingkungan.js` — bagian penilaian
 
 ```js
 const nomorUtamaNode = Number(versiNode ? versiNode.match(/^v(\d+)/)?.[1] : 0);
@@ -735,107 +753,92 @@ if (nomorUtamaNode >= 22) {
 }
 ```
 
-> This **check → compare → conclude** pattern is a miniature mirror of how a larger app works.
+> Pola **periksa → bandingkan → simpulkan** ini versi kecil dari cara kerja aplikasi yang jauh lebih besar.
 
 <!--
-Show only three things: the regular expression takes the major version number, the
-threshold of 22 is this book's requirement, and the three if/else branches give
-different conclusions.
+Tunjukkan tiga hal saja: regular expression mengambil nomor versi utama, ambang 22 adalah
+syarat buku ini, dan tiga cabang if/else memberi kesimpulan berbeda.
 
-Detailing the syntax is not yet necessary — variables, functions, and regular expressions
-are built in Chapter 3.
+Detail sintaksis belum perlu — variabel, fungsi, dan regular expression dibangun di Bab 3.
 -->
 
 ---
 
 <!-- _class: center -->
 
-## Comprehension Check
+## Kuis Kilat
 
-- Which characteristic most distinguishes a mobile app from a web app?
-- What is an app written with web technology and then wrapped in a WebView called?
-- Inside React Native, what is the `View` component drawn as?
-- In a client–server architecture, which side does the REST API sit on?
+- Karakteristik apa yang paling membedakan aplikasi mobile dari aplikasi web?
+- Aplikasi yang ditulis dengan teknologi web lalu dibungkus WebView disebut apa?
+- Di dalam React Native, komponen `View` digambar sebagai apa?
+- Pada arsitektur client–server, REST API berada di sisi mana?
 
 <!--
-A 5-minute oral quiz: show the question, ask the class to answer in chorus or by a show
-of hands, then move to the answers slide. Do not leak the answers on this slide.
+Kuis lisan 5 menit: tampilkan pertanyaan, minta kelas menjawab serempak atau dengan
+mengangkat tangan, lalu lanjut ke slide kunci. Jangan bocorkan jawaban di slide ini.
 
-If the class answers vary, note it and repeat the distinction at the end of the meeting.
+Kalau jawaban kelas beragam, catat dan ulangi pembedaannya di akhir pertemuan.
 -->
 
 ---
 
 <!-- _class: center -->
 
-## Answers
+## Kunci Kuis Kilat
 
-- It draws on the device's sensors, context, and notifications
-- A hybrid app — not mobile web, not native
-- A platform's native UI component, for example `ViewGroup` on Android
-- On the server side — the client calls it over HTTP
+- Pemakaian sensor, konteks, dan notifikasi perangkat
+- Aplikasi hybrid — bukan mobile web, bukan native
+- Komponen UI native platform, misalnya `ViewGroup` di Android
+- Di sisi server — client memanggilnya lewat HTTP
 
 <!--
-Repeat the distinction most often confused: hybrid (WebView) versus modern
-cross-platform (native components).
+Ulangi pembedaan yang paling sering tertukar: hybrid (WebView) versus cross-platform
+modern (komponen native).
 
-If many got the first question wrong, repeat the Section 1.1 characteristics before
-closing the meeting.
+Kalau banyak yang salah di pertanyaan pertama, ulangi subbab 1.1 tentang karakteristik
+sebelum menutup pertemuan.
 -->
 
 ---
 
-## Summary
+## Ringkasan
 
-1. Seven characteristics typical of mobile apps, from mobility to lifecycle
-2. Four approaches: native, mobile web, hybrid, cross-platform
-3. Android is open and fragmented; iOS is closed and consistent
-4. React Native maps JavaScript to native components; Expo completes it
-5. A client–server architecture with three client layers: presentation, business, data
+1. Tujuh karakteristik khas aplikasi mobile, dari mobilitas sampai siklus hidup
+2. Empat pendekatan: native, web mobile, hybrid, cross-platform
+3. Android terbuka dan terfragmentasi; iOS tertutup dan konsisten
+4. React Native memetakan JavaScript ke komponen native; Expo melengkapinya
+5. Arsitektur client–server dengan tiga lapisan client: presentasi, bisnis, data
 
 <!--
-Do not read it out. Ask students to pick one number and explain it in their own words —
-this works better than repeating the reading.
+Jangan dibacakan. Minta mahasiswa memilih satu nomor dan menjelaskannya dengan kata-kata
+sendiri — ini bekerja lebih baik daripada mengulang bacaan.
 
-Closing message: professional habits start today — every time you meet an unfamiliar
-term, look up its meaning; every time an app fails, read the error message before asking.
+Pesan penutup: kebiasaan profesional dimulai hari ini — setiap kali menemui istilah asing,
+cari artinya; setiap kali aplikasi gagal, baca pesan error sebelum bertanya.
 -->
 
 ---
 
-## References
+## Referensi
 
-| Source | Link |
+| Sumber | Link |
 |---|---|
-| React Native documentation (2026) | reactnative.dev |
-| Expo documentation (2026) | docs.expo.dev |
-| React documentation (2026) | react.dev |
+| Dokumentasi React Native (2026) | reactnative.dev |
+| Dokumentasi Expo (2026) | docs.expo.dev |
+| Dokumentasi React (2026) | react.dev |
 | JavaScript, MDN Web Docs (2026) | developer.mozilla.org |
-| Node.js documentation (2026) | nodejs.org |
+| Dokumentasi Node.js (2026) | nodejs.org |
 
-<div class="grid2">
-<div>
+**Bacaan lanjutan:** Bab 2 — Persiapan Lingkungan Pengembangan
 
-**Further reading**
-
-- Chapter 2 — Development Environment Setup
-
-</div>
-<div>
-
-**Technology versions in this book**
-
-- Expo SDK 57 · React Native 0.86 · React 19.2 · Node.js LTS ≥ 22
-
-</div>
-</div>
+**Versi teknologi:** Expo SDK 57 · React Native 0.86 · React 19.2 · Node.js ≥ 22
 
 <!--
-The complete references are in Appendix D; the glossary of terms (60 entries) in
-Appendix C is very helpful for terms such as bridge, WebView, and hot reload.
+Rujukan lengkap ada di Lampiran D; glosarium istilah (60 entri) di Lampiran C sangat
+membantu untuk istilah seperti bridge, WebView, dan hot reload.
 
-The main sources for this chapter remain the official documentation at reactnative.dev
-and docs.expo.dev, not blogs that may already be outdated.
+Sumber utama bab ini tetap dokumentasi resmi di reactnative.dev dan docs.expo.dev, bukan
+blog yang mungkin sudah usang.
 -->
 
 ---
@@ -843,17 +846,17 @@ and docs.expo.dev, not blogs that may already be outdated.
 <!-- _class: lead -->
 <!-- _paginate: skip -->
 
-# Ready for Chapter 2
+# Siap ke Bab 2
 
-**Assignment:** complete the practicum (Node.js LTS, VS Code, an Expo account) and write an observation report on three mobile apps.
+**Tugas:** selesaikan praktikum (Node.js LTS, VS Code, akun Expo) dan tulis laporan pengamatan tiga aplikasi mobile.
 
-Next meeting: setting up the environment and running your first app.
+Pertemuan berikutnya: menyiapkan lingkungan dan menjalankan aplikasi pertama.
 
 <!--
-Close with one sentence: "Today we bought the map; from Chapter 2 we start walking."
+Tutup dengan satu kalimat: "Hari ini kita membeli petanya; mulai Bab 2 kita mulai
+berjalan."
 
-State the Assignment 1 deadline explicitly: when it is collected, in what format, and
-which aspects it is graded on (see Appendix A — the practicum rubric: conceptual
-understanding 15%, implementation 25%, code quality 15%, UI/UX 15%, debugging 10%,
-documentation 20%).
+Sebutkan tenggat Tugas 1 secara eksplisit: kapan dikumpulkan, dalam format apa, dan aspek
+apa yang dinilai (lihat Lampiran A — rubrik praktikum: pemahaman konsep 15%, implementasi
+25%, kualitas kode 15%, UI/UX 15%, debugging 10%, dokumentasi 20%).
 -->
