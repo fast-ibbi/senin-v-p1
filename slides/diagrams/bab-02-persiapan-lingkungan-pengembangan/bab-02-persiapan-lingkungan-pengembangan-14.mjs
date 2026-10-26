@@ -17,7 +17,7 @@
 // facts would otherwise leave the slide.
 export default {
   id: '14',
-  slide: 'Starting the Development Server',
+  slide: 'Menjalankan Development Server dan Membaca Layarnya',
   pattern: 'flow',
   alt:
     'npx expo start, run from inside the project folder, opens the Expo terminal with a QR code and ' +

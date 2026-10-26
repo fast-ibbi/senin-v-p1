@@ -19,7 +19,7 @@
 // left panel is titled "Parts of the command" rather than pretending to be the whole line.
 export default {
   id: '13',
-  slide: 'Creating the First Expo Project',
+  slide: 'Empat Perintah dari Folder Kosong sampai Aplikasi Jalan',
   pattern: 'beforeAfter',
   alt:
     'Reading the command part by part: npx runs the newest version of the tool with nothing ' +

@@ -15,7 +15,7 @@
 // explicitly neutral.
 export default {
   id: '01',
-  slide: 'Diagram: Node.js: A JavaScript Runtime Outside the Browser',
+  slide: 'Node.js Menjalankan JavaScript, Bukan Bahasa Baru',
   pattern: 'layers',
   alt:
     'Three strata: the V8 JavaScript engine at the bottom — the same engine as Chrome — with ' +

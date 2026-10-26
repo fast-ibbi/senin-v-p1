@@ -25,7 +25,7 @@
 // three-word condensation of "runs only on macOS".
 export default {
   id: '12',
-  slide: 'iOS Simulator: An Introduction',
+  slide: 'iOS Simulator Hanya Hidup di macOS',
   pattern: 'layers',
   alt:
     'Three strata: the iOS Simulator simulates an iPhone or iPad, it needs Xcode, which is very ' +

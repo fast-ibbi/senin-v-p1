@@ -19,7 +19,7 @@
 // the picture is drawn at scale 1 — a 16px label stays 16px on the projector.
 export default {
   id: '08',
-  slide: 'Expo CLI: The Command-Line Interface',
+  slide: 'Expo CLI Dijalankan Lewat npx, Tanpa Pemasangan Global',
   pattern: 'tree',
   alt:
     'Every Expo CLI job is run through npx, so nothing is installed globally: create-expo-app, ' +

@@ -25,7 +25,7 @@
 // explanatory clauses sit in the presenter notes next to them.
 export default {
   id: '10',
-  slide: 'Android Emulator: Android Studio and AVD',
+  slide: 'Emulator Android: Satu Komputer, Banyak Versi Android',
   pattern: 'tree',
   alt:
     'Android Studio is the official Android IDE that holds two things: the emulator, managed from ' +

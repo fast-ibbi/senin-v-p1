@@ -20,7 +20,7 @@
 // in the middle of the canvas; the row order already says where the sequence starts.
 export default {
   id: '07',
-  slide: 'When the Command Is Not Recognized',
+  slide: 'Kalau Perintahnya Tidak Dikenali, Masalahnya di PATH',
   pattern: 'stateMachine',
   alt:
     'Three states in a row: command not found, then PATH not loaded after installing the LTS, then a ' +

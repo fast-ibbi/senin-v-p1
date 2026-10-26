@@ -16,7 +16,7 @@
 // leaves implicit, and it is the only inferred word in the picture.
 export default {
   id: '06',
-  slide: 'VS Code: The Editor and Helper Extensions',
+  slide: 'VS Code: Menulis, Menjalankan, dan Membaca Error',
   pattern: 'flow',
   alt:
     'Reading one save left to right: the file is written, Prettier tidies the format, ESLint checks ' +

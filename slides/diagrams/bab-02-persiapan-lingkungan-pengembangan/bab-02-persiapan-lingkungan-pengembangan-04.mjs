@@ -9,7 +9,7 @@
 // device paths the legacy chart listed for "the screen".
 export default {
   id: '04',
-  slide: 'Execution Flow: index.js then App.js',
+  slide: 'package.json Memanggil index.js, index.js Memanggil App.js',
   pattern: 'flow',
   alt:
     'The execution order: package.json points to index.js through its main key, index.js ' +

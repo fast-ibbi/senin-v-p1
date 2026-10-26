@@ -18,7 +18,7 @@
 // is mandatory.
 export default {
   id: '11',
-  slide: 'adb and Physical Devices',
+  slide: 'adb Menghubungkan Komputer ke Perangkat Android',
   pattern: 'flow',
   alt:
     'The Android setup order: enable Developer options by tapping Build number seven times, switch ' +

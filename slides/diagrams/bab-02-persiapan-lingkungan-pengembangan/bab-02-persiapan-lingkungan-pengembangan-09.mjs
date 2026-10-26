@@ -13,7 +13,7 @@
 // would be the only statement, and the pointer to Chapter 15 would be lost.
 export default {
   id: '09',
-  slide: 'Expo Go: Fast, with Limits',
+  slide: 'Expo Go Cepat, tetapi Tidak Semua Fitur Bisa Diuji',
   pattern: 'beforeAfter',
   alt:
     'The trade-off, side by side. What you get: the phone is the player, so you scan the QR code, and ' +

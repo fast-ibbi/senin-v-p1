@@ -16,7 +16,7 @@
 // the two slides that follow this one, and the numbers keep the picture honest to the checklist.
 export default {
   id: '03',
-  slide: 'The Flow for Creating the First Project',
+  slide: 'Alur Membuat Proyek: Enam Langkah, Tidak Boleh Melompat',
   pattern: 'tree',
   alt:
     'The six-step first-project checklist in two phases: setting up the project holds steps 1 ' +

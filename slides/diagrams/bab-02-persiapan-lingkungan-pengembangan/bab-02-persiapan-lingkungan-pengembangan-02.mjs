@@ -12,7 +12,7 @@
 // "Fast Refresh" is the heading.
 export default {
   id: '02',
-  slide: 'Metro Bundler and Fast Refresh',
+  slide: 'Metro Membundel Kode, Perangkat Hanya Menerima Hasilnya',
   pattern: 'flow',
   alt:
     'The Metro pipeline left to right: the source files and every imported module are read by ' +

@@ -16,7 +16,7 @@
 // stayed because the picture does not show what goes wrong without npm.
 export default {
   id: '05',
-  slide: "npm: The Project's Package Manager",
+  slide: 'npm Mencatat Daftar Paket, Bukan Menyimpannya Sendiri',
   pattern: 'flow',
   alt:
     'The npm pipeline: package.json keeps the version record, npm install reads it, the packages ' +
