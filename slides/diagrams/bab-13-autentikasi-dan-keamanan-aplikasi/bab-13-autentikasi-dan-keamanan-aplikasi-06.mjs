@@ -16,7 +16,7 @@
 // keeps saying the server must make.
 export default {
   id: '06',
-  slide: 'Authentication vs Authorization',
+  slide: 'Autentikasi Membuktikan Identitas, Otorisasi Menentukan Hak',
   pattern: 'beforeAfter',
   alt:
     'Authentication asks "who are you?" and proves identity; authorization asks "what are ' +

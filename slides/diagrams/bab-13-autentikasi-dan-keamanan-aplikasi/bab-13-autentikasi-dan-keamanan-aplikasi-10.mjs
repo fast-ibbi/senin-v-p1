@@ -16,7 +16,7 @@
 // wording.
 export default {
   id: '10',
-  slide: 'Why a JWT Makes the Server Stateless',
+  slide: 'Kenapa JWT Membuat Server Tidak Menyimpan Apa pun',
   pattern: 'flow',
   alt:
     'The token arrives carrying a header and a payload; the server recomputes the signature with ' +

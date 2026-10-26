@@ -18,7 +18,7 @@
 // the layout returns for `masuk`.
 export default {
   id: '12',
-  slide: 'Protected Route: Definition and Its Limits',
+  slide: 'Protected Route Mengatur Tampilan, Bukan Mengunci Data',
   pattern: 'tree',
   alt:
     'The redirect page app/index.js decides by authentication status: while memuat it shows a ' +

@@ -22,7 +22,7 @@
 // not a place.
 export default {
   id: '14',
-  slide: 'Principle 2: No Secret Key in the Application',
+  slide: 'Prinsip 2: Secret Key Tidak Pernah Ikut ke dalam APK',
   pattern: 'flow',
   alt:
     'Bundled JavaScript inside the APK can be taken apart by one user, and one leak puts every ' +

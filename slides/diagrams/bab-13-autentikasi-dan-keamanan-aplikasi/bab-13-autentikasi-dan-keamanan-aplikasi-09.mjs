@@ -14,7 +14,7 @@
 // sits on the signature, which is what actually protects the token.
 export default {
   id: '09',
-  slide: 'A JWT Is Not Encryption',
+  slide: 'JWT Bukan Enkripsi',
   pattern: 'beforeAfter',
   alt:
     'Header and payload are only encoded, not encrypted — anyone can decode and read them. The ' +

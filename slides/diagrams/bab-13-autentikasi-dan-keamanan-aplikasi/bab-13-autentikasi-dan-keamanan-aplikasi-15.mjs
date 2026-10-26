@@ -19,7 +19,7 @@
 // exist in the picture and both are the same request.
 export default {
   id: '15',
-  slide: 'Principle 3: HTTPS Is Mandatory in Production',
+  slide: 'Prinsip 3: Tanpa HTTPS, Password Dibaca dari Jaringan yang Sama',
   pattern: 'beforeAfter',
   alt:
     'Without HTTPS, email, passwords and tokens travel as cleartext, and that is only a local ' +

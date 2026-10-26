@@ -14,7 +14,7 @@
 // accent marks the token column, the choice the chapter argues for.
 export default {
   id: '02',
-  slide: 'Architecture: A Server That Remembers vs One That Does Not',
+  slide: 'Server yang Mengingat Butuh Tempat Berbagi, yang Stateless Cukup Satu Kunci',
   pattern: 'beforeAfter',
   alt:
     'Two servers side by side. A session: the client sends the session ID, the server looks ' +

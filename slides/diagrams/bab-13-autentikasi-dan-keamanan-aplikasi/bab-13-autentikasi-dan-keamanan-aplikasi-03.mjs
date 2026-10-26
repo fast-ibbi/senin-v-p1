@@ -18,7 +18,7 @@
 // holds.
 export default {
   id: '03',
-  slide: 'JWT: Three Parts Separated by Dots',
+  slide: 'JWT: Tiga Bagian, Dua Titik Pemisah',
   pattern: 'flow',
   alt:
     'A JWT read left to right as one string with two dot separators: header, dot, payload, ' +

@@ -19,7 +19,7 @@
 // token is lost or expired …") and is left to the notes.
 export default {
   id: '05',
-  slide: 'Diagram: The Complete Flow: Login → Token → Access API → Logout',
+  slide: 'Diagram: Siapa Berbicara ke Siapa, dan di Mana Token Disimpan',
   pattern: 'sequence',
   alt:
     'The complete flow as an exchange: the user sends an email and a password to the ' +

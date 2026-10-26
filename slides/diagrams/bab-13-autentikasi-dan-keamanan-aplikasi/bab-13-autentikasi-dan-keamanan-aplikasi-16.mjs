@@ -19,7 +19,7 @@
 // server is the one that enforces the limit, which is the chapter's standing argument.
 export default {
   id: '16',
-  slide: 'Principle 4: Least Privilege (Smallest Access Rights)',
+  slide: 'Prinsip 4: Least Privilege Mempersempit Sasaran Serangan',
   pattern: 'layers',
   alt:
     'Least privilege applied at three layers of one request: device permissions requested when ' +

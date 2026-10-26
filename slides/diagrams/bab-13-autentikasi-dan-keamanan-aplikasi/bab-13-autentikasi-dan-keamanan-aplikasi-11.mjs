@@ -17,7 +17,7 @@
 // row of modes would only decorate a straight line (see references/patterns.md).
 export default {
   id: '11',
-  slide: 'The Price of Stateless: Revocation Is Hard',
+  slide: 'Harga Stateless: Token yang Dicuri Hidup Sampai exp',
   pattern: 'flow',
   alt:
     'An access token lives 15 minutes to 1 hour; at exp a long-lived refresh token issues a new ' +

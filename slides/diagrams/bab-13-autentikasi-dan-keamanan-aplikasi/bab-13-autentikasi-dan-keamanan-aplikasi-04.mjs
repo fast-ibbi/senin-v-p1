@@ -15,7 +15,7 @@
 // layer the slide says actually decides.
 export default {
   id: '04',
-  slide: 'Two Layers of Protection',
+  slide: 'Klien Mengarahkan, Server Memutuskan',
   pattern: 'beforeAfter',
   alt:
     'Two layers of protection compared row by row. The client layer directs the user, reads ' +

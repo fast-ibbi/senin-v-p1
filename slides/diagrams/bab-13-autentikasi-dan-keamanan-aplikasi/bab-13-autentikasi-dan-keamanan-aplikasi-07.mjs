@@ -21,7 +21,7 @@
 // endpoint cells, and `register` / `login` are the two halves the heading names.
 export default {
   id: '07',
-  slide: 'Register and Login: Two Endpoints',
+  slide: 'Register dan Login: Dua Endpoint, Satu Tiket Masuk',
   pattern: 'tree',
   alt:
     'Two endpoints hang off POST /api/auth: register is answered with 201 Created and login is ' +

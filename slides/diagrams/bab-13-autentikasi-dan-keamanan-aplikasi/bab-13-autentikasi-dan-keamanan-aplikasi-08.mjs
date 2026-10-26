@@ -14,7 +14,7 @@
 // slide's phrases ("the original text", "hash values", "stores").
 export default {
   id: '08',
-  slide: 'Passwords Are Never Stored in Plaintext',
+  slide: 'Password Tidak Pernah Disimpan sebagai Teks Polos',
   pattern: 'flow',
   alt:
     'The password — the original text — goes through one-way hashing with a salt, for example ' +

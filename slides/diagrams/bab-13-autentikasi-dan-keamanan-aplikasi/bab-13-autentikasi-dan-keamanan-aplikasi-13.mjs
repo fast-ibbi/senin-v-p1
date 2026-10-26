@@ -24,7 +24,7 @@
 // safely.
 export default {
   id: '13',
-  slide: 'Principle 1: Input Validation on the Server Side',
+  slide: 'Prinsip 1: Klien Tidak Bisa Dipercaya, Server Harus Memvalidasi',
   pattern: 'flow',
   alt:
     'The request — not always sent by your application, curl can call the endpoint — reaches the ' +
