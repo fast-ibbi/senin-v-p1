@@ -17,7 +17,7 @@
 // tap does not move a cursor by itself.
 export default {
   id: '04',
-  slide: 'The Event Flow: One Tap, One Re-render',
+  slide: 'Satu Ketukan, Satu Re-render',
   pattern: 'sequence',
   alt:
     'One tap, one re-render: the user taps, the component runs its onClick handler, the ' +

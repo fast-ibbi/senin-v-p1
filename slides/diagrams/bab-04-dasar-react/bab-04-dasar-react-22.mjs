@@ -38,7 +38,7 @@
 // pair students confuse. The two stages above it stay neutral so only one box glows.
 export default {
   id: '22',
-  slide: 'Components: The Smallest Unit of the UI',
+  slide: 'Component: Satuan Terkecil Antarmuka',
   pattern: 'flow',
   alt:
     'App.js, the root component, renders one function component called Sapaan, which returns ' +

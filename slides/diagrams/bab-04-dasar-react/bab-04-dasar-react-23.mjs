@@ -32,7 +32,7 @@
 // type by hand; the data source and the cards stay neutral.
 export default {
   id: '23',
-  slide: 'Case Study: Academic Data at BAAK',
+  slide: 'Studi Kasus: Data Akademik di BAAK',
   pattern: 'flow',
   alt:
     'One data source — DATA_MAHASISWA — is filtered by program into a set of independent ' +

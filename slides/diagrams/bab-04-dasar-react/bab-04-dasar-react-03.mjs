@@ -13,7 +13,7 @@
 // (cleanup runs before an effect re-runs, and again when the component is removed).
 export default {
   id: '03',
-  slide: 'Lifecycle: Mount, Update, Unmount',
+  slide: 'Siklus Hidup: Mount, Update, Unmount',
   pattern: 'flow',
   alt:
     'The component lifecycle as a chain: on mount the effect runs once, when a dependency ' +

@@ -23,7 +23,7 @@
 // stands where it is declared, which is exactly what the two notes say between them.
 export default {
   id: '02',
-  slide: 'Component Composition \u0026 Reusable Components',
+  slide: 'Komposisi Component: Data Turun, State Tinggal',
   pattern: 'layers',
   alt:
     'Component composition read top-down: App.js is the root component that owns the data, ' +
