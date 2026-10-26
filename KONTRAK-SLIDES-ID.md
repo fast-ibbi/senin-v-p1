@@ -94,7 +94,7 @@ Setiap bab memakai urutan ini; variasi lama dilipat ke slot terdekat.
 
 ```
  1  Pembuka — hook + judul bab (lead)
- 2  Tujuan Pembelajaran — 5 butir, verba Bloom
+ 2  Tujuan Pembelajaran — butir sesuai RPS di readme.md, verba Bloom
  3  Bagian 1 — judul bagian (lead)
  4  … isi …                 judul berupa klaim/pertanyaan
  5  Studi Kasus (spine: Aplikasi Manajemen Data Mahasiswa)
@@ -165,6 +165,11 @@ node scripts/verify-slides-id.mjs 01 --verbose
 
 Skrip hanya membuktikan **bentuk**. Yang tidak bisa diperiksa skrip:
 
+- **kata serapan yang wajar.** Pemeriksaan bocor-EN memakai daftar kata fungsi Inggris
+  (`the`, `and`, `you`, …). Kata seperti `mobile`, `web`, `data`, `sensor`, `codebase`
+  adalah bahasa Indonesia sehari-hari dan tidak ditandai. Audit terpisah (membandingkan
+  kata prosa dengan baseline Inggris) menemukan sisa seperti `Reproducibility` — jenis ini
+  harus ditangkap dengan mata, bukan regex;
 - **membaca setiap bab** — kesalahan tingkat huruf (kata tertukar/hilang) hanya ketemu
   dengan membaca; ini pelajaran dari `REVISI-CASUAL.md` §11.9;
 - **render** `npx marp <berkas> --images png --allow-local-files` untuk slide padat:
@@ -197,6 +202,18 @@ ini, jadi SVG tidak bisa dibangun ulang. Keputusan: diagram dibiarkan Inggris da
 dipindahkan. Untuk 3 diagram yang menyebut nama kasus lain (Bab 4, 7, 14), teks slide
 membingkainya sebagai "aplikasi lain yang melakukan hal yang sama".
 
+### 8.4 `grid2` per bab sudah selesai; 35 tempat sisa di Bab 5–15
+
+Status pembersihan `grid2`: Bab 1 (2), Bab 2 (3), Bab 3 (2), Bab 4 (2) sudah bersih.
+Sisa: Bab 5 (3), 6 (3), 7 (2), 8 (3), 9 (4), 10 (5), 11 (3), 12 (2), 13 (3), 14 (4), 15 (3).
+
+### 8.5 RPS dan deck tidak sinkron soal Tujuan Pembelajaran
+
+Di `readme.md`, Pertemuan 4 mencantumkan **4** butir tujuan, sedangkan deck Bab 4
+mempunyai **7** (versi Inggris 8). Selisih ini sudah ada sebelum penerjemahan, jadi tidak
+diubah: RPS adalah dokumen kurikulum dan perlu keputusan pemilik, bukan editor slide.
+Bab 1 sendiri sinkron (5 butir di keduanya).
+
 ## 9. Alur kerja
 
 ```
@@ -211,30 +228,53 @@ branch slides-id
 Bab 1 dikerjakan sendiri, lalu dibaca pemilik repo sebagai baseline gaya. Bab 2–15
 dikerjakan per batch 3–4 bab dengan workflow multi-agen yang memakai kontrak ini.
 
-## 10. Laporan pelaksanaan — Bab 1
+## 10. Laporan pelaksanaan
 
 ```
-bab     status  slide  kode  gambar  kata       istilah  slang  bocor-EN  Anda
-bab 01  lulus   40     1/1   15/15   1706/1784  0        0      0         0
+bab     status  slide  kode   gambar  kata       istilah  slang  bocor-EN  Anda
+bab 01  lulus   40     1/1    15/15   1702/1784  0        0      0         0
+bab 02  lulus   40     5/5    14/14   1731/1987  0        0      0         0
+bab 03  lulus   35     12/12  10/10   1038/1177  0        0      0         0
+bab 04  lulus   37     4/4    22/22   887/989    0        0      0         0
 ```
+
+### 10.1 Bab 1
 
 | Aspek | Hasil |
 |---|---|
 | Slide | 40 (Inggris 39) — tambah 1: `Yang Harus Teramati`; `Comprehension Check` + `Answers` menjadi `Kuis Kilat` + `Kunci Kuis Kilat` |
 | Blok kode | 1/1 identik byte-per-byte |
-| Gambar | 15/15, urutan sama dengan aslinya |
-| Kata | 1706 ≤ 1784 (−4%) |
-| Judul | 5 judul isi diubah jadi klaim (mis. `React Native: Core Concepts` → `Ditulis Sekali, Digambar Native di Dua Platform`) |
-| Spine | `Aplikasi Manajemen Data Mahasiswa` diperkenalkan di slide studi kasus keputusan (slide 27), bukan di pembuka |
-| Render | 40/40 slide diperiksa PNG; 2 tabel overflow diperbaiki (`compact` + sel satu baris), 1 slide Referensi diperbaiki (grid2 dibuang) |
+| Gambar | 15/15, urutan sama |
+| Kata | 1706 ≤ 1784 |
+| Spine | `Aplikasi Manajemen Data Mahasiswa` diperkenalkan di slide studi kasus keputusan (slide 27) |
+| Render | 40/40 diperiksa; 2 tabel overflow diperbaiki (`compact` + sel satu baris), slide Referensi diperbaiki (grid2 dibuang) |
+
+### 10.2 Bab 2–4 (batch pertama, workflow 3 tahap)
+
+Dikerjakan tiga agen per bab: tulis → periksa visual (render PNG) → baca isi terhadap
+baseline Inggris. Setiap tahap digerbangi `verify-slides-id.mjs`.
+
+| Bab | Slide | Temuan isi yang diperbaiki |
+|---|---|---|
+| 02 | 40 | `create-expo-app` tanpa `--template blank` bertentangan dengan baris tabelnya; "Tujuh Langkah" → "Enam Langkah" (diagram 03 punya enam); satu butir EN hilang → dipulihkan ke catatan |
+| 03 | 35 | blockquote Praktikum hilang → dipulihkan; label `reduce`/`sort` hilang; catatan Bagian 2 lenyap; "lebih pendek" → "lebih pendek atau sama panjang"; dua kata rusak; satu perintah yang tidak ada di EN dihapus |
+| 04 | 37 | tujuan 5–8 yang digabung satu butir → dipisah lagi (siklus hidup `useEffect` dan evaluasi `useMemo` kembali berdiri sendiri) |
+
+Pemeriksaan manual setelah workflow (tidak ditemukan agen): **overflow tabel** di Bab 2
+slide 25 (`Enam Perintah`) dan Bab 4 slide 27 (`Kebiasaan Bab Ini Dipakai`) — keduanya
+diperbaiki dengan memendekkan sel. Frase versi teknologi diseragamkan lintas empat bab.
 
 ## 11. Yang masih terbuka
 
-1. **`slide:` di 171 spec diagram** masih menyebut judul Inggris. Rencana: skrip
-   `scripts/sync-diagram-slides.mjs` yang memetakan baris `![]()` ke judul terdekat di
-   atasnya, lalu menulisnya ke field `slide:`. Belum dikerjakan.
+1. **`slide:` di spec diagram** sudah diselaraskan untuk Bab 1–4 lewat
+   `scripts/sync-diagram-slides.mjs`. Bab 5–15 menyusul saat babnya dikerjakan.
 2. **README 15 subfolder diagram** dibiarkan sebagai catatan sejarah; judul di dalamnya
    merujuk versi Inggris.
 3. **`buku/` tidak diselaraskan.** Slides memakai `Aplikasi Manajemen Data Mahasiswa`;
-   buku menyebut hal yang sama dengan nama itu juga, tetapi nada buku tetap formal.
-4. **Bab 2–15 belum disentuh.** Kontrak ini yang dipakai saat mengerjakannya.
+   buku menyebut hal yang sama dengan nama itu juga, tetapi nadanya tetap formal.
+4. **`kode/bab-02/` dan `kode/bab-03/` tidak ada**, padahal slide merujuk path di dalamnya
+   (Bab 2: 2 rujukan; Bab 3: 4 rujukan). Sudah begitu di `main` — bukan akibat
+   penerjemahan, tetapi membuat praktikum tidak bisa diikuti apa adanya.
+5. **Skrip penghasil `hasil-rekap.json`** (Bab 3) tidak ada di repo.
+6. **RPS vs deck soal Tujuan Pembelajaran** — lihat §8.5; butuh keputusan pemilik.
+7. **Bab 5–15 belum disentuh.** Kontrak ini yang dipakai saat mengerjakannya.
