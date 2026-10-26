@@ -17,7 +17,7 @@
 // drawn; the picture is the adaptive icon only.
 export default {
   id: '10',
-  slide: 'Icon, Adaptive Icon, and Splash Screen',
+  slide: 'Ikon Adaptif: Dua Lapis agar Tidak Terpotong',
   pattern: 'layers',
   alt:
     'The two layers of an adaptive icon: foregroundImage on top, with the safe area in the ' +

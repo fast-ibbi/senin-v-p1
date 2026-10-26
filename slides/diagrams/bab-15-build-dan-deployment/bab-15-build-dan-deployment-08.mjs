@@ -26,7 +26,7 @@
 // out.
 export default {
   id: '08',
-  slide: 'app.json: Name, Version, and Version Number',
+  slide: 'app.json: Dua Pembaca Versi yang Sering Tertukar',
   pattern: 'beforeAfter',
   alt:
     'Two readers of one app version. Humans read expo.version: the semantic version ' +

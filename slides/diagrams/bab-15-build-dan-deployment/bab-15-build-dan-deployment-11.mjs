@@ -28,7 +28,7 @@
 // picture does not show.
 export default {
   id: '11',
-  slide: 'Environment Variables: Configuration Outside the Code',
+  slide: 'Environment Variable: Konfigurasi di Luar Kode',
   pattern: 'beforeAfter',
   alt:
     'Two kinds of value in one .env file. A variable prefixed with EXPO_PUBLIC_ is inlined into ' +

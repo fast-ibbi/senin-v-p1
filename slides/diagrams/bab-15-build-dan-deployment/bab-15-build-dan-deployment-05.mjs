@@ -9,7 +9,7 @@
 // App Store Connect, test through TestFlight, review, release.
 export default {
   id: '05',
-  slide: 'App Store: Conceptual Flow',
+  slide: 'App Store: Satu Pintu, Tanpa Jalan Pintas',
   pattern: 'flow',
   alt:
     'The iOS release path: eas build produces the build with the certificate and the upload, ' +

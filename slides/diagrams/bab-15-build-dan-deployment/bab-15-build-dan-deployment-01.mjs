@@ -15,7 +15,7 @@
 // glows rather than the server that does the work. Geometry is the kit's, not the spec's.
 export default {
   id: '01',
-  slide: 'EAS Build: Heavy Lifting in the Cloud',
+  slide: 'EAS Build: Kerja Beratnya Dipindah ke Cloud',
   pattern: 'sequence',
   alt:
     'The EAS round trip: the local machine sends the project code to Expo\'s server, the ' +

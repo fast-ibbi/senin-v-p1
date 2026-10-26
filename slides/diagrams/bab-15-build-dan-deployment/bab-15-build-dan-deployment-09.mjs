@@ -20,7 +20,7 @@
 // slide's own words as well ("Once published", "may not be changed").
 export default {
   id: '09',
-  slide: 'Application ID: Permanent Once Published',
+  slide: 'Application ID: Sekali Terbit, Tidak Bisa Diganti',
   pattern: 'flow',
   alt:
     'Why the application ID is permanent: the reverse-domain ID goes live when it is ' +

@@ -14,7 +14,7 @@
 // same word on the arrow and under the box reads as a mistake.
 export default {
   id: '04',
-  slide: 'EXPO_PUBLIC_: Values Embedded in the Bundle',
+  slide: 'Nilai EXPO_PUBLIC_ Ikut Terbaca Semua Pengguna',
   pattern: 'flow',
   alt:
     'The value in the .env file is embedded at build time, ends up inside the JavaScript ' +

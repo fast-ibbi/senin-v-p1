@@ -23,7 +23,7 @@
 // stay on the slide — the picture says none of them.
 export default {
   id: '12',
-  slide: 'Signing: Proof of Build Authenticity',
+  slide: 'Signing: Tanda Tangan yang Membuktikan Keaslian',
   pattern: 'beforeAfter',
   alt:
     'Anyone can rebuild the app, but only the owner of the key can sign it. A copy signed with a ' +

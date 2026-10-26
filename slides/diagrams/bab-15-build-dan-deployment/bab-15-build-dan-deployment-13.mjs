@@ -41,7 +41,7 @@
 // direction of the ladder and the three gates, which the table's rows cannot show.
 export default {
   id: '13',
-  slide: 'Google Play: Four Release Tracks',
+  slide: 'Empat Kanal Rilis Google Play',
   pattern: 'flow',
   alt:
     'The Play release ladder from most private to most public: internal testing, at most 100 ' +

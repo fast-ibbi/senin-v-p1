@@ -13,7 +13,7 @@
 // material, and inventing them would read as established fact.
 export default {
   id: '06',
-  slide: 'iOS Build: Conceptual but Locked',
+  slide: 'Build iOS Butuh Keanggotaan yang Tidak Bisa Dilewati',
   pattern: 'layers',
   alt:
     'Three dependent layers of an iOS build: the Apple Developer Program membership, paid ' +

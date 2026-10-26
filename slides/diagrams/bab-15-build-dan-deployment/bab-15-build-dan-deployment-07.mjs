@@ -28,7 +28,7 @@
 // lifts the prose clear. No font size changed — the type is the kit's.
 export default {
   id: '07',
-  slide: 'What Is a Build?',
+  slide: 'Build Bukan npx expo start',
   pattern: 'flow',
   alt:
     'What happens during a build: Metro produces the JavaScript bundle, the bundle is ' +

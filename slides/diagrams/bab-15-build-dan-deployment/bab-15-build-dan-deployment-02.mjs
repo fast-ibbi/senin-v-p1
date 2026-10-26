@@ -8,7 +8,7 @@
 // mandatory"), kept as bare verbs because each arrow is only 74px wide.
 export default {
   id: '02',
-  slide: 'Build Flow with EAS',
+  slide: 'Urutan Perintah Build Tidak Boleh Ditukar',
   pattern: 'flow',
   alt:
     'The EAS build order: install eas-cli, sign in with eas login, run build:configure to ' +

@@ -17,7 +17,7 @@
 // the processor architecture, screen density, and language of that device".
 export default {
   id: '03',
-  slide: 'Why AAB Exists: Split APKs',
+  slide: 'Kenapa AAB Ada: Satu File, Banyak APK',
   pattern: 'tree',
   alt:
     'One AAB holds every device variant; Google Play assembles it into a split APK per ' +
