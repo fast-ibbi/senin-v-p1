@@ -486,12 +486,14 @@ duplikat, *spread* mengubahnya kembali menjadi array.
 
 ---
 
+<!-- _class: compact -->
+
 ## `map`, `filter`, `reduce`: Tiga Cara Mengolah Array
 
 | Metode | Tugasnya | Hasilnya |
 |---|---|---|
-| `map` | mengubah tiap elemen menjadi elemen baru | array baru, panjang sama |
-| `filter` | memilih elemen yang memenuhi syarat | array baru, lebih pendek atau sama panjang |
+| `map` | mengubah tiap elemen | array baru, panjang sama |
+| `filter` | memilih yang lolos syarat | array baru, sama atau lebih pendek |
 | `reduce` | menggabungkan semua elemen | satu nilai, misalnya total IPK |
 
 - Ketiganya mengembalikan nilai baru tanpa mengubah array aslinya
@@ -807,6 +809,8 @@ komponen partisipasi.
 
 ---
 
+<!-- _class: compact -->
+
 ## Praktikum: Yang Dibangun Pertemuan Ini
 
 - Buka `kode/bab-03-javascript-modern-untuk-react-native/`; `node --version` menampilkan 22 atau lebih
@@ -815,9 +819,14 @@ komponen partisipasi.
 - Jalankan tiga latihan CLI: `node latihan-predikat.js`, `node latihan-cari.js 20230002`, `node latihan-async.js`
 - `latihan-async.js` memperlihatkan `async`/`await` + `try`/`catch`/`finally`; tambahkan `--gagal` untuk melihat jalur gagal
 
+<!--
+Dipotong ke catatan (tidak muat di slide):
+
 > File lengkapnya ada di `kode/bab-03-javascript-modern-untuk-react-native/`. Semuanya modul ES, karena proyek itu menyetel `"type": "module"` di `package.json`; itu sebabnya `node latihan-cari.js` berjalan tanpa `.mjs`.
 
-<!--
+Bacakan kutipan itu sebelum menutup slide: seluruh praktikum ini modul ES, dan `"type": "module"`
+adalah yang membuat `node latihan-cari.js` berjalan tanpa ekstensi `.mjs`.
+
 Tekankan bahwa latihan ini versi kecil dari otomatisasi laporan: satu script yang bisa dijalankan
 ulang dengan hasil yang konsisten.
 
