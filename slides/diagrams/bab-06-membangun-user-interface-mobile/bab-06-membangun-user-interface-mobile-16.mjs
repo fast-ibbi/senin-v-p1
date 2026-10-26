@@ -19,7 +19,7 @@
 // type. So the props are mono and the sizing rule is not.
 export default {
   id: '16',
-  slide: 'Accessibility: Four Basic Practices',
+  slide: 'Aksesibilitas Dibangun Sejak Awal, Bukan Ditambal',
   pattern: 'beforeAfter',
   alt:
     'The four practices split by audience: a screen reader needs accessibilityRole, ' +

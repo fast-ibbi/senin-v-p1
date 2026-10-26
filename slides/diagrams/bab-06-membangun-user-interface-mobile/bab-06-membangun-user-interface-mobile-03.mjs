@@ -5,7 +5,7 @@
 // adds forms, Chapter 10 replaces static data with data from a server").
 export default {
   id: '03',
-  slide: 'The UI-First Approach',
+  slide: 'UI Dulu, Kode Kemudian',
   pattern: 'flow',
   alt:
     'The UI-first order: a wireframe becomes a static screen, then Chapter 7 adds ' +

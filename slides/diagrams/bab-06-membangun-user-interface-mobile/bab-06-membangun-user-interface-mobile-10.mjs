@@ -17,7 +17,7 @@
 // with a price.
 export default {
   id: '10',
-  slide: 'Card: One Card, One Entity',
+  slide: 'Satu Kartu Membawa Satu Entitas',
   pattern: 'beforeAfter',
   alt:
     'Card against row: a card carries one entity — one student — and separates entities ' +

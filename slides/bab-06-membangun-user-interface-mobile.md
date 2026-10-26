@@ -2,10 +2,10 @@
 marp: true
 theme: academic
 paginate: true
-title: "Chapter 6 — Building a Mobile User Interface"
-description: "Mobile Programming lecture, meeting 7: four mobile UI design principles, the 8pt spacing system, typography scale, color palette, Card/Button/Form/List components, header, bottom navigation, responsive design, accessibility, and wireframes for the Student List and Detail screens."
-author: "Course Instructor — Information Systems / Informatics Engineering Study Program"
-footer: "Mobile Programming · Chapter 6 — Building a Mobile User Interface"
+title: "Bab 6 — Membangun User Interface Mobile"
+description: "Slide kuliah Pemrograman Mobile, pertemuan 7: empat prinsip desain UI mobile, sistem jarak 8pt, skala tipografi, palet warna, component Card/Button/Form/List, header, navigasi bawah, desain responsif, aksesibilitas, serta wireframe halaman Daftar dan Detail Mahasiswa."
+author: "Dosen Mata Kuliah — Program Studi Sistem Informasi / Teknik Informatika"
+footer: "Pemrograman Mobile · Bab 6 — Membangun User Interface Mobile"
 size: 16:9
 ---
 
@@ -13,36 +13,47 @@ size: 16:9
 <!-- _paginate: skip -->
 <!-- _footer: "" -->
 
-# Chapter 6 — Building a Mobile User Interface
+# Bab 6 — Membangun User Interface Mobile
 
-Principles, visual foundations, and components · Meeting 7
+Prinsip, fondasi visual, dan component · Pertemuan 7
 
 <!--
-Open with one hook: "Last chapter we prepared the raw materials; today we learn to
-assemble them with reasons."
+Buka dengan satu kalimat penyambung: "Bab lalu kita menyiapkan bahan mentahnya; hari ini
+kita belajar menyusunnya dengan alasan."
 
-Opening question: "Why can two apps with similar features feel so far apart in
-comfort?" Collect 2–3 answers without correcting them yet; the answers are scattered
-across 6.1 (principles), 6.2 (components), and 6.5–6.6 (adaptation).
+Pertanyaan pembuka: "Kenapa dua aplikasi dengan fitur yang mirip bisa terasa sangat jauh
+beda kenyamanannya?" Tampung dua sampai tiga jawaban tanpa dikoreksi dulu, karena
+jawabannya tersebar di tiga tempat: prinsip (subbab 6.1), component (6.2), dan adaptasi
+layar (6.5–6.6).
+
+Sebutkan sejak awal bahwa bab ini tidak mengulang Bab 5, melainkan memakai ulang bahan
+Bab 5.
 -->
 
 ---
 
-## Learning Objectives
+## Tujuan Pembelajaran
 
-- Explain the four mobile UI design principles and the reasoning behind them
-- Identify the role of the 8pt spacing system, typography scale, and color palette
-- Implement the Card, Button, Form, and List components consistently
-- Design wireframes for the Student List and Detail screens before writing code
-- Apply basic accessibility and analyze design decisions in the case study
+Setelah bab ini, kamu bisa:
+
+- Menjelaskan empat prinsip desain UI mobile beserta alasan di belakangnya
+- Mengidentifikasi peran sistem jarak 8pt, skala tipografi, dan palet warna
+- Mengimplementasikan component Card, Button, Form, dan List secara konsisten
+- Merancang *wireframe* halaman Daftar dan Detail Mahasiswa sebelum menulis kode
+- Menerapkan aksesibilitas dasar dan menganalisis keputusan desain pada studi kasus
 
 <!--
-Read out only the verbs. The first four objectives rest on Sub-CPMK 3.1 (mobile UI
-design principles); the last touches Sub-CPMK 3.2 (responsiveness and basic
-accessibility), which the RPS also maps to Chapter 6.
+Bacakan verba tiap butir dengan tempo cepat, jangan dijelaskan satu per satu sekarang.
 
-Mention the assessment up front: Chapter 6 Practicum and Assignment 2 — campus app
-UI redesign.
+Empat butir pertama bertumpu pada Sub-CPMK 3.1 (prinsip desain UI mobile); butir terakhir
+menyentuh Sub-CPMK 3.2 (responsivitas dan aksesibilitas dasar), yang di RPS juga dipetakan
+ke Bab 6.
+
+Sebutkan penilaiannya di depan: Praktikum Bab 6 dan Tugas 2 — perancangan ulang UI
+aplikasi kampus.
+
+Tegaskan bahwa butir keempat yang paling sering diremehkan: rancangan di atas kertas lebih
+murah diperbaiki daripada layar yang sudah ditulis.
 -->
 
 ---
@@ -50,278 +61,281 @@ UI redesign.
 <!-- _class: lead -->
 <!-- _paginate: skip -->
 
-# Part 1 — Principles of Mobile UI Design
+# Bagian 1 — Empat Prinsip Desain UI Mobile
 
-Section 6.1 four principles · 6.2–6.4 visual foundations and components
+subbab 6.1 empat prinsip · 6.2–6.4 fondasi visual dan component
 
 <!--
-This part is conceptual, but it must not be skipped: every decision in the practicum
-traces back to the four principles here.
+Bagian ini konseptual, tetapi tidak boleh dilewati: setiap keputusan di praktikum nanti
+bisa dilacak balik ke empat prinsip di sini.
 
-If time is tight, students may read section 6.4 on their own; section 6.1 may not.
+Kalau waktu pertemuan menipis, subbab 6.4 boleh dibaca mandiri oleh mahasiswa; subbab 6.1
+tidak boleh.
 -->
 
 ---
 
-## Why Does an App Feel Easy or Hard?
+## Kenapa Dua Aplikasi Mirip Terasa Jauh Berbeda?
 
 ![w:1120](assets/diagrams/bab-06-membangun-user-interface-mobile-06.svg)
 
-A designer's first question is not about technology, but about why an interface feels easy or hard to use.
+Pertanyaan pertama seorang perancang bukan soal teknologi.
 
-<div class="grid2">
-<div>
+**Prinsip, bukan selera**
 
-**Principles, not taste**
+- Antarmuka disusun dengan alasan, bukan coba-coba
 
-- Building an interface with reasons, not by trial and error
+**Bahan mentahnya sudah siap**
 
-</div>
-<div>
-
-**The raw materials are ready**
-
-- Chapter 5 gave us `View`, `Text`, `StyleSheet`, Flexbox, `FlatList`
-
-</div>
-</div>
+- Bab 5 memberi `View`, `Text`, `StyleSheet`, Flexbox, `FlatList`
 
 <!--
-Trimmed to the picture (the diagram says this):
-- Born from observing how people read and hold a phone
-- This chapter teaches how to assemble them into a reasoned interface
+Dipotong ke gambar (diagram yang mengatakan ini):
+- Lahir dari pengamatan cara orang membaca dan memegang HP
+- Bab ini mengajarkan cara menyusunnya menjadi antarmuka yang beralasan
 
-The first moved bullet is the picture's first stage (the observation behind a principle)
-and the second is its last stage (this chapter's assembly). What stays on the slide is the
-Chapter 5 material list, which no stage names, and the rule about building with reasons,
-which stage two only gestures at ("not taste, not trial and error").
+Butir pertama yang pindah adalah tahap pertama gambar (pengamatan di balik sebuah prinsip),
+dan butir kedua adalah tahap terakhirnya (penyusunan di bab ini). Yang tinggal di slide
+adalah daftar bahan Bab 5, yang tidak disebut satu tahap pun, dan aturan "beralasan, bukan
+coba-coba", yang hanya disinggung tahap kedua.
 
-Emphasize the shift in role: from screen assembler to designer able to explain the
-reason behind every decision.
+Tekankan pergeseran perannya: dari perakit layar menjadi perancang yang bisa menjelaskan
+alasan di balik setiap keputusan. Kalimat penuh yang layak diucapkan: pertanyaan pertama
+seorang perancang bukan soal teknologi, melainkan soal kenapa sebuah antarmuka terasa enak
+atau susah dipakai.
 
-Guiding question: "If two buttons have different functions, what distinguishes them in
-the user's eyes?" (Answer: their appearance and position, not the developer's intent.)
+Pertanyaan penuntun: "Kalau dua tombol punya fungsi berbeda, apa yang membedakannya di mata
+pengguna?" (Jawaban: tampilan dan posisinya, bukan niat pengembangnya.)
 
-Close by stressing that this chapter does not repeat Chapter 5, it reuses its materials.
+Tutup dengan menegaskan bahwa bab ini tidak mengulang Bab 5, tetapi memakai ulang bahannya.
 -->
 
 ---
 
-## Principle 1 — Consistency
+## Prinsip 1 — Elemen Serupa Tampil Serupa
 
 ![w:1120](assets/diagrams/bab-06-membangun-user-interface-mobile-07.svg)
 
-- In IS: staff with varied digital literacy make fewer data-entry mistakes
-- Trade-off: rigid consistency can block solutions specific to a context
+- Di sistem informasi: staf dengan literasi digital beragam membuat lebih sedikit salah input
+- *Trade-off*: konsistensi yang terlalu kaku bisa memblokir solusi khusus satu konteks
 
 <!--
-Trimmed to the picture (the diagram says this):
-- Similar elements look and behave similarly: same colors, spacing, and label wording
-- Lowers cognitive cost: after learning one screen, other screens can be guessed
-- What it looks like: **design tokens** — one place that stores colors and sizes
+Dipotong ke gambar (diagram yang mengatakan ini):
+- Elemen serupa tampil dan berperilaku serupa: warna, jarak, dan pilihan kata yang sama
+- Menurunkan beban kognitif: setelah satu layar dipelajari, layar lain bisa ditebak
+- Bentuk teknisnya: **token desain** — satu tempat yang menyimpan warna dan ukuran
 
-Three of the five bullets are stages of the chain the picture draws (tokens → similar
-elements → cognitive cost), so they moved. What stays is the trade-off, which is a limit of
-the chain rather than one of its links, and the IS consequence — the reason the chain
-matters in this course's own domain.
+Tiga dari lima butir adalah mata rantai yang digambar gambar itu (token → elemen serupa →
+beban kognitif), jadi dipindahkan. Yang tinggal adalah trade-off, yang merupakan batas
+rantainya, bukan salah satu mata rantainya, dan akibatnya di sistem informasi — alasan
+rantai itu penting di bidang mata kuliah ini sendiri.
 
-Cheapest example: ask students to name the color of the "Save" button in an app they
-use daily, then show that the answers are uniform.
+Contoh paling murah: minta mahasiswa menyebut warna tombol "Simpan" di aplikasi yang mereka
+pakai tiap hari, lalu tunjukkan bahwa jawabannya seragam.
 
-Warn about the common misconception: consistency does not mean every screen is
-identical. Dashboard and form screens may deviate slightly as long as the basic rules
-of color, font, and spacing stay the same.
+Peringatkan salah paham yang umum: konsisten bukan berarti semua layar identik. Layar
+dasbor dan layar formulir boleh berbeda sedikit asal aturan dasar warna, huruf, dan jarak
+tetap sama.
 
-Guiding question: "Why does consistency matter in a campus app?" (Staff with varied
-digital literacy must be trained only once.)
+Pertanyaan penuntun: "Kenapa konsistensi penting di aplikasi kampus?" (Staf dengan
+literasi digital beragam cukup dilatih sekali.)
 -->
 
 ---
 
-## Principle 2 — Visual Hierarchy
+## Prinsip 2 — Mata Memindai, Bukan Membaca
 
 ![w:1120](assets/diagrams/bab-06-membangun-user-interface-mobile-08.svg)
 
-- The eye scans a screen, it does not read it line by line
-- Arrange size, weight, color, and position to show order
-- Trade-off: too aggressive a hierarchy makes the screen shout everything at once
-- Trade-off: too flat a hierarchy leaves users unsure where to start
+- Mata memindai layar, bukan membacanya baris demi baris
+- Atur ukuran, ketebalan, warna, dan posisi untuk menunjukkan urutan
+- *Trade-off*: hierarki terlalu agresif membuat layar berteriak sekaligus
+- *Trade-off*: hierarki terlalu datar membuat bingung harus mulai dari mana
 
 <!--
-Trimmed to the picture (the diagram says this):
-- Title most prominent, then the main content, then the faintest notes
+Dipotong ke gambar (diagram yang mengatakan ini):
+- Judul paling menonjol, lalu isi utama, lalu keterangan yang paling redup
 
-That bullet is the three bands of the picture, in the same order, so it moved. The rest of
-the slide is untouched: the scanning fact, the four tools, and both failure modes are
-sentences the bands cannot state.
+Butir itu adalah tiga pita di gambar, dalam urutan yang sama, jadi dipindahkan. Sisa slide
+tidak diubah: fakta tentang memindai, empat alat pengatur, dan dua mode kegagalan adalah
+kalimat yang tidak bisa diucapkan pita gambar.
 
-Quick demonstration: show two screenshots, one with every text large and bold, one
-with a single title that truly stands out.
+Demonstrasi cepat: tampilkan dua tangkapan layar, satu dengan semua teks besar dan tebal,
+satu dengan satu judul yang benar-benar menonjol.
 
-Guiding question: "Which screen can you scan in one second?" (The second one; a flat
-hierarchy actually slows reading down.)
+Pertanyaan penuntun: "Layar mana yang bisa kamu pindai dalam satu detik?" (Yang kedua;
+hierarki yang datar justru memperlambat pembacaan.)
 
-Connect it to the outcome: a good hierarchy makes a screen scannable in seconds.
+Hubungkan dengan hasil akhirnya: hierarki yang baik membuat layar bisa dipindai dalam
+hitungan detik.
 -->
 
 ---
 
-## Principle 3 — Feedback
+## Prinsip 3 — Setiap Sentuhan Butuh Jawaban
 
 ![w:1120](assets/diagrams/bab-06-membangun-user-interface-mobile-09.svg)
 
-- A pressed button dims; a tapped card gives a visual effect
-- Feedback answers the anxiety: "was my touch received?"
-- A touchscreen gives no physical sensation, so visual response replaces it
-- Trade-off: touch response is mandatory (Pressable); vibration and animation come later
+- Tombol yang ditekan meredup; kartu yang diketuk memberi efek visual
+- Umpan balik menjawab kecemasan: "apakah sentuhan saya diterima?"
+- Layar sentuh tidak memberi sensasi fisik, jadi respons visual menggantikannya
+- *Trade-off*: respons sentuh wajib (`Pressable`), getaran dan animasi menyusul
 
 <!--
-Trimmed to the picture (the diagram says this):
-- Every user action must get a visible response
+Dipotong ke gambar (diagram yang mengatakan ini):
+- Setiap tindakan pengguna harus mendapat respons yang terlihat
 
-The rule moved because the picture is that rule as an exchange: the touch goes out and the
-response comes back. The example stays — the picture says "dims, visual effect" but never
-says which control, and a tapped card is a second case the picture does not carry.
+Aturan itu pindah karena gambar adalah aturan itu sendiri sebagai pertukaran: sentuhan
+keluar, respons datang kembali. Contohnya tinggal — gambar menyebut "meredup, efek visual"
+tetapi tidak pernah menyebut kontrol mana, dan kartu yang diketuk adalah kasus kedua yang
+tidak dibawa gambar.
 
-Analogy: pressing a lift button that does not light up — people press it repeatedly
-instead of giving up.
+Analogi: menekan tombol lift yang tidak menyala — orang menekannya berkali-kali, bukan
+menyerah.
 
-Warn that without feedback users conclude the app is broken even when the code is
-correct. The technical form is shown on the `Pressable` code slide later.
+Peringatkan bahwa tanpa umpan balik, pengguna menyimpulkan aplikasinya rusak walaupun
+kodenya benar. Bentuk teknisnya ditunjukkan di slide kode `Pressable` nanti. Getaran dan
+animasi sengaja disebut belakangan karena keduanya boleh, bukan wajib.
 
-Guiding question: "Which response is mandatory, and which may follow later?" (A visible
-touch response is mandatory; vibration and animation may be considered later.)
+Pertanyaan penuntun: "Respons mana yang wajib, dan mana yang boleh menyusul?" (Respons
+sentuh yang terlihat itu wajib; getaran dan animasi boleh dipertimbangkan belakangan.)
 -->
 
 ---
 
-## Principle 4 — Thumb-friendly
+## Prinsip 4 — Jangkauan Ibu Jari Menentukan Posisi
 
 ![w:1120](assets/diagrams/bab-06-membangun-user-interface-mobile-05.svg)
 
-- Most phone interaction is done with one thumb
-- The bottom and middle of the screen are easy to reach; the top corners are hard
-- Important actions go in reachable zones; the top area is for titles
-- Trade-off: reach sometimes collides with habit (back in the top left)
-- That is why the main action button on modern phones sits at the bottom — not by chance
+- Sebagian besar interaksi HP dilakukan dengan satu ibu jari
+- Bagian bawah dan tengah layar mudah dijangkau; sudut atas sulit
+- *Trade-off*: jangkauan kadang bentrok dengan kebiasaan (tombol kembali di kiri atas)
+- Itu sebabnya tombol aksi utama di HP modern ada di bawah — bukan kebetulan
 
 <!--
-Demonstration: ask students to hold their phone in one hand and touch the top right
-corner without changing their grip. Let them feel the limitation themselves.
+Zona jangkauan tidak perlu diucapkan ulang karena gambarnya sudah membaginya: judul layar di
+atas dengan catatan "sudut atas sulit", isi dan aksi utama di bawah dengan catatan "mudah
+dijangkau". Yang diucapkan hanyalah butir ketiga yang dulu ada di slide ini: aksi penting
+ditaruh di zona terjangkau, sedangkan area atas disediakan untuk judul.
 
-Guiding question: "Where should the Save button sit on a long form?" (Following the
-thumb: attached to the bottom of the form, not in the top corner.)
+Demonstrasi: minta mahasiswa memegang HP dengan satu tangan lalu menyentuh sudut kanan
+atas tanpa mengubah pegangan. Biarkan mereka merasakan batasannya sendiri.
 
-Remind them that the sacrifice is real: some layout density is given up for reach
-comfort.
+Pertanyaan penuntun: "Tombol Simpan di formulir panjang sebaiknya di mana?" (Mengikuti ibu
+jari: menempel di bawah formulir, bukan di sudut atas.)
+
+Ingatkan bahwa pengorbanannya nyata: sebagian kepadatan layout dilepas demi kenyamanan
+jangkauan.
 -->
 
 ---
 
-## Four Principles Working Together
+## Empat Prinsip Ini Tidak Berdiri Sendiri
 
 ![w:1120](assets/diagrams/bab-06-membangun-user-interface-mobile-02.svg)
 
-> Principles become real through design tokens, the typography scale, the color palette, and the `Pressable` style when pressed or disabled.
+> Prinsip menjadi nyata lewat token desain, skala tipografi, palet warna, dan gaya `Pressable` saat ditekan atau nonaktif.
 
 <!--
-Main message: principles do not stand alone. Hierarchy without consistency makes every
-screen advertise its own method; feedback without hierarchy gives the same response to
-different actions.
+Pesan utamanya: prinsip tidak berdiri sendiri. Hierarki tanpa konsistensi membuat setiap
+layar mengiklankan caranya sendiri; umpan balik tanpa hierarki memberi respons yang sama
+untuk tindakan yang berbeda.
 
-Mention that every label in the chart can be traced back to its section (6.1, 6.2, 6.4),
-so students know where to return when they forget.
+Sebutkan bahwa setiap label di bagan bisa dilacak ke subbabnya (6.1, 6.2, 6.4), jadi
+mahasiswa tahu ke mana harus kembali saat lupa.
 
-
-Think-pair-share, brief: ask each pair to pick one principle and name one violation of it
-in an app they use daily.
+Think-pair-share singkat: minta setiap pasangan memilih satu prinsip dan menyebut satu
+pelanggarannya di aplikasi yang mereka pakai sehari-hari.
 -->
 
 ---
 
-## The 8pt Spacing System
+<!-- _class: compact -->
 
-- A set of spacing values: 4, 8, 12, 16, 24, 32, 48, 64
-- Chosen because it divides by 2: small enough for detail, large enough for rhythm
+## Sistem Jarak 8pt: Angka yang Disepakati, Bukan Dirasa
 
-| Rule of thumb | Value |
+- Satu set nilai jarak: 4, 8, 12, 16, 24, 32, 48, 64
+- Dipilih karena habis dibagi 2: cukup kecil untuk detail, cukup besar untuk irama
+
+| Aturan praktis | Nilai |
 |---|---|
-| Spacing between elements in one group | 8 |
-| Spacing between groups | 16 |
-| Screen edge margin | 16–24 |
-| Spacing inside a card (padding) | 16 |
-| Corner radius | 8–12 |
+| Jarak antar elemen dalam satu kelompok | 8 |
+| Jarak antar kelompok | 16 |
+| Margin tepi layar | 16–24 |
+| Jarak di dalam kartu (padding) | 16 |
+| Sudut membulat | 8–12 |
 
 <!--
-Stress that the benefit is not aesthetics but decision speed: the team no longer argues
-over "16 or 17 pixels?".
+Tekankan bahwa manfaatnya bukan estetika, melainkan kecepatan memutuskan: tim tidak lagi
+berdebat "16 atau 17 piksel?".
 
-Mention that the values in this table are what recurs throughout the practicum code, so
-a screen that feels off usually has one value out of rhythm.
+Nilai di tabel ini jugalah yang berulang di seluruh kode praktikum, jadi layar yang terasa
+janggal biasanya punya satu nilai yang keluar dari irama.
 
-Guiding question: "Why 8, not 5 or 7?" (8 divides by 2, so 4, 8, 16, and 32 always
-line up.)
+Pertanyaan penuntun: "Kenapa 8, bukan 5 atau 7?" (8 habis dibagi 2, sehingga 4, 8, 16, dan
+32 selalu sejajar.)
 -->
 
 ---
 
-## Card: One Card, One Entity
+## Satu Kartu Membawa Satu Entitas
 
 ![w:1120](assets/diagrams/bab-06-membangun-user-interface-mobile-10.svg)
 
-- Gives a visual boundary so the eye can separate entities while scrolling
-- Anatomy: white background, radius 8–12, padding 16, spacing between cards 8
-- Trade-off: cards consume vertical space; uniform data is more economical as rows
+- Memberi batas visual agar mata bisa memisahkan entitas saat menggulir
+- Anatomi: latar putih, radius 8–12, padding 16, jarak antar kartu 8
+- *Trade-off*: kartu memakan ruang vertikal; data seragam lebih hemat sebagai baris
 
 <!--
-Trimmed to the picture (the diagram says this):
-- One card = one idea = one entity; in our app, one student
+Dipotong ke gambar (diagram yang mengatakan ini):
+- Satu kartu = satu gagasan = satu entitas; di aplikasi kita, satu mahasiswa
 
-That is the left panel of the picture, so it moved. Three bullets stay because the picture
-cannot carry them: the anatomy (background, radius, padding), the price (vertical space),
-and the boundary bullet — the panel says "separate entities while scrolling" but not why
-that works.
+Itu panel kiri gambar, jadi dipindahkan. Tiga butir tinggal karena gambar tidak bisa
+membawanya: anatomi (latar, radius, padding), harganya (ruang vertikal), dan butir batas
+visual — panel menyebut "memisahkan entitas saat menggulir" tetapi tidak menjelaskan kenapa
+itu bekerja.
 
-Analogy: a card is like a business card — once stacked, the eye can still separate one
-from another.
+Analogi: kartu itu seperti kartu nama — setelah ditumpuk pun, mata masih bisa memisahkan
+satu dari yang lain.
 
-The most common misconception: packing two entities into one card. Remind them that one
-card carries one message.
+Salah paham tersering: menumpuk dua entitas dalam satu kartu. Ingatkan bahwa satu kartu
+membawa satu pesan.
 
-Guiding question: "When is a row more appropriate than a card?" (When there is a lot of
-uniform data, for example a grade table.)
+Pertanyaan penuntun: "Kapan baris lebih tepat daripada kartu?" (Saat datanya banyak dan
+seragam, misalnya tabel nilai.)
 -->
 
 ---
 
-## Button: Four Variants
+<!-- _class: compact -->
 
-The design question is not "what does it look like?" but "how important is this action?".
+## Empat Varian Tombol, Satu Hierarki Aksi
 
-| Variant | Appearance | Purpose |
+Pertanyaan desainnya bukan "bentuknya bagaimana", melainkan "seberapa penting aksi ini".
+
+| Varian | Tampilan | Kegunaan |
 |---|---|---|
-| primary | Main color background, white text | The single main action on a screen |
-| secondary | Soft gray background | A supporting action that still matters |
-| outline | Transparent with a main-color border | An alternative action |
-| danger | Red background | A risky or destructive action |
+| primary | Latar warna utama, teks putih | Satu-satunya aksi utama di layar |
+| secondary | Latar abu lembut | Aksi pendukung yang tetap penting |
+| outline | Transparan, garis warna utama | Aksi alternatif |
+| danger | Latar merah | Aksi berisiko atau merusak |
 
-- Rule: one primary per screen — if everything stands out, nothing does
-- Labels are clear verbs: "Save", not "OK"
+- Aturan: satu primary per layar — kalau semua menonjol, tidak ada yang menonjol
+- Label berupa verba yang jelas: "Simpan", bukan "OK"
 
 <!--
-Main takeaway: users read meaning from color before reading the text. A red button that
-is never used for deleting loses its meaning.
+Inti pesannya: pengguna membaca makna dari warna sebelum membaca teksnya. Tombol merah yang
+tidak pernah dipakai untuk menghapus kehilangan artinya.
 
-Guiding question: "May two important actions both be primary on one screen?" (No — the
-action hierarchy disappears immediately.)
+Pertanyaan penuntun: "Boleh dua aksi penting sama-sama primary di satu layar?" (Tidak —
+hierarki aksinya langsung hilang.)
 
-Remind them that `danger` does not mean "important", it is reserved for destructive
-actions.
+Ingatkan bahwa `danger` bukan berarti "penting", melainkan khusus untuk aksi yang merusak.
 -->
 
 ---
 
-## Button: Pressed and Disabled States
+## Tombol Nonaktif Tidak Boleh Ikut Meredup
 
 `File: components/Tombol.js`
 
@@ -335,23 +349,22 @@ style={({ pressed }) => [
 ]}
 ```
 
-> Three color states: normal per variant, dimmed when pressed, and locked gray when disabled.
+> Tiga warna status: normal sesuai varian, meredup saat ditekan, dan terkunci abu saat nonaktif.
 
 <!--
-Discuss the order of the conditions first: a disabled button must not dim when
-"pressed", because it does not respond to touch at all.
+Bahas dulu urutan kondisinya: tombol nonaktif tidak boleh meredup saat "ditekan", karena ia
+sama sekali tidak merespons sentuhan.
 
-Ask: "Why is opacity written as an expression rather than two separate styles?" (Because
-the `Pressable` style function receives `{ pressed }`, so the state can be read at render
-time.)
+Tanya: "Kenapa opacity ditulis sebagai ekspresi, bukan dua gaya terpisah?" (Karena fungsi
+gaya `Pressable` menerima `{ pressed }`, sehingga statusnya bisa dibaca saat render.)
 
-Stress that this slide is not new syntax: `Pressable` was learned in Chapter 5; what is
-new is the design reasoning behind it.
+Tegaskan bahwa slide ini bukan sintaksis baru: `Pressable` sudah dipelajari di Bab 5; yang
+baru adalah alasan desain di belakangnya.
 -->
 
 ---
 
-## Form: Appearance Only
+## Label Menetap, Placeholder Hanya Petunjuk
 
 ```plaintext
 ┌──────────────────────────────┐
@@ -367,157 +380,184 @@ new is the design reasoning behind it.
 └──────────────────────────────┘
 ```
 
-- Labels always visible — a placeholder disappears once the user starts typing
-- The save button sits at the bottom of the form, within thumb reach
+- Label selalu terlihat — placeholder hilang begitu pengguna mulai mengetik
+- Tombol simpan menempel di bawah formulir, dalam jangkauan ibu jari
 
 <!--
-Discuss only two appearance decisions: labels must not depend on placeholders, and the
-position of the save button.
+Bahas dua keputusan tampilan saja: label tidak boleh bergantung pada placeholder, dan posisi
+tombol simpan.
 
-Remind them of this chapter's scope: state, validation, and keyboard behavior are
-deliberately postponed to Chapter 8 so the class focuses on the visual pattern.
+Ingatkan lingkup bab ini: state, validasi, dan perilaku papan ketik sengaja ditunda ke Bab 8
+supaya kelas fokus pada pola visualnya.
 
-Guiding question: "Why is the label above the field rather than beside it?" (The phone
-screen width is not enough for two paired columns.)
+Pertanyaan penuntun: "Kenapa label di atas kolom, bukan di sampingnya?" (Lebar layar HP
+tidak cukup untuk dua kolom berdampingan.)
 -->
 
 ---
 
-## List: Item Consistency
+## Item Seragam Membuat Daftar Terasa Tenang
 
 ![w:1120](assets/diagrams/bab-06-membangun-user-interface-mobile-12.svg)
 
-- Uniform item structure: the same touch area, inner spacing, and text hierarchy
-- Separator: a thin line or 8 of space — pick one and use it consistently
-- Three states anticipated: loading, empty, and failed to load
+- Struktur item seragam: area sentuh, jarak dalam, dan hierarki teks yang sama
+- Pemisah: garis tipis atau jarak 8 — pilih satu dan pakai konsisten
+- Tiga keadaan diantisipasi: sedang memuat, kosong, dan gagal dimuat
 
 <!--
-Trimmed to the picture (the diagram says this):
-- One-line pattern: title only; two-line pattern: title on top, small caption below
-- Our app uses two lines: student name, then NIM–cohort
+Dipotong ke gambar (diagram yang mengatakan ini):
+- Pola satu baris: judul saja; pola dua baris: judul di atas, keterangan kecil di bawah
+- Aplikasi kita memakai dua baris: nama mahasiswa, lalu NIM–angkatan
 
-Both bullets are the two panels: the picture puts the one-line shape beside the two-line shape
-and names this app's two lines in the second panel. Three bullets stay because the picture
-cannot show them: the uniform structure (touch area, inner spacing, text hierarchy), the
-separator choice, and the three states a list has to anticipate.
+Kedua butir itu adalah dua panel gambar: gambar menaruh bentuk satu baris di samping bentuk
+dua baris, dan menyebut dua baris aplikasi kita di panel kedua. Tiga butir tinggal karena
+gambar tidak bisa menunjukkannya: struktur yang seragam (area sentuh, jarak dalam, hierarki
+teks), pilihan pemisah, dan tiga keadaan yang harus diantisipasi setiap daftar.
 
-Remind them that `FlatList` was introduced in Chapter 5; what is discussed here is the
-consistency of its items, not how to use it.
+Ingatkan bahwa `FlatList` sudah diperkenalkan di Bab 5; yang dibahas di sini adalah
+keseragaman itemnya, bukan cara memakainya.
 
-Mention that the three states (loading, empty, failed to load) are only implemented in
-Chapter 10 when data comes from a server; for now it is enough to anticipate them in the
-design.
+Sebutkan bahwa tiga keadaan (memuat, kosong, gagal dimuat) baru diimplementasikan di Bab 10
+saat data datang dari server; untuk sekarang cukup diantisipasi di rancangan.
 
-Guiding question: "What makes a list feel jittery while scrolling?" (Item heights and
-the spacing between items are not uniform.)
+Pertanyaan penuntun: "Apa yang membuat daftar terasa bergetar saat digulir?" (Tinggi item
+dan jarak antar item tidak seragam.)
 -->
 
 ---
 
-## Header and Bottom Navigation
+## Header Menjawab, Navigasi Bawah Menjangkau
 
 ![w:1000](assets/diagrams/bab-06-membangun-user-interface-mobile-13.svg)
 
-<div class="grid2">
-<div>
+**Header (atas layar)**
 
-**Header (screen top)**
+- Menjawab: di mana aku, apa yang bisa aku lakukan, bagaimana kembali
 
-- Answers: where am I, what can I do, how do I go back
+**Navigasi bawah**
 
-</div>
-<div>
-
-**Bottom navigation**
-
-- Placed at the bottom because it is the most comfortable place for the thumb
-- The active tab is always marked; only for the app's main sections
-
-</div>
-</div>
+- Di bawah karena itu tempat paling nyaman untuk ibu jari
+- Tab aktif selalu ditandai; navigasi bawah hanya untuk bagian utama aplikasi
 
 <!--
-Trimmed to the picture (the diagram says this):
-- Elements: title, contextual action on the right, back button on the left
-- A tab bar at the bottom of the screen with 3–5 icon-and-label tabs
+Dipotong ke gambar (diagram yang mengatakan ini):
+- Elemennya: judul, aksi kontekstual di kanan, tombol kembali di kiri
+- Tab bar di bawah layar berisi 3–5 tab dengan ikon dan label
 
-Both are the anatomy the tree draws: the header holds the title, the back button on the left
-and the contextual action on the right, and the bottom navigation holds 3–5 icon-and-label
-tabs. What stays on the slide are the facts a tree cannot show: what the header answers, why
-the tab bar belongs at the bottom, and the rule that the active tab is only for the app's
-main sections — the picture marks the active tab but does not say where tabs may be used.
+Keduanya adalah anatomi yang digambar pohon itu: header memuat judul, tombol kembali di kiri,
+dan aksi kontekstual di kanan, sedangkan navigasi bawah memuat 3–5 tab berikon dan berlabel.
+Yang tinggal di slide adalah hal yang tidak bisa ditunjukkan pohon: apa yang dijawab header,
+kenapa tab bar ada di bawah, dan aturan bahwa tab aktif hanya untuk bagian utama aplikasi —
+gambar menandai tab aktif tetapi tidak mengatakan di mana tab boleh dipakai.
 
-Also moved here to keep the picture legible (the slide's own quote):
-> Header height is typically 56pt plus the status area; tab implementation with Expo Router is built in Chapter 7.
+Juga dipindah ke sini supaya gambar tetap terbaca (kutipan slide ini):
+> Tinggi header biasanya 56pt ditambah area status; penerapan tab dengan Expo Router dibangun di Bab 7.
 
-It states a design constant and a pointer to Chapter 7 — neither is something the picture
-shows, and neither has to be read off the projector while the anatomy is being discussed.
+Kalimat itu menyebut satu konstanta desain dan satu penunjuk ke Bab 7 — keduanya tidak
+ditunjukkan gambar, dan keduanya tidak perlu dibaca dari proyektor saat anatominya sedang
+dibahas.
 
-Stress why the header exists, not what it looks like: the header is the "name plate" the
-user meets on every screen change, so its height, spacing, and style must be consistent.
+Tekankan alasan header ada, bukan bentuknya: header adalah "papan nama" yang dijumpai
+pengguna setiap kali berpindah layar, jadi tinggi, jarak, dan gayanya harus konsisten.
 
-Warn that bottom navigation is only for main sections; detail pages and forms are not
-tabs. This concept is implemented in Chapter 7 with Expo Router.
+Peringatkan bahwa navigasi bawah hanya untuk bagian utama; halaman detail dan formulir
+bukan tab, dan tab yang terlalu banyak membuat labelnya sempit. Konsep ini diterapkan di
+Bab 7 dengan Expo Router.
 
-Guiding question: "If your app has seven main sections, what do you do?" (Reduce them to
-3–5; too many tabs become too narrow.)
+Pertanyaan penuntun: "Kalau aplikasimu punya tujuh bagian utama, apa yang kamu lakukan?"
+(Kurangi jadi 3–5; tab yang terlalu banyak jadi terlalu sempit.)
 -->
 
 ---
 
-## Typography Scale
+<!-- _class: compact -->
 
-| Level | Size | Weight | Usage |
+## Skala Tipografi: Enam Tingkat untuk Berhenti Menebak
+
+| Tingkat | Ukuran | Ketebalan | Pemakaian |
 |---|---|---|---|
-| caption | 12 | 400/500 | small captions, badges |
-| small body | 14 | 400 | secondary text, detail values |
-| body | 16 | 400 | main text, card content |
-| subheading | 18–20 | 600/700 | section titles, name on detail |
-| screen title | 20–28 | 700 | screen header title |
-| display | 32+ | 700 | large numbers, opening pages |
+| caption | 12 | 400/500 | keterangan kecil, lencana |
+| small body | 14 | 400 | teks sekunder, nilai detail |
+| body | 16 | 400 | teks utama, isi kartu |
+| subheading | 18–20 | 600/700 | judul bagian, nama di detail |
+| screen title | 20–28 | 700 | judul header layar |
+| display | 32+ | 700 | angka besar, halaman pembuka |
 
-- Capitalization is a conscious decision: sentence case for screen titles, set via `textTransform`
-
-> Emphasizing text is enough with weight (400 → 600 → 700); large and bold at once overdoes the hierarchy.
+- Kapitalisasi keputusan sadar: judul layar cukup kapital di awal kalimat, diatur lewat `textTransform`
 
 <!--
-Stress that this scale is what stops the habit of "font size by taste on every screen"
-and becomes the cheapest tool for visual hierarchy.
+Tekankan bahwa skala inilah yang menghentikan kebiasaan "ukuran huruf menurut selera di tiap
+layar", dan sekaligus menjadi alat hierarki visual yang paling murah.
 
-The main misconception: enlarging and bolding at the same time. Pick one.
+Ucapkan aturan tebalnya dengan suara keras: menonjolkan teks cukup dengan ketebalan
+(400 → 600 → 700); besar dan tebal sekaligus membuat hierarki berlebihan.
 
-Platform note: the default font differs on Android (Roboto) and iOS (San Francisco), and
-custom fonts are loaded through the expo-font library, which is outside this book's
-scope; line spacing (lineHeight) is kept around 1.3–1.5 times the font size.
-⚠ version-sensitive: check the latest official documentation (reactnative.dev) for
-per-platform weight support.
+Salah paham utamanya: memperbesar dan menebalkan sekaligus. Pilih salah satu.
+
+Catatan platform: font bawaan berbeda di Android (Roboto) dan iOS (San Francisco), dan font
+kustom dimuat lewat library expo-font yang di luar cakupan buku ini; jarak antar baris
+(lineHeight) dijaga sekitar 1,3–1,5 kali ukuran huruf.
+⚠ sensitif versi: periksa dokumentasi resmi terbaru (reactnative.dev) untuk dukungan
+ketebalan per platform.
 -->
 
 ---
 
-## Color: Layered Palette and Contrast
+<!-- _class: compact -->
 
-| Role | Color | Usage |
+## Warna Mempercepat, Teks yang Menjelaskan
+
+| Peran | Warna | Pemakaian |
 |---|---|---|
-| Primary | Blue `#2563EB` | primary buttons, avatars, main actions |
-| Text neutral | `#1F2937`, `#6B7280`, `#9CA3AF` | primary, secondary, faint text |
-| Background neutral | `#FFFFFF`, `#F9FAFB`, `#E5E7EB` | cards, screen background, dividers |
-| Success | Green `#15803D` | GPA ≥ 3.5 and active status |
-| Warning | Orange `#C2410C` | borderline values and warnings |
-| Danger | Red `#B91C1C`/`#DC2626` | low GPA and the Delete button |
+| Primary | Biru `#2563EB` | tombol primary, avatar, aksi utama |
+| Netral teks | `#1F2937`, `#6B7280`, `#9CA3AF` | teks utama, sekunder, samar |
+| Netral latar | `#FFFFFF`, `#F9FAFB`, `#E5E7EB` | kartu, latar layar, garis pemisah |
+| Sukses | Hijau `#15803D` | IPK ≥ 3,5 dan status aktif |
+| Peringatan | Oranye `#C2410C` | nilai batas dan peringatan |
+| Bahaya | Merah `#B91C1C`/`#DC2626` | IPK rendah dan tombol Hapus |
 
-- WCAG 2.1 level AA contrast: at least 4.5:1 for normal text and 3:1 for large text
-- Never rely on color as the only carrier of meaning — include text
+- Kontras WCAG 2.1 level AA: minimal 4,5:1 untuk teks normal, 3:1 untuk teks besar
+- Jangan memakai warna sebagai satu-satunya pembawa makna — sertakan teks
 
 <!--
-Stress the golden rule: color speeds up scanning, while text carries the meaning. Users
-with color blindness do not read "red versus green" as a message.
+Tekankan aturan emasnya: warna mempercepat pemindaian, sedangkan teks yang membawa makna.
+Pengguna dengan buta warna tidak membaca "merah versus hijau" sebagai pesan.
 
-Mention that the pairs in the table were chosen to pass the contrast threshold: for
-example, white on the primary blue sits at about 5:1, enough for normal text.
+Sebutkan bahwa pasangan di tabel dipilih agar lolos ambang kontras: misalnya putih di atas
+biru primary berada sekitar 5:1, cukup untuk teks normal.
 
-Guiding question: "How should a low GPA be marked so everyone can still read it?" (Red
-as a quick marker, plus the GPA number as text.)
+Pertanyaan penuntun: "Bagaimana IPK rendah ditandai supaya semua orang tetap bisa
+membacanya?" (Merah sebagai penanda cepat, ditambah angka IPK sebagai teks.)
+-->
+
+---
+
+<!-- _class: compact -->
+
+## Studi Kasus: Permintaan yang Sebenarnya Soal Antarmuka
+
+Data mahasiswa tersebar di beberapa spreadsheet; staf membuka tiga file untuk satu pertanyaan.
+
+| Kebutuhan pengguna | Dijawab di |
+|---|---|
+| Staf baru cukup dilatih sehari | Konsistensi dan hierarki visual (6.1) |
+| Dipindai cepat di loket yang sibuk | Skala tipografi dan warna semantik (6.4) |
+| Dipakai sambil berdiri | Aksi di bawah, ramah ibu jari (6.1, 6.3) |
+| "Hapus jangan dekat Simpan" | Danger dan primary, jarak aksi (6.2) |
+| Alur diperbaiki sebelum biaya naik | *Wireframe* sebagai negosiasi (6.7) |
+
+<!--
+Pesan utamanya: permintaan manajer itu permintaan antarmuka, bukan permintaan basis data.
+Datanya sudah ada; yang belum dirancang adalah cara menyajikannya.
+
+Tunjukkan bahwa satu permintaan sehari-hari seperti "staf baru bisa memakainya setelah
+sehari" langsung berubah menjadi kriteria konsistensi dan hierarki.
+
+Kaitkan dengan karier: mengubah keluhan pengguna menjadi keputusan desain adalah nilai jual
+seorang analis sistem di proyek sistem informasi.
+
+Sebutkan bahwa baris terakhir tabel baru dijawab di Bagian 2, karena *wireframe*-nya
+dirancang di subbab 6.7.
 -->
 
 ---
@@ -525,53 +565,56 @@ as a quick marker, plus the GPA number as text.)
 <!-- _class: lead -->
 <!-- _paginate: skip -->
 
-# Part 2 — Responsive, Accessibility & Application
+# Bagian 2 — Responsif, Aksesibilitas & Aplikasi
 
-Section 6.5 responsiveness · 6.6 accessibility · 6.7 case study and practicum
+subbab 6.5 responsivitas · 6.6 aksesibilitas · 6.7 studi kasus dan praktikum
 
 <!--
-This part shows up most often in the practicum assessment because it produces a real
-artefact: the static Student List and Detail screens.
+Bagian ini paling sering muncul di penilaian praktikum karena menghasilkan artefak nyata:
+layar Daftar dan Detail Mahasiswa yang statis tetapi berjalan.
 
-Mention that responsiveness and accessibility are not optional extras; both feed the
-UI/UX aspect of the practicum rubric (Appendix A).
+Sebutkan bahwa responsivitas dan aksesibilitas bukan tambahan opsional; keduanya menyumbang
+aspek UI/UX di rubrik praktikum (Lampiran A).
+
+Ingatkan juga bahwa baris terakhir studi kasus tadi — *wireframe* sebagai alat negosiasi —
+dijawab di bagian ini.
 -->
 
 ---
 
-## Responsive Design: Five Tools
+## Satu Aplikasi, Ribuan Perangkat: Lima Alat Responsif
 
 ![w:1120](assets/diagrams/bab-06-membangun-user-interface-mobile-15.svg)
 
-One app runs on thousands of devices; a fixed-width assumption will look broken on some of them.
+Aplikasi berjalan di ribuan perangkat; asumsi lebar tetap akan terlihat rusak di sebagian perangkat.
 
-- **Flexbox** — the foundation of proportioning, already mastered in Chapter 5
-- Percentage widths and `flex` to divide space relatively
-- `useWindowDimensions` — the current screen width and height, updating on rotation
+- **Flexbox** — dasar pembagian proporsi, sudah dikuasai di Bab 5
+- Lebar persentase dan `flex` untuk membagi ruang secara relatif
+- `useWindowDimensions` — lebar dan tinggi layar saat ini, ikut berubah saat diputar
 
 <!--
-Trimmed to the picture (the diagram says this):
-- `flexWrap` so elements move to a new row when the screen is narrow
-- `maxWidth` so elements do not stretch uncontrollably on large screens
+Dipotong ke gambar (diagram yang mengatakan ini):
+- `flexWrap` agar elemen pindah ke baris baru saat layar sempit
+- `maxWidth` agar elemen tidak meregang tak terkendali di layar besar
 
-Those two are the ends of the picture: the NARROW panel answers with `flexWrap`, the LARGE
-panel with `maxWidth`. Three tools stay on the slide because the picture does not place them
-— Flexbox as the foundation, percentage widths and `flex` as the division of space, and
-`useWindowDimensions` as the measurement that tells the layout which size it is in.
+Keduanya ujung gambar: panel SEMPIT menjawab dengan `flexWrap`, panel LEBAR dengan `maxWidth`.
+Tiga alat tinggal di slide karena gambar tidak menempatkannya — Flexbox sebagai fondasi,
+lebar persentase dan `flex` sebagai pembagi ruang, dan `useWindowDimensions` sebagai
+pengukur yang memberi tahu layout sedang berada di ukuran mana.
 
-State the trade-off honestly: responsive code is more complicated and harder to test,
-but its cost is far smaller than an app that falls apart on the lecturer's tablet.
+Sebutkan trade-off-nya dengan jujur: kode responsif lebih rumit dan lebih sulit diuji, tetapi
+harganya jauh lebih murah daripada aplikasi yang berantakan di tablet dosen.
 
-Guiding question: "Which tool makes a screen change when the phone is rotated?"
-(`useWindowDimensions` — this hook subscribes to screen size changes.)
+Pertanyaan penuntun: "Alat mana yang membuat layar berubah saat HP diputar?"
+(`useWindowDimensions` — hook ini berlangganan perubahan ukuran layar.)
 
-Remind them to test at several sizes: the Android emulator simulates many devices, and
-Expo Go lets you try a real phone (Chapter 2).
+Ingatkan untuk menguji di beberapa ukuran: emulator Android bisa meniru banyak perangkat, dan
+Expo Go memungkinkan mencoba HP sungguhan (Bab 2).
 -->
 
 ---
 
-## Adaptive List: One or Two Columns
+## Daftar Adaptif: Satu Kolom atau Dua?
 
 `File: screens/DaftarMahasiswa.js`
 
@@ -589,143 +632,119 @@ const jumlahKolom = width >= 700 ? 2 : 1;
 />
 ```
 
-> The 700 threshold is a design decision that must be tested on real devices, not an absolute number.
+> Ambang 700 adalah keputusan desain yang harus diuji di perangkat nyata, bukan angka mutlak.
 
 <!--
-Stress the relationship between the last two lines of code: the hook supplies the screen
-width, then `numColumns` uses that value to decide the number of columns.
+Tekankan hubungan dua baris terakhir kode: hook menyediakan lebar layar, lalu `numColumns`
+memakai nilai itu untuk menentukan jumlah kolom.
 
-Mention the advanced pattern: master–detail (list on the left, detail on the right) is
-common on tablets; on phones the two panels become two separate screens, exactly like the
-List and Detail screens we are building.
+Sebutkan pola lanjutannya: master–detail (daftar di kiri, detail di kanan) lazim di tablet;
+di HP kedua panel itu menjadi dua layar terpisah, persis seperti layar Daftar dan Detail
+yang sedang kita bangun.
 
-Guiding question: "What happens if `useWindowDimensions` is called outside a component?"
-(Hooks are only valid inside function components.)
+Pertanyaan penuntun: "Apa yang terjadi kalau `useWindowDimensions` dipanggil di luar
+component?" (Hook hanya sah di dalam function component.)
 -->
 
 ---
 
-## Accessibility: Four Basic Practices
+## Aksesibilitas Dibangun Sejak Awal, Bukan Ditambal
 
 ![w:1120](assets/diagrams/bab-06-membangun-user-interface-mobile-16.svg)
 
-- `accessibilityRole` — the element's role for screen readers: `button`, `header`, `image`
-- `accessibilityLabel` — descriptive alternative text, not "Tap here"
-- `accessibilityState` — element state, for example `{ disabled: true }`
+- `accessibilityRole` — peran untuk pembaca layar: `button`, `header`, `image`
+- `accessibilityLabel` — teks alternatif yang menjelaskan, bukan "Ketuk di sini"
+- `accessibilityState` — status elemen, misalnya `{ disabled: true }`
 
 <!--
-Trimmed to the picture (the diagram says this):
-- Minimum touch target 44×44 points (Apple) or 48×48 dp (Material Design)
-- If the icon is small, do not shrink the touch area — extend it with `hitSlop`
+Dipotong ke gambar (diagram yang mengatakan ini):
+- Target sentuh minimal 44×44 point (Apple) atau 48×48 dp (Material Design)
+- Kalau ikonnya kecil, jangan kecilkan area sentuhnya — luaskan dengan `hitSlop`
 
-Also moved here because the slide has no room for it above the footer (the slide's own quote):
-> Ethics, law (public services must accommodate people with disabilities), and market — three reasons accessibility is mandatory for IS students.
+Juga dipindah ke sini karena slide tidak punya ruang di atas footer (kutipan slide ini):
+> Etika, hukum (layanan publik wajib mengakomodasi penyandang disabilitas), dan pasar — tiga alasan aksesibilitas wajib bagi mahasiswa sistem informasi.
 
-Both of the trimmed bullets are the right panel of the picture: the area a finger needs, as
-opposed to the three things a screen reader needs. The three prop bullets stay on the slide because the picture
-names each prop but leaves its values to the prose — `button`, "Tap here", and
-`{ disabled: true }` are what the student types.
+Dua butir yang dipotong adalah panel kanan gambar: luas area yang dibutuhkan jari, sebagai
+lawan dari tiga hal yang dibutuhkan pembaca layar. Tiga butir prop tinggal di slide karena
+gambar hanya menyebut nama prop-nya dan menyerahkan nilainya kepada prosa — `button`,
+"Ketuk di sini", dan `{ disabled: true }` adalah yang diketik mahasiswa.
 
-Stress that accessibility is built in from the start, not patched on at the end; adding
-it afterwards usually forces a layout redesign.
+Tekankan bahwa aksesibilitas dipasang sejak awal, bukan ditambal di akhir; menambahkannya
+belakangan biasanya memaksa layout dirancang ulang.
 
-Guiding question: "Why is the label 'Tap here' bad for screen reader users?" (Because it
-does not explain what will happen.) Mention VoiceOver on iOS and TalkBack on Android.
+Pertanyaan penuntun: "Kenapa label 'Ketuk di sini' buruk bagi pengguna pembaca layar?"
+(Karena tidak menjelaskan apa yang akan terjadi.) Sebutkan VoiceOver di iOS dan TalkBack di
+Android.
 
-The common misconception: assuming a small icon automatically means a small touch target.
-That is exactly what `hitSlop` is for.
+Salah paham yang umum: menganggap ikon kecil otomatis berarti area sentuh kecil. Justru itu
+fungsi `hitSlop`.
 -->
 
 ---
 
 <!-- _class: center -->
 
-## What Happens If…?
+## Apa yang Terjadi Jika…?
 
-A screen shows a **Delete History** button in primary (blue) next to a **Save** button, both 36×36.
+Satu layar menampilkan tombol **Hapus Riwayat** berwarna primary (biru) di samping tombol **Simpan**, keduanya berukuran 36×36.
 
-- Which principles and standards does this screen violate?
-- What fixes do you propose, and what is the reason for each?
+- Prinsip dan standar mana yang dilanggar layar ini?
+- Perbaikan apa yang kamu usulkan, dan apa alasan tiap perbaikan?
 
 <!--
-Give 2 minutes to think alone, then discuss. Do not leak the answer on this slide: it is
-on the next slide, and the PDF export shows both.
+Beri dua menit untuk berpikir sendiri, lalu diskusikan. Jangan bocorkan jawabannya di slide
+ini: jawabannya ada di slide berikutnya, dan ekspor PDF menampilkan keduanya.
 
-This exercise is equivalent to the Analysis Question in the chapter's Exercises section;
-use it as a warm-up before students work on it in writing.
+Latihan ini setara dengan soal analisis di bagian Latihan bab ini; pakai sebagai pemanasan
+sebelum mahasiswa mengerjakannya secara tertulis.
 
-If the class is quiet, point them to the "one primary per screen" rule in 6.2.
+Kalau kelas diam, arahkan ke aturan "satu primary per layar" di subbab 6.2.
 -->
 
 ---
 
 <!-- _class: center -->
 
-## Answer: Violation Analysis
+## Jawabannya: Empat Aturan Dilanggar Sekaligus
 
-- Action hierarchy: one primary per screen — here two actions stand out equally
-- Semantic color: a destructive action should be `danger` (red), not primary (blue)
-- The 36×36 touch target is below the 44×44-point minimum
-- Fix: Save stays primary, Delete becomes danger, the sizes are increased
+- Hierarki aksi: satu primary per layar — di sini dua aksi sama-sama menonjol
+- Warna semantik: aksi merusak seharusnya `danger` (merah), bukan primary (biru)
+- Target sentuh 36×36 berada di bawah minimum 44×44 point
+- Perbaikan: Simpan tetap primary, Hapus jadi danger, ukurannya dinaikkan
 
 <!--
-This answer is assembled from the chapter's own rules (6.2 for variants and action
-hierarchy, 6.6 for touch targets), not quoted directly from the chapter narrative.
+Jawaban ini disusun dari aturan bab ini sendiri (6.2 untuk varian dan hierarki aksi, 6.6
+untuk target sentuh), bukan dikutip langsung dari narasi bab.
 
-Stress the psychological consequence: when two buttons stand out equally, users hesitate
-and may press the destructive action by mistake.
+Tekankan akibat psikologisnya: saat dua tombol sama-sama menonjol, pengguna ragu dan bisa
+salah menekan aksi yang merusak.
 
-Follow-up question: "Is enlarging them enough?" (No — semantic color and action
-hierarchy must be fixed as well.)
+Pertanyaan lanjutan: "Cukup dengan memperbesar ukurannya?" (Tidak — warna semantik dan
+hierarki aksi juga harus diperbaiki.)
 -->
 
 ---
 
-## Case Study: A Request for an Interface
-
-Student data is scattered across several unsynced spreadsheets; staff open three files to answer one question.
-
-| User need | Where it appears in the material |
-|---|---|
-| A new staff member can use it after one day of training | Consistency and visual hierarchy (6.1) |
-| The screen is scanned quickly in the middle of a busy counter | Typography scale and semantic color (6.4) |
-| Used while standing | Thumb-friendly: actions at the bottom (6.1, 6.3) |
-| "Don't put the delete button near the save button" | Danger vs primary and spacing between actions (6.2) |
-| The flow is corrected before construction costs rise | Wireframes as a negotiation tool (6.7) |
-
-<!--
-The main message: the manager's request is an interface request, not a database request.
-The data already exists; what has not been designed is how it is presented.
-
-Show that one everyday request such as "a new staff member can use it after one day"
-turns directly into the criteria of consistency and hierarchy.
-
-Tie it to careers: turning user complaints into design decisions is the selling point of
-a systems analyst on an IS project.
--->
-
----
-
-## The UI-First Approach
+## UI Dulu, Kode Kemudian
 
 ![w:1120](assets/diagrams/bab-06-membangun-user-interface-mobile-03.svg)
 
-> A static screen is not a half-finished product — it is a legitimate design artefact and a team communication tool.
+> Layar statis bukan produk setengah jadi — ia artefak desain yang sah dan alat komunikasi tim.
 
 <!--
-Explain the reason before the form: the interface is the part whose requirements are
-most often misunderstood, so stakeholders need to see a real screen first.
+Jelaskan alasannya sebelum bentuknya: antarmuka adalah bagian yang kebutuhannya paling sering
+salah dipahami, jadi pemangku kepentingan perlu melihat layar nyata lebih dulu.
 
-Stress that this order is deliberate: Chapter 7 adds navigation, Chapter 8 adds forms,
-Chapter 10 replaces static data with data from a server.
+Tegaskan bahwa urutan ini disengaja: Bab 7 menambahkan navigasi, Bab 8 menambahkan formulir,
+Bab 10 mengganti data statis dengan data dari server.
 
-Guiding question: "What is the benefit of showing a static screen to academic staff?"
-(They can correct the flow before construction costs rise.)
+Pertanyaan penuntun: "Apa manfaatnya menunjukkan layar statis ke staf akademik?" (Mereka bisa
+memperbaiki alurnya sebelum biaya pembangunan naik.)
 -->
 
 ---
 
-## Wireframe: Student List Screen
+## Layar Daftar: Satu Header, Lima Kartu Seragam
 
 ```plaintext
 ┌────────────────────────────────┐
@@ -744,25 +763,25 @@ Guiding question: "What is the benefit of showing a static screen to academic st
 └────────────────────────────────┘
 ```
 
-> Cards are chosen rather than table rows: each student carries three pieces of information with different weights.
+> Kartu dipilih, bukan baris tabel: tiga informasi dengan bobot berbeda.
 
 <!--
-Read the wireframe from top to bottom, as if walking the class through the screen.
+Bacakan *wireframe* dari atas ke bawah, seperti menuntun kelas menyusuri layar.
 
-Mention that the drawing shows only one card as a pattern example, while there are five
-in total (one drawn card plus four more) per the standard dataset.
+Sebutkan bahwa gambar hanya menggambarkan satu kartu sebagai contoh pola, sedangkan
+jumlahnya lima (satu kartu tergambar ditambah empat lagi) sesuai data baku.
 
-Stress two decisions that look trivial but are deliberate: the program badge uses a soft
-color per program and is always accompanied by text, and the GPA is given a semantic
-color because academic staff often look for "whose GPA is a problem".
+Tekankan dua keputusan yang terlihat sepele tetapi disengaja: lencana prodi memakai warna
+lembut per prodi dan selalu disertai teks, dan IPK diberi warna semantik karena staf
+akademik sering mencari "siapa yang IPK-nya bermasalah".
 
-Guiding question: "If this wireframe were shown to academic staff, which part would they
-most likely comment on?" (Usually the order of information inside the card.)
+Pertanyaan penuntun: "Kalau *wireframe* ini ditunjukkan ke staf akademik, bagian mana yang
+paling mungkin mereka komentari?" (Biasanya urutan informasi di dalam kartu.)
 -->
 
 ---
 
-## Wireframe: Student Detail Screen
+## Layar Detail: Identitas Dulu, Data, Baru Aksi
 
 ```plaintext
 ┌────────────────────────────────┐
@@ -781,247 +800,243 @@ most likely comment on?" (Usually the order of information inside the card.)
 └────────────────────────────────┘
 ```
 
-> Screen hierarchy: student identity most prominent, then the data, then the actions.
+> Hierarki layar: identitas mahasiswa paling menonjol, lalu data, lalu aksi.
 
 <!--
-Point out the label–value pair pattern: one pattern for six rows, rendered from the
-`BARIS_INFORMASI` array with `map` — consistency through data, not copy-paste. The
-wireframe deliberately draws only two rows as a pattern example; the six rows come from
-the array, not from the drawing.
+Tunjukkan pola pasangan label–nilai: satu pola untuk enam baris, dirender dari array
+`BARIS_INFORMASI` dengan `map` — konsistensi lewat data, bukan salin-tempel. *Wireframe*-nya
+sengaja hanya menggambar dua baris sebagai contoh pola; enam barisnya datang dari array,
+bukan dari gambar.
 
-Stress its accessibility decision: the avatar uses initials, not a photo — a valid choice
-for a static-data app as long as every element is labelled correctly.
+Tekankan keputusan aksesibilitasnya: avatar memakai inisial, bukan foto — pilihan yang sah
+untuk aplikasi data statis selama setiap elemen diberi label yang benar.
 
-Guiding question: "Why is Delete not placed directly beside Save?" (Both are opposing,
-risky actions prone to mis-taps.)
+Pertanyaan penuntun: "Kenapa Hapus tidak ditempatkan tepat di samping Simpan?" (Keduanya
+aksi berlawanan dan berisiko, rawan salah tekan.)
 -->
 
 ---
 
-## Design Decision Analysis
+<!-- _class: compact -->
 
-| Decision in the wireframe | Principle basis |
+## Setiap Keputusan Wireframe Punya Dasar Prinsip
+
+| Keputusan di wireframe | Dasar prinsip |
 |---|---|
-| Uniform cards, spacing in multiples of 8 | The 8pt system and scanning (6.1, 6.2) |
-| One primary per screen, Delete as danger | Action hierarchy and semantic color (6.2, 6.4) |
-| Program badge with color and text | Contrast and not relying on color (6.4, 6.6) |
-| GPA in a semantic color | Fast scanning of data (6.4) |
-| Back button and actions at the bottom | Thumb-friendly (6.1) |
-| Touch targets ≥ 44×44 and accessible labels | Accessibility (6.6) |
+| Kartu seragam, jarak kelipatan 8 | Sistem 8pt dan pemindaian (6.1, 6.2) |
+| Satu primary per layar, Hapus danger | Hierarki aksi dan warna semantik (6.2, 6.4) |
+| Lencana prodi berwarna dan berteks | Kontras, tidak bergantung warna (6.4, 6.6) |
+| IPK berwarna semantik | Pemindaian data yang cepat (6.4) |
+| Kembali dan aksi di bawah | Ramah ibu jari (6.1) |
+| Target sentuh ≥ 44×44, label jelas | Aksesibilitas (6.6) |
 
-> A wireframe is a visual contract before code: every decision can be traced back to its principle.
+> *Wireframe* adalah kontrak visual sebelum kode: setiap keputusan bisa dilacak ke prinsipnya.
 
 <!--
-How to teach it: cover the right column, ask the class to guess the principle behind each
-decision, then reveal it. This is the fastest way to test understanding of 6.1 before the
-practicum.
+Cara mengajarkannya: tutup kolom kanan, minta kelas menebak prinsip di balik tiap keputusan,
+lalu buka. Ini cara tercepat menguji pemahaman subbab 6.1 sebelum praktikum.
 
-Mention out loud one decision left out of the table for space: "A consistent header on
-both screens" — its principle basis is consistency (6.1), the same on the List and Detail
-wireframes.
+Sebutkan dengan suara keras satu keputusan yang tidak masuk tabel karena ruang: "header yang
+konsisten di kedua layar" — dasar prinsipnya konsistensi (6.1), sama di layar Daftar dan
+Detail.
 
-Guiding question: "If a decision cannot be traced back to any principle, what does that
-mean?" (It has not been designed yet, only assembled.)
+Pertanyaan penuntun: "Kalau satu keputusan tidak bisa dilacak ke prinsip mana pun, apa
+artinya?" (Artinya belum dirancang, baru disusun.)
 
-Remind them that this table can also be used as a checklist when students review their
-own practicum result.
+Ingatkan bahwa tabel ini juga bisa dipakai sebagai daftar periksa saat mahasiswa meninjau
+hasil praktikumnya sendiri.
 -->
 
 ---
 
-## Practicum: Structure and Work Steps
-
-| # | File | Content |
-|---|---|---|
-| 1 | `components/Tombol.js` | Four variants, pressed and disabled states |
-| 2 | `components/CardMahasiswa.js` | Name, program badge, NIM, cohort, GPA |
-| 3 | `screens/DaftarMahasiswa.js` | Header and `FlatList` in one or two columns |
-| 4 | `screens/DetailMahasiswa.js` | Profile, label–value pairs, Edit/Delete |
-| 5 | `App.js` | Five static records and the screen selector state |
-| 6 | `npx expo start` | Test scrolling, tapping cards, Back, rotating the device |
-
-> Install the safe area with `npx expo install react-native-safe-area-context`, then wrap the app with `SafeAreaProvider`.
-
-<!--
-Order the writing from the smallest component (Button, Card), then the screens, and
-finally App.js — this pattern prevents students from writing screens that depend on
-components that do not exist yet.
-
-Warn that the built-in `SafeAreaView` in React Native has been marked deprecated in
-recent versions, which is why this book uses the react-native-safe-area-context package.
-⚠ version-sensitive: check the latest official documentation (docs.expo.dev) before
-relying on this behavior.
-
-The complete code for all five files is available in the kode/bab-06-membangun-user-interface-mobile/ folder for
-comparison after students try writing it themselves.
--->
-
----
-
-## Data Flow: Data Down, Events Up
+## Data Turun lewat Props, Event Naik lewat Fungsi
 
 ![w:1120](assets/diagrams/bab-06-membangun-user-interface-mobile-04.svg)
 
-> Components never import data themselves — that is what makes them reusable and easy to test (Chapter 14).
+> Component tidak pernah mengimpor datanya sendiri — itulah yang membuatnya bisa dipakai ulang dan mudah diuji (Bab 14).
 
 <!--
-Walk through one complete trip: state in App.js changes after a card is tapped, React
-re-renders, and the Detail screen appears — all without any navigation.
+Telusuri satu perjalanan penuh: state di `App.js` berubah setelah kartu diketuk, React
+me-render ulang, dan layar Detail muncul — semuanya tanpa navigasi.
 
-Stress the architectural consequence: because data only flows through props, the Detail
-screen can later receive data from a server (Chapter 10) without changing its appearance.
+Tekankan akibat arsitekturnya: karena data hanya mengalir lewat props, layar Detail nanti bisa
+menerima data dari server (Bab 10) tanpa mengubah tampilannya.
 
-Guiding question: "If `onTekan` is not passed along at one of the intermediaries, what is
-the symptom?" (The card does not respond at all — the props chain is broken.)
+Pertanyaan penuntun: "Apa yang terjadi kalau `onTekan` tidak diteruskan di salah satu
+perantara?" (Kartunya sama sekali tidak merespons — rantai props-nya putus.)
 -->
 
 ---
 
-## Expected Result
+<!-- _class: compact -->
 
-| What you observe | Criteria |
-|---|---|
-| List header | Title, subtitle, and an "Add" button on the right |
-| Five cards | Budi 3.45 · Siti 3.82 · Agus 3.20 · Dewi 3.61 · Rizky 2.95 |
-| Tapping a card | Detail screen: avatar "BS", six label–value rows, Edit and Delete |
-| Pressing a button | Dims (opacity 0.75) for as long as it is pressed |
-| Width ≥ 700 and safe area | The list becomes two columns; content does not hit the status area |
-| Screen reader on | The card reads "Open detail [name], NIM [nim], button" |
+## Praktikum: Yang Dibangun Pertemuan Ini
+
+Aplikasi Manajemen Data Mahasiswa tahap pertama: dua layar statis.
+
+| # | File | Isi |
+|---|---|---|
+| 1 | `components/Tombol.js` | Empat varian, status ditekan dan nonaktif |
+| 2 | `components/CardMahasiswa.js` | Nama, lencana prodi, NIM, angkatan, IPK |
+| 3 | `screens/DaftarMahasiswa.js` | Header dan `FlatList` satu atau dua kolom |
+| 4 | `screens/DetailMahasiswa.js` | Profil, pasangan label–nilai, Edit/Hapus |
+| 5 | `App.js` | Lima data statis dan state pemilih layar |
+| 6 | `npx expo start` | Uji gulir, ketuk kartu, Kembali, putar perangkat |
+
+> Butuh `SafeAreaProvider` dari paket `react-native-safe-area-context`.
 
 <!--
-This slide is the practicum checklist: ask students to match what they see on their device
-against every row before submitting their report.
+Urutkan penulisannya dari component terkecil (Tombol, Card), lalu layar, terakhir `App.js` —
+pola ini mencegah mahasiswa menulis layar yang bergantung pada component yang belum ada.
 
-The GPA color is a quick way to assess: green for GPA ≥ 3.5; gray for 3.0–3.49; red for
-below 3.0.
+Peringatkan bahwa `SafeAreaView` bawaan React Native sudah ditandai usang di versi terbaru,
+karena itu buku ini memakai paket react-native-safe-area-context. Perintah pemasangannya:
+`npx expo install react-native-safe-area-context`, lalu aplikasi dibungkus
+`SafeAreaProvider`.
+⚠ sensitif versi: periksa dokumentasi resmi terbaru (docs.expo.dev) sebelum bergantung pada
+perilaku ini.
 
-Warn that screen readers are rarely tried by students even though they are easy to test:
-turn on TalkBack or VoiceOver, then move through the cards without looking at the screen.
+Kode lengkap kelima file ada di folder kode/bab-06-membangun-user-interface-mobile/ untuk
+dibandingkan setelah mahasiswa mencoba menulisnya sendiri.
+-->
+
+---
+
+<!-- _class: compact -->
+
+## Yang Harus Teramati
+
+| Yang kamu amati | Kriteria |
+|---|---|
+| Header daftar | Judul, subjudul, dan tombol "Tambah" di kanan |
+| Lima kartu | Budi 3.45 · Siti 3.82 · Agus 3.20 · Dewi 3.61 · Rizky 2.95 |
+| Ketuk satu kartu | Layar Detail: avatar "BS", enam baris label–nilai, Edit dan Hapus |
+| Tekan satu tombol | Meredup (opacity 0,75) selama ditekan |
+| Lebar ≥ 700 dan safe area | Daftar jadi dua kolom; isi tidak menabrak area status |
+| Pembaca layar aktif | Kartu terbaca "Buka detail [nama], NIM [nim], tombol" |
+
+<!--
+Slide ini adalah lembar centang praktikum: minta mahasiswa mencocokkan apa yang terlihat di
+perangkatnya dengan setiap baris sebelum mengumpulkan laporan.
+
+Warna IPK adalah cara cepat menilai: hijau untuk IPK ≥ 3,5; abu untuk 3,0–3,49; merah untuk
+di bawah 3,0.
+
+Peringatkan bahwa pembaca layar hampir tidak pernah dicoba mahasiswa padahal mudah diuji:
+nyalakan TalkBack atau VoiceOver, lalu susuri kartunya tanpa melihat layar.
 -->
 
 ---
 
 <!-- _class: center -->
 
-## Comprehension Check
+## Kuis Kilat
 
-- What is the principle that demands similar elements look and behave similarly?
-- What is the WCAG level AA contrast ratio for normal text?
-- What is the industry minimum touch target size?
-- What does `useWindowDimensions` do on the Student List screen?
+- Prinsip apa yang menuntut elemen serupa tampil dan berperilaku serupa?
+- Berapa rasio kontras WCAG level AA untuk teks normal?
+- Berapa ukuran target sentuh minimum menurut industri?
+- Apa yang dilakukan `useWindowDimensions` di layar Daftar Mahasiswa?
 
 <!--
-Four-minute oral quiz: show the questions, ask the class to answer, then move to the
-answer slide. Do not leak the answers on this slide.
+Kuis lisan empat menit: tampilkan pertanyaan, minta kelas menjawab, lalu lanjut ke slide kunci.
+Jangan bocorkan jawaban di slide ini.
 
-If answers vary on the third question, repeat the distinction between the two industry
-references: Apple uses 44×44 points and Material Design uses 48×48 dp.
+Kalau jawaban pertanyaan ketiga beragam, ulangi pembedaan dua rujukan industri: Apple memakai
+44×44 point dan Material Design memakai 48×48 dp.
 -->
 
 ---
 
 <!-- _class: center -->
 
-## Answers
+## Kunci Kuis Kilat
 
-- Consistency — similar elements look and behave similarly
-- 4.5:1 for normal text; 3:1 for large text or interface elements
-- 44×44 points (Apple); Material Design uses 48×48 dp
-- It returns the screen width/height and updates the view when the size changes
+- Konsistensi — elemen serupa tampil dan berperilaku serupa
+- 4,5:1 untuk teks normal; 3:1 untuk teks besar atau elemen antarmuka
+- 44×44 point (Apple); Material Design memakai 48×48 dp
+- Mengembalikan lebar dan tinggi layar, lalu memperbarui tampilan saat ukurannya berubah
 
 <!--
-Repeat the two distinctions most often confused: the contrast threshold of 4.5:1 for
-normal text differs from 3:1 for large text or interface elements, and the touch target
-has two industry references — Apple's 44×44 points and Material Design's 48×48 dp; both
-are minimums, not numbers you may go below.
+Ulangi dua pembedaan yang paling sering tertukar: ambang kontras 4,5:1 untuk teks normal
+berbeda dari 3:1 untuk teks besar atau elemen antarmuka, dan target sentuh punya dua rujukan
+industri — 44×44 point dari Apple dan 48×48 dp dari Material Design; keduanya minimum, bukan
+angka yang boleh diturunkan.
 
-If many students miss the first question, repeat the four principles of 6.1 before closing
-this part — those principles are used again in every following chapter.
+Kalau banyak yang salah di pertanyaan pertama, ulangi empat prinsip subbab 6.1 sebelum
+menutup bagian ini — prinsip itu dipakai lagi di setiap bab berikutnya.
 -->
 
 ---
 
-## Summary
+## Ringkasan
 
-1. Four principles: consistency, visual hierarchy, feedback, thumb-friendly (6.1)
-2. 8pt spacing, a typography scale, and a layered palette with contrast ≥ 4.5:1 (6.2, 6.4)
-3. Card, four-variant Button, appearance-only Form, and a consistent List (6.2)
-4. Header and bottom navigation: orientation, actions, and thumb reach (6.3)
-5. Responsive, accessible, and built UI-first with five static student records (6.5–6.7)
+1. Empat prinsip: konsistensi, hierarki visual, umpan balik, ramah ibu jari (6.1)
+2. Jarak 8pt, skala tipografi, dan palet berlapis dengan kontras ≥ 4,5:1 (6.2, 6.4)
+3. Card, Button empat varian, Form tampilan saja, dan List yang konsisten (6.2)
+4. Header dan navigasi bawah: orientasi, aksi, dan jangkauan ibu jari (6.3)
+5. Responsif, aksesibel, dan dibangun UI-first dengan lima data statis (6.5–6.7)
 
 <!--
-Do not read it out. Ask students to pick one number and explain it in their own words —
-this works better than repeating the reading.
+Jangan dibacakan. Minta mahasiswa memilih satu nomor dan menjelaskannya dengan kata-kata
+sendiri — ini bekerja lebih baik daripada mengulang bacaan.
 
-The main message: a design decision that cannot be traced back to any principle has not
-been designed yet, only assembled.
+Pesan utamanya: keputusan desain yang tidak bisa dilacak ke prinsip mana pun belum dirancang,
+baru disusun.
 
-Remind them that these five points are reused in Chapter 7 (navigation) and Chapter 8
-(forms), so they need not memorize them, only understand the reasoning.
+Ingatkan bahwa kelima butir ini dipakai lagi di Bab 7 (navigasi) dan Bab 8 (formulir), jadi
+tidak perlu dihafal, cukup dipahami alasannya.
 -->
 
 ---
 
-## Exercises, Challenges, and Reflection
+## Latihan Menguji Penalaran, Bukan Hafalan
 
-| Type | Task |
+| Jenis | Tugas |
 |---|---|
-| Practice | Add a green "Status: Active" row to the card, align the wireframe |
-| Challenge | Move the color and size constants into `tema/desain.js` without changing the render |
-| Challenge | Adaptive master–detail at width ≥ 900: list 40%, detail 60% |
+| Latihan | Tambahkan baris hijau "Status: Aktif" di kartu, selaraskan *wireframe*-nya |
+| Tantangan | Pindahkan konstanta warna dan ukuran ke `tema/desain.js` tanpa mengubah render |
+| Tantangan | *Master–detail* adaptif di lebar ≥ 900: daftar 40%, detail 60% |
 
-- When is a dense table (NIM–Name–GPA) more appropriate than cards?
-- What happens if two buttons on one screen are both primary?
-- Designing the wireframe first: wasting time or saving it?
+- Kapan tabel padat (NIM–Nama–IPK) lebih tepat daripada kartu?
+- Apa yang terjadi kalau dua tombol di satu layar sama-sama primary?
+- Merancang *wireframe* lebih dulu: membuang waktu atau menghemat?
 
 <!--
-The full comprehension and analysis questions are in the chapter's Exercises section; the
-three table rows here are only the examples quickest to do and discuss in class.
+Soal pemahaman dan analisis lengkapnya ada di bagian Latihan bab ini; tiga baris tabel di sini
+hanya contoh yang paling cepat dikerjakan dan didiskusikan di kelas.
 
-The centralized-token challenge trains safe refactoring: the render result must not change
-at all. The master–detail challenge bridges into Chapter 7.
+Tantangan memusatkan token melatih *refactoring* yang aman: hasil render tidak boleh berubah
+sama sekali. Tantangan *master–detail* menjadi jembatan ke Bab 7.
 
-Give 3 minutes in pairs for the last three questions, then collect 2–3 answers. Judge the
-quality of the reasoning, not the design choice.
+Beri tiga menit berpasangan untuk tiga pertanyaan terakhir, lalu tampung dua sampai tiga
+jawaban. Yang dinilai adalah mutu penalarannya, bukan pilihan desainnya.
 -->
 
 ---
 
-## References
+<!-- _class: compact -->
 
-| Source | Link |
+## Referensi
+
+| Sumber | Link |
 |---|---|
-| React Native documentation (2026) | reactnative.dev |
-| Expo documentation (2026) | docs.expo.dev |
-| React documentation (2026) | react.dev |
-| MDN Web Docs — JavaScript (2026) | developer.mozilla.org |
+| Dokumentasi React Native (2026) | reactnative.dev |
+| Dokumentasi Expo (2026) | docs.expo.dev |
+| Dokumentasi React (2026) | react.dev |
+| JavaScript, MDN Web Docs (2026) | developer.mozilla.org |
 | Krug, S. (2014). *Don't make me think, revisited* | New Riders |
-| Tidwell et al. (2021). *Designing interfaces* (3rd ed.) | O'Reilly Media |
+| Tidwell dkk. (2021). *Designing interfaces* (3rd ed.) | O'Reilly Media |
 
-<div class="grid2">
-<div>
+**Bacaan lanjutan:** Bab 7 — Navigasi Aplikasi
 
-**Further reading**
-
-- Chapter 7 — App Navigation with Expo Router
-
-</div>
-<div>
-
-**Technology versions in this book**
-
-- Expo SDK 57 · React Native 0.86 · React 19.2 · Node.js LTS ≥ 22
-
-</div>
-</div>
+**Versi teknologi:** Expo SDK 57 · React Native 0.86 · React 19.2 · Node.js ≥ 22
 
 <!--
-The complete references are in Appendix D; the glossary of terms in Appendix C helps with
-terms such as wireframe, Flexbox, and Pressable.
+Rujukan lengkap ada di Lampiran D; glosarium istilah di Lampiran C membantu untuk istilah
+seperti *wireframe*, Flexbox, dan Pressable.
 
-The two books in this table are the UI/UX principle sources used in this chapter; the
-official documentation remains the primary reference for API details and current version
-behavior.
+Dua buku di tabel ini adalah sumber prinsip UI/UX yang dipakai bab ini; dokumentasi resmi
+tetap menjadi rujukan utama untuk detail API dan perilaku versi terkini.
 -->
 
 ---
@@ -1029,17 +1044,20 @@ behavior.
 <!-- _class: lead -->
 <!-- _paginate: skip -->
 
-# Ready for Chapter 7
+# Siap ke Bab 7
 
-**Assignment:** complete Practicum 6 (static Student List and Detail screens) and Assignment 2 — campus app UI redesign.
+**Tugas:** selesaikan Praktikum 6 — layar Daftar dan Detail Mahasiswa yang statis — serta Tugas 2, perancangan ulang UI aplikasi kampus.
 
-Next in this session: multi-page navigation with Expo Router.
+Masih di pertemuan yang sama: navigasi multi-halaman dengan Expo Router.
 
 <!--
-Close with one sentence: "The interface we design today will be used as-is by navigation,
-forms, and server data in the chapters that follow."
+Tutup dengan satu kalimat: "Antarmuka yang kita rancang hari ini akan dipakai apa adanya oleh
+navigasi, formulir, dan data server di bab-bab sesudahnya."
 
-State the Assignment 2 deadline explicitly and its assessment aspects: the practicum
-rubric in Appendix A covers conceptual understanding 15%, implementation 25%, code
-quality 15%, UI/UX 15%, debugging 10%, and documentation 20%.
+Sebutkan tenggat Tugas 2 secara eksplisit dan aspek penilaiannya: rubrik praktikum di Lampiran
+A mencakup pemahaman konsep 15%, implementasi 25%, kualitas kode 15%, UI/UX 15%, debugging
+10%, dan dokumentasi 20%.
+
+Ingatkan bahwa layar statis ini disimpan; Bab 7 menambahkan navigasi, Bab 8 formulir, dan Bab
+10 data dari server, tanpa merombak tampilannya.
 -->

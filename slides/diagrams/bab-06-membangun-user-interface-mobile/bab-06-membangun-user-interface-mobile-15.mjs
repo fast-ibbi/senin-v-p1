@@ -17,7 +17,7 @@
 // so every label is verbatim.
 export default {
   id: '15',
-  slide: 'Responsive Design: Five Tools',
+  slide: 'Satu Aplikasi, Ribuan Perangkat: Lima Alat Responsif',
   pattern: 'beforeAfter',
   alt:
     'One layout at two screen sizes: on a narrow screen flexWrap moves elements to a new row; ' +

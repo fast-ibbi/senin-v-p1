@@ -13,7 +13,7 @@
 // ordering, not a new fact.
 export default {
   id: '09',
-  slide: 'Principle 3 — Feedback',
+  slide: 'Prinsip 3 — Setiap Sentuhan Butuh Jawaban',
   pattern: 'sequence',
   alt:
     'The feedback round trip: the user presses, the screen answers with a visual effect — ' +

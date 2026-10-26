@@ -12,7 +12,7 @@
 // Consistency" … "Principle 4 — Thumb-friendly").
 export default {
   id: '02',
-  slide: 'Four Principles Working Together',
+  slide: 'Empat Prinsip Ini Tidak Berdiri Sendiri',
   pattern: 'beforeAfter',
   alt:
     'Four principles paired with their technical form: consistency through design tokens, ' +

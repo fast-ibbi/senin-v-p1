@@ -15,7 +15,7 @@
 // the slide does not have.
 export default {
   id: '12',
-  slide: 'List: Item Consistency',
+  slide: 'Item Seragam Membuat Daftar Terasa Tenang',
   pattern: 'beforeAfter',
   alt:
     'Two list item patterns: the one-line pattern carries a title only; the two-line pattern ' +

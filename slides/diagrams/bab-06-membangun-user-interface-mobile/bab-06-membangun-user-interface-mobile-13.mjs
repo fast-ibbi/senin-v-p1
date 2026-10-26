@@ -28,7 +28,7 @@
 // and the tab bar's two facts are all still in the picture.
 export default {
   id: '13',
-  slide: 'Header and Bottom Navigation',
+  slide: 'Header Menjawab, Navigasi Bawah Menjangkau',
   pattern: 'tree',
   alt:
     'What belongs to what on one screen: the header holds the title and the two action slots — ' +

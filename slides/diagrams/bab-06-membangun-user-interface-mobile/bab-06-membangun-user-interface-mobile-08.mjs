@@ -15,7 +15,7 @@
 // relationship it cannot draw.
 export default {
   id: '08',
-  slide: 'Principle 2 — Visual Hierarchy',
+  slide: 'Prinsip 2 — Mata Memindai, Bukan Membaca',
   pattern: 'layers',
   alt:
     'Visual hierarchy read top to bottom: the title is the most prominent, the main ' +

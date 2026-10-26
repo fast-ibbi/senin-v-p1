@@ -12,7 +12,7 @@
 // verbs are the only authored words; the deck has no verb joining the steps.
 export default {
   id: '06',
-  slide: 'Why Does an App Feel Easy or Hard?',
+  slide: 'Kenapa Dua Aplikasi Mirip Terasa Jauh Berbeda?',
   pattern: 'flow',
   alt:
     'How principles arise: observing how people read and hold a phone yields principles ' +

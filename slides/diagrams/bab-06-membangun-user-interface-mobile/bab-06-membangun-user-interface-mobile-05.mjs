@@ -13,7 +13,7 @@
 // zone that is actually hardest to reach.
 export default {
   id: '05',
-  slide: 'Principle 4 — Thumb-friendly',
+  slide: 'Prinsip 4 — Jangkauan Ibu Jari Menentukan Posisi',
   pattern: 'layers',
   alt:
     'Three phone screen zones by thumb reach: the screen title at the top is hard to ' +

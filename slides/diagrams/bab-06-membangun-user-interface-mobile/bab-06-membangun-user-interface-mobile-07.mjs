@@ -13,7 +13,7 @@
 // Edge verbs are authored: the slide never prints "applied everywhere" or "lowers".
 export default {
   id: '07',
-  slide: 'Principle 1 — Consistency',
+  slide: 'Prinsip 1 — Elemen Serupa Tampil Serupa',
   pattern: 'flow',
   alt:
     'The chain behind consistency: design tokens in one place store colors and sizes, so ' +

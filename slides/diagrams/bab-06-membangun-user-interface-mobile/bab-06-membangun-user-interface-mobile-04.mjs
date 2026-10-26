@@ -8,7 +8,7 @@
 // `onTekan` in the picture, although both appear in the presenter notes.
 export default {
   id: '04',
-  slide: 'Data Flow: Data Down, Events Up',
+  slide: 'Data Turun lewat Props, Event Naik lewat Fungsi',
   pattern: 'sequence',
   alt:
     'The data round trip: App.js passes data down to Screen, Screen passes data down to ' +
