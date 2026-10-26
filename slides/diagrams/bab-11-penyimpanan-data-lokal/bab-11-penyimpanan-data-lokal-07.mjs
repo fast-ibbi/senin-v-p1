@@ -22,7 +22,7 @@
 // list").
 export default {
   id: '07',
-  slide: 'What AsyncStorage Is',
+  slide: 'AsyncStorage Bukan Database, Hanya Kunci dan Nilai',
   pattern: 'tree',
   alt:
     'AsyncStorage as a set of labelled drawers: the key preferensi:nama holds the saved name, ' +

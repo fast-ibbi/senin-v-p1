@@ -21,7 +21,7 @@
 // all four stay on the slide.
 export default {
   id: '06',
-  slide: 'Why State Alone Is Not Enough',
+  slide: 'State Hanya Bertahan Sampai Aplikasi Ditutup',
   pattern: 'beforeAfter',
   alt:
     'Two models side by side: React state lives in the device\'s memory (RAM) and vanishes ' +

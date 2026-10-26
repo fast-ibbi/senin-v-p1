@@ -28,7 +28,7 @@
 // label is the slide's own wording.
 export default {
   id: '13',
-  slide: 'Case Study: Still Working Without Signal',
+  slide: 'Studi Kasus: Tetap Bekerja Tanpa Sinyal',
   pattern: 'flow',
   alt:
     'The offline-first chain as a company story: sales staff work in areas whose network often ' +

@@ -27,7 +27,7 @@
 // wording.
 export default {
   id: '12',
-  slide: 'When Must Data Be Reloaded?',
+  slide: 'Kapan Data Harus Dimuat Ulang?',
   pattern: 'flow',
   alt:
     'The reload bug drawn as a chain: useEffect with empty dependencies runs only once at ' +

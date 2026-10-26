@@ -24,7 +24,7 @@
 // the build cannot find, and it is deliberate.
 export default {
   id: '09',
-  slide: 'Cache: A Copy So the App Stays Useful',
+  slide: 'Cache: Salinan agar Aplikasi Tetap Berguna',
   pattern: 'beforeAfter',
   alt:
     'The same screen with and without a cache: without one the app waits for a server ' +

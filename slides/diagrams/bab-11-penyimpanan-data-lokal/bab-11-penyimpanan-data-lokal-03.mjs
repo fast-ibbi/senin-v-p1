@@ -13,7 +13,7 @@
 // Neither panel is red: both storage choices are correct for their own data class.
 export default {
   id: '03',
-  slide: 'Secure Storage: Keychain and Android Keystore',
+  slide: 'Secure Storage: Kunci yang Menempel pada Perangkat',
   pattern: 'beforeAfter',
   alt:
     'Two destinations chosen by sensitivity: AsyncStorage holds preferences, cache and notes ' +

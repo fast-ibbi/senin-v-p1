@@ -22,7 +22,7 @@
 // Every other label is the slide's own wording.
 export default {
   id: '10',
-  slide: 'Do Not Store Tokens in AsyncStorage',
+  slide: 'Token Tidak Boleh Tinggal di AsyncStorage',
   pattern: 'flow',
   alt:
     'The risk chain for a token in AsyncStorage: the stored value is plain text and not ' +

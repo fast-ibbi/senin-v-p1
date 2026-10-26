@@ -26,7 +26,7 @@
 // is not valid JSON", "the user cannot get in" — is the slide's own wording.
 export default {
   id: '08',
-  slide: 'Reading Must Not Crash the App',
+  slide: 'Data Rusak Tidak Boleh Membuat Aplikasi Crash',
   pattern: 'flow',
   alt:
     'The failure chain this slide warns about: JSON.parse reads the stored text, throws a ' +

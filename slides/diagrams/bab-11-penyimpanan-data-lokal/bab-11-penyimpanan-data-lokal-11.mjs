@@ -27,7 +27,7 @@
 // canvas's padding and no font size was touched.
 export default {
   id: '11',
-  slide: 'Notes App: What Will Be Built',
+  slide: 'Praktikum: Yang Dibangun Pertemuan Ini',
   pattern: 'tree',
   alt:
     'The note entity drawn as containment: one note holds exactly four fields, id, judul, isi ' +

@@ -20,7 +20,7 @@
 // arm as the continuation of the success arm, which is false.
 export default {
   id: '02',
-  slide: 'Cache Workflow When the Network Fails',
+  slide: 'Alur Cache Saat Jaringan Gagal',
   pattern: 'beforeAfter',
   alt:
     'Two arms of the cache workflow: on success the app saves a copy of the data and shows ' +

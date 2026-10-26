@@ -2,10 +2,10 @@
 marp: true
 theme: academic
 paginate: true
-title: "Chapter 11 — Local Data Storage"
-description: "Mobile Programming lecture, meeting 12: the need for local storage, AsyncStorage, JSON serialization, simple caching, token storage, and the Notes App project."
-author: "Course Instructor — Information Systems / Informatics Engineering Study Program"
-footer: "Mobile Programming · Chapter 11 — Local Data Storage"
+title: "Bab 11 — Penyimpanan Data Lokal"
+description: "Kuliah Pemrograman Mobile, pertemuan 12: kebutuhan penyimpanan lokal, AsyncStorage, serialisasi JSON, caching sederhana, penyimpanan token, dan proyek Aplikasi Catatan."
+author: "Dosen Mata Kuliah — Program Studi Sistem Informasi / Teknik Informatika"
+footer: "Pemrograman Mobile · Bab 11 — Penyimpanan Data Lokal"
 size: 16:9
 ---
 
@@ -13,37 +13,37 @@ size: 16:9
 <!-- _paginate: skip -->
 <!-- _footer: "" -->
 
-# Chapter 11 — Local Data Storage
+# Bab 11 — Penyimpanan Data Lokal
 
-AsyncStorage, JSON, and a persistent notes app · Meeting 12 · Sub-CPMK 6.1
+AsyncStorage, JSON, dan catatan yang bertahan · Pertemuan 12 · Sub-CPMK 6.1
 
 <!--
-Opening hook: "Chapter 10 made our app able to call a server; today we make that app stop
-losing data the moment it is closed."
+Buka dengan satu kalimat: "Bab 10 membuat aplikasi kita bisa memanggil server; hari ini kita
+membuat aplikasi itu berhenti kehilangan data begitu ditutup."
 
-Mention the RPS context: meeting 12 covers Chapter 11 (Sub-CPMK 6.1). This material is
-reused in Chapter 12 (stored student profile) and Chapter 13 (token in secure storage).
+Sebut konteks RPS: pertemuan 12 membahas Bab 11 (Sub-CPMK 6.1). Materi ini dipakai lagi di
+Bab 12 (profil mahasiswa yang tersimpan) dan Bab 13 (token di secure storage).
 -->
 
 ---
 
-## Learning Objectives
+## Tujuan Pembelajaran
 
-| # | After this meeting students are able to |
-|---|---|
-| 1 | Explain the need for local storage compared with state in memory |
-| 2 | Identify the characteristics of AsyncStorage |
-| 3 | Implement saving, reading, and deleting data with JSON |
-| 4 | Analyze the caching pattern: snapshot, timestamp, and TTL |
-| 5 | Evaluate the risk of storing tokens in AsyncStorage |
-| 6 | Design a persistent notes app |
+Setelah bab ini, kamu bisa:
+
+- Menjelaskan kebutuhan penyimpanan lokal dibandingkan state di memori
+- Mengidentifikasi karakteristik AsyncStorage
+- Menerapkan penyimpanan, pembacaan, dan penghapusan data dengan JSON
+- Menganalisis pola cache: snapshot, timestamp, dan TTL
+- Mengevaluasi risiko menyimpan token di AsyncStorage
+- Merancang aplikasi catatan yang datanya tetap ada setelah ditutup
 
 <!--
-Read out only the verbs. Items 3–6 are assessed through the Chapter 11 Practicum (rubric in
-Appendix A); items 1–2 through this chapter's comprehension questions — see the RPS row.
+Bacakan hanya kata kerjanya. Butir 3–6 dinilai lewat Praktikum 11 (rubrik di Lampiran A);
+butir 1–2 lewat soal pemahaman bab ini — lihat baris RPS.
 
-Stress item 6: the notes app is not a typing exercise but proof that data survives after
-the app is closed — and that is what students must report.
+Tegaskan butir 6: aplikasi catatan bukan latihan mengetik, melainkan bukti bahwa data
+bertahan setelah aplikasi ditutup — dan itulah yang harus dilaporkan mahasiswa.
 -->
 
 ---
@@ -51,144 +51,148 @@ the app is closed — and that is what students must report.
 <!-- _class: lead -->
 <!-- _paginate: skip -->
 
-# Part 1 — Requirements & AsyncStorage
+# Bagian 1 — Kebutuhan & AsyncStorage
 
-Section 11.1 Requirements · 11.2 Saving, Reading, Deleting
+subbab 11.1 Kebutuhan · 11.2 Menyimpan, Membaca, Menghapus
 
 <!--
-This part is the most conceptual. If meeting time runs short, compress the discussion of
-the storage options (SQLite and expo-file-system), but do not skip Section 11.2, because
-the whole practicum of this chapter stands on it.
+Bagian ini paling konseptual. Kalau waktu pertemuan menipis, pembahasan pilihan penyimpanan
+(SQLite dan expo-file-system) boleh dipadatkan, tetapi subbab 11.2 tidak boleh dilewati
+karena seluruh praktikum bab ini berdiri di atasnya.
 -->
 
 ---
 
-## Why State Alone Is Not Enough
+## State Hanya Bertahan Sampai Aplikasi Ditutup
 
 ![w:1120](assets/diagrams/bab-11-penyimpanan-data-lokal-06.svg)
 
-React state lives in the device's memory (RAM), and memory is **volatile**: once the app is closed or its process is killed by the system, every value vanishes without a trace.
+State React hidup di memori perangkat (RAM), dan memori bersifat **volatil** (mudah menguap): begitu aplikasi ditutup atau prosesnya dimatikan sistem, semua nilainya lenyap tanpa jejak.
 
-- The operating system can kill the app process at any time to reclaim its memory
-- The network is not always available: poor signal, exhausted quota, or a failing server
-- Not all data needs to be sent to the server — local is faster and saves quota
-- Storing data locally also respects user privacy more
+- Sistem bisa mematikan proses aplikasi kapan saja untuk mengambil memorinya
+- Jaringan tidak selalu tersedia: sinyal buruk, kuota habis, server gagal
+- Tidak semua data perlu ke server — lokal lebih cepat dan hemat kuota
+- Menyimpan data di perangkat juga lebih menghormati privasi pengguna
 
 <!--
-Analogy: state is the classroom whiteboard (quick to write, quick to erase), local storage
-is a notebook (it must be opened and closed, but its content is still there tomorrow).
+Analogi: state itu papan tulis kelas (cepat ditulis, cepat dihapus), penyimpanan lokal itu
+buku catatan (harus dibuka dan ditutup, tetapi isinya masih ada besok pagi).
 
-Ask: "When did an app on your phone last lose data you were in the middle of entering?"
-(Usually a draft lost after the app process was killed by the system.)
+Tanya: "Kapan terakhir kali aplikasi di HP-mu kehilangan data yang sedang kamu isi?"
+(Biasanya draf yang hilang setelah proses aplikasi dimatikan sistem.)
 
-Misconception warning: pressing Home does not mean the app has stopped. The app process
-stays alive until the system needs it back.
+Peringatan salah paham: menekan tombol Home tidak berarti aplikasi berhenti. Prosesnya tetap
+hidup sampai sistem membutuhkan memorinya kembali.
 -->
 
 ---
 
-## Five Kinds of Data That Must Survive
+<!-- _class: compact -->
 
-| Data type | Example in an app |
+## Lima Jenis Data yang Harus Bertahan
+
+| Jenis data | Contoh di aplikasi |
 |---|---|
-| User preferences | Dark theme, interface language, font size |
-| Form drafts | Chapter 8 form input that is not finished |
-| Server content cache | A copy of Chapter 10 API data so it still shows |
-| Offline operational data | Notes or orders created without signal |
-| Session credentials | A token so the user need not log in every time |
+| Preferensi pengguna | Tema gelap, bahasa antarmuka, ukuran huruf |
+| Draf formulir | Isian formulir Bab 8 yang belum selesai |
+| Cache isi server | Salinan data API Bab 10 agar tetap tampil |
+| Data operasional offline | Catatan atau pesanan yang dibuat tanpa sinyal |
+| Kredensial sesi | Token agar pengguna tidak login berulang |
 
 <!--
-Ask students to pick one row and name a real app that uses it; concrete experience sticks
-better than a definition.
+Minta mahasiswa memilih satu baris dan menyebut aplikasi nyata yang memakainya; pengalaman
+konkret lebih menempel daripada definisi.
 
-The "cache" and "offline operational data" rows are the content of Section 11.4 and the
-case-study material; just flag them now, do not explain them yet.
+Baris "cache" dan "data operasional offline" adalah isi subbab 11.4 dan bahan studi kasus;
+sekarang cukup ditandai, jangan dijelaskan dulu. Sebut juga bahwa baris ketiga itulah yang
+nanti dipakai Aplikasi Manajemen Data Mahasiswa untuk menyimpan daftar mahasiswanya.
 
-Warning: a form draft is not an ordinary storage problem — it is also a matter of user
-trust. Data lost once often makes a user stop using the app.
+Peringatan: draf formulir bukan urusan penyimpanan biasa — ia juga soal kepercayaan pengguna.
+Data yang hilang sekali sering membuat pengguna berhenti memakai aplikasi.
 -->
 
 ---
 
-## Three Local Storage Options in Expo
+## Tiga Pilihan Penyimpanan Lokal di Expo
 
-| Option | Character | Best suited for |
+| Pilihan | Sifat | Paling cocok untuk |
 |---|---|---|
-| AsyncStorage | Simple key–value pairs | Preferences, cache, short lists |
-| SQLite | Relational database | Large data with complex queries |
-| `expo-file-system` | File storage | Images and media (Chapter 12) |
+| AsyncStorage | Pasangan kunci–nilai sederhana | Preferensi, cache, daftar pendek |
+| SQLite | Basis data relasional | Data besar dengan kueri rumit |
+| `expo-file-system` | Penyimpanan file | Gambar dan media (Bab 12) |
 
-> Android has SharedPreferences and SQLite, iOS has UserDefaults and Core Data — AsyncStorage unifies that difference.
+> Android punya SharedPreferences dan SQLite, iOS punya UserDefaults dan Core Data — AsyncStorage menyatukan perbedaan itu.
 
 <!--
-Analogy from the chapter: using SQLite to store preferences is as wasteful as bringing a
-truck to carry one box. The selection principle is "the simplest tool that is
-adequate".
+Analogi dari buku: memakai SQLite untuk menyimpan preferensi itu boros, seperti membawa truk
+untuk mengangkut satu kotak. Prinsip pemilihannya "alat paling sederhana yang memadai".
 
-Ask: "For 50 product photos, which one?" (expo-file-system) and "for 10,000 transaction
-rows searched by date?" (SQLite) — never AsyncStorage.
+Tanya: "Untuk 50 foto produk, pilih yang mana?" (expo-file-system) dan "untuk 10.000 baris
+transaksi yang dicari menurut tanggal?" (SQLite) — jangan pernah AsyncStorage.
 -->
 
 ---
 
-## What AsyncStorage Is
+## AsyncStorage Bukan Database, Hanya Kunci dan Nilai
 
 ![w:1120](assets/diagrams/bab-11-penyimpanan-data-lokal-07.svg)
 
-**AsyncStorage** is an asynchronous **key–value storage** library for React Native: community-maintained, fully supported by Expo, and running on Android, iOS, and web.
+**AsyncStorage** adalah library **penyimpanan kunci–nilai** asinkron untuk React Native: dirawat komunitas, didukung penuh Expo, dan berjalan di Android, iOS, serta web.
 
-- Every piece of data is stored under a key, a unique name used to read it back
-- Different from `npm install`: `npx expo install` picks the version that matches the SDK
+- Setiap data disimpan di bawah satu kunci, nama unik yang dipakai untuk membacanya
+- Berbeda dari `npm install`: `npx expo install` memilih versi yang cocok dengan SDK
 
 ```bash
 npx expo install @react-native-async-storage/async-storage
 ```
 
 <!--
-Stress the difference in install commands: installing with `npm install` and a free version
-is the most frequent complaint in forums and reappears in this chapter's troubleshooting row.
+Tegaskan beda perintah pemasangan: memasang dengan `npm install` dan versi bebas adalah
+keluhan paling sering di forum, dan muncul lagi di baris troubleshooting bab ini.
 
-Misconception warning: AsyncStorage is not a database. There are no tables, no relations,
-no queries — only key and value pairs.
+Peringatan salah paham: AsyncStorage bukan basis data. Tidak ada tabel, tidak ada relasi,
+tidak ada kueri — hanya pasangan kunci dan nilai.
 
-Ask: "What happens if the key name is written differently when saving and reading?"
-(The data looks lost even though it is stored under another key.)
+Tanya: "Apa yang terjadi kalau nama kunci berbeda saat menyimpan dan saat membaca?" (Datanya
+terlihat hilang padahal tersimpan di kunci yang lain.)
 
-Trimmed to the picture (the diagram says this):
-- The concept is like filing drawers: one drawer, one label, and its contents are read through that label
+Dipotong ke gambar (diagram yang mengatakan ini):
+- Konsepnya seperti lemari arsip: satu laci, satu label, dan isinya dibaca lewat label itu
 -->
 
 ---
 
-## AsyncStorage API at a Glance
+<!-- _class: compact -->
 
-| Method | Function | Return value |
+## Metode AsyncStorage, Semuanya Promise
+
+| Metode | Fungsi | Nilai kembalian |
 |---|---|---|
-| `setItem(key, value)` | Saves one key–value pair | `Promise<void>` |
-| `getItem(key)` | Reads the value of one key | `Promise<string \| null>` |
-| `removeItem(key)` | Deletes one key together with its value | `Promise<void>` |
-| `multiGet([k1, k2])` | Reads several keys at once | `Promise<[key, value][]>` |
-| `multiSet([[k1, v1]])` | Saves several pairs at once | `Promise<void>` |
-| `getAllKeys()` | Gets the list of all keys | `Promise<string[]>` |
+| `setItem(key, value)` | Menyimpan pasangan kunci | `Promise<void>` |
+| `getItem(key)` | Membaca nilai satu kunci | `Promise<string \| null>` |
+| `removeItem(key)` | Menghapus satu kunci | `Promise<void>` |
+| `multiGet([k1, k2])` | Membaca beberapa kunci | `Promise<[key, value][]>` |
+| `multiSet([[k, v]])` | Menyimpan banyak pasangan | `Promise<void>` |
+| `getAllKeys()` | Daftar semua kunci | `Promise<string[]>` |
 
-- `clear()` deletes all of the app's data — do not use it without a clear reason
+- `clear()` menghapus seluruh data aplikasi — jangan asal pakai
 
 <!--
-Do not read it row by row. Group it: three single-key methods, two multi-key methods, two
-whole-store management methods.
+Jangan dibaca baris per baris. Kelompokkan: tiga metode satu kunci, dua metode banyak kunci,
+dua metode pengelolaan seluruh penyimpanan.
 
-Stress the third column: all of them return a Promise, so all of them must be awaited.
-`multiGet` is more efficient than calling `getItem` repeatedly.
+Tegaskan kolom ketiga: semuanya mengembalikan Promise, jadi semuanya harus di-await.
+`multiGet` lebih efisien daripada memanggil `getItem` berulang kali.
 
-Warning: in a real app `clear()` deletes every user preference and session — call it only
-in a logout or a deliberate reset flow.
+Peringatan: di aplikasi nyata `clear()` menghapus semua preferensi dan sesi pengguna —
+panggil hanya pada alur logout atau reset yang disengaja.
 -->
 
 ---
 
-## Example: Saving and Reading a Name
+## Pola Dasar: Simpan dengan `await`, Baca dengan Cek `null`
 
-`App.js` — the basic pattern of `setItem` and `getItem`
+`App.js` — pola dasar `setItem` dan `getItem`
 
 ```js
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -206,66 +210,68 @@ async function bacaNamaPengguna() {
 }
 ```
 
-> `getItem` returns `null` — not an empty string — for a key that has never been saved.
+> `getItem` mengembalikan `null`, bukan string kosong, untuk kunci yang belum disimpan.
 
 <!--
-Show only three things: the `await` that waits for the write and read to finish, the
-`try/catch` that keeps the app from stopping, and the `null` check before use.
+Tunjukkan tiga hal saja: `await` yang menunggu penulisan dan pembacaan selesai, `try/catch`
+yang menjaga aplikasi tidak berhenti, dan pemeriksaan `null` sebelum data dipakai.
 
-Ask: "If `await` is removed, what happens?" (The next line runs before the data is
-written — this is the origin of the 'data not saved' bug.)
+Tanya: "Kalau `await` dihapus, apa yang terjadi?" (Baris berikutnya berjalan sebelum data
+tertulis — inilah asal bug "data tidak tersimpan".)
 
-Warning: a prefixed key pattern such as `preferensi:nama` prevents collisions between
-features; make it a habit from the very first example.
+Peringatan: pola kunci berawalan seperti `preferensi:nama` mencegah tabrakan antarfitur;
+jadikan kebiasaan sejak contoh pertama.
 -->
 
 ---
 
-## Five Principles for Using AsyncStorage
+<!-- _class: compact -->
 
-| Principle | Practical meaning |
+## Lima Prinsip yang Menentukan Cara Pakainya
+
+| Prinsip | Arti praktisnya |
 |---|---|
-| **Asynchronous** | All methods return a Promise; call them with `await` |
-| **Strings only** | Keys and values must be strings; objects must be serialized |
-| **`null` means not there yet** | Check with `=== null`, not by comparing an empty string |
-| **Not encrypted** | Data is stored in plain form inside the app sandbox |
-| **Not for large data** | For preferences, cache, and short lists |
+| **Asinkron** | Semua metode mengembalikan Promise; pakai `await` |
+| **Hanya string** | Kunci dan nilai harus string; objek harus diserialisasi |
+| **Nilai `null`** | Artinya belum ada; periksa dengan `=== null`, bukan string kosong |
+| **Tidak terenkripsi** | Data tersimpan apa adanya di dalam sandbox aplikasi |
+| **Bukan data besar** | Untuk preferensi, cache, dan daftar pendek |
 
-> Behind the scenes: SQLite on Android, a small file on iOS, `localStorage` on web — all of it is deleted when the app is uninstalled.
+> Di balik layar: SQLite di Android, file kecil di iOS, `localStorage` di web — semuanya terhapus saat aplikasi di-uninstall.
 
 <!--
-⚠ version-sensitive: the official documentation mentions a per-entry size limit of about 6 MB
-on Android because of the SQLite implementation behind it; the exact value can change between
-versions — check the library's official documentation page before quoting the number.
+⚠ sensitif versi: dokumentasi resmi menyebut batas ukuran per entri sekitar 6 MB di Android
+karena implementasi SQLite di belakangnya; angka pastinya bisa berubah antarversi — periksa
+halaman dokumentasi resmi library sebelum menyebut angkanya di kelas.
 
-Ask the class to guess the consequence of violating each row before it is explained. The
-"not encrypted" row is the doorway into Section 11.5; only touch on it for now.
+Minta kelas menebak akibat pelanggaran setiap baris sebelum dijelaskan. Baris "tidak
+terenkripsi" adalah pintu masuk subbab 11.5; sekarang cukup disentuh.
 
-Misconception warning: local data is not kept forever. Uninstalling, clearing the app's
-data, or changing devices deletes it without warning.
+Peringatan salah paham: data lokal tidak abadi. Uninstall, membersihkan data aplikasi, atau
+berganti perangkat menghapusnya tanpa pemberitahuan.
 -->
 
 ---
 
 <!-- _class: center -->
 
-## Think-Pair-Share: The Empty List
+## Berpikir Berpasangan: Daftar yang Kosong
 
-- After a restart, the notes list is empty — name three possible causes
-- Which cause can you prove from the code, and which is still a guess?
+- Setelah aplikasi di-restart, daftar catatan kosong — sebutkan tiga kemungkinan penyebabnya
+- Penyebab mana yang bisa kamu buktikan dari kode, dan mana yang masih dugaan?
 
-Two minutes in pairs, then 2–3 pairs present their results.
+Dua menit berpasangan, lalu 2–3 pasangan menyampaikan hasilnya.
 
 <!--
-Do not give the answers. After 2 minutes, collect the answers and write them on the board;
-every answer will be verified in the second half of this meeting.
+Jangan beri jawabannya. Setelah 2 menit, tampung jawaban dan tulis di papan; setiap jawaban
+akan diverifikasi di paruh kedua pertemuan ini.
 
-Expected answers: a missing `await`; a key name that differs between saving and reading;
-storage deleted because of an uninstall; a `JSON.parse` failure that returns an empty list;
-data loaded only once so the screen does not refresh.
+Jawaban yang diharapkan: `await` yang hilang; nama kunci berbeda antara menyimpan dan
+membaca; penyimpanan terhapus karena uninstall; `JSON.parse` gagal sehingga daftar kosong;
+data hanya dimuat sekali sehingga layar tidak menyegarkan tampilannya.
 
-Guiding question if the class is silent: "Data that looks lost — was it really not
-stored?"
+Pertanyaan penuntun kalau kelas diam: "Data yang terlihat hilang — apa benar tidak pernah
+tersimpan?"
 -->
 
 ---
@@ -273,27 +279,27 @@ stored?"
 <!-- _class: lead -->
 <!-- _paginate: skip -->
 
-# Part 2 — JSON, Cache & Tokens
+# Bagian 2 — JSON, Cache & Token
 
-Section 11.3 JSON Serialization · 11.4 Caching · 11.5 Storing Tokens
+subbab 11.3 Serialisasi JSON · 11.4 Caching · 11.5 Menyimpan Token
 
 <!--
-This part is the most frequently tested: serialization, the three safety layers for reading
-data, the cache components, and the ban on storing tokens.
+Bagian ini yang paling sering keluar di ujian: serialisasi, tiga lapis pengaman saat membaca,
+komponen cache, dan larangan menyimpan token.
 
-Mention that Section 11.5 deliberately stops at an introductory level; its implementation
-continues in Chapter 13 so there are not two conflicting explanations.
+Sebut bahwa subbab 11.5 sengaja berhenti di tingkat pengantar; penerapannya dilanjutkan di
+Bab 13 supaya tidak ada dua penjelasan yang saling bertentangan.
 -->
 
 ---
 
-## JSON Serialization: Bridging the String Rule
+## JSON: Jembatan dari Objek ke String
 
-- `JSON.stringify(data)` — turns an object or array into a JSON string
-- `JSON.parse(teks)` — turns a JSON string back into an object or array
-- **Serialization** turns data into a string; **deserialization** is the reverse
+- `JSON.stringify(data)` — mengubah objek atau array menjadi string JSON
+- `JSON.parse(teks)` — mengubah string JSON kembali menjadi objek atau array
+- **Serialisasi** mengubah data menjadi string; **deserialisasi** adalah kebalikannya
 
-`storage/notesStorage.js` — saving and reading the notes list
+`storage/notesStorage.js` — menyimpan dan membaca daftar catatan
 
 ```js
 const daftarCatatan = [
@@ -307,43 +313,45 @@ const tersimpan = await AsyncStorage.getItem('catatan:v1');
 const daftarLagi = tersimpan === null ? [] : JSON.parse(tersimpan);
 ```
 
-- The key is given a version suffix (`catatan:v1`) — a good practice called key versioning
+- Kunci diberi akhiran versi (`catatan:v1`) — praktik baik yang disebut versi kunci
 
 <!--
-Show that one key holds the whole list: one long JSON string, not one key per note. That is
-why the rewrite strategy in Section 11.6 makes sense.
+Tunjukkan bahwa satu kunci menyimpan seluruh daftar: satu string JSON panjang, bukan satu
+kunci per catatan. Itulah sebabnya strategi tulis-ulang di subbab 11.6 masuk akal.
 
-Key versioning is explained as insurance: if the note structure changes, a new key
-(`catatan:v2`) is created and migration logic is added, without damaging the old data.
+Versi kunci dijelaskan sebagai asuransi: kalau struktur catatan berubah, kunci baru
+(`catatan:v2`) dibuat dan logika migrasi ditambahkan, tanpa merusak data lama.
 
-A warning about dates: `createdAt` is stored as an ISO 8601 string because it serializes
-safely and sorts automatically in chronological order.
+Peringatan soal tanggal: `createdAt` disimpan sebagai string ISO 8601 karena aman
+diserialisasi dan otomatis terurut secara kronologis.
 -->
 
 ---
 
-## Diagram: JSON Serialization: Bridging the String Rule
+## Objek Masuk, String Keluar, Objek Kembali
 
 ![w:1120](assets/diagrams/bab-11-penyimpanan-data-lokal-05.svg)
 
 <!--
-Picture only, so the three rules, the code excerpt, and the key-versioning bullet on the
-previous slide stay whole. Read it left to right: daftarCatatan is the array in memory;
-stringify turns it into a JSON string, one long string that a key can hold; setItem stores
-that JSON string in AsyncStorage under the key catatan:v1; and then getItem, JSON.parse, and
-you have the array again.
+Slide gambar saja, supaya tiga aturan, potongan kode, dan butir versi kunci di slide
+sebelumnya tetap utuh. Bacakan dari kiri ke kanan: daftarCatatan adalah array di memori;
+stringify mengubahnya menjadi string JSON, satu string panjang yang bisa ditampung satu
+kunci; setItem menyimpan string JSON itu di AsyncStorage di bawah kunci catatan:v1; lalu
+getItem, JSON.parse, dan array-nya kembali.
 
-Point at the first and the last chip when you say it: the thing that goes in and the thing
-that comes out have the same name, and the JSON string in the middle is the only form
-AsyncStorage ever sees. That is why an object sent straight to setItem becomes
-[object Object] — the chapter's troubleshooting table comes back to this picture.
+Tunjuk keping pertama dan terakhir saat mengucapkannya: yang masuk dan yang keluar punya nama
+yang sama, dan string JSON di tengah adalah satu-satunya bentuk yang pernah dilihat
+AsyncStorage. Itulah sebabnya objek yang dikirim langsung ke setItem menjadi
+[object Object] — tabel troubleshooting bab ini kembali ke gambar ini.
 -->
 
 ---
 
-## Reading Local Data Safely
+<!-- _class: compact -->
 
-`storage/notesStorage.js` — three safety layers when reading
+## Membaca Data Lokal dengan Tiga Lapis Pengaman
+
+`storage/notesStorage.js` — tiga lapis pengaman saat membaca
 
 ```js
 export async function muatCatatan() {
@@ -359,100 +367,100 @@ export async function muatCatatan() {
 }
 ```
 
-- Layer 1: `null` is returned as an empty array `[]`
-- Layer 2: a parsing error is caught and logged, and the function still returns `[]`
-- Layer 3: the result is checked with `Array.isArray` so an unexpected shape is rejected
+- Lapis 1: `null` dikembalikan sebagai array kosong `[]`
+- Lapis 2: error parsing ditangkap dan dicatat, fungsinya tetap mengembalikan `[]`
+- Lapis 3: hasilnya diperiksa dengan `Array.isArray` supaya bentuk tak terduga ditolak
 
 <!--
-Teach it as a sequence of checks, not as a block to memorize: (1) is there anything in it?
-(2) can it be read? (3) is the shape correct?
+Ajarkan sebagai urutan pemeriksaan, bukan sebagai blok yang dihafal: (1) ada isinya? (2) bisa
+dibaca? (3) bentuknya benar?
 
-Stress `console.warn` as a diagnostic trace — Chapter 14 uses the same trace when tracing
-app failures.
+Tegaskan `console.warn` sebagai jejak diagnosis — Bab 14 memakai jejak yang sama saat
+menelusuri kegagalan aplikasi.
 
-Misconception warning: a `catch` that swallows an error without a trace is as bad as not
-handling the error at all. Always log it, then return a safe default value.
+Peringatan salah paham: `catch` yang menelan error tanpa jejak sama buruknya dengan tidak
+menangani error sama sekali. Selalu catat, lalu kembalikan nilai bawaan yang aman.
 -->
 
 ---
 
 <!-- _class: center -->
 
-## What Happens If…?
+## Apa yang Terjadi Jika…?
 
-- The note data is corrupted: it was stored truncated because the process stopped midway
-- The app is opened and calls `JSON.parse` straight away without `try/catch`
-- What does the user experience, and what should the developer do?
+- Data catatan rusak: tersimpan terpotong karena prosesnya berhenti di tengah
+- Aplikasi dibuka dan langsung memanggil `JSON.parse` tanpa `try/catch`
+- Apa yang dialami pengguna, dan apa yang seharusnya dilakukan pengembangnya?
 
 <!--
-Give one minute to think, then ask for two answers before moving on. Do not leak the
-consequence on this slide; the discussion is on the next one.
+Beri satu menit untuk berpikir, lalu minta dua jawaban sebelum melanjutkan. Jangan bocorkan
+akibatnya di slide ini; pembahasannya ada di slide berikutnya.
 
-Expected answers: `JSON.parse` throws a `SyntaxError`, the app crashes the moment it is
-opened, and the user has no way in at all. The fix is not to delete the data, but to catch
-the error and use a default value.
+Jawaban yang diharapkan: `JSON.parse` melempar `SyntaxError`, aplikasi crash begitu dibuka,
+dan pengguna tidak punya jalan masuk sama sekali. Perbaikannya bukan menghapus data, melainkan
+menangkap error dan memakai nilai bawaan.
 
-Tie it to the earlier Think-Pair-Share: this is one of the causes of the "empty list".
+Kaitkan dengan Berpikir Berpasangan tadi: inilah salah satu penyebab "daftar kosong".
 -->
 
 ---
 
-## Reading Must Not Crash the App
+## Data Rusak Tidak Boleh Membuat Aplikasi Crash
 
 ![w:1120](assets/diagrams/bab-11-penyimpanan-data-lokal-08.svg)
 
-- `JSON.parse` throws a `SyntaxError` if the text is not valid JSON
-- Without handling, the app crashes the moment it is opened — the user cannot get in
-- Sources of damage: interrupted storage, truncated data, or an old-version structure
-- Local data is also deleted when the app is uninstalled or cleared
+- `JSON.parse` melempar `SyntaxError` bila teksnya bukan JSON yang sah
+- Tanpa penanganan, aplikasi crash begitu dibuka — pengguna tidak bisa masuk sama sekali
+- Sumber kerusakan: penyimpanan terputus, data terpotong, atau struktur versi lama
+- Data lokal juga terhapus saat aplikasi di-uninstall atau datanya dibersihkan
 
-> Principle: local storage is a source that cannot always be trusted — the app must face it gracefully.
+> Prinsip: penyimpanan lokal adalah sumber yang tidak selalu bisa dipercaya — aplikasi harus menghadapinya dengan tenang.
 
 <!--
-Stress the principle sentence: the app must withstand its own corrupted data. This is the
-difference between an app that runs and an app that is ready for other people to use.
+Tegaskan kalimat prinsipnya: aplikasi harus tahan terhadap datanya sendiri yang rusak. Inilah
+bedanya aplikasi yang jalan dengan aplikasi yang siap dipakai orang lain.
 
-Ask: "If the data is corrupted, is deleting all the user's data a justifiable way out?"
-(It can be, but it must be a last resort and the user must be told.)
+Tanya: "Kalau datanya rusak, apakah menghapus seluruh data pengguna bisa dibenarkan?" (Bisa,
+tetapi itu jalan terakhir dan pengguna harus diberi tahu.)
 
-Warning: with high-value data, losing local data must be answered with a backup or server
-synchronization — a problem that reappears in the case study later.
+Peringatan: untuk data bernilai tinggi, kehilangan data lokal harus dijawab dengan cadangan
+atau sinkronisasi ke server — masalah yang muncul lagi di studi kasus nanti.
 -->
 
 ---
 
-## Cache: A Copy So the App Stays Useful
+## Cache: Salinan agar Aplikasi Tetap Berguna
 
 ![w:1120](assets/diagrams/bab-11-penyimpanan-data-lokal-09.svg)
 
-**Cache** is a copy of data stored closer to its user so that it can be accessed faster or without the original source.
+**Cache** adalah salinan data yang disimpan lebih dekat ke pemakainya supaya bisa diakses lebih cepat atau tanpa sumber aslinya.
 
-- Speed: the local copy shows immediately without waiting for a server response
-- Quota savings: data that rarely changes is not downloaded over and over
+- Kecepatan: salinan lokal tampil seketika tanpa menunggu jawaban server
+- Hemat kuota: data yang jarang berubah tidak diunduh berulang kali
 
-> Trade-off: what is sacrificed is freshness — what is shown may not be the newest.
+> Trade-off: yang dikorbankan kesegaran — yang tampil belum tentu terbaru.
 
 <!--
-Connect it to Chapter 10: the pattern of save on success, read the copy on failure is a
-direct continuation of fetch and error handling in the previous chapter.
+Hubungkan dengan Bab 10: pola simpan saat berhasil, baca salinan saat gagal adalah lanjutan
+langsung dari fetch dan penanganan error bab sebelumnya.
 
-Ask: "Which app on your phone can still be opened in airplane mode?" (Answer: an app that
-stores a copy of its data, not one that always waits for the server.)
+Tanya: "Aplikasi apa di HP-mu yang masih bisa dibuka dalam mode pesawat?" (Jawaban: aplikasi
+yang menyimpan salinan datanya, bukan yang selalu menunggu server.)
 
-Trimmed to the picture (the diagram says this):
-- Availability: the app keeps showing data when the network is not available
+Dipotong ke gambar (diagram yang mengatakan ini):
+- Ketersediaan: aplikasi tetap menampilkan data saat jaringan tidak tersedia
 -->
 
 ---
 
-## Three Cache Components
+## Tiga Komponen Cache: Snapshot, Timestamp, TTL
 
-- **Snapshot** — the stored copy of the data returned by an API response
-- **Timestamp** — the time of storage, written as an ISO 8601 string
-- **TTL** (time to live) — the cache's age limit before it is considered stale
-- Firm ban: never cache sensitive data such as tokens
+- **Snapshot** — salinan data hasil jawaban API yang disimpan
+- **Timestamp** — waktu penyimpanan, ditulis sebagai string ISO 8601
+- **TTL** (time to live) — batas umur cache sebelum dianggap kedaluwarsa
+- Larangan tegas: jangan pernah meng-cache data sensitif seperti token
 
-`storage/apiCache.js` — the shape of the cache package (used by `simpanCache` and `ambilCache`)
+`storage/apiCache.js` — bentuk paket cache (dipakai `simpanCache` dan `ambilCache`)
 
 ```js
 const paket = {
@@ -462,41 +470,41 @@ const paket = {
 ```
 
 <!--
-Draw one package on the board: data and time, nothing else. Every cache decision is built
-from these two pieces of information.
+Gambar satu paket di papan: data dan waktu, tidak lebih. Setiap keputusan cache dibangun dari
+dua informasi itu.
 
-Ask about the TTL trade-off: "Short or long TTL for a per-semester course list?" (Long,
-because the data is stable. For market prices the answer is the opposite.)
+Tanya soal trade-off TTL: "TTL pendek atau panjang untuk daftar mata kuliah per semester?"
+(Panjang, karena datanya stabil. Untuk harga pasar jawabannya sebaliknya.)
 
-Warning: the ban on caching sensitive data sits here so students do not conclude "as long
-as there is a TTL it is safe" — TTL governs age, not protection.
+Peringatan: larangan meng-cache data sensitif diletakkan di sini supaya mahasiswa tidak
+menyimpulkan "asal ada TTL berarti aman" — TTL mengatur umur, bukan perlindungan.
 -->
 
 ---
 
-## Cache Workflow When the Network Fails
+## Alur Cache Saat Jaringan Gagal
 
 ![w:1120](assets/diagrams/bab-11-penyimpanan-data-lokal-02.svg)
 
-> A professional app does not silently show stale data: give the marker "Showing saved data (offline mode)".
+> Aplikasi yang profesional tidak diam-diam menampilkan data basi: beri penanda "Menampilkan data tersimpan (mode offline)".
 
 <!--
-Read the diagram as a decision flow: try the server, on success save a copy, on failure
-check the cache, and only when the cache is already stale show an error message.
+Bacakan gambar sebagai alur keputusan: coba server, kalau berhasil simpan salinan, kalau gagal
+periksa cache, dan hanya bila cache sudah kedaluwarsa tampilkan pesan error.
 
-Ask: "On which branch may the app lie a little?" (None. The cache branch must carry an
-offline marker so the user knows how reliable the data is.)
+Tanya: "Di cabang mana aplikasi boleh sedikit berbohong?" (Tidak ada. Cabang cache wajib
+membawa penanda offline supaya pengguna tahu seberapa andal datanya.)
 
-**Additional explanation:** this chapter chooses the "TTL passed → error message" branch;
-showing stale data with a firmer marker is a design alternative discussed in Analysis
-Question 2, not behavior this chapter prescribes.
+**Penjelasan tambahan:** bab ini memilih cabang "TTL habis → pesan error"; menampilkan data
+basi dengan penanda lebih tegas adalah alternatif desain yang dibahas di Soal Analisis 2,
+bukan perilaku yang diwajibkan bab ini.
 -->
 
 ---
 
-## Cache Module: Save and Check Age
+## Modul Cache: Menyimpan dan Memeriksa Umur
 
-`storage/apiCache.js` — importing `AsyncStorage` as in the previous pattern
+`storage/apiCache.js` — mengimpor `AsyncStorage` seperti pola sebelumnya
 
 ```js
 export async function simpanCache(nama, data) {
@@ -516,63 +524,63 @@ export function cacheKadaluarsa(paket, batasMs) {
 ```
 
 <!--
-Stress that the cache name becomes part of the key: one module serves the catalog, the
-schedule, and the student list at once without overwriting each other.
+Tegaskan bahwa nama cache menjadi bagian dari kunci: satu modul melayani katalog, jadwal, dan
+daftar mahasiswa sekaligus tanpa saling menimpa.
 
-Mention that `ambilCache(nama)` follows the same pattern as reading notes — `getItem` and
-`JSON.parse` inside `try/catch`, returning `null` on failure.
+Sebutkan bahwa `ambilCache(nama)` mengikuti pola pembacaan catatan — `getItem` dan `JSON.parse`
+di dalam `try/catch`, mengembalikan `null` bila gagal.
 
-⚠ version-sensitive: the usage examples in this chapter use a development server address
-(10.0.2.2 for the Android emulator); change the address to match your environment and check
-the Chapter 10 documentation if the behavior differs.
+⚠ sensitif versi: contoh pemakaian di bab ini memakai alamat server pengembangan (10.0.2.2
+untuk emulator Android); sesuaikan alamatnya dengan lingkunganmu dan periksa dokumentasi
+Bab 10 bila perilakunya berbeda.
 -->
 
 ---
 
-## Do Not Store Tokens in AsyncStorage
+## Token Tidak Boleh Tinggal di AsyncStorage
 
 ![w:1120](assets/diagrams/bab-11-penyimpanan-data-lokal-10.svg)
 
-**Token** is data the server grants after login: a kind of "identity card" that is sent on every subsequent API request (Chapter 10.8).
+**Token** adalah data yang diberikan server setelah login: semacam "kartu identitas" yang dikirim pada setiap permintaan API berikutnya (subbab 10.8).
 
-- Any code running inside the app can read it
-- A rooted device (Android) or a jailbroken one (iOS) raises the risk
+- Kode apa pun yang berjalan di dalam aplikasi bisa membacanya
+- Perangkat yang di-root (Android) atau di-jailbreak (iOS) menaikkan risikonya
 
 <!--
-Read it as a risk, not as a rule: who can read it, how they would do
-it, and what it costs the user.
+Bacakan sebagai risiko, bukan sebagai aturan: siapa yang bisa membacanya, bagaimana caranya,
+dan apa akibatnya bagi pengguna.
 
-Ask: "Storing the token in AsyncStorage means the user need not log in again. Is that
-convenience worth it?" (No — a hijacked account costs far more than one login.)
+Tanya: "Menyimpan token di AsyncStorage berarti pengguna tidak perlu login lagi. Apakah
+kemudahan itu sepadan?" (Tidak — akun yang dibajak jauh lebih mahal daripada satu kali login.)
 
-Misconception warning: "my app is not important, so it will not be attacked" is the most
-often misleading excuse in the practicum.
+Peringatan salah paham: "aplikasi saya tidak penting, jadi tidak akan diserang" adalah alasan
+yang paling sering menyesatkan di praktikum.
 
-Trimmed to the picture (the diagram says this):
-- AsyncStorage data is not encrypted: its values are stored as plain text
-- A stolen token: an attacker can call the API on the user's behalf
+Dipotong ke gambar (diagram yang mengatakan ini):
+- Data AsyncStorage tidak terenkripsi: nilainya tersimpan sebagai teks biasa
+- Token yang dicuri: penyerang bisa memanggil API atas nama pengguna
 -->
 
 ---
 
-## Secure Storage: Keychain and Android Keystore
+## Secure Storage: Kunci yang Menempel pada Perangkat
 
-**Secure storage** makes use of the operating system's hardware security: **Keychain** on iOS, **Android Keystore** on Android. The Expo library is `expo-secure-store`, discussed in full in Chapter 13.
+**Secure storage** memakai keamanan perangkat keras sistem operasi: **Keychain** di iOS, **Android Keystore** di Android. Library Expo-nya `expo-secure-store`, dibahas penuh di Bab 13.
 
 ![w:1120](assets/diagrams/bab-11-penyimpanan-data-lokal-03.svg)
 
-- Separate by sensitivity; when in doubt, do not store it at all
-- The decision about where to store is a security decision, not merely a technical one
+- Pisahkan data menurut sensitivitas; kalau ragu, jangan disimpan sama sekali
+- Keputusan tempat penyimpanan adalah keputusan keamanan, bukan sekadar teknis
 
 <!--
-Analogy: AsyncStorage is like an unlocked cupboard inside a room, secure storage is like a
-chest whose lock is attached to its hardware.
+Analogi: AsyncStorage seperti lemari tanpa kunci di dalam kamar, secure storage seperti peti
+yang kuncinya menempel pada perangkat kerasnya.
 
-Stress the last principle: data that is never stored cannot be stolen. This principle is
-stronger than any library.
+Tegaskan prinsip terakhir: data yang tidak pernah disimpan tidak bisa dicuri. Prinsip ini lebih
+kuat daripada library apa pun.
 
-Warning: this chapter only introduces it; the complete login, token, and logout flow is
-written in Chapter 13 so students do not merge two explanations of different versions.
+Peringatan: bab ini hanya memperkenalkannya; alur login, token, dan logout yang lengkap ditulis
+di Bab 13 supaya mahasiswa tidak mencampur dua penjelasan dari versi yang berbeda.
 -->
 
 ---
@@ -580,94 +588,103 @@ written in Chapter 13 so students do not merge two explanations of different ver
 <!-- _class: lead -->
 <!-- _paginate: skip -->
 
-# Part 3 — Notes App Project
+# Bagian 3 — Proyek Aplikasi Catatan
 
-Section 11.6 · Practicum 11 · Troubleshooting
+subbab 11.6 · Praktikum 11 · Troubleshooting
 
 <!--
-This part is the practicum. If this meeting is used to work on the project, just show the
-three code slides (notesStorage, list, form) and then accompany students while they retype.
+Bagian ini praktikum. Kalau pertemuan ini dipakai untuk mengerjakan proyek, tampilkan tiga
+slide kode (notesStorage, daftar, formulir) lalu dampingi mahasiswa mengetik ulang.
 
-Before the practicum starts, make sure the AsyncStorage library is already installed with
-`npx expo install` in each project.
+Sebelum praktikum dimulai, pastikan library AsyncStorage sudah terpasang dengan
+`npx expo install` di setiap proyek.
 -->
 
 ---
 
-## Notes App: What Will Be Built
+## Praktikum: Yang Dibangun Pertemuan Ini
 
 ![w:1030](assets/diagrams/bab-11-penyimpanan-data-lokal-11.svg)
 
-- Add, edit, and delete notes with a confirmation dialog
-- Search notes by title or content
-- All data is still there after the app is closed and reopened
+- Tambah, edit, dan hapus catatan dengan dialog konfirmasi
+- Cari catatan lewat judul atau isinya
+- Semua data masih ada setelah aplikasi ditutup dan dibuka lagi
 
-> Persistence test: close the app completely (or press `r` to reload in Metro), open it again — all notes are still there.
+> Ujiannya satu: tutup aplikasi sepenuhnya, buka lagi — catatan masih ada.
 
 <!--
-Stress that the last item is the proof this chapter succeeded. Without a restart test, the
-app can look correct only because its data is still in state.
+Tegaskan bahwa butir terakhir adalah bukti bab ini berhasil. Tanpa uji restart, aplikasi bisa
+terlihat benar hanya karena datanya masih ada di state.
 
-Ask students to prepare evidence for the practicum report: notes before the app is closed
-and after it is reopened.
+Minta mahasiswa menyiapkan bukti untuk laporan praktikum: catatan sebelum aplikasi ditutup dan
+sesudah dibuka lagi.
 
-Warning: closing the app with the Home button is not enough as a persistence test — close
-its process from the list of running apps.
+Peringatan: menutup aplikasi dengan tombol Home belum cukup sebagai uji persistensi — tutup
+prosesnya dari daftar aplikasi yang berjalan. Menekan `r` di Metro untuk memuat ulang juga
+sah sebagai bukti cepat karena state React ikut direset, tetapi menutup aplikasi sepenuhnya
+tetap uji yang paling meyakinkan.
 
-Trimmed to the picture (the diagram says this):
-- The note entity `{ id, judul, isi, createdAt }` following the book's data contract
+Dipotong ke gambar (diagram yang mengatakan ini):
+- Entitas catatan `{ id, judul, isi, createdAt }` mengikuti kontrak data buku ini
 -->
 
 ---
 
-## Notes App Project Structure
+<!-- _class: compact -->
 
-| File or folder | Responsibility |
+## Struktur Proyek: Satu File, Satu Tanggung Jawab
+
+| File atau folder | Tanggung jawab |
 |---|---|
-| `app/_layout.js` | Stack navigator with three screens (Chapter 7) |
-| `app/index.js` | Route `/`: the notes list |
-| `app/catatan/buat.js`, `app/catatan/[id].js` | New note form and edit form |
-| `storage/notesStorage.js` | A small API for note storage |
-| `screens/DaftarCatatan.js`, `screens/FormCatatan.js` | The list screen and the form screen |
-| `utils/formatTanggal.js` | ISO timestamp formatter for display |
-
-> Both routes use the same `FormCatatan` component; add or edit mode is determined by whether an `id` parameter is present.
+| `app/_layout.js` | Stack navigator tiga layar (Bab 7) |
+| `app/index.js` | Rute `/`: daftar catatan |
+| `app/catatan/buat.js` | Formulir catatan baru |
+| `app/catatan/[id].js` | Formulir edit catatan |
+| `storage/notesStorage.js` | API kecil penyimpanan |
+| `screens/DaftarCatatan.js` | Layar daftar dan pencarian |
+| `screens/FormCatatan.js` | Layar formulir tambah dan edit |
+| `utils/formatTanggal.js` | Pemformat timestamp ISO |
 
 <!--
-Navigation is Chapter 7 material and is not repeated here — just show that the name in
-`Stack.Screen` must match the route file name, including the brackets on `[id]`.
+Navigasi adalah materi Bab 7 dan tidak diulang di sini — cukup tunjukkan bahwa nama di
+`Stack.Screen` harus sama dengan nama file rute, termasuk tanda kurung siku pada `[id]`.
 
-Ask: "Why is the storage logic placed in the storage/ folder rather than inside the
-screen?" (One change to the data format is enough in one file; the screen stays focused.)
+Dipotong ke catatan (tidak muat di slide): dua rute memakai komponen `FormCatatan` yang
+sama; mode tambah atau edit ditentukan oleh ada tidaknya parameter `id`. Ucapkan saat
+menunjuk baris `catatan/buat.js` dan `catatan/[id].js`.
 
-Warning: putting `AsyncStorage.setItem` directly in a screen is a habit that must be
-dismantled from this meeting on.
+Tanya: "Kenapa logika penyimpanan diletakkan di folder storage/, bukan di dalam layar?"
+(Satu perubahan format data cukup di satu file; layarnya tetap fokus.)
+
+Peringatan: menaruh `AsyncStorage.setItem` langsung di layar adalah kebiasaan yang harus
+dibongkar sejak pertemuan ini.
 -->
 
 ---
 
-## Data Flow: Screen, Small API, Storage
+## Alur Data: Layar, API Kecil, Lalu Penyimpanan
 
 ![w:1120](assets/diagrams/bab-11-penyimpanan-data-lokal-04.svg)
 
-> Benefit of the separation: the data structure changes, one file changes; storage logic can be tested without a user interface (Chapter 14).
+> Keuntungan pemisahannya: struktur data berubah, satu file ikut berubah; logika penyimpanan bisa diuji tanpa antarmuka (Bab 14).
 
 <!--
-The term "small API" is explained here: a set of functions with a single responsibility
-that the screen uses without needing to know the storage details.
+Istilah "API kecil" dijelaskan di sini: kumpulan fungsi dengan satu tanggung jawab yang dipakai
+layar tanpa perlu tahu detail penyimpanan.
 
-State the data pattern: every change modifies storage first, then updates state so the
-display changes too — save first, display later.
+Sebutkan pola datanya: setiap perubahan mengubah penyimpanan lebih dulu, lalu memperbarui state
+supaya tampilannya ikut berubah — simpan dahulu, tampilkan kemudian.
 
-Ask: "If the order is reversed, what is the risk?" (The display shows data that in fact
-failed to be saved.)
+Tanya: "Kalau urutannya dibalik, apa risikonya?" (Tampilan menunjukkan data yang sebenarnya
+gagal disimpan.)
 -->
 
 ---
 
-## Small API: Saving and Deleting
+## API Kecil: Menyimpan dan Menghapus
 
-`storage/notesStorage.js` — saving (rewrite) and deleting
+`storage/notesStorage.js` — menyimpan (tulis ulang) dan menghapus
+
 ```js
 const KUNCI_CATATAN = 'catatan:v1';
 export async function simpanCatatan(daftarCatatan) {
@@ -686,22 +703,22 @@ export async function hapusCatatan(id) {
 ```
 
 <!--
-Explain the rewrite strategy: every change reads the whole list, modifies it in memory,
-then saves the whole thing back. For a short list this is simplest; with thousands of rows
-you need per-row storage or a database.
+Jelaskan strategi tulis-ulang: setiap perubahan membaca seluruh daftar, mengubahnya di memori,
+lalu menyimpan seluruhnya kembali. Untuk daftar pendek ini paling sederhana; untuk ribuan baris
+kamu butuh penyimpanan per baris atau basis data.
 
-Mention that a note's identity is made from `Date.now().toString()` — enough for the
-practicum, whereas in production a UUID is better so they do not collide.
+Sebutkan bahwa identitas catatan dibuat dari `Date.now().toString()` — cukup untuk praktikum,
+sedangkan di produksi UUID lebih baik supaya tidak bertabrakan.
 
-Warning: the return value of `hapusCatatan` is deliberately the latest list so the screen
-can update its state without reading again.
+Peringatan: nilai kembalian `hapusCatatan` sengaja berupa daftar terbaru supaya layar bisa
+memperbarui state tanpa membaca ulang.
 -->
 
 ---
 
-## Notes List: Search and Loading
+## Daftar Catatan: Pencarian dan Pemuatan Ulang
 
-`screens/DaftarCatatan.js` — the core excerpt
+`screens/DaftarCatatan.js` — potongan inti
 
 ```jsx
 const [daftar, setDaftar] = useState([]);
@@ -718,26 +735,27 @@ const daftarTersaring = daftar.filter((catatan) => {
 });
 ```
 
-- Deleting always goes through an `Alert.alert` confirmation so nothing is deleted by accident
-- Tapping the card opens the edit form through `router.push` (Chapter 7)
+- Hapus selalu lewat konfirmasi `Alert.alert` agar tidak terhapus tak sengaja
 
 <!--
-Dissect the search: trim the edge spaces, lowercase both sides, then compare with
-`includes`. The case where "belanja" does not find "Belanja mingguan" is the next
-troubleshooting item.
+Dipotong ke catatan (tidak muat di slide): mengetuk kartu membuka formulir edit lewat
+`router.push` (Bab 7).
 
-Stress the separation of touch areas: the Delete button is placed apart from the card's
-press area so the two actions do not overlap.
+Bedah pencariannya: buang spasi di tepi, kecilkan kedua sisi, lalu bandingkan dengan `includes`.
+Kasus "belanja" tidak menemukan "Belanja mingguan" adalah butir troubleshooting berikutnya.
 
-Warning: deleting data always goes through a confirmation — a mistaken delete cannot be
-undone because there is no history in simple local storage.
+Tegaskan pemisahan area sentuh: tombol Hapus diletakkan terpisah dari area tekan kartu supaya
+dua aksi itu tidak bertumpuk.
+
+Peringatan: menghapus data selalu lewat konfirmasi — penghapusan yang keliru tidak bisa
+dibatalkan karena penyimpanan lokal sederhana tidak punya riwayat.
 -->
 
 ---
 
-## Note Form: One Component, Two Modes
+## Formulir Catatan: Satu Komponen, Dua Mode
 
-`screens/FormCatatan.js` — the mode is determined by whether the route parameter `id` is present
+`screens/FormCatatan.js` — modenya ditentukan oleh ada tidaknya parameter rute `id`
 
 ```jsx
 const idCatatan = typeof params.id === 'string' ? params.id : null; // null = tambah
@@ -753,264 +771,267 @@ const simpan = async () => {
 };
 ```
 
-- An empty title is rejected through `Alert.alert` before the data is saved
-- `keyboardShouldPersistTaps` keeps the Save button active while the keyboard is open
+- Judul kosong ditolak lewat `Alert.alert` sebelum data disimpan
+- `keyboardShouldPersistTaps` menjaga tombol Simpan tetap aktif saat papan ketik terbuka
 
 <!--
-Compare the two modes in one component: `idCatatan` is null on the `/catatan/buat` route,
-and holds an id on the `/catatan/[id]` route.
+Bandingkan dua mode dalam satu komponen: `idCatatan` bernilai null di rute `/catatan/buat`, dan
+berisi sebuah id di rute `/catatan/[id]`.
 
-Ask: "Why not make two separate screen files?" (Because most of the form code is the same;
-one component means a validation fix is enough in one place.)
+Tanya: "Kenapa tidak dibuat dua file layar yang terpisah?" (Karena sebagian besar kode
+formulirnya sama; satu komponen berarti perbaikan validasi cukup di satu tempat.)
 
-Warning: `useLocalSearchParams` can return an array, so its type is checked with
-`typeof params.id === 'string'` — not simply trusted.
+Peringatan: `useLocalSearchParams` bisa mengembalikan array, jadi tipenya diperiksa dengan
+`typeof params.id === 'string'` — jangan langsung dipercaya.
 -->
 
 ---
 
-## When Must Data Be Reloaded?
+## Kapan Data Harus Dimuat Ulang?
 
 ![w:1120](assets/diagrams/bab-11-penyimpanan-data-lokal-12.svg)
 
-- The list screen stays mounted while the form screen covers it (Stack navigation, Chapter 7)
-- `useFocusEffect` re-triggers every time the screen gains focus — exactly what is wanted
+- Layar daftar tetap ter-mount selama formulir menutupinya (navigasi Stack, Bab 7)
+- `useFocusEffect` memicu ulang setiap kali layar kembali mendapat fokus — persis yang dibutuhkan
 
-> `useCallback` is used so the effect is not recreated on every render.
+> `useCallback` dipakai supaya effect tidak dibuat ulang di setiap render.
 
 <!--
-This is the classic bug of this chapter; discuss it as a story: the note is saved, but the
-screen does not know because it has not been reloaded for a long time.
+Inilah bug klasik bab ini; bahas sebagai cerita: catatannya tersimpan, tetapi layar tidak tahu
+karena sudah lama tidak dimuat ulang.
 
-Analogy: the door of the room stays open, but we no longer look inside. Screen focus is the
-moment to take a look.
+Analogi: pintu kamar tetap terbuka, tetapi kita tidak lagi melihat ke dalam. Fokus layar adalah
+saatnya menengok.
 
-Misconception warning: the problem is not storage but when the data is read. Students often
-blame AsyncStorage when this symptom appears.
+Peringatan salah paham: masalahnya bukan penyimpanan, melainkan kapan datanya dibaca.
+Mahasiswa sering menyalahkan AsyncStorage saat gejala ini muncul.
 
-Trimmed to the picture (the diagram says this):
-- `useEffect` with empty dependencies runs only once when the screen mounts
-- As a result a new note does not appear when the user returns from the form
+Dipotong ke gambar (diagram yang mengatakan ini):
+- `useEffect` dengan dependency kosong hanya berjalan sekali saat layar ter-mount
+- Akibatnya catatan baru tidak muncul saat pengguna kembali dari formulir
 -->
 
 ---
 
-## Common Troubleshooting Problems
+<!-- _class: compact -->
 
-| Problem | Cause | Solution |
+## Lima Masalah yang Paling Sering Muncul
+
+| Masalah | Penyebab | Solusi |
 |---|---|---|
-| A new note does not appear | Loading happens only once (`useEffect`) | Use `useFocusEffect` |
-| `[object Object]` is shown | The object is saved without `JSON.stringify` | Always go through the storage module |
-| `Module not found` async-storage | Installed through `npm install` | `npx expo install`, then restart |
-| Search does not find it | The comparison is case-sensitive | `.toLowerCase()` and `.trim()` |
-| Data feels "lost" | The app was uninstalled or the key differs | one key constant in one module |
+| Catatan baru tidak muncul | Pemuatan hanya sekali (`useEffect`) | Pakai `useFocusEffect` |
+| Tampil `[object Object]` | Objek disimpan tanpa `JSON.stringify` | Selalu lewat modul penyimpanan |
+| `Module not found` async-storage | Dipasang lewat `npm install` | `npx expo install`, lalu restart |
+| Pencarian tidak menemukan | Perbandingan peka huruf besar-kecil | `.toLowerCase()` dan `.trim()` |
+| Data terasa "hilang" | Di-uninstall atau kuncinya beda | Satu konstanta kunci di satu modul |
 
 <!--
-Discuss the first row (five to ten minutes) because it happens most often in the practicum;
-the rest students can read themselves while working.
+Bahas baris pertama (lima sampai sepuluh menit) karena paling sering terjadi di praktikum;
+sisanya bisa dibaca mahasiswa sendiri sambil bekerja.
 
-For the "key differs" row, show that the practicum uses one `KUNCI_CATATAN` constant so a
-typo in the key name becomes impossible.
+Untuk baris "kuncinya beda", tunjukkan bahwa praktikum memakai satu konstanta `KUNCI_CATATAN`
+sehingga salah ketik nama kunci menjadi mustahil.
 
-Warning: do not patch the symptom by forcing a re-render. Find where the data actually is
-first before changing code.
+Peringatan: jangan menambal gejalanya dengan memaksa render ulang. Temukan dulu di mana datanya
+sebenarnya sebelum mengubah kode.
 -->
 
 ---
 
-## Case Study: Still Working Without Signal
+## Studi Kasus: Tetap Bekerja Tanpa Sinyal
 
 ![w:1120](assets/diagrams/bab-11-penyimpanan-data-lokal-13.svg)
 
-<div class="grid2">
-<div>
+**Masalahnya**
 
-**Problem**
+- Katalog tidak bisa dibaca dan pesanan tidak bisa dicatat saat offline
 
-- The catalog cannot be read and orders cannot be recorded while offline
+**Keputusan: offline-first**
 
-</div>
-<div>
+- Token penjualan disimpan di secure storage, bukan di AsyncStorage
 
-**Decision: offline-first**
-
-- The sales token is stored in secure storage, not AsyncStorage
-
-</div>
-</div>
-
-> Three trade-offs that must be managed: availability vs consistency · freshness vs reliability · convenience vs security.
+> Tiga trade-off: ketersediaan, kesegaran, dan keamanan.
 
 <!--
-Tell it as a company story, not as a list; the goal is to make students feel that a storage
-decision is a product decision.
+Ceritakan sebagai kisah perusahaan, bukan sebagai daftar; tujuannya agar mahasiswa merasa bahwa
+keputusan penyimpanan adalah keputusan produk.
 
-Mention the conflict that appears during synchronization: a "last writer wins" rule using a
-timestamp, or asking the user for confirmation.
+Sebut pasangan trade-off-nya satu per satu: ketersediaan dilawankan dengan konsistensi,
+kesegaran dengan keandalan, kemudahan dengan keamanan.
 
-The biggest risk of this approach is losing data when the app is uninstalled or the device
-breaks — which is why a backup and synchronization strategy must be designed as early as
-possible, not added later.
+Sebut konflik yang muncul saat sinkronisasi: aturan "penulis terakhir menang" memakai
+timestamp, atau meminta konfirmasi pengguna.
 
-Trimmed to the picture (the diagram says this):
-- Sales staff visit areas whose network often disappears
-- The catalog is cached with snapshot + timestamp, and still shows offline
-- Orders go into a local queue, sent when the connection recovers
+Risiko terbesar pendekatan ini adalah kehilangan data saat aplikasi di-uninstall atau
+perangkatnya rusak — itulah sebabnya strategi cadangan dan sinkronisasi harus dirancang
+seawal mungkin, bukan ditambahkan belakangan.
+
+Dipotong ke gambar (diagram yang mengatakan ini):
+- Petugas penjualan mendatangi wilayah yang jaringannya sering hilang
+- Katalog di-cache dengan snapshot + timestamp, dan tetap tampil offline
+- Pesanan masuk antrean lokal, dikirim saat koneksi pulih
 -->
 
 ---
 
-## Application in IS/IT Practice
+## Yang Harus Teramati
 
-| App need | Pattern from this chapter |
-|---|---|
-| Preferences and settings | `setItem`/`getItem` with the key `preferensi:*` |
-| Form drafts that must not be lost | JSON serialization and rewrite storage |
-| Schedule and catalog stay readable | Cache snapshot + timestamp + TTL |
-| Transaction queue without signal | A local JSON list, synchronized when online |
-| User session | Secure storage (Chapter 13), not AsyncStorage |
+Untuk praktikum ini, catat lima hal:
 
-> The Final Project uses the same patterns: the course list and schedule stay readable even when the campus network is unstable.
+- Daftar catatan tetap ada setelah aplikasi ditutup penuh, lalu dibuka lagi
+- Satu kunci `catatan:v1` menyimpan seluruh daftar, bukan satu kunci per catatan
+- Yang tampil di layar berasal dari `muatCatatan()`, bukan dari data contoh di dalam file
+- Pencarian berhuruf kecil menemukan judul yang berhuruf kapital
+- Catatan yang dihapus tidak muncul lagi setelah layar dimuat ulang
+
+> Laporan yang baik melampirkan tangkapan layar sebelum dan sesudah aplikasi dibuka ulang.
 
 <!--
-Show that the five rows of this table are five design decisions that will be asked for in
-the Final Project, complete with the reasons for choosing them.
+Jadikan daftar ini lembar centang: mahasiswa mencentang setiap butir lalu melampirkan buktinya.
 
-Ask: "Which row do campus apps most often ignore?" (Usually the form draft: the user loses
-their KRS or registration input because the session is cut off.)
+Yang paling sering hilang adalah butir pertama: mahasiswa menutup aplikasi dengan tombol Home
+lalu mengira sudah menguji persistensi.
 
-Remind them that local storage does not replace the server: it complements it, with
-availability and freshness limits the developer must be aware of.
+Pertanyaan penuntun: "Bukti apa yang paling sulit dipalsukan di praktikum ini?" (Jawaban:
+tangkapan layar yang menunjukkan jam perangkat berbeda sebelum dan sesudah restart.)
+-->
+
+---
+
+<!-- _class: compact -->
+
+## Pola Bab Ini Muncul di Lima Kebutuhan Aplikasi
+
+| Kebutuhan aplikasi | Pola dari bab ini |
+|---|---|
+| Preferensi dan pengaturan | `setItem`/`getItem` dengan kunci `preferensi:*` |
+| Draf formulir yang tidak boleh hilang | Serialisasi JSON dan penyimpanan tulis-ulang |
+| Jadwal dan katalog tetap terbaca | Cache snapshot + timestamp + TTL |
+| Antrean transaksi tanpa sinyal | Daftar JSON lokal, disinkronkan saat online |
+| Sesi pengguna | Secure storage (Bab 13), bukan AsyncStorage |
+
+> Aplikasi Manajemen Data Mahasiswa memakai baris ketiga dan keempat: daftar mahasiswa dari `GET /api/mahasiswa` tetap terbaca saat jaringan kampus putus.
+
+<!--
+Tunjukkan bahwa lima baris tabel ini adalah lima keputusan desain yang akan diminta di Project
+Akhir, lengkap dengan alasan pemilihannya.
+
+Tanya: "Baris mana yang paling sering diabaikan aplikasi kampus?" (Biasanya draf formulir:
+pengguna kehilangan isian KRS atau pendaftaran karena sesinya terputus.)
+
+Ingatkan bahwa penyimpanan lokal tidak menggantikan server: ia melengkapinya, dengan batas
+ketersediaan dan kesegaran yang harus disadari pengembang.
+-->
+
+---
+
+## Latihan dan Diskusi: dari Satu Penghitung ke Kebiasaan
+
+**Latihan (dari buku)**
+
+- Menambah penghitung catatan yang ikut bertahan
+- Menandai catatan penting dengan versi kunci `catatan:v2`
+
+**Diskusi kelas**
+
+- Pernah kehilangan draf karena aplikasinya tertutup?
+- Fitur apa di aplikasimu yang membuktikan cache benar-benar ada?
+- Bagaimana menjadikan keamanan sebagai kebiasaan sejak awal, bukan setelah dipakai?
+
+<!--
+Tiga menit berpikir berpasangan untuk pertanyaan diskusi, lalu tampung dua sampai tiga jawaban.
+Jangan menilai benar atau salah; nilai kemampuan memberikan alasan.
+
+Latihan pertama dan kedua dinilai pada pemahaman versi kunci dan penanganan data lama yang
+harus tetap terbaca. Tantangan lain (fitur arsip, sinkronisasi sederhana) ada di buku.
+
+Yang dinilai dalam diskusi: kesadaran bahwa keputusan penyimpanan adalah keputusan desain
+produk, bukan sekadar pilihan library.
 -->
 
 ---
 
 <!-- _class: center -->
 
-## Comprehension Check
+## Kuis Kilat
 
-- If `{ nama: 'Budi' }` is sent straight to `setItem`, what is stored?
-- What is the return value of `getItem` for a key that has never been saved?
-- Why may an authentication token not be stored in AsyncStorage?
-- What is the role of TTL in the caching pattern?
+- Kalau `{ nama: 'Budi' }` dikirim langsung ke `setItem`, apa yang tersimpan?
+- Apa nilai kembalian `getItem` untuk kunci yang belum pernah disimpan?
+- Kenapa token autentikasi tidak boleh disimpan di AsyncStorage?
+- Apa peran TTL dalam pola caching?
 
 <!--
-Five-minute oral quiz: show the questions, ask the class to answer together or raise hands,
-then move to the answer slide. Do not leak the answers on this slide.
+Kuis lisan lima menit: tampilkan pertanyaan, minta kelas menjawab serempak atau mengangkat
+tangan, lalu lanjut ke slide kunci. Jangan bocorkan jawaban di slide ini.
 
-If the class's answers vary on the first question, repeat the "strings only" rule before
-closing the meeting.
+Kalau jawaban kelas beragam di pertanyaan pertama, ulangi aturan "hanya string" sebelum
+menutup pertemuan.
 -->
 
 ---
 
 <!-- _class: center -->
 
-## Answers
+## Kunci Kuis Kilat
 
-- `[object Object]` — a non-string value must be serialized first
-- `null` — not an empty string, so it is checked with `=== null`
-- Because it is not encrypted; use secure storage as in Chapter 13
-- The cache's age limit before its data is considered stale
+- `[object Object]` — nilai non-string harus diserialisasi lebih dulu
+- `null` — bukan string kosong, jadi diperiksa dengan `=== null`
+- Karena tidak terenkripsi; pakai secure storage seperti di Bab 13
+- Batas umur cache sebelum datanya dianggap kedaluwarsa
 
 <!--
-Repeat the two distinctions most often swapped: `null` versus an empty string, and TTL (the
-data's age limit) versus timeout (the time limit for waiting for a server).
+Ulangi dua pembedaan yang paling sering tertukar: `null` versus string kosong, dan TTL (batas
+umur data) versus timeout (batas waktu menunggu jawaban server).
 
-If many are wrong on the third question, repeat the risk of a rooted device before closing
-the meeting.
+Kalau banyak yang salah di pertanyaan ketiga, ulangi risiko perangkat yang di-root sebelum
+menutup pertemuan.
 -->
 
 ---
 
-## Summary
+## Ringkasan
 
-1. React state is volatile; data that must survive is put in local storage
-2. AsyncStorage: key–value, asynchronous, strings only, persistent, not encrypted
-3. Non-string values must go through `JSON.stringify` and `JSON.parse` inside `try/catch`
-4. Cache = snapshot + timestamp + TTL; give a marker when the data comes from the cache
-5. Tokens go to secure storage; storage logic is separated into a small API module
+1. State React hidup di memori yang volatil; data yang harus bertahan disimpan di penyimpanan lokal
+2. AsyncStorage: kunci–nilai, asinkron, hanya string, persisten, tidak terenkripsi
+3. Nilai non-string harus lewat `JSON.stringify` dan `JSON.parse` di dalam `try/catch`
+4. Cache = snapshot + timestamp + TTL; beri penanda saat data berasal dari cache
+5. Token masuk secure storage; logika penyimpanan dipisah ke modul API kecil
 
 <!--
-Do not read it out. Ask five students to pick one number and explain it in their own
-sentence; an item that cannot be explained is an item that must be repeated.
+Jangan dibacakan. Minta lima mahasiswa memilih satu nomor dan menjelaskannya dengan kalimatnya
+sendiri; butir yang tidak bisa dijelaskan adalah butir yang harus diulang.
 
-Closing message: a good app is not one that never fails, but one that is still useful when
-it fails — it does not lose data, and it is honest about the freshness of its data.
+Pesan penutup: aplikasi yang baik bukan yang tidak pernah gagal, melainkan yang tetap berguna
+saat gagal — tidak kehilangan data, dan jujur soal kesegaran datanya.
+
+Sambungkan ke bab berikutnya: penyimpanan yang baru dipelajari ini dipakai lagi saat kamera,
+lokasi, dan notifikasi menghasilkan file dan data yang harus ditahan di perangkat.
 -->
 
 ---
 
-## Exercises and Class Discussion
+<!-- _class: compact -->
 
-<div class="grid2">
-<div>
+## Referensi
 
-**Exercises (from the chapter)**
-
-- Add a persistent note counter
-- Mark important notes with the key version `catatan:v2`
-
-</div>
-<div>
-
-**Class discussion**
-
-- Have you ever lost a draft because the app closed?
-- Which feature in your daily app proves that a cache exists?
-- How do you make being safe a habit from the start, not after it is used?
-
-</div>
-</div>
-
-<!--
-Three-minute think-pair-share for the discussion questions, then collect two to three
-answers. Do not judge right or wrong; judge the ability to give a reason.
-
-The first and second exercises are assessed on understanding key versioning and handling
-old data that must stay readable. Other challenges (an archive feature, simple
-synchronization) are in the chapter.
-
-What is assessed in the discussion: the awareness that a storage decision is a product
-design decision, not merely a library choice.
--->
-
----
-
-## References
-
-| Source | Link |
+| Sumber | Link |
 |---|---|
-| Expo documentation (2026) | docs.expo.dev |
-| React Native documentation (2026) | reactnative.dev |
+| Dokumentasi Expo (2026) | docs.expo.dev |
+| Dokumentasi React Native (2026) | reactnative.dev |
 | MDN Web Docs — JavaScript (2026) | developer.mozilla.org |
-| AsyncStorage library documentation | the library's official documentation |
+| Dokumentasi library AsyncStorage | dokumentasi resmi library |
 
-<div class="grid2">
-<div>
+**Bacaan lanjutan:** Bab 12 — Mengakses Fitur Perangkat · Bab 13 — Autentikasi dan Keamanan Aplikasi
 
-**Further reading**
-
-- Chapter 12 — Accessing Device Features (files and media)
-- Chapter 13 — Authentication and Security (secure storage)
-
-</div>
-<div>
-
-**Technology versions in this book**
-
-- Expo SDK 57 · React Native 0.86 · React 19.2 · Node.js LTS ≥ 22
-
-</div>
-</div>
+**Versi teknologi:** Expo SDK 57 · React Native 0.86 · React 19.2 · Node.js ≥ 22
 
 <!--
-The complete references are in Appendix D; the glossary of terms in Appendix C contains
-entries for AsyncStorage, JSON, and Secure Storage along with their term equivalents.
+Rujukan lengkap ada di Lampiran D; glosarium istilah di Lampiran C memuat entri AsyncStorage,
+JSON, dan Secure Storage beserta padanan istilahnya.
 
-⚠ version-sensitive: the AsyncStorage library documentation can change between versions —
-including the data size limit and the behavior on the web platform. Always check the
-library's official documentation page, not a blog or an old forum answer.
+⚠ sensitif versi: dokumentasi library AsyncStorage bisa berubah antarversi — termasuk batas
+ukuran data dan perilakunya di platform web. Selalu periksa halaman dokumentasi resmi library,
+bukan blog atau jawaban forum lama.
 -->
 
 ---
@@ -1018,17 +1039,17 @@ library's official documentation page, not a blog or an old forum answer.
 <!-- _class: lead -->
 <!-- _paginate: skip -->
 
-# Towards Chapter 12
+# Siap ke Bab 12
 
-**Practicum:** build the Notes App (add, edit, delete, search) and prove that its data survives after the app is restarted.
+**Tugas:** bangun Aplikasi Catatan (tambah, edit, hapus, cari) dan buktikan datanya bertahan setelah aplikasi di-restart; kumpulkan laporan Praktikum 11.
 
-Next meeting: accessing device features — camera, location, and notifications.
+Pertemuan berikutnya: mengakses fitur perangkat — kamera, lokasi, dan notifikasi.
 
 <!--
-Close with one sentence: "Today our app learned to remember; next meeting it learns to see
-and feel."
+Tutup dengan satu kalimat: "Hari ini aplikasi kita belajar mengingat; pertemuan berikutnya ia
+belajar melihat dan merasakan."
 
-State the practicum report submission deadline explicitly and its assessment aspects: see
-Appendix A — the practicum rubric (conceptual understanding 15%, implementation 25%, code
-quality 15%, UI/UX 15%, debugging 10%, documentation 20%).
+Sebutkan tenggat pengumpulan laporan praktikum secara eksplisit beserta aspek penilaiannya:
+lihat Lampiran A — rubrik praktikum (pemahaman konsep 15%, implementasi 25%, kualitas kode 15%,
+UI/UX 15%, debugging 10%, dokumentasi 20%).
 -->

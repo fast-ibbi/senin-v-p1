@@ -16,7 +16,7 @@
 // explicitly, since `layers` defaults the top band to the accent.
 export default {
   id: '04',
-  slide: 'Data Flow: Screen, Small API, Storage',
+  slide: 'Alur Data: Layar, API Kecil, Lalu Penyimpanan',
   pattern: 'layers',
   alt:
     'Three levels a data change passes through: the screen in screens/, the small API in ' +

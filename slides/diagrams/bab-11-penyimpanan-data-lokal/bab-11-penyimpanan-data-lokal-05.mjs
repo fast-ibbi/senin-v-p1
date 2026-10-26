@@ -20,7 +20,7 @@
 // instead and no bullet was removed.
 export default {
   id: '05',
-  slide: 'Diagram: JSON Serialization: Bridging the String Rule',
+  slide: 'Objek Masuk, String Keluar, Objek Kembali',
   pattern: 'flow',
   alt:
     'The serialization round trip, drawn as a one-way chain rather than a loop: ' +
