@@ -18,7 +18,7 @@
 // reads as an accident. The alt text keeps the full name. Slide 30 also calls it "the form".
 export default {
   id: '05',
-  slide: 'Protected Screen: A Single Control Point',
+  slide: 'Perlindungan di Satu Titik Berlaku untuk Semua Layar',
   pattern: 'tree',
   alt:
     'One control point: the (app) group layout sits above Home, Student List, Student ' +

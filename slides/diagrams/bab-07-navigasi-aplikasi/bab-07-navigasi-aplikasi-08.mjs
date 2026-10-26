@@ -23,7 +23,7 @@
 // owns ("a stack inside each tab").
 export default {
   id: '08',
-  slide: 'Case Study: the "SehatIn" Clinic',
+  slide: 'Studi Kasus: Klinik "SehatIn"',
   pattern: 'flow',
   alt:
     'The case study\'s deep link, stage by stage: a cancellation notification arrives via ' +

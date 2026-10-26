@@ -20,7 +20,7 @@
 // the Android back button and the iOS edge swipe are not in the picture.
 export default {
   id: '06',
-  slide: 'What Is Navigation?',
+  slide: 'Navigasi Mengatur Layar, Riwayat, dan Data',
   pattern: 'beforeAfter',
   alt:
     'The browser analogy, read row by row: a page address is an internal route, the forward ' +

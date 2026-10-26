@@ -17,7 +17,7 @@
 // ("Kehilangan fokus"), which the slide itself only names as "when focus returns".
 export default {
   id: '04',
-  slide: 'Why Is the List Stale After Going Back?',
+  slide: 'Kenapa Daftar Masih Basi Setelah Kembali?',
   pattern: 'stateMachine',
   alt:
     'A tab screen mounts once — a plain useEffect runs there and never again — then cycles ' +

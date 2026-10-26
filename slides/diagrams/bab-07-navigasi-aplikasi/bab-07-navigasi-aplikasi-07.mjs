@@ -15,7 +15,7 @@
 // "the folder is the structure", which is the point of the slide.
 export default {
   id: '07',
-  slide: 'File-Based Routing: Folders Become Addresses',
+  slide: 'Folder Menjadi Alamat, File Menjadi Layar',
   pattern: 'tree',
   alt:
     'The app/ folder holds three files, and each file name becomes the address beside it: ' +

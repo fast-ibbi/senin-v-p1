@@ -21,7 +21,7 @@
 // value that belongs to the prose on `Dynamic Routes and Parameters`, not to a route.
 export default {
   id: '02',
-  slide: 'From File to Address',
+  slide: 'Tanda Kurung Mengelompokkan, Bukan Menambah Alamat',
   pattern: 'beforeAfter',
   alt:
     'Four files in the app/ folder and the route address each one produces: index.js gives ' +

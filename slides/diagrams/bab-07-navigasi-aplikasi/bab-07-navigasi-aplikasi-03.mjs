@@ -13,7 +13,7 @@
 // as the route map names them ("Student List", "Student Detail", "Add/Edit Form").
 export default {
   id: '03',
-  slide: 'Nested Navigation: A Tab Containing a Stack',
+  slide: 'Tab yang Berisi Stack Punya Riwayat Sendiri',
   pattern: 'tree',
   alt:
     'Nested navigation: the Tabs root holds two tabs; the Students tab holds its own Stack, ' +

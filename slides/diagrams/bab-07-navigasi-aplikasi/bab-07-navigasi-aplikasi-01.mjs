@@ -15,7 +15,7 @@
 // tree, not from registration code").
 export default {
   id: '01',
-  slide: 'Navigation: An Early Architecture Decision',
+  slide: 'Salah Memilih Navigasi Terasa Langsung oleh Pengguna',
   pattern: 'beforeAfter',
   alt:
     'Two ways to own navigation. Hand-built: the active screen is kept in state, the back ' +
