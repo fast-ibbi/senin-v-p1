@@ -26,7 +26,7 @@
 // no label moved and no font changed.
 export default {
   id: '07',
-  slide: 'Spread Operator: Copying and Updating',
+  slide: '... Menyalin Dulu, Baru Memperbarui',
   pattern: 'flow',
   alt:
     'Copy first, then update: ...dataLama copies every key of the old object into a new ' +

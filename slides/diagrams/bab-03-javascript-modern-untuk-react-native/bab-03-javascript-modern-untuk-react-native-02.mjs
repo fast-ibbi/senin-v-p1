@@ -13,7 +13,7 @@
 // words ("the data file", "the logic file").
 export default {
   id: '02',
-  slide: 'Modules: Splitting Code into Files',
+  slide: 'Modul Memecah Kode Menjadi File',
   pattern: 'flow',
   alt:
     'Modules split code into files: data-mahasiswa.mjs is the data file and exports ' +

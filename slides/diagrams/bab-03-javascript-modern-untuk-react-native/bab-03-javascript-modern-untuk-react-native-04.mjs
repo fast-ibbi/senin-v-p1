@@ -15,7 +15,7 @@
 // Red/green is the wrong-versus-right pairing, not an accent highlight.
 export default {
   id: '04',
-  slide: '`try`/`catch`: the App Must Not Stay Silent',
+  slide: 'try/catch: Aplikasi Tidak Boleh Diam Saja',
   pattern: 'beforeAfter',
   alt:
     'Two mental models of a catch block, matched row by row: what the block does, then ' +

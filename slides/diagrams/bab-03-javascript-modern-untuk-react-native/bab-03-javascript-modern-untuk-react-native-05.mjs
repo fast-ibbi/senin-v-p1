@@ -17,7 +17,7 @@
 // card — that would be a table, and the deck already uses tables for those.
 export default {
   id: '05',
-  slide: 'Variables: `const` and `let`',
+  slide: 'React Hampir Selalu Memakai const, Ini Sebabnya',
   pattern: 'beforeAfter',
   alt:
     'Two mental models, matched row by row: const is for a value filled once and is ' +

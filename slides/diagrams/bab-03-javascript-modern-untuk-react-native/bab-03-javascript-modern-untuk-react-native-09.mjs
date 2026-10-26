@@ -24,7 +24,7 @@
 // the sentence in one piece, because it says it as two code blocks.
 export default {
   id: '09',
-  slide: 'Running Modules in Node.js',
+  slide: 'Menjalankan Modul di Node.js Butuh Dua Langkah',
   pattern: 'beforeAfter',
   alt:
     'Two ways to make Node read the file as a module, not one after the other. Left: the .mjs ' +

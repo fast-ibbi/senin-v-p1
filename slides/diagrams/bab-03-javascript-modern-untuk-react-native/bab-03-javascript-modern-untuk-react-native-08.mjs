@@ -26,7 +26,7 @@
 // Nothing was trimmed from this slide.
 export default {
   id: '08',
-  slide: '`map`, `filter`, and `reduce`',
+  slide: 'map, filter, reduce: Tiga Cara Mengolah Array',
   pattern: 'tree',
   alt:
     'Containment, not a chain: one array — the original array, unchanged — carries three ' +

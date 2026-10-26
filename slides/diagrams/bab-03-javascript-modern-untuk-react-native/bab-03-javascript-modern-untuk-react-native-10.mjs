@@ -31,7 +31,7 @@
 // label and no font, and the note ink ends at 135, well inside 160. Same crop as diagram 07.
 export default {
   id: '10',
-  slide: '`async`/`await`: Asynchronous as if Synchronous',
+  slide: 'async/await Membuat Asinkron Terbaca Berurutan',
   pattern: 'flow',
   alt:
     'The chain of one awaited call: the call returns a promise, await waits for that one ' +

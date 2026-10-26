@@ -20,7 +20,7 @@
 // value) and in the two "empty" rows; the alt text says so.
 export default {
   id: '01',
-  slide: 'Falsy and Truthy',
+  slide: 'Hanya Enam Nilai yang Dianggap Salah',
   pattern: 'beforeAfter',
   alt:
     'A partition, not paired rows: the falsy panel lists the whole falsy set (false, 0, ' +

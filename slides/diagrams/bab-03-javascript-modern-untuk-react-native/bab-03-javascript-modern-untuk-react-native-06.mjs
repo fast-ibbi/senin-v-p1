@@ -21,7 +21,7 @@
 // point of the first guard. The third note is bullet 2's own phrase, "a default value".
 export default {
   id: '06',
-  slide: 'Optional Chaining and Nullish Coalescing',
+  slide: '?. dan ?? Menjaga Akses ke Data Kosong',
   pattern: 'flow',
   alt:
     'The value travels through two guards: mahasiswa.alamat is null, so the guarded access ' +

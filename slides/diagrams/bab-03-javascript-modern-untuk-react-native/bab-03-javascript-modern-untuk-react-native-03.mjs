@@ -16,7 +16,7 @@
 // on the slide at all.
 export default {
   id: '03',
-  slide: 'Promises and Their Three States',
+  slide: 'Promise Punya Tiga Keadaan',
   pattern: 'stateMachine',
   alt:
     'The three states of a Promise: it starts pending, becomes fulfilled when resolve is ' +
