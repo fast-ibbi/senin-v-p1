@@ -24,7 +24,7 @@
 // later, says no approach wins).
 export default {
   id: '08',
-  slide: 'Four Approaches (1): Native & Web Mobile',
+  slide: 'Empat Pendekatan (1): Native & Web Mobile',
   pattern: 'beforeAfter',
   alt:
     'Native app against mobile web app on two paired rows. Made with: the platform\u2019s ' +

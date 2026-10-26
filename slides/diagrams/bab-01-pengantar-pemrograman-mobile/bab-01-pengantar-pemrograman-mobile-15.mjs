@@ -26,7 +26,7 @@
 // the requirements, which are what the case turns into.
 export default {
   id: '15',
-  slide: 'Case Study: Campus Needs',
+  slide: 'Studi Kasus: Delapan Ribu Mahasiswa, Satu Aplikasi',
   pattern: 'beforeAfter',
   alt:
     'The case in two columns. The problem: class schedules are only posted on the notice ' +

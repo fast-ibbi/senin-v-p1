@@ -21,7 +21,7 @@
 // so moving it would lose a fact the picture does not carry.
 export default {
   id: '09',
-  slide: 'Four Approaches (2): Hybrid & Cross-platform',
+  slide: 'Empat Pendekatan (2): Hybrid & Cross-platform',
   pattern: 'layers',
   alt:
     'The hybrid app as three nested strata: the interface, written in HTML, CSS and ' +

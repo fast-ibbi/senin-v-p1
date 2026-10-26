@@ -24,7 +24,7 @@
 // on, and rule four keeps two bullets on a slide that had bullets anyway.
 export default {
   id: '13',
-  slide: 'Expo: The Price You Pay',
+  slide: 'Setiap Kemudahan Expo Punya Harganya',
   pattern: 'beforeAfter',
   alt:
     'Expo\u2019s costs beside the verdict. The price: app size tends to be larger, native ' +

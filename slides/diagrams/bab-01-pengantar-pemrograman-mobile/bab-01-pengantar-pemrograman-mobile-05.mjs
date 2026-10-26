@@ -17,7 +17,7 @@
 // chapter's prose, and a version detail is not worth inventing.
 export default {
   id: '05',
-  slide: 'How React Native Works',
+  slide: 'JavaScript Memerintah, Native yang Menggambar',
   pattern: 'layers',
   alt:
     'Inside a running app: the JavaScript layer holds the app logic and issues commands, the ' +

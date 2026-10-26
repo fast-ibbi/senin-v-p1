@@ -13,7 +13,7 @@
 // is. The last stage keeps the pattern's default accent, marking where the chapter lands.
 export default {
   id: '03',
-  slide: 'The Evolution of Mobile Technology',
+  slide: 'Setiap Era Lahir dari Keterbatasan Era Sebelumnya',
   pattern: 'flow',
   alt:
     'Mobile technology eras in order, each answering the limitation of the previous one: ' +

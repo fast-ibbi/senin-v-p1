@@ -13,7 +13,7 @@
 // picture, the table two slides earlier, and the summary all agree.
 export default {
   id: '02',
-  slide: 'When to Choose Which?',
+  slide: 'Prioritas Pasar Menentukan Urutan Platform',
   pattern: 'beforeAfter',
   alt:
     'Four priorities each point at one approach: peak performance and the newest device ' +

@@ -14,7 +14,7 @@
 // chain, which is where the three client layers point.
 export default {
   id: '06',
-  slide: 'General Architecture of a Mobile App',
+  slide: 'Satu Aplikasi, Tiga Lapisan',
   pattern: 'flow',
   alt:
     'The client–server chain: the presentation layer passes input to the business layer, the ' +

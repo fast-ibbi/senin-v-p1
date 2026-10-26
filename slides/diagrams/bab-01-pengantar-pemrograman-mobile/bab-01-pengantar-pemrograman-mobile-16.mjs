@@ -30,7 +30,7 @@
 // which is now the picture, so the slide reads top-down — picture, competencies.
 export default {
   id: '16',
-  slide: 'Competencies and the Map of 15 Chapters',
+  slide: 'Peta 15 Bab: Setiap Bab Satu Bata',
   pattern: 'layers',
   alt:
     'The course as a stack, oldest at the bottom: Chapters 2–7 (environment, JavaScript, ' +

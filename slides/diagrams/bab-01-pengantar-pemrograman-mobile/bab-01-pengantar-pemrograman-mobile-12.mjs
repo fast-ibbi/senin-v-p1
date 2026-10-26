@@ -25,7 +25,7 @@
 // name what each tool *is*, and the picture only says what it does in the chain.
 export default {
   id: '12',
-  slide: 'Expo: Three Main Components',
+  slide: 'Expo: Tiga Komponen Utama',
   pattern: 'flow',
   alt:
     'The three Expo components as the stages a project passes through: you write against ' +

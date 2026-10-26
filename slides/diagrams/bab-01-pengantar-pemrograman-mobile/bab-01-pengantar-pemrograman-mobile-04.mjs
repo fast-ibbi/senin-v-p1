@@ -22,7 +22,7 @@
 // below the picture, which is the shape Chapter 6's "Principle 4" slide already uses.
 export default {
   id: '04',
-  slide: 'React Native: Core Concepts',
+  slide: 'Ditulis Sekali, Digambar Native di Dua Platform',
   pattern: 'tree',
   alt:
     'JavaScript and JSX code written once goes into React Native, which draws ViewGroup on ' +

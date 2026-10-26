@@ -30,7 +30,7 @@
 // screen. The arrow-free layout means no direction is asserted between the two sides.
 export default {
   id: '14',
-  slide: 'When Is React Native the Right Fit?',
+  slide: 'Kapan React Native Tepat Dipakai?',
   pattern: 'beforeAfter',
   alt:
     'Two sides of the fit test. Right fit: interface- and data-rich apps, and business ' +

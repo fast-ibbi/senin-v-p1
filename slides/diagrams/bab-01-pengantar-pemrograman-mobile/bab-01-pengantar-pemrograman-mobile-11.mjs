@@ -23,7 +23,7 @@
 // them, so nothing is duplicated there.
 export default {
   id: '11',
-  slide: 'What React Native Is Not',
+  slide: 'React Native Bukan Penerjemah Kode',
   pattern: 'beforeAfter',
   alt:
     'What is native in a React Native app: the interface it displays, not the JavaScript ' +

@@ -25,7 +25,7 @@
 // into a row of its own.
 export default {
   id: '10',
-  slide: 'Fragmentation vs Consistency',
+  slide: 'Kebebasan Android Ditukar dengan Fragmentasi',
   pattern: 'beforeAfter',
   alt:
     'Consequences of the two platforms on paired rows: on Android behaviour can differ from ' +

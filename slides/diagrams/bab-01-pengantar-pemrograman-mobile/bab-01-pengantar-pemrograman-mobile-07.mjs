@@ -23,7 +23,7 @@
 // clause ("so the app must survive stop-and-resume").
 export default {
   id: '07',
-  slide: 'What Is a Mobile App?',
+  slide: 'Aplikasi Mobile Bukan Website yang Diperkecil',
   pattern: 'tree',
   alt:
     'A mobile app defined by two facets: it is not just a shrunken website — installed on ' +
