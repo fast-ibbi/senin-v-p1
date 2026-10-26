@@ -33,7 +33,7 @@
 // verdict. Amber marks a cause worth fixing, red marks what already broke.
 export default {
   id: '08',
-  slide: 'Case Study: The KRS Online Incident',
+  slide: 'Studi Kasus: Insiden KRS Online',
   pattern: 'beforeAfter',
   alt:
     'Symptoms in the field beside the root cause after the audit: a form that accepted a ' +

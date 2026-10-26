@@ -25,7 +25,7 @@
 // the same way). The first chip stays neutral — a new feature is not the fault.
 export default {
   id: '06',
-  slide: 'Why This Chapter Exists',
+  slide: 'Bug yang Sampai ke Pengguna Lebih Mahal daripada yang Tertangkap Lebih Awal',
   pattern: 'flow',
   alt:
     'Every new feature adds the chance that one change breaks another part, and that ' +

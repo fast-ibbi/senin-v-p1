@@ -2,10 +2,10 @@
 marp: true
 theme: academic
 paginate: true
-title: "Chapter 14 — Debugging, Testing, and Quality Assurance"
-description: "Mobile Programming lecture, meeting 15: the console and React Native DevTools, common React Native errors, network debugging, unit testing with node:test, integration testing, manual and usability testing, and a QA checklist."
-author: "Course Instructor — Information Systems / Informatics Engineering Study Program"
-footer: "Mobile Programming · Chapter 14 — Debugging, Testing, and Quality Assurance"
+title: "Bab 14 — Debugging, Testing, dan Quality Assurance"
+description: "Slide kuliah Pemrograman Mobile, pertemuan 15: console dan React Native DevTools, error React Native yang umum, debugging jaringan, unit testing dengan node:test, integration testing, pengujian manual dan usability, serta checklist QA."
+author: "Dosen Mata Kuliah — Program Studi Sistem Informasi / Teknik Informatika"
+footer: "Pemrograman Mobile · Bab 14 — Debugging, Testing, dan Quality Assurance"
 size: 16:9
 ---
 
@@ -13,64 +13,70 @@ size: 16:9
 <!-- _paginate: skip -->
 <!-- _footer: "" -->
 
-# Chapter 14 — Debugging, Testing, and Quality Assurance
+# Bab 14 — Debugging, Testing, dan Quality Assurance
 
-From an app that "runs" to an app that is correct · Meeting 15
+Dari aplikasi yang "jalan" ke aplikasi yang benar · Pertemuan 15
 
 <!--
-Open with one sentence: "This chapter adds no feature at all, but it decides whether the
-features you have already built are worth trusting."
+Buka dengan satu kalimat: "Bab ini tidak menambah fitur satu pun, tetapi ia yang menentukan
+apakah fitur yang sudah kamu bangun layak dipercaya."
 
-Opening question: "If your app runs smoothly in your own emulator, does that mean the app
-is correct?" Collect 2–3 answers without correcting them yet — the answers are in
-Sections 14.6 and 14.7.
+Pertanyaan pembuka: "Kalau aplikasimu lancar di emulatormu sendiri, apakah itu berarti
+aplikasinya benar?" Tampung dua sampai tiga jawaban tanpa dikoreksi dulu — jawabannya ada di
+subbab 14.6 dan 14.7.
+
+Peringatan waktu: pertemuan 15 memuat dua bab sekaligus (Bab 14 dan Bab 15). Jaga bab ini
+selesai dalam separuh waktu pertama, karena praktikumnya yang paling banyak memakan menit.
 -->
 
 ---
 
-## Learning Objectives
+## Tujuan Pembelajaran
 
-- Explain the role of debugging, testing, and QA in the application life cycle
-- Identify the functions of the console and the features of React Native DevTools
-- Analyze common React Native errors together with their causes and solutions
-- Apply unit tests to pure functions with `node:test`
-- Distinguish unit, integration, manual, and usability testing
+Setelah bab ini, kamu bisa:
+
+- Menjelaskan peran debugging, testing, dan QA dalam siklus hidup aplikasi
+- Mengidentifikasi fungsi console dan fitur React Native DevTools
+- Menganalisis error umum React Native beserta penyebab dan solusinya
+- Menerapkan unit test fungsi murni dengan `node:test`
+- Membedakan unit, integration, manual, dan usability testing
 
 <!--
-Read out only the verbs. Stress that the sixth objective of the chapter (evaluating test
-results through a checklist) is this meeting's real product: a filled-in QA checklist and a
-unit test that can actually be run.
+Bacakan hanya verbanya, dengan tempo cepat. Tegaskan bahwa tujuan keenam di buku (mengevaluasi
+hasil pengujian lewat checklist) adalah produk nyata pertemuan ini: checklist QA yang terisi
+dan unit test yang benar-benar bisa dijalankan.
 
-Tie it to the assessment: the debugging aspect at 10% and documentation at 20% in the
-practicum rubric (Appendix A) draw on this chapter.
+Kaitkan dengan penilaian: aspek debugging berbobot 10% dan dokumentasi 20% di rubrik praktikum
+(Lampiran A) bersumber dari bab ini.
+
+Pertanyaan penuntun: "Bedanya butir keempat dan kelima apa?" (Jawaban: keempat soal menulis
+test, kelima soal memilih jenis test yang tepat untuk masalah yang dihadapi.)
 -->
 
 ---
 
-## Why This Chapter Exists
+## Bug yang Sampai ke Pengguna Lebih Mahal daripada yang Tertangkap Lebih Awal
 
 ![w:1120](assets/diagrams/bab-14-debugging-testing-dan-quality-assurance-06.svg)
 
-- Without a way to trace and test, the team spends its time guessing
-- A bug that reaches users costs more than one caught before release
+- Tanpa cara menelusuri dan menguji, tim menghabiskan waktunya menduga-duga
+- Bug yang tertangkap sebelum rilis jauh lebih murah daripada bug yang sampai ke pengguna
 
 <!--
-Trimmed to the picture (the diagram says this):
-- Every new feature adds the chance that one change breaks another part
-- That condition is called **regression** (a decline in quality)
+Dipotong ke gambar (diagram yang mengatakan ini):
+- Setiap fitur baru menambah peluang satu perubahan merusak bagian lain
+- Keadaan itu bernama **regression** (penurunan kualitas)
 
-Read the three chips left to right: a new feature, the part it breaks, and the name that
-condition carries. The last chip is red because a regression is the thing this chapter
-exists to catch, not a fault of the feature that introduced it.
+Baca tiga keping gambar dari kiri ke kanan: fitur baru, bagian yang rusak, lalu nama yang
+disandang keadaan itu. Keping terakhir berwarna merah karena regression adalah hal yang dibuat
+bab ini untuk ditangkap, bukan kesalahan fitur yang memperkenalkannya.
 
-Stress that a regression is not a new bug: an old feature that used to be correct breaks
-because of a change somewhere else.
+Tegaskan bahwa regression bukan bug baru: fitur lama yang tadinya benar ikut rusak karena
+perubahan di tempat lain. Analogi: seperti menambah lantai pada rumah tanpa memeriksa fondasi
+lama — yang runtuh bukan lantai barunya.
 
-Analogy: like adding a floor to a house without inspecting the old foundation — what
-collapses is not the new floor.
-
-Guiding question: "Has your app ever failed after you added code in another file?"
-(Answer: that is a regression, and this chapter provides a way to catch it earlier.)
+Pertanyaan penuntun: "Pernahkah aplikasimu gagal setelah kamu menambah kode di file lain?"
+(Jawaban: itulah regression, dan bab ini memberi cara menangkapnya lebih awal.)
 -->
 
 ---
@@ -78,66 +84,68 @@ Guiding question: "Has your app ever failed after you added code in another file
 <!-- _class: lead -->
 <!-- _paginate: skip -->
 
-# Part 1 — Debugging
+# Bagian 1 — Debugging
 
-Section 14.1 Console & DevTools · 14.2 Common errors · 14.3 Network debugging
+subbab 14.1 console & DevTools · 14.2 error umum · 14.3 debugging jaringan
 
 <!--
-This part is the most practical and the most frequently used in the workplace: tracing
-problems in code that already exists, not writing new features.
+Bagian ini paling praktis dan paling sering dipakai di dunia kerja: menelusuri masalah pada
+kode yang sudah ada, bukan menulis fitur baru.
 
-If time is tight, Section 14.3 may be compressed; Sections 14.1 and 14.2 must not be
-skipped, because both become tools for every practicum that follows.
+Kalau waktu menipis, subbab 14.3 boleh dipadatkan; subbab 14.1 dan 14.2 tidak boleh
+dilewati, karena keduanya menjadi alat untuk setiap praktikum sesudah ini.
 -->
 
 ---
 
-## Debugging, Testing, and QA
+## Tiga Kegiatan, Satu Tujuan: Kode yang Bisa Dipercaya
 
-| Term | What it does | Nature of the activity |
+| Istilah | Yang dikerjakan | Sifat kegiatan |
 |---|---|---|
-| **Debugging** | Finding and fixing mistakes (bugs) in the code | Reacting to a bug that has already appeared |
-| **Testing** | Checking software behavior in a planned way | Planned: test cases are prepared in advance |
-| **Quality assurance (QA)** | Ensuring the product meets user needs | Systematic: preventing bugs from the start |
+| **Debugging** | Mencari dan memperbaiki bug di kode | Bereaksi pada bug yang sudah muncul |
+| **Testing** | Memeriksa perilaku perangkat lunak dengan rencana | Terencana: kasus uji disiapkan lebih dulu |
+| **Quality assurance (QA)** | Memastikan produk memenuhi kebutuhan pengguna | Sistematis: mencegah bug sejak awal |
 
-> QA does not only hunt for bugs, it prevents them through standards, checklists, and procedures.
+> QA tidak hanya berburu bug, tetapi mencegahnya lewat standar, checklist, dan prosedur.
 
 <!--
-Separate the three by asking: "who works earliest?" Debugging comes last, testing in
-the middle, QA first — that is why QA is called assurance, not repair.
+Pisahkan ketiganya dengan satu pertanyaan: "siapa yang bekerja paling awal?" Debugging paling
+akhir, testing di tengah, QA paling awal — itulah sebabnya QA disebut jaminan, bukan reparasi.
 
-Quick comprehension check: "Putting together a checklist before writing code belongs to
-which activity?" (Answer: QA, because it prevents rather than repairs.)
+Cek pemahaman cepat: "Menyusun checklist sebelum menulis kode termasuk kegiatan apa?"
+(Jawaban: QA, karena mencegah dan bukan memperbaiki.)
 
-Warn about the common misconception: QA is not "another team" — on a small project, QA is
-the developer's own attitude.
+Peringatkan salah paham tersering: QA bukan "tim lain". Di proyek kecil, QA adalah sikap
+pengembangnya sendiri.
 -->
 
 ---
 
-## Console: Three Kinds of Messages
+<!-- _class: compact -->
 
-| Call | What it is for | Example from this chapter |
+## Console: Tiga Jenis Pesan, Tiga Kegunaan
+
+| Pemanggilan | Untuk apa | Contoh di bab ini |
 |---|---|---|
-| `console.log` | Seeing a variable's value or the flow of execution | Printing the number of student records |
-| `console.warn` | A value beyond what was expected, the app keeps running | Students with a GPA below 3.0 |
-| `console.table` | An array of objects as a table with columns | Student list: NIM, name, program, GPA |
+| `console.log` | Melihat nilai variabel atau alur eksekusi | Mencetak jumlah data mahasiswa |
+| `console.warn` | Nilai di luar dugaan; aplikasi tetap jalan | Mahasiswa dengan IPK di bawah 3.0 |
+| `console.table` | Array objek sebagai tabel berkolom | Daftar mahasiswa: NIM, nama, prodi, IPK |
 
-> Every message is given a text label, for example "Jumlah data mahasiswa:", so it is easy to find when the logs are mixed together.
+> Setiap pesan diberi label teks, misalnya "Jumlah data mahasiswa:", supaya mudah ditemukan saat log bercampur.
 
 <!--
-Stress the habit of labelling: one good label saves hours of searching for the right log
-line among dozens of messages.
+Tekankan kebiasaan memberi label: satu label yang baik menghemat berjam-jam mencari baris log
+yang tepat di antara puluhan pesan.
 
-Ask: "If you want to check five students at once, which one do you use?" (Answer:
-console.table, because the columns line up, so a wrong value is immediately visible.)
+Tanya: "Kalau kamu ingin memeriksa lima mahasiswa sekaligus, pakai yang mana?" (Jawaban:
+console.table, karena kolomnya lurus sehingga nilai yang salah langsung terlihat.)
 -->
 
 ---
 
-## Console for Student Data
+## Empat Pemanggilan Console di Satu File Membaca Satu Layar Data
 
-`console-demo.js` — can be run directly with Node, without an emulator
+`console-demo.js` — bisa dijalankan langsung dengan Node, tanpa emulator
 
 ```js
 const mahasiswa = [
@@ -154,103 +162,81 @@ console.table(mahasiswa.map((m) => ({
 })));
 ```
 
-> The complete file is in this chapter; on the slide, the four other static records are elided with a comment.
+> File lengkapnya ada di bab ini; di slide, empat data baku lainnya diringkas dengan komentar.
 
 <!--
-Show only three things: the label on every log, console.warn for an abnormal condition, and
-console.table which turns an array of objects into tidy columns.
+Tunjukkan tiga hal saja: label pada setiap log, console.warn untuk keadaan tidak normal, dan
+console.table yang mengubah array objek menjadi kolom rapi.
 
-Mention the spread operator `...` from Chapter 3, which passes every GPA to Math.max.
+Sebutkan operator spread `...` dari Bab 3 yang menyalurkan setiap IPK ke Math.max.
 
-Guiding question: "What is the use of printing the number of records first?" (Answer: to
-make sure the data actually arrives before suspecting any other part.)
+Pertanyaan penuntun: "Apa gunanya mencetak jumlah data lebih dulu?" (Jawaban: memastikan
+datanya benar-benar datang sebelum mencurigai bagian lain.)
 -->
 
 ---
 
-## Developer Menu and DevTools
+<!-- _class: compact -->
 
-| Key | Function |
+## Tiga Tombol Terminal yang Mempercepat Setiap Percobaan
+
+| Tombol | Fungsi |
 |---|---|
-| `m` | Opens or closes the developer menu in the app |
-| `r` | Reloads the app with the latest code |
-| `j` | Opens the JavaScript debugger |
+| `m` | Membuka atau menutup menu developer di aplikasi |
+| `r` | Memuat ulang aplikasi dengan kode terbaru |
+| `j` | Membuka debugger JavaScript |
 
-> ⚠ version-sensitive: the key combinations may change between Expo SDK versions; follow the key list the terminal prints when you run `npx expo start`.
+> Sensitif versi: kombinasi tombol bisa berubah antarversi SDK; ikuti daftar yang dicetak terminal `npx expo start`.
 
 <!--
-Lay it out as one procedure: npx expo start, press m, open the developer menu, choose the
-debugger for SDK 57.
+Susun sebagai satu prosedur: jalankan npx expo start, tekan m, buka menu developer, pilih
+debugger untuk SDK 57.
 
-Remind them what React Native DevTools contains: source code, breakpoints (the stopping
-point where execution pauses), and the Network tab. React DevTools is separate and shows
-the component tree and state values.
+Ingatkan isi React Native DevTools: kode sumber, breakpoint (titik henti tempat eksekusi
+berhenti), dan tab Network. React DevTools terpisah dan menampilkan pohon component beserta
+nilai state.
 
-The version-sensitive warning must be said out loud: do not memorize key combinations from
-a book — the Expo terminal is the source of truth for the version you are using.
+Peringatan sensitif versi harus diucapkan: jangan menghafal kombinasi tombol dari buku —
+terminal Expo adalah sumber kebenaran untuk versi yang kamu pakai.
 -->
 
 ---
 
-## Debugging State in Two Layers
-
-<div class="grid2">
-<div>
-
-**Layer 1 — logs at the point of change**
-
-- Write `console.log('state berubah:', nilai)` inside `useEffect`
-
-</div>
-<div>
-
-**Layer 2 — React DevTools**
-
-- Can change state without writing code
-
-</div>
-</div>
-
-<!--
-Trimmed to the picture (the diagram says this) — the picture is the next slide,
-"Diagram: Debugging State in Two Layers", which prints each of these word for word:
-- Answers the question "when and in what order"
-- Inspect the component tree and the state value of every component
-- Answers the question "what does it contain right now"
-
-What stays on the slide is the mechanism each layer offers; what moved to the picture is
-the question only that layer can answer. Say the two questions out loud here, then let the
-next slide show them side by side.
-
-The main message: the two layers complement each other, they do not replace each other. The
-logs answer the order of events, DevTools answers the current contents.
-
-Analogy: logs are like a traffic camera recording, React DevTools is like a photo of the
-current condition.
-
-Remind them that useState and useEffect were covered in Chapter 4; here both are used as
-tools, not studied again.
--->
-
----
-
-## Diagram: Debugging State in Two Layers
+## Dua Lapisan untuk Melihat State, Dua Pertanyaan Berbeda
 
 ![w:1120](assets/diagrams/bab-14-debugging-testing-dan-quality-assurance-05.svg)
 
+- DevTools bisa mengubah state tanpa menulis kode
+- Kedua lapisan saling melengkapi, tidak saling menggantikan
+
 <!--
-Read the two columns as one table: row 1 is the mechanism each layer offers, row 2 is the
-question only that layer can answer. The pair of questions is the point — the log tells you
-the order of events, DevTools tells you what the state contains right now. Neither column
-replaces the other. The DevTools capability that the picture leaves out (changing state
-without writing code) is the third bullet on the previous slide.
+Dipotong ke gambar (diagram yang mengatakan ini):
+- Tulis `console.log('state berubah:', nilai)` di dalam `useEffect`
+- Menjawab pertanyaan "kapan dan dalam urutan apa"
+- Periksa pohon component dan nilai state setiap component
+- Menjawab pertanyaan "sekarang isinya apa"
+
+Bacalah gambar sebagai satu tabel: baris pertama adalah mekanisme tiap lapisan, baris kedua
+adalah pertanyaan yang hanya bisa dijawab lapisan itu. Pasangan pertanyaannya itulah intinya —
+log memberi tahu urutan kejadian, DevTools memberi tahu isi state saat ini. Tidak ada kolom
+yang menggantikan kolom lain.
+
+Yang tinggal di slide adalah dua hal yang tidak digambar: kemampuan DevTools mengubah state
+langsung, dan kesimpulan bahwa keduanya melengkapi.
+
+Analogi: log seperti rekaman kamera lalu lintas, React DevTools seperti foto kondisi sekarang.
+
+Ingatkan bahwa useState dan useEffect sudah dibahas di Bab 4; di sini keduanya dipakai sebagai
+alat, bukan dipelajari ulang.
 -->
 
 ---
 
-## Example 1 — Labelled Logs on State
+<!-- _class: compact -->
 
-`app/TampilkanIPK.js` — the state and `useEffect` pattern from Chapter 4
+## Log Berlabel Menunjukkan Kapan State Berubah
+
+`app/TampilkanIPK.js` — pola state dan `useEffect` dari Bab 4
 
 ```js
 import { useEffect, useState } from 'react';
@@ -269,226 +255,224 @@ export default function TampilkanIPK() {
 }
 ```
 
-> The state starts as `null` — this is the most common cause of the "undefined is not an object" error.
-
 <!--
-Read out the order printed in the terminal: null, then 3.45. That is what a log at the
-point of change is for.
+Dipotong ke catatan (tidak muat di slide): State dimulai sebagai `null` — ini penyebab paling
+sering error `'undefined' is not an object`.
 
-Show that the log label names the component and the variable, so the log is easy to find
-when many components are active at once.
+Bacakan urutan yang tercetak di terminal: null, lalu 3.45. Itulah gunanya log di titik
+perubahan.
 
-Warn that the clearTimeout cleanup prevents a state update after the component is
-unmounted.
+Tunjukkan bahwa label log menyebut component dan variabelnya, sehingga log mudah ditemukan saat
+banyak component aktif sekaligus.
+
+Peringatkan bahwa cleanup clearTimeout mencegah pembaruan state setelah component dilepas.
 -->
 
 ---
 
-## Six Common React Native Errors
+<!-- _class: compact -->
 
-| # | Error message (shortened) | Nature |
+## Enam Error React Native yang Paling Sering Muncul
+
+| # | Pesan error (disingkat) | Sifat |
 |---|---|---|
-| 1 | Unable to resolve module | Fatal |
-| 2 | Invalid hook call | Fatal |
-| 3 | 'undefined' is not an object | Fatal |
-| 4 | Text strings must be rendered within a `<Text>` | Fatal |
-| 5 | VirtualizedLists should never be nested inside plain ScrollViews | Warning |
-| 6 | Each child in a list should have a unique 'key' prop | Warning |
+| 1 | `Unable to resolve module` | Fatal |
+| 2 | `Invalid hook call` | Fatal |
+| 3 | `'undefined' is not an object` | Fatal |
+| 4 | `Text strings must be rendered within a <Text>` | Fatal |
+| 5 | `VirtualizedLists should never be nested inside plain ScrollViews` | Peringatan |
+| 6 | `Each child in a list should have a unique 'key' prop` | Peringatan |
 
-> A fatal error appears on a full red screen called RedBox, which always carries the file name and the line number. Read that part first.
+> Error fatal tampil sebagai layar merah penuh bernama RedBox, yang selalu memuat nama file dan nomor baris. Baca bagian itu lebih dulu.
 
 <!--
-The main message: recognizing an error message matters as much as recognizing the syntax of
-a language. An error message is a direction sign, not a failure announcement.
+Pesan utamanya: mengenali pesan error sama pentingnya dengan mengenali sintaksis bahasa. Pesan
+error adalah penunjuk arah, bukan pengumuman kegagalan.
 
-Ask the class to guess the nature of each error before the right column is discussed: the
-first four stop the app, the last two are only warnings but signal a design that is prone
-to bugs.
+Minta kelas menebak sifat tiap error sebelum kolom kanan dibahas: empat pertama menghentikan
+aplikasi, dua terakhir hanya peringatan tetapi menandakan rancangan yang rawan bug.
 
-The habit to stress: read the line location on the RedBox before guessing the cause.
+Kebiasaan yang harus ditekankan: baca lokasi baris di RedBox sebelum menebak penyebabnya.
 -->
 
 ---
 
-## Fatal Errors 1 and 2
+## Dua Error Fatal: Module dan Hook
 
-| Error | Typical cause | Solution |
+| Error | Penyebab lazim | Solusi |
 |---|---|---|
-| **Unable to resolve module** | A wrong path or file name; a difference in capital letters | Fix the path; for an npm package run `npx expo install`, then press `r` |
-| **Invalid hook call** | A hook called inside an `if`, a callback, or a plain function | Move the hook call to the top level of the component |
+| **`Unable to resolve module`** | Path atau nama file salah; beda huruf besar-kecil | Perbaiki path; untuk paket npm jalankan `npx expo install`, lalu tekan `r` |
+| **`Invalid hook call`** | Hook dipanggil di dalam `if`, callback, atau fungsi biasa | Pindahkan pemanggilan hook ke level teratas component |
 
-> Golden rule: never call a hook inside an `if`, a `for`, or a nested function.
+> Aturan emas: jangan pernah memanggil hook di dalam `if`, `for`, atau fungsi bersarang.
 
 <!--
-Error 1 often appears on Windows because of a difference in capital letters:
-KartuMahasiswa.js versus kartumahasiswa.js, so Metro cannot find it. Metro is the React
-Native bundler.
+Error pertama sering muncul di Windows karena beda huruf besar-kecil: KartuMahasiswa.js versus
+kartumahasiswa.js, sehingga Metro tidak menemukannya. Metro adalah bundler React Native.
 
-Error 2 is the most common beginner mistake: a hook that slips into a branch looks
-reasonable but breaks the rule of hook order.
+Error kedua adalah kesalahan pemula yang paling umum: hook yang menyelinap ke dalam cabang
+terlihat wajar, tetapi melanggar aturan urutan hook.
 
-Ask: "Why does React care where a hook is called?" (Answer: React pairs state by the order
-of hook calls, which must be the same on every render.)
+Tanya: "Kenapa React peduli di mana hook dipanggil?" (Jawaban: React memasangkan state menurut
+urutan pemanggilan hook, dan urutan itu harus sama di setiap render.)
 -->
 
 ---
 
-## Error 3 — undefined is not an object
+## Error Ketiga: Properti Dibaca Sebelum Datanya Tiba
 
 ![w:1120](assets/diagrams/bab-14-debugging-testing-dan-quality-assurance-07.svg)
 
-- You read a property from a value that does not exist yet, usually data that has not loaded
-- Use the optional operator `mahasiswa?.nama` so access is safe while the object is absent
+- Kamu membaca properti dari nilai yang belum ada, biasanya data yang belum selesai dimuat
+- Operator opsional `mahasiswa?.nama` membuat akses aman selama objeknya belum ada
 
-> Print the API response with `console.log` before mapping it to the view.
+> Cetak jawaban API dengan `console.log` sebelum memetakannya ke tampilan.
 
 <!--
-Trimmed to the picture (the diagram says this):
-- Give the state an initial value of `[]` or `null`, then show a loading indicator
-- Also check the API response structure: this book uses the form `{ data: [...] }` (Chapter 10)
+Dipotong ke gambar (diagram yang mengatakan ini):
+- Beri state nilai awal `[]` atau `null`, lalu tampilkan penanda loading
+- Periksa juga struktur jawaban API: buku ini memakai bentuk `{ data: [...] }` (Bab 10)
 
-The picture stacks the three defences at the three depths of one data path, and it carries
-both of those bullets in full: the state band says "Give the state an initial value" with
-"[] or null, then show a loading indicator" beside it, and the bottom band says "Check the API
-response structure" with "{ data: [...] } · Chapter 10". The two bullets left on the slide are
-the ones the picture does not state: the cause (reading a property of a value that is not
-there yet) and the reason the optional operator works (access stays safe while the object is
-absent).
+Gambar menumpuk tiga pertahanan pada tiga kedalaman satu jalur data, dan ia memuat kedua butir
+itu lengkap. Dua butir yang tinggal di slide adalah yang tidak dikatakan gambar: penyebabnya
+(membaca properti dari nilai yang belum ada) dan alasan operator opsional bekerja (akses tetap
+aman selama objeknya absen).
 
-Connect it to Example 1 on the previous slide: the ipk state starts as null and the screen
-shows "memuat..." — a pattern that prevents this error.
+Hubungkan dengan slide "Log Berlabel Menunjukkan Kapan State Berubah" tiga slide sebelumnya:
+state ipk dimulai sebagai null dan layarnya menampilkan "memuat..." — pola yang mencegah error
+ini.
 
-Warn about two hidden causes: misspelling a property name (nama versus name) and an API
-response that is not shaped the way you assumed.
+Peringatkan dua penyebab tersembunyi: salah menulis nama properti (nama versus name) dan
+jawaban API yang bentuknya tidak seperti dugaanmu.
 
-Guiding question: "How do you know the structure of an API response before writing it
-down?" (Answer: by printing the response once during the first integration.)
+Pertanyaan penuntun: "Bagaimana kamu tahu struktur jawaban API sebelum menuliskannya?"
+(Jawaban: dengan mencetak jawabannya sekali saat integrasi pertama.)
 -->
 
 ---
 
-## Fatal Error 4 and Two Warnings
+<!-- _class: compact -->
 
-| Error | Meaning and solution |
+## Error Keempat dan Dua Peringatan yang Sering Diabaikan
+
+| Error | Arti dan solusi |
 |---|---|
-| **Text strings must be rendered within a `<Text>`** | Plain text inside a `View`; wrap it with `<Text>Halo</Text>` (the rule from Chapter 5) |
-| **VirtualizedLists should never be nested inside plain ScrollViews** | A `FlatList` inside a same-direction `ScrollView`; use `ListHeaderComponent` or `map` |
-| **Each child in a list should have a unique 'key' prop** | Give `key={item.nim}` to the first element returned by `map`; do not use the array index |
+| **`Text strings must be rendered within a <Text>`** | Teks polos di dalam `View`; bungkus dengan `<Text>Halo</Text>` (aturan Bab 5) |
+| **`VirtualizedLists should never be nested inside plain ScrollViews`** | `FlatList` di dalam `ScrollView` searah; pakai `ListHeaderComponent` atau `map` |
+| **`Each child in a list should have a unique 'key' prop`** | Beri `key={item.nim}` pada elemen pertama hasil `map`; jangan pakai indeks array |
 
 <!--
-Error 4 is the Chapter 5 rule that got forgotten: all text visible on the screen must sit
-inside a Text.
+Error keempat adalah aturan Bab 5 yang terlupa: semua teks yang tampil di layar harus berada di
+dalam Text.
 
-Warning 5 signals a fragile design: React Native cannot compute content height when two
-components that scroll in the same direction are stacked. The cheapest solution is one main
-list component per page.
+Peringatan kelima menandakan rancangan yang rapuh: React Native tidak bisa menghitung tinggi isi
+saat dua component yang menggulir searah ditumpuk. Solusi termurah adalah satu component daftar
+utama per halaman.
 
-Warning 6 does not stop the app, but React can render the wrong data or lose row state when
-the data is updated.
+Peringatan keenam tidak menghentikan aplikasi, tetapi React bisa menggambar data yang salah atau
+kehilangan state baris saat datanya diperbarui.
 -->
 
 ---
 
 <!-- _class: center -->
 
-## What Happens If…?
+## Apa yang Terjadi Jika…?
 
-- What happens if `useState` is called inside an `if` branch?
-- What happens if a `FlatList` is placed inside a same-direction `ScrollView`?
-- What happens if the result of `map` is not given a `key` property?
+- …`useState` dipanggil di dalam cabang `if`?
+- …`FlatList` diletakkan di dalam `ScrollView` yang searah?
+- …hasil `map` tidak diberi properti `key`?
 
 <!--
-Do not answer. Ask three students to guess first, then state that the answers are on the
-next slide.
+Jangan dijawab. Minta tiga mahasiswa menebak lebih dulu, lalu tegaskan bahwa jawabannya ada di
+slide berikutnya.
 
-The goal is to train reasoning from symptom to cause, not to memorize error names.
+Tujuannya melatih penalaran dari gejala ke penyebab, bukan menghafal nama error.
 -->
 
 ---
 
 <!-- _class: center -->
 
-## Answers
+## Urutan Hook Berubah, React Pun Melempar Error
 
-- React reports "Invalid hook call" because the hook order differs on each render
-- The content height cannot be computed; scrolling becomes strange and performance drops
-- React has trouble tracking which elements changed, so data can be rendered wrongly
+- React melaporkan `Invalid hook call` karena urutan hook berbeda di setiap render
+- Tinggi isi tidak bisa dihitung; gulir jadi aneh dan performa turun
+- React sulit melacak elemen mana yang berubah, sehingga data bisa tergambar keliru
 
 <!--
-Repeat the golden rule: hooks are only at the top level of a component. If a value needs to
-be conditional, compute it after the hook is called, not inside the branch.
+Ulangi aturan emas: hook hanya di level teratas component. Kalau sebuah nilai perlu bersyarat,
+hitung sesudah hook dipanggil, bukan di dalam cabangnya.
 
-Stress that the last two answers are only warnings: the app keeps running, but the symptoms
-show up later as bugs that are hard to trace.
+Tegaskan bahwa dua jawaban terakhir hanya peringatan: aplikasi tetap berjalan, tetapi gejalanya
+muncul kemudian sebagai bug yang sulit ditelusuri.
 -->
 
 ---
 
-## Test the Endpoint Before Integration
+## Uji Endpoint Dulu Sebelum Menyalahkan Aplikasi
 
-- Check the endpoint from a browser, `curl`, or the `fetch` built into Node.js 22
-- Make sure the book's backend server is running first (see Chapter 10)
-- The test result separates two possible sources of the problem: the server or the app
+- Periksa endpoint dari browser, `curl`, atau `fetch` bawaan Node.js 22
+- Pastikan server backend buku ini berjalan lebih dulu (lihat Bab 10)
+- Hasil uji memisahkan dua sumber masalah: server atau aplikasi
 
 ```bash
 curl http://localhost:3000/api/mahasiswa
 ```
 
 <!--
-Analogy: check the tap first before taking apart the pipes inside the house.
+Analogi: periksa keran lebih dulu sebelum membongkar pipa di dalam rumah.
 
-The pattern of proof: if curl succeeds but the app fails, the problem is on the app side
-(code, configuration, address); if curl also fails, the problem is on the server — not
-running, wrong port, or a 404/500 status.
+Pola pembuktiannya: kalau curl berhasil tetapi aplikasi gagal, masalahnya di sisi aplikasi
+(kode, konfigurasi, alamat); kalau curl juga gagal, masalahnya di server — tidak berjalan, port
+salah, atau status 404/500.
 
-Mention that curl is a command-line program that sends an HTTP request. An alternative on
-Windows: open that address in a browser, or run the fetch built into Node.js 22 from
-Example 2 in the chapter.
+Sebutkan bahwa curl adalah program baris perintah yang mengirim permintaan HTTP. Alternatif di
+Windows: buka alamat itu di browser, atau jalankan fetch bawaan Node.js 22 dari Contoh 2 di bab.
 -->
 
 ---
 
-## Server or App? Decision Flow
+## Server atau Aplikasi? Satu Perintah, Dua Kesimpulan
 
 ![w:1120](assets/diagrams/bab-14-debugging-testing-dan-quality-assurance-02.svg)
 
-> Testing the endpoint first separates the two possible sources of the problem before you start guessing.
+> Menguji endpoint lebih dulu memisahkan dua sumber masalah sebelum kamu mulai menduga.
 
 <!--
-Read the diagram as a procedure: one command, two different conclusions.
+Baca gambar sebagai prosedur: satu perintah, dua kesimpulan berbeda.
 
-Stress the condition on the left branch: the conclusion "the problem is on the app side" is
-only valid if the endpoint succeeds BUT the app still fails. An endpoint that answers 200
-while the app runs normally is not a problem at all.
+Tekankan syarat di cabang kiri: kesimpulan "masalahnya di sisi aplikasi" hanya sah bila endpoint
+berhasil TETAPI aplikasi tetap gagal. Endpoint yang menjawab 200 sementara aplikasi berjalan
+normal bukan masalah sama sekali.
 
-Connect it to "Network request failed" on the next slide: that message appears in the app,
-but it does not necessarily mean the server is dead.
+Hubungkan dengan "Network request failed" di slide berikutnya: pesan itu muncul di aplikasi,
+tetapi belum tentu berarti servernya mati.
 -->
 
 ---
 
-## Target Addresses and the Network Tab
+## Alamat Berbeda untuk Tiap Target
 
-| Target | Backend server address |
+| Target | Alamat server backend |
 |---|---|
-| Developer computer | `http://localhost:3000` |
-| Android emulator | `http://10.0.2.2:3000` |
-| Physical device | The computer's IP on the local network (LAN) |
+| Komputer pengembang | `http://localhost:3000` |
+| Emulator Android | `http://10.0.2.2:3000` |
+| Perangkat fisik | IP komputer di jaringan lokal (LAN) |
 
-> The message "Network request failed" most often means the address is wrong for the target, the server is down, or the device and the computer are on different networks.
+> Pesan "Network request failed" paling sering berarti alamatnya salah untuk target itu, server mati, atau perangkat dan komputer berada di jaringan berbeda.
 
 <!--
-These address details were covered in Chapter 10; here they are used as the first step of
-network debugging, not as new material.
+Rincian alamat ini sudah dibahas di Bab 10; di sini dipakai sebagai langkah pertama debugging
+jaringan, bukan materi baru.
 
-The Network tab in React Native DevTools shows every fetch request, its response status
-(200, 404, 500), and the JSON body returned. A version-sensitive marker: the availability
-and layout of the Network tab depend on the DevTools that ship with SDK 57, so printing the
-response yourself in code is always a safe alternative.
+Tab Network di React Native DevTools menampilkan setiap permintaan fetch, status jawabannya
+(200, 404, 500), dan body JSON yang dikembalikan. Tandai sensitif versi: ketersediaan dan tata
+letak tab Network bergantung pada DevTools yang menyertai SDK 57, sehingga mencetak jawabannya
+sendiri di kode selalu menjadi alternatif yang aman.
 
-Establish the habit: put console.warn in the catch block and in the !response.ok branch so
-every failure leaves a trace, then print JSON.stringify(data) once during the first
-integration.
+Tanamkan kebiasaan: taruh console.warn di blok catch dan di cabang !response.ok supaya setiap
+kegagalan meninggalkan jejak, lalu cetak JSON.stringify(data) sekali saat integrasi pertama.
 -->
 
 ---
@@ -496,48 +480,48 @@ integration.
 <!-- _class: lead -->
 <!-- _paginate: skip -->
 
-# Part 2 — Testing and QA
+# Bagian 2 — Testing dan QA
 
-Section 14.4 Unit testing · 14.5 Integration · 14.6 Manual & usability · 14.7 Checklist
+subbab 14.4 unit testing · 14.5 integration · 14.6 manual & usability · 14.7 checklist
 
 <!--
-This part answers the objection that comes up most often: "why test when my code already
-runs in my emulator?".
+Bagian ini menjawab bantahan yang paling sering muncul: "kenapa diuji, kodenya sudah jalan di
+emulatorku?".
 
-If time is tight, Section 14.5 only needs its concept explained; Sections 14.4 and 14.7
-must not be skipped, because both produce the artefact that is assessed in the practicum.
+Kalau waktu menipis, subbab 14.5 cukup dijelaskan konsepnya; subbab 14.4 dan 14.7 tidak boleh
+dilewati, karena keduanya menghasilkan artefak yang dinilai di praktikum.
 -->
 
 ---
 
-## Unit Testing and Its Easiest Target
+## Unit Testing Menembak Fungsi Terkecil, Berulang Kali
 
-- Unit testing tests one unit of code, usually one function, in isolation
-- Manual testing cannot be repeated consistently: people forget steps and rush
-- A unit test can be run repeatedly and quickly, the main weapon against regression
-- Trade-off: writing tests costs time up front and they must be maintained
-- The easiest target is a **pure function**, whose result is determined only by its arguments
+- Unit testing menguji satu unit kode, biasanya satu fungsi, secara terpisah
+- Pengujian manual tidak bisa diulang konsisten: orang lupa langkah dan terburu-buru
+- Unit test bisa dijalankan berulang dan cepat — senjata utama melawan regression
+- Trade-off: menulis test memakan waktu di awal dan harus dirawat
+- Target termudah adalah **fungsi murni**, yang hasilnya hanya ditentukan argumennya
 
-> This book uses `node:test`, a module built into Node.js. Jest with the `jest-expo` preset is the React Native industry standard.
+> Buku ini memakai `node:test`, modul bawaan Node.js. Jest dengan preset `jest-expo` adalah standar industri React Native.
 
 <!--
-Stress the deterministic nature of a pure function: the same input always gives the same
-output, so a test never "sometimes passes, sometimes fails". A pure function also does not
-read files and does not call an API.
+Tekankan sifat deterministik fungsi murni: masukan yang sama selalu memberi keluaran yang sama,
+sehingga test tidak "kadang lulus, kadang gagal". Fungsi murni juga tidak membaca file dan tidak
+memanggil API.
 
-Version-sensitive warning: the jest-expo version is always tied to the SDK; check the Unit
-testing page on docs.expo.dev for SDK 57 before installing it.
+Peringatan sensitif versi: versi jest-expo selalu terikat pada SDK; periksa halaman Unit
+testing di docs.expo.dev untuk SDK 57 sebelum memasangnya.
 
-Guiding question: "Why is a test that tests the implementation rather than the behavior
-considered bad?" (Answer: an implementation change that does not change behavior makes the
-test fail falsely, so its maintenance cost is greater than its benefit.)
+Pertanyaan penuntun: "Kenapa test yang menguji implementasi, bukan perilaku, dianggap buruk?"
+(Jawaban: perubahan implementasi yang tidak mengubah perilaku membuat test gagal palsu,
+sehingga biaya perawatannya lebih besar daripada manfaatnya.)
 -->
 
 ---
 
-## utils/validators.js from Chapter 8
+## Fungsi Murni dari Bab 8 adalah Kandidat Terbaik
 
-`utils/validators.js` — pure functions with no dependencies, an ideal candidate for a unit test
+`utils/validators.js` — fungsi murni tanpa dependency, kandidat ideal untuk unit test
 
 ```js
 function validateNim(nim) {
@@ -553,25 +537,25 @@ function validateEmail(email) {
 // … validateNama, validateTelepon, validatePassword: pola yang sama
 ```
 
-> Every function returns an error message as a string, or the empty string `''` when the data is valid.
+> Setiap fungsi mengembalikan pesan error sebagai string, atau string kosong `''` saat datanya valid.
 
 <!--
-Explain the convention "an empty string means valid": that is what makes the result easy to
-check in a test, for example assert.strictEqual(fungsi('2201001'), '').
+Jelaskan kesepakatan "string kosong berarti valid": itulah yang membuat hasilnya mudah diperiksa
+di test, misalnya assert.strictEqual(fungsi('2201001'), '').
 
-Warning: this slide and the next show only three of the seven functions (there are still
-required, validateNama, validateTelepon, and validatePassword). The complete file is in
-Chapter 8 and is repeated in full in this chapter.
+Peringatan: slide ini dan slide berikutnya hanya menampilkan sebagian dari tujuh fungsi (masih
+ada required, validateNama, validateTelepon, dan validatePassword). File lengkapnya ada di Bab 8
+dan diulang utuh di bab ini.
 
-Ask: "Why does this function not touch state, storage, or the network?" (Answer: that is
-why it is pure, so it can be tested even without running the app.)
+Tanya: "Kenapa fungsi ini tidak menyentuh state, penyimpanan, atau jaringan?" (Jawaban: itulah
+sebabnya ia murni, sehingga bisa diuji tanpa menjalankan aplikasi.)
 -->
 
 ---
 
-## validateFormMahasiswa: All Errors at Once
+## validateFormMahasiswa Mengumpulkan Semua Error Sekaligus
 
-`utils/validators.js` — validating the whole form by reusing the functions above
+`utils/validators.js` — memvalidasi seluruh formulir dengan memakai ulang fungsi di atas
 
 ```js
 function validateFormMahasiswa({ nim, nama, email, telepon } = {}) {
@@ -585,29 +569,31 @@ function validateFormMahasiswa({ nim, nama, email, telepon } = {}) {
 }
 ```
 
-> `valid` is `true` only when `errors` is empty; this `{ valid, errors }` shape is what the form in Chapter 8 consumes.
+> `valid` bernilai `true` hanya saat `errors` kosong; bentuk `{ valid, errors }` inilah yang dipakai formulir di Bab 8.
 
 <!--
-Stress that this function does not copy the validation rules; it calls validateNim,
-validateNama, and so on, then collects every message into the errors object.
+Tekankan bahwa fungsi ini tidak menyalin aturan validasi: ia memanggil validateNim, validateNama,
+dan seterusnya, lalu mengumpulkan setiap pesan ke dalam objek errors.
 
-Analogy: like a counter clerk who checks four documents one by one and attaches a note to
-every incomplete document — the check does not stop at the first document.
+Analogi: seperti petugas loket yang memeriksa empat dokumen satu per satu dan menempelkan catatan
+di setiap dokumen yang kurang — pemeriksaannya tidak berhenti di dokumen pertama.
 
-Guiding question: "Why are all messages collected instead of returned one at a time?"
-(Answer: the form must show every mistake at once, not ask the user to fix one field at a
-time.)
+Pertanyaan penuntun: "Kenapa semua pesan dikumpulkan, bukan dikembalikan satu per satu?"
+(Jawaban: formulir harus menampilkan semua kesalahan sekaligus, bukan meminta pengguna
+memperbaiki satu kolom setiap kali.)
 
-The two lines for email and phone are elided with a comment; the pattern is exactly the same
-as the nim and nama lines shown. The code on screen must still show that errors are filled
-in, so students do not copy a function that always returns valid: true.
+Dua baris untuk email dan telepon diringkas dengan komentar; polanya persis sama dengan baris nim
+dan nama yang tampak. Kode di layar tetap harus menunjukkan bahwa errors terisi, supaya mahasiswa
+tidak menyalin fungsi yang selalu mengembalikan valid: true.
 -->
 
 ---
 
-## First Test File with node:test
+<!-- _class: compact -->
 
-`__tests__/validators.test.js` — one test for one behavior
+## Uji Pertama: Satu Test, Satu Perilaku
+
+`__tests__/validators.test.js` — satu test untuk satu perilaku
 
 ```js
 const { test } = require('node:test');
@@ -626,378 +612,389 @@ test('validateFormMahasiswa mengumpulkan semua error sekaligus', () => {
 });
 ```
 
-> Run `node --test` from the project folder, or `node __tests__/validators.test.js` for this file only.
+> Jalankan `node --test` dari folder proyek, atau `node __tests__/validators.test.js` untuk file ini saja.
 
 <!--
-Point out three things: node:test and node:assert/strict are available with no installation
-at all, test descriptions written in Indonesian make the failure report easy to read, and
-assert.strictEqual checks a value while deepStrictEqual checks an object's structure.
+Tunjukkan tiga hal: node:test dan node:assert/strict tersedia tanpa pemasangan apa pun, deskripsi
+test yang ditulis dalam bahasa Indonesia membuat laporan kegagalan mudah dibaca, dan
+assert.strictEqual memeriksa nilai sedangkan deepStrictEqual memeriksa struktur objek.
 
-Mention the correct result: all 13 tests pass with the summary pass 13 and fail 0. The
-complete file in the chapter holds 13 test cases; on the slide only three are shown.
+Sebutkan hasil yang benar: ketiga belas test lulus dengan ringkasan pass 13 dan fail 0. File
+lengkap di bab memuat 13 kasus uji; di slide hanya tiga yang tampak.
 
-Stress the one-test-one-behavior pattern: a failure points straight at the rule that was
-broken. If a test fails, decide which is wrong — the function or the test itself; that is
-part of the debugging skill.
+Tekankan pola satu test satu perilaku: kegagalan langsung menunjuk aturan yang dilanggar. Kalau
+sebuah test gagal, putuskan mana yang salah — fungsinya atau testnya; itu bagian dari keterampilan
+debugging.
 -->
 
 ---
 
-## Unit vs Integration Testing
+<!-- _class: compact -->
 
-| Aspect | Unit testing | Integration testing |
+## Unit Menguji Fungsi, Integration Menguji Sambungan
+
+| Aspek | Unit testing | Integration testing |
 |---|---|---|
-| What is checked | One function in isolation | Cooperation between parts |
-| The typical question | Does `validateNim` reject a wrong NIM? | Does the Save button really send data to the API? |
-| Scope and cost | Fast, cheap, easy to set up | Slower, more fragile, harder to set up |
-| Mistakes caught | Wrong logic rules | Mismatched interface contracts |
+| Yang diperiksa | Satu fungsi secara terpisah | Kerja sama antarbagian |
+| Pertanyaan khas | Apakah `validateNim` menolak NIM salah? | Apakah tombol Simpan benar-benar mengirim data ke API? |
+| Cakupan dan biaya | Cepat, murah, mudah disiapkan | Lebih lambat, rapuh, sulit disiapkan |
+| Kesalahan yang tertangkap | Aturan logika yang keliru | Kontrak antarmuka yang tidak cocok |
 
 <!--
-The core difference is the level of scope: a unit separates one unit from its surroundings,
-integration connects the unit with state, fetch, and the view.
+Beda intinya ada di tingkat cakupan: unit memisahkan satu unit dari sekitarnya, integration
+menyambungkan unit itu dengan state, fetch, dan tampilan.
 
-An example of a fragile joint: the data format the form sends is not the same as the one the
-list reads, or the Chapter 13 authentication token is not sent along on the next request.
+Contoh sambungan yang rapuh: format data yang dikirim formulir tidak sama dengan yang dibaca
+daftar, atau token autentikasi Bab 13 tidak ikut terkirim pada permintaan berikutnya.
 
-Version-sensitive warning: React Native integration tests generally use a library such as
-React Native Testing Library, which renders real components while faking the network; the
-library and its configuration change quickly, so follow the official documentation for
-SDK 57. This chapter deliberately does not implement them in depth.
+Peringatan sensitif versi: integration test React Native umumnya memakai library seperti React
+Native Testing Library, yang menggambar component sungguhan sambil memalsukan jaringan; library
+dan konfigurasinya cepat berubah, jadi ikuti dokumentasi resmi untuk SDK 57. Bab ini sengaja tidak
+menerapkannya secara mendalam.
 -->
 
 ---
 
-## Testing Pyramid
+## Piramida Testing: Banyak di Bawah, Sedikit di Atas
 
 ![w:1120](assets/diagrams/bab-14-debugging-testing-dan-quality-assurance-03.svg)
 
-> Unit tests that all pass do not guarantee the app works: mistakes often appear at the joints between parts.
+> Unit test yang semuanya lulus tidak menjamin aplikasi berjalan: kesalahan justru sering muncul di sambungan antarbagian.
 
 <!--
-Read the pyramid from the bottom: many unit tests as the base, fewer integration tests in
-the middle, and the fewest end-to-end tests at the top — that is industry practice because
-cost and fragility increase upward.
+Baca piramida dari bawah: banyak unit test sebagai alas, lebih sedikit integration test di tengah,
+dan paling sedikit end-to-end test di puncak — itulah praktik industri karena biaya dan kerapuhan
+naik ke atas.
 
-Stress that the number is not a matter of style: a slow and fragile test will be abandoned
-by the team if there are too many of them.
+Tegaskan bahwa jumlahnya bukan soal gaya: test yang lambat dan rapuh akan ditinggalkan tim kalau
+terlalu banyak.
+
+Pertanyaan penuntun: "Kenapa end-to-end test tidak dijadikan andalan?" (Jawaban: paling mahal,
+paling rapuh, dan kegagalannya sulit ditunjuk ke satu penyebab.)
 -->
 
 ---
 
-## Manual Testing: Three Case Categories
+<!-- _class: compact -->
 
-| Category | Content | Example in this book's app |
+## Manual Testing: Tiga Kategori Kasus
+
+| Kategori | Isi | Contoh di aplikasi buku ini |
 |---|---|---|
-| **Functional** | The main flows that were designed | Login succeeds, the student list appears, the form saves data |
-| **Edge case** | Unusual input | An empty form, an email without `@`, an NIM with letters, an empty API, a dead connection |
-| **Platform** | Behavior that differs by device | The Android back button, a small screen, rotation, a denied device permission |
+| **Fungsional** | Alur utama yang dirancang | Login berhasil, daftar mahasiswa muncul, formulir menyimpan data |
+| **Edge case** | Masukan yang tidak biasa | Formulir kosong, email tanpa `@`, NIM berisi huruf, API kosong, koneksi mati |
+| **Platform** | Perilaku yang berbeda antarperangkat | Tombol back Android, layar kecil, rotasi, izin perangkat ditolak |
 
-> Test on at least one emulator and one physical device: an emulator does not reproduce the memory, network, and sensors of a real device.
+> Uji di minimal satu emulator dan satu perangkat fisik: emulator tidak mereproduksi memori, jaringan, dan sensor perangkat sungguhan.
 
 <!--
-The strength of manual testing is catching problems that automated tests never thought of:
-a stuttering animation, text cut off on a small screen, a button that is hard to press.
+Kekuatan pengujian manual adalah menangkap masalah yang tidak pernah terpikirkan oleh test
+otomatis: animasi tersendat, teks terpotong di layar kecil, tombol yang sulit ditekan.
 
-Its weakness is that it takes time and depends on human thoroughness, so manual testing must
-be guided by a checklist so it does not jump around without a plan.
+Kelemahannya: memakan waktu dan bergantung pada ketelitian manusia, sehingga pengujian manual harus
+dipandu checklist agar tidak melompat tanpa rencana.
 
-Guiding question: "Which case do students forget most often?" (Answer: edge cases —
-especially turning off the connection in the middle of a request.)
+Pertanyaan penuntun: "Kasus mana yang paling sering dilupakan mahasiswa?" (Jawaban: edge case —
+terutama mematikan koneksi di tengah permintaan.)
 -->
 
 ---
 
-## Usability Testing: Around 5 Users
+## Usability Testing Cukup dengan Sekitar 5 Pengguna
 
-- Manual testing judges correctness; usability testing judges ease of use
-- The classic principle: test with around 5 users to find the majority of the problems
-- A session in three parts: 3–5 real tasks, thinking aloud while working, then observation
-- Record task success, time, the places where the user hesitated, and the mistakes made
-- Help only when the user is truly stuck, and record it as a finding
+- Pengujian manual menilai kebenaran; usability testing menilai kemudahan pemakaian
+- Prinsip klasik: uji dengan sekitar 5 pengguna untuk menemukan mayoritas masalah
+- Satu sesi tiga bagian: 3–5 tugas nyata, berpikir keras saat bekerja, lalu pengamatan
+- Catat keberhasilan tugas, waktu, tempat pengguna ragu, dan kesalahan yang dibuat
+- Bantu hanya saat pengguna benar-benar macet, dan catat itu sebagai temuan
 
 <!--
-Stress the distinction that is most often confused: manual testing asks "does the feature
-work?", usability testing asks "can the user find it and use it easily?". An app that is
-technically correct can still be confusing.
+Tekankan pembedaan yang paling sering tertukar: pengujian manual bertanya "apakah fiturnya
+bekerja?", usability testing bertanya "apakah pengguna mudah menemukannya dan memakainya?".
+Aplikasi yang benar secara teknis bisa tetap membingungkan.
 
-An example of a real task from the chapter: "register a new student named Dewi Lestari
-without looking at any manual".
+Contoh tugas nyata dari bab: "daftarkan mahasiswa baru bernama Dewi Lestari tanpa melihat panduan
+apa pun".
 
-Mention the trade-off: adding users beyond five adds only a few findings, so the cost is not
-worth it. The observation results are prioritized into UI improvements in the next
-development cycle.
+Sebutkan trade-off-nya: menambah pengguna di atas lima hanya menambah sedikit temuan, sehingga
+biayanya tidak sepadan. Hasil pengamatan diprioritaskan menjadi perbaikan antarmuka di siklus
+pengembangan berikutnya.
 -->
 
 ---
 
-## Mobile App Testing Checklist
+<!-- _class: compact -->
 
-| Area | Test case | Actual result | Status |
+## Checklist: Enam Kasus Uji Paling Mewakili
+
+| Area | Kasus uji | Hasil nyata | Status |
 |---|---|---|---|
-| Login | A wrong password shows an error message, no redirect | — | ☐ Pass ☐ Fail |
-| Student List | Data from the API appears complete (NIM, name, program, GPA) | — | ☐ Pass ☐ Fail |
-| Student List | The API turned off shows an error message, the app does not crash | — | ☐ Pass ☐ Fail |
-| Student Form | A 6-digit NIM is rejected with a validation message | — | ☐ Pass ☐ Fail |
-| Navigation | The Android back button leaves the form without saving | — | ☐ Pass ☐ Fail |
-| Network | A loading state appears when the response is slow | — | ☐ Pass ☐ Fail |
+| Login | Password salah memunculkan pesan error, tanpa pindah layar | — | ☐ Lulus ☐ Gagal |
+| Daftar Mahasiswa | Data dari API muncul lengkap (NIM, nama, prodi, IPK) | — | ☐ Lulus ☐ Gagal |
+| Daftar Mahasiswa | API dimatikan memunculkan pesan error, aplikasi tidak berhenti | — | ☐ Lulus ☐ Gagal |
+| Formulir Mahasiswa | NIM 6 digit ditolak dengan pesan validasi | — | ☐ Lulus ☐ Gagal |
+| Navigasi | Tombol back Android meninggalkan formulir tanpa menyimpan | — | ☐ Lulus ☐ Gagal |
+| Jaringan | Status loading muncul saat jawaban server lambat | — | ☐ Lulus ☐ Gagal |
 
 <!--
-The complete table in the chapter holds ten test cases including a successful login, a phone
-number not starting with 08, and the display on a small screen of around 360 dp; on this
-slide are the six most representative cases.
+Tabel lengkap di bab memuat sepuluh kasus uji, termasuk login berhasil, nomor telepon yang tidak
+diawali 08, dan tampilan di layar kecil sekitar 360 dp; di slide ini ada enam kasus paling
+mewakili.
 
-The filling rule that must be stressed: the actual result column is filled with what you
-really observed, not what you expected, and the status is marked only after the result has
-been verified.
+Aturan pengisian yang harus ditekankan: kolom hasil nyata diisi dengan yang benar-benar kamu
+amati, bukan yang kamu harapkan, dan status ditandai hanya setelah hasilnya diperiksa.
 
-A failed test case is not deleted: it is recorded, fixed, and then tested again.
+Kasus uji yang gagal tidak dihapus: dicatat, diperbaiki, lalu diuji lagi.
 -->
 
 ---
 
-## A Living Checklist and Regression Test Cases
+## Checklist yang Hidup Menjadi Penjaga Regresi
 
 ![w:1120](assets/diagrams/bab-14-debugging-testing-dan-quality-assurance-04.svg)
 
-> A checklist is the team's working document: a bug that slips through means there was a test case that should have existed.
+> Checklist adalah dokumen kerja tim: bug yang lolos berarti ada kasus uji yang seharusnya sudah ada.
 
 <!--
-Explain the economic value of this cycle: every bug that ever slipped through becomes a
-permanent guard, so the same mistake does not repeat in the next release.
+Jelaskan nilai ekonomi siklus ini: setiap bug yang pernah lolos menjadi penjaga permanen, sehingga
+kesalahan yang sama tidak terulang di rilis berikutnya.
 
-Remind them that the checklist is reused during release preparation in Chapter 15.
+Ingatkan bahwa checklist ini dipakai ulang saat persiapan rilis di Bab 15.
 
-Stress a realistic division of QA work for a student project: unit tests for pure logic,
-which are cheap to automate, and a manual checklist for app behavior that is hard to
-automate.
+Tegaskan pembagian kerja QA yang realistis untuk proyek mahasiswa: unit test untuk logika murni
+yang murah diotomatiskan, dan checklist manual untuk perilaku aplikasi yang sulit diotomatiskan.
 -->
 
 ---
 
-## This Meeting's Practicum
+## Praktikum: Yang Dibangun Pertemuan Ini
 
-- Make sure you have Node.js LTS version 22 or newer with `node --version`
-- Copy `utils/validators.js` and `__tests__/validators.test.js` into the `praktikum14` folder
-- Run `node --test` until all 13 tests pass
-- Test the endpoint from the terminal, then turn the server off and repeat to read the failure
-- Fill in a testing checklist of at least 5 test cases for your own app
+- Fungsi yang diuji milik **Aplikasi Manajemen Data Mahasiswa** dari praktikum Bab 8
+- Pastikan Node.js LTS versi 22 atau lebih baru lewat `node --version`
+- Salin `utils/validators.js` dan `__tests__/validators.test.js` ke folder `praktikum14`
+- Jalankan `node --test` sampai ketiga belas test lulus
+- Uji endpoint dari terminal, lalu matikan server dan ulangi untuk membaca kegagalannya
+- Isi checklist pengujian minimal 5 kasus uji untuk aplikasimu sendiri
 
 <!--
-Remind them of the correct folder order: utils/ and __tests__/ are created first, and the
-command is run from inside praktikum14 because the path ../utils/validators.js is resolved
-from the __tests__ folder.
+Ingatkan urutan folder yang benar: utils/ dan __tests__/ dibuat lebih dulu, dan perintahnya
+dijalankan dari dalam praktikum14 karena path ../utils/validators.js diselesaikan dari folder
+__tests__.
 
-The expected result: a summary of pass 13 and fail 0 from node:test, a five-row table from
-console.table, a 200 status when the endpoint is tested, and a message from the catch block
-when the server is turned off.
+Peringatan waktu: langkah praktikum ini menuntut menyalin dua file, menjalankan test, dan mengisi
+checklist sekaligus; siapkan file dasarnya sebelum pertemuan supaya tidak ada yang menyalin dari
+nol.
 
-If a step fails, point students to the chapter's Troubleshooting section: a Node version that
-is too old, a wrong relative path, AssertionError, the developer menu not appearing, and
-fetch not being recognized.
+Bila ada langkah yang gagal, arahkan mahasiswa ke bagian Troubleshooting di bab: versi Node yang
+terlalu tua, path relatif yang salah, AssertionError, menu developer yang tidak muncul, dan fetch
+yang tidak dikenali.
 -->
 
 ---
 
-## Case Study: The KRS Online Incident
+## Yang Harus Teramati
 
-**A SIAKAD mobile app for filling in the KRS failed on the first day of registration.**
+Untuk praktikum ini, catat lima hal:
+
+- `node --test` menutup dengan ringkasan pass 13 dan fail 0
+- `console.table` mencetak tabel lima baris untuk data mahasiswa
+- `curl` menjawab status 200 selama server backend hidup
+- Server dimatikan: blok `catch` mencetak pesan kegagalan, bukan aplikasi berhenti
+- Checklist pengujianmu sendiri terisi minimal 5 kasus uji
+
+> Laporan yang baik melampirkan keluaran terminal dan tabel checklist, bukan hanya tulisan "berhasil".
+
+<!--
+Jadikan daftar ini lembar centang: mahasiswa mencentang setiap butir lalu melampirkan tangkapan
+layar sebagai bukti sesuai rubrik praktikum.
+
+Butir kedua dan keempat sengaja berpasangan: yang satu menunjukkan data benar-benar sampai, yang
+lain menunjukkan kegagalan tertangkap dan tidak menjatuhkan aplikasi. Pasangan itulah inti bab ini
+dalam dua baris terminal.
+
+Pertanyaan penuntun: "Kenapa ringkasan pass 13 fail 0 lebih penting daripada tangkapan layar
+aplikasi yang tampak normal?" (Jawaban: ringkasan itu bukti terukur bahwa seluruh kasus uji
+pernah dijalankan.)
+-->
+
+---
+
+<!-- _class: compact -->
+
+## Studi Kasus: Insiden KRS Online
+
+**Contoh ilustratif** — aplikasi SIAKAD mobile untuk mengisi KRS gagal di hari pertama pendaftaran.
 
 ![w:1120](assets/diagrams/bab-14-debugging-testing-dan-quality-assurance-08.svg)
 
-<div class="grid2">
-<div>
-
-**Symptoms in the field**
-
-- The form accepted a 6-digit NIM, so foreign data was saved
-
-</div>
-<div>
-
-**Root cause after the audit**
-
-- There were no unit tests for that app's validation functions
-
-</div>
-</div>
-
-<!--
-Trimmed to the picture (the diagram says this):
-- The team only tested the success flow on one Android emulator, with no real-device test
-- Many students saw a blank screen when opening the KRS list
-- iOS users could not save because the button was covered by the keyboard
-
-The picture draws both columns of this case — the three symptoms in the field and the two root
-causes the audit found — as numbered rows side by side, and it sits directly under the lead
-line because it is the whole case in one picture. One bullet of each column stays on the
-slide, because a slide that had bullets keeps at least two: the first symptom, and the second
-cause (the shorter of the two, which keeps its second line clear of the page number). Those
-two therefore repeat one row of the picture each — the price of the two-bullet floor, paid
-rather than deleting them. The picture's panels are tagged "IN THE FIELD" and "AFTER THE
-AUDIT" (both fragments of this slide's own headings) so the figure does not repeat the two
-heading lines verbatim underneath itself.
-
-Read it as a story, not as a list. The goal is to make students recognize this pattern of
-failure in their own project.
-
-Mention that the app in this case follows the same flow as the Student Data Management App
-built in Chapters 6–10: login, list, and input form.
-
-Question before the next slide: "Of those three symptoms, which is most likely to happen in
-your group project?" Let them guess first.
--->
-
----
-
-## Incident Analysis: The Stage That Should Have Caught It
-
-| Symptom | Stage from this chapter's material | Why it can catch it |
-|---|---|---|
-| A 6-digit NIM is accepted | Unit test for `validators.js` | The 7-digit NIM rule is tested repeatedly without running the app |
-| A blank screen and "undefined is not an object" | Common error 14.2 and the manual checklist | There was no loading state and no check of the response structure |
-| The save button covered by the iOS keyboard | Manual and usability testing | An Android emulator does not reproduce the iOS keyboard |
-
-> The cost of three days of helpdesk is far higher than the cost of writing a number of unit tests and a one-page checklist.
-
-<!--
-Ask students to judge the cheapest order in which to apply QA if the team only has one day:
-unit tests for validation first because they are cheapest and fastest to run, then a
-functional manual checklist, then usability testing.
-
-Mention that the app in this case study is exactly the Final Project "Mobile Academic
-Information System", so the testing equipment from this chapter will be used again.
--->
-
----
-
-<!-- _class: center -->
-
-## Mini Quiz
-
-- What is the activity of finding and fixing mistakes in code called?
-- Which console function is most appropriate for a student list with columns?
-- Which property of a pure function makes it ideal for a unit test?
-- What is the main difference between unit testing and integration testing?
-
-<!--
-A five-minute oral quiz: show the questions, ask the class to answer together or raise
-hands, then move to the answer slide. Do not leak the answers on this slide.
-
-If the class's answers vary, note the numbers and repeat the distinction before the meeting
-is closed.
--->
-
----
-
-<!-- _class: center -->
-
-## Answers
-
-- Debugging — not testing, and not quality assurance
-- `console.table` — arranges an array of objects into tidy columns
-- Deterministic: its result is determined only by its arguments
-- The level of scope: one isolated unit versus cooperation between parts
-
-<!--
-Repeat the key sentence for number 4 because this is the concept most often confused in
-exams.
-
-If many students got number 2 wrong, repeat the table of three console message types before
-closing the meeting.
--->
-
----
-
-## Class Discussion and Exercises
-
-<div class="grid2">
-<div>
-
-**Class discussion**
-
-- Which symptom of the KRS Online incident is most likely to happen in your project?
-- If the team only has one day to test, which QA order is the cheapest?
-
-</div>
-<div>
-
-**Exercises and challenges**
-
-- Add three new test cases for NIM, email, and phone
-- Write a unit test for one pure function from the Chapter 9 project
-- Keep a one-week bug journal: error, cause, solution, the test case that prevents it
-
-</div>
-</div>
-
-<!--
-Give 5 minutes in pairs for the two discussion questions, then collect 2–3 answers. A strong
-answer names the cost and risk reasons, not only the order of activities.
-
-For the bug journal challenge, explain that its output is the addition of test cases to the
-checklist — this is the regression test case principle.
-
-Assessment reminder: a testing checklist of at least five test cases is part of Assignment 3
-in this meeting's RPS.
--->
-
----
-
-## Summary
-
-1. Debugging finds and fixes; testing checks in a planned way; QA prevents from the start
-2. `console.log`, `console.warn`, and `console.table` are useful when every message is given a label
-3. The six common React Native errors each have a typical cause and solution
-4. Test the endpoint first; pay attention to the `localhost`, `10.0.2.2`, and LAN IP addresses (Chapter 10)
-5. `node:test` runs unit tests without dependencies; the QA checklist is this chapter's product
-
-<!--
-Do not read it out. Ask five students to explain one number each in their own words; if
-wrong, correct it on the spot before the meeting ends.
-
-What is not yet written on the slide and needs to be said out loud: the testing pyramid, the
-difference between manual and usability testing, and the around-five-users principle.
-
-Closing message: professional habits start from reading the error message and recording test
-results, not from memorizing tools.
--->
-
----
-
-## References
-
-| Source | Link |
+| Gejala di lapangan | Akar masalah setelah audit |
 |---|---|
-| React Native documentation (2026) | reactnative.dev |
-| Expo documentation (2026) | docs.expo.dev |
-| Node.js documentation — `node:test` (2026) | nodejs.org |
-| MDN Web Docs — HTTP and JavaScript (2026) | developer.mozilla.org |
-
-<div class="grid2">
-<div>
-
-**Related chapters**
-
-- Chapter 8 — form validation that is tested in this chapter
-- Chapter 10 — REST API, status codes, and the book's backend
-
-</div>
-<div>
-
-**Technology versions in this book**
-
-- Expo SDK 57 · React Native 0.86 · React 19.2 · Node.js LTS ≥ 22
-
-</div>
-</div>
+| Formulir menerima NIM 6 digit, sehingga data orang lain ikut tersimpan | Tidak ada unit test untuk fungsi validasi aplikasi itu |
 
 <!--
-The complete references are in Appendix D; terms such as Metro Bundler, Debugging, and
-Status Code are explained in Appendix C (glossary).
+Dipotong ke gambar (diagram yang mengatakan ini):
+- Tim hanya menguji alur berhasil di satu emulator Android, tanpa uji perangkat fisik
+- Banyak mahasiswa melihat layar kosong saat membuka daftar KRS
+- Pengguna iOS tidak bisa menyimpan karena tombolnya tertutup keyboard
 
-Remind them that documentation pages are version-sensitive: re-check the behavior of
-DevTools, jest-expo, and React Native Testing Library for SDK 57 before using them in
-production code.
+Gambar menggambar kedua kolom kasus ini — tiga gejala di lapangan dan dua akar masalah temuan
+audit — sebagai baris bernomor yang berdampingan. Di bawahnya, satu baris tabel memuat satu
+butir dari tiap kolom: gejala pertama, dan akar masalah kedua yang lebih pendek. Keduanya
+memang mengulang satu baris gambar masing-masing — itu harga dari keharusan menyisakan teks di
+slide, dan dibayar, bukan dihapus.
+
+Bacakan sebagai cerita, bukan sebagai daftar. Tujuannya membuat mahasiswa mengenali pola
+kegagalan ini di proyeknya sendiri.
+
+Sebutkan bahwa aplikasi pada kasus ini mengikuti alur yang sama dengan Aplikasi Manajemen Data
+Mahasiswa yang dibangun di Bab 6–10: login, daftar, dan formulir input — aplikasi yang sama persis
+dengan Project Akhir yang kamu bangun sendiri.
+
+Pertanyaan sebelum slide berikutnya: "Dari ketiga gejala itu, mana yang paling mungkin terjadi di
+proyek kelompokmu?" Biarkan mereka menebak lebih dulu.
+-->
+
+---
+
+<!-- _class: compact -->
+
+## Insiden Itu Seharusnya Tertangkap di Tahap Ini
+
+| Gejala | Tahap dari materi bab ini | Kenapa bisa menangkapnya |
+|---|---|---|
+| NIM 6 digit diterima | Unit test untuk `validators.js` | Aturan NIM 7 digit diuji berulang tanpa menjalankan aplikasi |
+| Layar kosong dan `'undefined' is not an object` | Error umum 14.2 dan checklist manual | Tidak ada status loading dan tidak ada pemeriksaan struktur jawaban |
+| Tombol simpan tertutup keyboard iOS | Manual dan usability testing | Emulator Android tidak mereproduksi keyboard iOS |
+
+> Biaya tiga hari helpdesk jauh lebih mahal daripada biaya menulis sejumlah unit test dan checklist satu halaman.
+
+<!--
+Minta mahasiswa menilai urutan QA termurah bila tim hanya punya satu hari: unit test untuk
+validasi lebih dulu karena paling murah dan paling cepat dijalankan, lalu checklist manual
+fungsional, lalu usability testing.
+
+Hubungkan dengan aplikasi kita: aplikasi pada studi kasus ini persis Project Akhir yang dibangun
+di Bab 6–10, sehingga tiga gejala di tabel ini bisa menimpanya bila praktikum Bab 8 disalin tanpa
+test dan tanpa checklist. Peralatan pengujian di bab ini akan dipakai lagi di sana.
+
+Pesan penutup slide ini: kebanyakan insiden bukan kegagalan kode, melainkan kegagalan proses
+pengujian.
+-->
+
+---
+
+<!-- _class: center -->
+
+## Kuis Kilat
+
+- Kegiatan mencari dan memperbaiki kesalahan di kode disebut apa?
+- Fungsi console mana yang paling tepat untuk daftar mahasiswa berkolom?
+- Sifat apa pada fungsi murni yang membuatnya ideal untuk unit test?
+- Apa beda utama unit testing dan integration testing?
+
+<!--
+Kuis lisan lima menit: tampilkan pertanyaan, minta kelas menjawab bersama atau mengangkat tangan,
+lalu lanjut ke slide kunci. Jangan membocorkan jawaban di slide ini.
+
+Kalau jawaban kelas beragam, catat nomornya dan ulangi pembedaannya sebelum pertemuan ditutup.
+-->
+
+---
+
+<!-- _class: center -->
+
+## Kunci Kuis Kilat
+
+- Debugging — bukan testing, dan bukan quality assurance
+- `console.table` — menyusun array objek menjadi kolom rapi
+- Deterministik: hasilnya hanya ditentukan argumennya
+- Tingkat cakupannya: satu unit terpisah versus kerja sama antarbagian
+
+<!--
+Ulangi kalimat kunci nomor empat karena inilah konsep yang paling sering tertukar di ujian.
+
+Kalau banyak yang salah di nomor dua, ulangi tabel tiga jenis pesan console sebelum menutup
+pertemuan.
+-->
+
+---
+
+## Satu Hari untuk Menguji Memaksa Kita Memilih Urutan
+
+**Diskusi kelas**
+
+- Gejala mana dari insiden KRS Online yang paling mungkin muncul di proyekmu?
+- Kalau tim hanya punya satu hari untuk menguji, urutan QA mana yang paling murah?
+
+**Latihan dan tantangan**
+
+- Tambah tiga kasus uji baru untuk NIM, email, dan telepon
+- Tulis unit test untuk satu fungsi murni dari proyek Bab 9
+- Simpan jurnal bug satu minggu: error, penyebab, solusi, kasus uji pencegahnya
+
+> Soal diskusi dan latihan bab ini menjadi bahan Latihan Bab 14, dinilai lewat rubrik praktikum di Lampiran A.
+
+<!--
+Beri 5 menit berpasangan untuk dua pertanyaan diskusi, lalu tampung dua sampai tiga jawaban.
+Jawaban yang kuat menyebut alasan biaya dan risiko, bukan hanya urutan kegiatannya.
+
+Untuk tantangan jurnal bug, jelaskan bahwa keluarannya adalah penambahan kasus uji ke checklist —
+itulah prinsip kasus uji regresi yang dibahas di slide checklist.
+
+Pengingat penilaian: checklist pengujian minimal lima kasus uji adalah bagian Tugas 3 di RPS
+pertemuan ini.
+-->
+
+---
+
+## Ringkasan
+
+1. Debugging mencari dan memperbaiki; testing memeriksa terencana; QA mencegah sejak awal
+2. `console.log`, `console.warn`, dan `console.table` berguna bila setiap pesan diberi label
+3. Enam error React Native yang umum punya penyebab dan solusi khas masing-masing
+4. Uji endpoint lebih dulu; perhatikan alamat `localhost`, `10.0.2.2`, dan IP LAN (Bab 10)
+5. `node:test` menjalankan unit test tanpa dependency; checklist QA adalah produk bab ini
+
+<!--
+Jangan dibacakan. Minta lima mahasiswa menjelaskan satu nomor dengan kata-kata sendiri; bila
+keliru, perbaiki saat itu juga sebelum pertemuan ditutup.
+
+Yang belum tertulis di slide dan perlu diucapkan: piramida testing, beda pengujian manual dan
+usability testing, serta prinsip sekitar lima pengguna.
+
+Pesan penutup: kebiasaan profesional dimulai dari membaca pesan error dan mencatat hasil uji,
+bukan dari menghafal alat.
+-->
+
+---
+
+<!-- _class: compact -->
+
+## Referensi
+
+| Sumber | Link |
+|---|---|
+| Dokumentasi React Native (2026) | reactnative.dev |
+| Dokumentasi Expo (2026) | docs.expo.dev |
+| Dokumentasi Node.js — `node:test` (2026) | nodejs.org |
+| MDN Web Docs — HTTP dan JavaScript (2026) | developer.mozilla.org |
+
+**Bab terkait:** Bab 8 (validasi formulir yang diuji di sini) · Bab 10 (REST API, status code, dan backend buku ini)
+
+**Bacaan lanjutan:** Bab 15 — Build dan Deployment
+
+**Versi teknologi:** Expo SDK 57 · React Native 0.86 · React 19.2 · Node.js ≥ 22
+
+<!--
+Rujukan lengkap ada di Lampiran D; istilah seperti Metro Bundler, Debugging, dan Status Code
+dijelaskan di glosarium Lampiran C.
+
+Ingatkan bahwa halaman dokumentasi bersifat sensitif versi: periksa ulang perilaku DevTools,
+jest-expo, dan React Native Testing Library untuk SDK 57 sebelum memakainya di kode produksi.
+
+Dua bab terkait itu sudah dibahas sebelumnya dan hanya dipakai ulang di sini: Bab 8 untuk fungsi
+validasi yang menjadi bahan test, dan Bab 10 untuk endpoint serta status code yang diuji dengan
+curl.
 -->
 
 ---
@@ -1005,21 +1002,22 @@ production code.
 <!-- _class: lead -->
 <!-- _paginate: skip -->
 
-# Ready for Chapter 15
+# Siap ke Bab 15
 
-**Assignment 3 (see the RPS for meeting 15):** a QA report — a testing checklist filled in with at least 5 test cases + `node --test` evidence; the build report follows in Chapter 15.
+**Tugas 3 (RPS pertemuan 15):** laporan QA — checklist minimal 5 kasus uji terisi plus bukti `node --test`.
 
-Meeting 15 (continued): Chapter 15 — Build and Deployment.
+Laporan build menyusul di Bab 15.
+
+Pertemuan 15 (lanjutan): Bab 15 — Build dan Deployment.
 
 <!--
-Close with one sentence: "This chapter taught us to inspect the house before it is handed
-over; the next chapter teaches us to hand it over to the occupants."
+Tutup dengan satu kalimat: "Bab ini mengajari kita memeriksa rumah sebelum diserahkan; bab
+berikutnya mengajari kita menyerahkannya kepada penghuninya."
 
-State the Assignment 3 submission deadline explicitly and tie it to the practicum rubric
-(Appendix A): conceptual understanding 15%, implementation 25%, code quality 15%, UI/UX 15%,
-debugging 10%, documentation 20%.
+Sebutkan tenggat pengumpulan Tugas 3 secara eksplisit, lalu kaitkan dengan rubrik praktikum
+(Lampiran A): pemahaman konsep 15%, implementasi 25%, kualitas kode 15%, UI/UX 15%, debugging
+10%, dokumentasi 20%.
 
-Remind them that Assignment 3 covers two reports — the QA report from this meeting and the
-build report that follows in Chapter 15 — because meeting 15 contains both of those chapters
-(RPS meeting 15).
+Ingatkan bahwa Tugas 3 mencakup dua laporan — laporan QA dari pertemuan ini dan laporan build
+yang menyusul di Bab 15 — karena pertemuan 15 memuat kedua bab itu sekaligus.
 -->

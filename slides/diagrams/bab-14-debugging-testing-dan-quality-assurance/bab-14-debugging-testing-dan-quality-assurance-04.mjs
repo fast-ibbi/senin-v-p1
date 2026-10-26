@@ -18,7 +18,7 @@
 // word ("next release") would say when the loop repeats and not why it matters.
 export default {
   id: '04',
-  slide: 'A Living Checklist and Regression Test Cases',
+  slide: 'Checklist yang Hidup Menjadi Penjaga Regresi',
   pattern: 'stateMachine',
   alt:
     'The checklist cycle: a bug that slips through is recorded as a permanent guard, the ' +

@@ -28,7 +28,7 @@
 // `[] or null`, `{ data: [...] }`, Chapter 10).
 export default {
   id: '07',
-  slide: 'Error 3 — undefined is not an object',
+  slide: 'Error Ketiga: Properti Dibaca Sebelum Datanya Tiba',
   pattern: 'layers',
   alt:
     'Three levels of defence against "undefined is not an object", from the read down to the ' +

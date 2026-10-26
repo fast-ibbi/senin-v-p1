@@ -26,7 +26,7 @@
 // (picture-only) slide; each label was checked by hand against the prose slide above it.
 export default {
   id: '05',
-  slide: 'Diagram: Debugging State in Two Layers',
+  slide: 'Dua Lapisan untuk Melihat State, Dua Pertanyaan Berbeda',
   pattern: 'beforeAfter',
   alt:
     'Two layers of state debugging: logs written inside useEffect answer when and in what ' +

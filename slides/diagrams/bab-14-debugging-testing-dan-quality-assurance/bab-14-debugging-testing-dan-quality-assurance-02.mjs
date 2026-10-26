@@ -13,7 +13,7 @@
 // two siblings, because siblings are the pair on different rows.
 export default {
   id: '02',
-  slide: 'Server or App? Decision Flow',
+  slide: 'Server atau Aplikasi? Satu Perintah, Dua Kesimpulan',
   pattern: 'tree',
   alt:
     'Testing the endpoint first branches two ways: if the endpoint succeeds but the app still ' +

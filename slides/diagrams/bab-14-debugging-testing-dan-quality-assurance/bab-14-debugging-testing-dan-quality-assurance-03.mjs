@@ -19,7 +19,7 @@
 // many), and the picture's job is the order of the strata, which is exact.
 export default {
   id: '03',
-  slide: 'Testing Pyramid',
+  slide: 'Piramida Testing: Banyak di Bawah, Sedikit di Atas',
   pattern: 'layers',
   alt:
     'The testing pyramid, read from the bottom: many unit tests as the base, fewer ' +
