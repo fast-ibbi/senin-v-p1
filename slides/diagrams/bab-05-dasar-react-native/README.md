@@ -1,5 +1,12 @@
 # Chapter 5 diagram specs
 
+> **Status: usang.** Deck `slides/bab-05-dasar-react-native.md` ditulis ulang dari
+> bahan baru (rincian topik materi 5 bagian) atas keputusan pemilik: deck sekarang **tanpa
+> gambar**, jadi tidak satu pun baris `![]()` di deck merujuk SVG di bawah ini. Seluruh spec
+> masih terikat ke judul slide versi lama, sehingga `build.mjs` **akan gagal** dengan
+> "names slide … but no ## heading matches" bila dijalankan tanpa penyesuaian. Berkas SVG di
+> `slides/assets/diagrams/bab-05-dasar-react-native-*.svg` dibiarkan utuh sebagai arsip.
+
 `slide-diagrams` kit specs for `slides/bab-05-dasar-react-native.md`.
 One file = one picture. A spec carries data only; geometry, text wrapping, and the
 font-size floor are owned by the kit.
