@@ -5,5 +5,8 @@ dist/
 # hasil render slide di folder slides/
 slides/out/
 
+# status lokal Expo (dibuat ulang oleh `npx expo start`)
+demo/**/.expo/
+
 # sistem
 .DS_Store
