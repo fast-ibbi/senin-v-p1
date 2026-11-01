@@ -1,0 +1,90 @@
+/*
+ * Gaya khusus demo web Bab 5 · Bagian 4 — Layout Responsif dengan Flexbox.
+ * Dimuat setelah aset/halaman.css dan aset/tiruan.css; berkas bersama tidak diubah.
+ *
+ * Isinya hanya dua hal:
+ *
+ *   1. Breakpoint 600 px di dalam bingkai. Bingkai bisa selebar 390 px di layar
+ *      1600 px, jadi ambangnya dibaca dari lebar BINGKAI (container query
+ *      `layar`, dipasang di .bingkai-layar oleh aset/halaman.css), bukan dari
+ *      lebar jendela. Media query akan salah di sini: ia membaca jendela, sehingga
+ *      demonstrasi 600 px tidak akan pernah bekerja di dalam bingkai. Di React
+ *      Native ambang yang sama dibaca useWindowDimensions() pada kode yang
+ *      ditampilkan di Subbab 4.9.
+ *
+ *   2. Garis bantu halaman: penanda teks dan sel tiruan. Bagian ini bukan gaya
+ *      aplikasi. Tidak ada satu pun nilai StyleSheet aplikasi yang ditulis di
+ *      sini — warna, jarak, radius, dan ukuran tetap inline pada markup tiruan,
+ *      persis seperti objek StyleSheet pada kode yang ditampilkan.
+ */
+
+/* ---------------------------------------------- breakpoint 600 px di dalam bingkai */
+
+.rn-600 {
+  flex-direction: column;
+}
+
+@container layar (min-width: 600px) {
+  .rn-600 {
+    flex-direction: row;
+  }
+}
+
+/* Penanda nilai: teksnya berganti mengikuti lebar bingkai, tanpa JavaScript.
+   Yang berganti hanya `content`; ukuran huruf tidak disentuh supaya tetap 14 px
+   seperti teks React Native tanpa style. */
+.penanda-600::after {
+  content: "flexDirection: 'column'";
+}
+
+@container layar (min-width: 600px) {
+  .penanda-600::after {
+    content: "flexDirection: 'row'";
+  }
+}
+
+/* Kotak putus-putus pada kedua panel: garis bantu halaman supaya panel yang tidak
+   punya backgroundColor tetap terlihat. Kode di Subbab 4.9 tidak menulis border
+   maupun warna latar apa pun. */
+.rn-600 > .rn-view {
+  outline: 1px dashed #cbd5e1;
+}
+
+/* ------------------------------------------------------------- garis bantu halaman */
+
+/* Penanda halaman yang ditaruh di dalam tiruan (bukan bagian dari kode aplikasi). */
+.penanda {
+  color: #64748b;
+  font-family: var(--mono);
+}
+
+/* Tiruan tata letak internal FlatList numColumns={2} di Subbab 4.3. Dua kolom itu
+   perilaku komponen, bukan gaya yang ditulis aplikasi: kode yang ditampilkan hanya
+   menulis numColumns={jumlahKolom}. Sel diberi garis putus-putus sebagai penanda
+   halaman, sebab KartuMahasiswa tidak ikut ditampilkan di halaman ini. */
+.rn-kolom2 {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+.rn-kolom2 > .rn-view {
+  flex: 0 0 50%;
+  padding: 4px;
+}
+
+.rn-sel {
+  border: 1px dashed #cbd5e1;
+  border-radius: 6px;
+  padding: 8px;
+}
+
+/* Daftar periksa di Subbab 4.10: bagan, bukan keluaran tiruan. */
+.bagan-jalur.periksa {
+  align-items: flex-start;
+}
+
+.bagan-jalur.periksa .bagan-label {
+  margin-top: 2px;
+}

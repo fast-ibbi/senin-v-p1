@@ -7,6 +7,9 @@
     "clean": "rm -rf dist",
     "build": "npm run clean && marp -I slides -o dist && node scripts/build-pages.mjs",
     "serve": "marp -s slides",
+    "serve:demo": "python3 -m http.server 8137 -d demo/web/bab-05",
+    "verify:demo-web": "node scripts/verify-demo-web.mjs",
+    "capture:demo-web": "node scripts/screenshot-demo-web.mjs",
     "smoke:api": "node scripts/smoke-api.mjs"
   },
   "keywords": [],

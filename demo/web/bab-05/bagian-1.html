@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bab 5 · Bagian 1 — React untuk Web dan React Native</title>
+<meta name="description" content="Penjelasan lengkap Bagian 1 Bab 5: konsep React yang sama dengan medium yang berbeda, padanan elemen HTML ke komponen native, perbedaan tempat render, dan kode yang bisa dipakai ulang — disertai kode dan hasil yang diharapkan.">
+<link rel="stylesheet" href="aset/akademik.css">
+<link rel="stylesheet" href="aset/prism/prism.css">
+<link rel="stylesheet" href="aset/halaman.css">
+<link rel="stylesheet" href="aset/tiruan.css">
+</head>
+<body>
+<a class="lewati" href="#isi">Lewati ke isi</a>
+
+<header class="puncak">
+  <p class="jejak">Demo web · Bab 5 — Dasar React Native · Pertemuan 6</p>
+  <nav class="nav-bab" aria-label="Navigasi bab">
+    <a href="index.html">Bab 5</a>
+    <span class="pemisah" aria-hidden="true">|</span>
+    <a href="bagian-1.html" aria-current="page">Bagian 1 · Web dan Native</a>
+    <span class="pemisah" aria-hidden="true">|</span>
+    <a href="bagian-2.html">Bagian 2 · Komponen Inti</a>
+    <span class="pemisah" aria-hidden="true">|</span>
+    <a href="bagian-3.html">Bagian 3 · Gaya</a>
+    <span class="pemisah" aria-hidden="true">|</span>
+    <a href="bagian-4.html">Bagian 4 · Layout</a>
+    <span class="pemisah" aria-hidden="true">|</span>
+    <a href="bagian-5.html">Bagian 5 · Scroller</a>
+    <span class="pemisah" aria-hidden="true">|</span>
+    <a href="praktikum.html">Praktikum</a>
+  </nav>
+</header>
+
+<div class="kendali" role="group" aria-label="Kendali lebar bingkai contoh">
+  <div class="kendali-isi">
+    <div class="kendali-slider">
+      <label for="lebar" class="kendali-judul">Lebar layar contoh</label>
+      <input id="lebar" type="range" min="320" max="1024" step="1" value="390" data-kendali-lebar>
+      <span class="kendali-rentang">320–1024 px</span>
+      <output class="kendali-nilai" for="lebar" data-kendali-nilai>390 px</output>
+    </div>
+    <button type="button" class="tombol-preset" data-preset="390" aria-pressed="true">Ponsel 390</button>
+    <button type="button" class="tombol-preset" data-preset="844" aria-pressed="false">Lanskap 844</button>
+    <button type="button" class="tombol-preset" data-preset="834" aria-pressed="false">Tablet 834</button>
+    <p class="kendali-catatan">Penggeser ini mengubah lebar semua bingkai di halaman, kecuali bingkai yang sengaja dipatok untuk perbandingan (mis. 2 kolom lawan 3 kolom). Contoh di dalam bingkai sengaja statis: tidak ada tombol, tab, atau isian yang bisa ditekan.</p>
+  </div>
+</div>
+
+<main class="isi-utama" id="isi">
+
+  <h1>Bagian 1 — React untuk Web dan React Native</h1>
+
+  <p class="ringkas">
+    Empat subbab: konsep React yang sama dengan medium yang berbeda, padanan elemen HTML ke
+    komponen native, perbedaan tempat render, dan bagian kode yang bisa dipakai ulang. Setiap
+    kode disertai hasil yang diharapkan, dan setiap angka di halaman ini ditelusuri ke
+    <code>slides/bab-05-dasar-react-native.md</code>, <code>buku/bab-05-dasar-react-native.md</code>,
+    atau <code>praktikum/bab-05-*.md</code>.
+  </p>
+
+  <div class="pengantar-pertanyaan">
+    <p><strong>Pertanyaan pembuka deck:</strong> “Kalau cara berpikirnya sama dengan React, kenapa kodenya harus berbeda?”</p>
+    <p>Tampung dua sampai tiga jawaban sebelum membaca halaman ini. Jawaban lengkapnya baru muncul di Subbab 1.2 dan 1.3.</p>
+  </div>
+
+  <div class="kotak kotak-tiruan">
+    <p class="kotak-judul">Yang perlu diketahui sebelum membaca</p>
+    <p>
+      Panel bertanda <strong>React Native</strong> adalah <strong>tiruan HTML/CSS</strong>, bukan React
+      Native sungguhan: tidak ada kode React Native yang dijalankan di halaman ini. Tiruan itu meniru
+      lima aturan yang paling mudah dibuktikan —
+      <code>flexDirection</code> bawaan <code>column</code> (CSS: <code>row</code>),
+      <code>alignItems</code> bawaan <code>stretch</code>,
+      <code>flexShrink</code> bawaan <code>0</code> (CSS: <code>1</code>),
+      <code>box-sizing: border-box</code> di semua komponen, dan tidak ada margin collapse.
+      Di perangkat asli hasilnya bisa sedikit berbeda karena font perangkat dan pembulatan piksel.
+    </p>
+    <p class="kotak-jawab">
+      Panel bertanda <strong>React Web</strong> bukan tiruan: browser benar-benar merender HTML dengan
+      aturan CSS yang ditampilkan, sehingga kolom kiri bisa dipakai sebagai pembanding yang jujur.
+    </p>
+  </div>
+
+  <!-- ============================================================ SUBBAB 1.1 -->
+
+  <section class="subbab" id="s1-1" data-subbab="1.1"
+           data-tanpa-kode="Subbab ini berisi konsep dan tabel perbandingan; kode pertama di Bagian 1 muncul di Subbab 1.4."
+           data-tanpa-output="Perbedaan React dan React Native di subbab ini adalah perbedaan mesin, bukan perbedaan yang bisa difoto. Yang bisa dibandingkan tampilannya ada di Subbab 1.2 dan 1.3.">
+    <p class="label-subbab">
+      Subbab 1.1 <span class="sumber-slide">· deck: “Konsepnya Sama, Medianya Berbeda” · buku §5.1</span>
+    </p>
+    <h2>Konsepnya Sama, Medianya Berbeda</h2>
+
+    <ul>
+      <li>React: pustaka JavaScript untuk membangun antarmuka pengguna.</li>
+      <li>React Native: untuk membangun aplikasi mobile.</li>
+      <li>Konsep yang sama: <em>component</em>, <em>props</em>, <em>state</em>, dan <em>hooks</em>.</li>
+    </ul>
+
+    <p>
+      React lahir pada 2013 sebagai pustaka antarmuka web: komponen ditulis dengan JSX, lalu
+      <code>react-dom</code> merendernya menjadi elemen DOM. Ketika React Native diluncurkan pada 2015,
+      idenya tidak berubah — komponen, props, state, dan hook tetap sama persis — tetapi target rendernya
+      diganti: alih-alih DOM, React Native merender <strong>komponen native</strong>, yaitu
+      <code>UIView</code> di iOS dan <code>ViewGroup</code> di Android. Inilah inti “mengapa teknologi ini
+      ada”: satu bahasa, satu cara berpikir, dua platform sekaligus.
+    </p>
+
+    <p>
+      Imbalannya adalah lapisan abstraksi. Fitur spesifik platform kadang memerlukan modul native
+      tambahan, dan perilaku visual tidak pernah sepenuhnya identik antarponsel. Perbedaan praktis yang
+      paling terasa saat menulis kode dirangkum pada tabel berikut (buku §5.1).
+    </p>
+
+    <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Perbedaan praktis React web dan React Native · sumber: buku §5.1</caption>
+      <thead>
+        <tr><th scope="col">Aspek</th><th scope="col">React (web)</th><th scope="col">React Native</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Elemen yang dirender</td><td>DOM: <code>div</code>, <code>span</code>, <code>p</code>, <code>img</code>, <code>button</code></td><td>Komponen native: <code>View</code>, <code>Text</code>, <code>Image</code>, <code>Pressable</code></td></tr>
+        <tr><td>Styling</td><td>Berkas CSS: selektor, kelas, <em>cascade</em></td><td>Objek JavaScript: <code>StyleSheet</code>, tanpa selektor maupun pewarisan</td></tr>
+        <tr><td>Layout</td><td>CSS Box Model + Flexbox (bawaan <code>row</code>)</td><td>Mesin layout <strong>Yoga</strong> — Flexbox (bawaan <code>column</code>)</td></tr>
+        <tr><td>Event sentuhan</td><td><code>onClick</code>, <code>onMouseEnter</code></td><td><code>onPress</code>, <code>onLongPress</code></td></tr>
+        <tr><td>Navigasi</td><td>URL browser / <em>react-router</em></td><td>Tidak ada URL — pustaka navigasi (Bab 7: Expo Router)</td></tr>
+        <tr><td>API browser</td><td><code>document</code>, <code>window</code>, <code>localStorage</code></td><td>Tidak ada — memakai API perangkat melalui modul Expo (Bab 12)</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <div class="kotak kotak-salah">
+      <p class="kotak-judul">Salah paham</p>
+      <p>
+        Menganggap React Native menerjemahkan HTML menjadi aplikasi mobile. Yang dirender bukan HTML,
+        melainkan komponen native.
+      </p>
+    </div>
+
+    <div class="kotak kotak-tanya">
+      <p class="kotak-judul">Pertanyaan penuntun</p>
+      <p>“Kalau konsepnya sama, apa yang berubah?”</p>
+      <details class="kotak-jawab">
+        <summary>Lihat jawaban</summary>
+        <p>Mediumnya: dari halaman web menjadi aplikasi mobile, sehingga elemen yang dirender dan cara menata gayanya ikut berganti.</p>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============================================================ SUBBAB 1.2 -->
+
+  <section class="subbab" id="s1-2" data-subbab="1.2">
+    <p class="label-subbab">
+      Subbab 1.2 <span class="sumber-slide">· deck: “Elemen HTML Diganti Komponen Native” · buku §5.1</span>
+    </p>
+    <h2>Elemen HTML Diganti Komponen Native</h2>
+
+    <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Padanan yang dipakai sepanjang bab · sumber: deck (empat baris pertama) dan buku §5.1 (<code>img</code> ke <code>Image</code>)</caption>
+      <thead>
+        <tr><th scope="col">React Web</th><th scope="col">React Native</th><th scope="col">Catatan</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>div</code></td><td><code>View</code></td><td>Wadah; hanya boleh berisi komponen, bukan teks</td></tr>
+        <tr><td><code>p</code></td><td><code>Text</code></td><td>Satu-satunya komponen yang boleh memuat teks</td></tr>
+        <tr><td><code>button</code></td><td><code>Pressable</code></td><td>Tanpa tampilan bawaan; <code>Button</code> punya tampilan bawaan</td></tr>
+        <tr><td><code>img</code></td><td><code>Image</code></td><td>Gambar jarak jauh wajib diberi lebar dan tinggi</td></tr>
+        <tr><td>CSS</td><td><code>StyleSheet</code></td><td>Gaya sebagai objek JavaScript, bukan selektor</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <p>
+      Padanan ini tidak selalu satu-satu. Satu <code>div</code> di web bisa menjadi dua <code>View</code>
+      sekaligus di React Native, tergantung kebutuhan layout — misalnya satu <code>View</code> untuk latar
+      dan satu lagi untuk isi yang diberi jarak. Yang perlu dipegang adalah perannya: wadah, teks, gambar,
+      area sentuh, dan gaya.
+    </p>
+
+    <p>
+      Contoh di bawah memakai komponen yang sama dari dua sisi. Kolom kiri adalah komponen React web
+      (praktikum Soal 1), kolom kanan adalah versi React Native-nya (kunci Soal 1). Keduanya menampilkan
+      kartu profil yang sama; yang berganti hanya elemen dan cara menata gayanya.
+    </p>
+
+    <div class="padanan">
+      <div class="padanan-sisi">
+        <h3>React Web <span class="peran">· dirender DOM</span></h3>
+
+        <figure class="kode">
+          <figcaption class="kode-kepala">
+            <span class="kode-berkas">Profil.jsx</span>
+            <span class="kode-sumber">soal · Soal 1</span>
+          </figcaption>
+          <pre><code class="language-jsx">export default function Profil() {
+  const nama = localStorage.getItem("nama");
+  return (
+    &lt;div className="kartu" onClick={() =&gt; alert("Halo")}&gt;
+      &lt;h2 style={{ color: "#1e3a8a" }}&gt;Profil&lt;/h2&gt;
+      &lt;img src="https://example.com/foto.jpg" /&gt;
+      &lt;p&gt;Halo, {nama}&lt;/p&gt;
+    &lt;/div&gt;
+  );
+}
+</code></pre>
+        </figure>
+
+        <figure class="kode">
+          <figcaption class="kode-kepala">
+            <span class="kode-berkas">kartu.css</span>
+            <span class="kode-sumber">soal · Soal 1</span>
+          </figcaption>
+          <pre><code class="language-css">.kartu { display: flex; padding: 16px; background: #fff; border-radius: 12px; }
+</code></pre>
+        </figure>
+
+        <div class="keluaran">
+          <p class="keluaran-kepala"><span>Hasil di browser</span><span class="keluaran-lebar">DOM asli</span></p>
+          <div class="layar-web">
+            <div class="layar-web-bilah"><span class="titik"></span><span>index.html · lebar bebas mengikuti kolom</span></div>
+            <div class="layar-web-isi contoh-web">
+              <div class="kartu">
+                <h2 style="color: #1e3a8a">Profil</h2>
+                <img src="aset/contoh-foto.svg" alt="Foto mahasiswa">
+                <p>Halo, null</p>
+              </div>
+            </div>
+          </div>
+          <p class="keluaran-catatan">
+            Dua akibat yang terlihat langsung. Pertama, <code>display: flex</code> di CSS berarti
+            <strong>baris</strong>, sehingga judul, gambar, dan paragraf berjajar ke samping — di React Native
+            <code>View</code> selalu <strong>kolom</strong> secara bawaan. Kedua, <code>&lt;img&gt;</code> menebak
+            ukuran dari berkasnya (di sini 96×96), sedangkan <code>Image</code> tidak menebak apa pun. Teks
+            “Halo, null” muncul karena <code>localStorage</code> kosong saat halaman baru dibuka — di React Native
+            baris itu bukan sekadar kosong, melainkan tidak tersedia sama sekali.
+          </p>
+        </div>
+      </div>
+
+      <div class="padanan-sisi">
+        <h3>React Native <span class="peran">· tiruan komponen native</span></h3>
+
+        <figure class="kode">
+          <figcaption class="kode-kepala">
+            <span class="kode-berkas">Profil.js</span>
+            <span class="kode-sumber">kunci · Soal 1</span>
+          </figcaption>
+          <pre><code class="language-jsx">   import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+
+   export default function Profil() {
+     const nama = "Budi Santoso"; // sementara; sumber data nyata → Bab 10/11
+     return (
+       &lt;Pressable style={styles.kartu} onPress={() =&gt; alert("Halo")}&gt;
+         &lt;Text style={styles.judul}&gt;Profil&lt;/Text&gt;
+         &lt;Image source={{ uri: "https://example.com/foto.jpg" }} style={styles.foto} /&gt;
+         &lt;Text&gt;Halo, {nama}&lt;/Text&gt;
+       &lt;/Pressable&gt;
+     );
+   }
+
+   const styles = StyleSheet.create({
+     kartu: { padding: 16, backgroundColor: "#ffffff", borderRadius: 12 },
+     judul: { color: "#1e3a8a", fontSize: 22, fontWeight: "bold" },
+     foto: { width: 72, height: 72, borderRadius: 36 },
+   });
+   </code></pre>
+        </figure>
+
+        <div class="keluaran">
+          <p class="keluaran-kepala"><span>Hasil yang diharapkan</span><span class="keluaran-lebar">390 px</span></p>
+          <div class="bingkai">
+            <div class="bingkai-layar">
+              <div class="rn">
+                <div class="rn-view" style="flex: 1; padding: 16px">
+                  <div class="rn-pressable" style="padding: 16px; background-color: #ffffff; border-radius: 12px">
+                    <div class="rn-text" style="color: #1e3a8a; font-size: 22px; font-weight: 700">Profil</div>
+                    <div class="rn-image rn-image-kosong" style="width: 72px; height: 72px; border-radius: 36px"></div>
+                    <div class="rn-text">Halo, Budi Santoso</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p class="keluaran-catatan">
+            Kotak 72×72 itu kosong karena <code>source={{ uri }}</code> butuh internet; <code>resizeMode</code>
+            tidak menolong saat gambarnya tidak pernah sampai. Yang penting di sini: kotaknya tetap berukuran
+            72×72 <em>karena gaya <code>foto</code> menuliskan <code>width</code> dan <code>height</code></em>.
+            Tanpa keduanya, kotak itu runtuh menjadi 0×0 dan gambarnya seolah tidak ada.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="kotak kotak-tanya">
+      <p class="kotak-judul">Pertanyaan penuntun</p>
+      <p>“Kenapa CSS tidak bisa dipakai apa adanya?”</p>
+      <details class="kotak-jawab">
+        <summary>Lihat jawaban</summary>
+        <p>
+          Karena tidak ada browser yang mem-parse CSS di aplikasi React Native. Gaya ditulis sebagai objek
+          JavaScript melalui <code>StyleSheet</code>, tanpa selektor dan tanpa pewarisan.
+        </p>
+      </details>
+    </div>
+
+    <div class="kotak kotak-salah">
+      <p class="kotak-judul">Salah paham</p>
+      <p>
+        Mencari berkas CSS di dalam project Expo, lalu menyimpulkan setup-nya rusak. Tidak ada berkas CSS di
+        sana karena seluruh gaya tinggal di dalam berkas JavaScript.
+      </p>
+    </div>
+
+    <p class="keluaran-catatan">
+      Praktik lengkap pemetaan ini ada di <a href="praktikum.html#p1">Praktikum 1</a>, beserta rubrik
+      penilaiannya.
+    </p>
+  </section>
+
+  <!-- ============================================================ SUBBAB 1.3 -->
+
+  <section class="subbab" id="s1-3" data-subbab="1.3"
+           data-tanpa-kode="Subbab ini menjelaskan tempat render; tidak ada kode baru di deck maupun di buku untuk topik ini."
+           data-tanpa-output="Perbedaan tempat render tidak punya tampilan yang bisa dibandingkan di peramban. Bagan di bawah menggantikan keluaran, dan diberi label sebagai bagan.">
+    <p class="label-subbab">
+      Subbab 1.3 <span class="sumber-slide">· deck: “HTML Dirender Browser, Komponen Dirender Native” · buku §5.1</span>
+    </p>
+    <h2>HTML Dirender Browser, Komponen Dirender Native</h2>
+
+    <ul>
+      <li>Rendering elemen HTML pada browser.</li>
+      <li>Rendering komponen menjadi antarmuka native pada perangkat mobile.</li>
+      <li>Lingkungan eksekusi, akses fitur perangkat, dan dukungan platform ikut berbeda.</li>
+    </ul>
+
+    <p>
+      Bayangkan dua jalur dari satu sumber. JSX yang sama ditulis sekali; satu jalur berakhir di DOM browser,
+      jalur lain berakhir di komponen native. Analogi yang dipakai di kelas: resep yang sama dimasak di dua
+      dapur berbeda — bahannya sama, alat masaknya tidak, jadi hasil dan waktu memasaknya pun berbeda.
+    </p>
+
+    <div class="bagan" role="img" aria-label="Dua jalur render dari satu sumber JSX: lewat react-dom menjadi DOM, atau lewat komponen native menjadi UIView dan ViewGroup">
+      <div class="bagan-jalur">
+        <span class="bagan-kotak">JSX</span>
+        <span class="bagan-panah" aria-hidden="true">→</span>
+        <span class="bagan-kotak">react-dom</span>
+        <span class="bagan-panah" aria-hidden="true">→</span>
+        <span class="bagan-kotak aksen">DOM browser</span>
+        <p class="bagan-label">Jalur React Web — berjalan di dalam browser, memakai API browser.</p>
+      </div>
+      <div class="bagan-jalur">
+        <span class="bagan-kotak">JSX</span>
+        <span class="bagan-panah" aria-hidden="true">→</span>
+        <span class="bagan-kotak">komponen native</span>
+        <span class="bagan-panah" aria-hidden="true">→</span>
+        <span class="bagan-kotak aksen">UIView (iOS) · ViewGroup (Android)</span>
+        <p class="bagan-label">Jalur React Native — berjalan di dalam aplikasi, tanpa browser di antaranya.</p>
+      </div>
+    </div>
+
+    <p>
+      Akibat yang paling sering menggigit pemula: di React Native tidak ada browser, sehingga
+      <code>document</code>, <code>window</code>, dan <code>localStorage</code> tidak tersedia. Kode yang
+      memanggilnya tidak “berfungsi sebagian” — kode itu gagal. Penggantinya disediakan bab lain: data dari
+      server di Bab 10, penyimpanan lokal perangkat di Bab 11, fitur perangkat di Bab 12.
+    </p>
+
+    <div class="kotak kotak-salah">
+      <p class="kotak-judul">Salah paham</p>
+      <p>Menganggap aplikasi React Native berjalan di dalam browser tersembunyi.</p>
+    </div>
+
+    <div class="kotak kotak-tanya">
+      <p class="kotak-judul">Pertanyaan penuntun</p>
+      <p>“Kenapa aplikasi React Native bisa mengakses kamera, sedangkan halaman web tidak selalu bisa?”</p>
+      <details class="kotak-jawab">
+        <summary>Lihat jawaban</summary>
+        <p>
+          Karena kodenya berjalan di dalam aplikasi native, bukan di dalam kotak pasir browser. Izin dan
+          kemampuannya mengikuti sistem operasi perangkat, bukan aturan tab peramban.
+        </p>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============================================================ SUBBAB 1.4 -->
+
+  <section class="subbab" id="s1-4" data-subbab="1.4">
+    <p class="label-subbab">
+      Subbab 1.4 <span class="sumber-slide">· deck: “Bagian Kode yang Bisa Dipakai Ulang”</span>
+    </p>
+    <h2>Bagian Kode yang Bisa Dipakai Ulang</h2>
+
+    <ul>
+      <li>Logika <em>component</em>, <em>props</em>, dan <em>state</em> bisa dipakai ulang.</li>
+      <li>Yang berganti: elemen yang dirender dan cara menata gayanya.</li>
+      <li>Kapan memakai React Web, kapan memakai React Native.</li>
+    </ul>
+
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">Halaman.js</span>
+        <span class="kode-sumber">deck · slide “Bagian Kode yang Bisa Dipakai Ulang”</span>
+      </figcaption>
+      <pre><code class="language-jsx">import { View, Text, Pressable } from 'react-native';
+
+export default function Halaman() {
+  return (
+    &lt;View&gt;
+      &lt;Text&gt;Judul Halaman&lt;/Text&gt;
+      &lt;Text&gt;Deskripsi singkat halaman.&lt;/Text&gt;
+      &lt;Pressable onPress={() =&gt; {}}&gt;
+        &lt;Text&gt;Tekan&lt;/Text&gt;
+      &lt;/Pressable&gt;
+    &lt;/View&gt;
+  );
+}
+</code></pre>
+    </figure>
+
+    <div class="keluaran">
+      <p class="keluaran-kepala"><span>Hasil yang diharapkan</span><span class="keluaran-lebar">390 px</span></p>
+      <div class="bingkai">
+        <div class="bingkai-layar">
+          <div class="rn">
+            <div class="rn-view">
+              <div class="rn-text">Judul Halaman</div>
+              <div class="rn-text">Deskripsi singkat halaman.</div>
+              <div class="rn-pressable">
+                <div class="rn-text">Tekan</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="keluaran-catatan">
+        Ketiga baris itu tampil sama besar dan saling menempel — dan itu memang hasil yang benar. Kode di atas
+        tidak menulis satu pun <code>style</code>, jadi berlaku ukuran teks bawaan 14 pt tanpa jarak.
+        <code>Pressable</code> juga tidak menambahkan bentuk tombol apa pun: berbeda dari <code>Button</code>,
+        <code>Pressable</code> hanya menyediakan area sentuh, dan tampilannya sepenuhnya bergantung pada gaya
+        yang kita tulis (dibahas di Bagian 3).
+      </p>
+    </div>
+
+    <p>
+      Aturan praktis memilih: React Web untuk halaman yang dibuka lewat tautan dan mudah diperbarui; React
+      Native untuk aplikasi yang butuh fitur perangkat, notifikasi, dan kehadiran di layar utama ponsel.
+      Peringatan kecil untuk kode di atas: <code>onPress</code> sengaja berisi fungsi kosong — di praktikum
+      nanti isi dengan aksi nyata.
+    </p>
+
+    <div class="kotak kotak-tanya">
+      <p class="kotak-judul">Pertanyaan penuntun</p>
+      <p>“Bagian mana yang kamu salin apa adanya dari project web?”</p>
+      <details class="kotak-jawab">
+        <summary>Lihat jawaban</summary>
+        <p>
+          Fungsi komponen, state, dan hooks — bukan elemen dan gayanya. Struktur JSX, logika, dan penamaan
+          state tetap sama persis.
+        </p>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============================================================ PRAKTIKUM 1 -->
+
+  <section class="subbab" id="p1" data-subbab="Praktikum 1"
+           data-tanpa-kode="Kode soal dan kunci praktikum ditampilkan di halaman Praktikum agar tidak tertulis dua kali; tautannya di bawah."
+           data-tanpa-output="Hasil praktikum bergantung pada pekerjaan mahasiswa. Patokan yang bisa diperiksa ada di halaman Praktikum.">
+    <p class="label-subbab">
+      Praktikum 1 <span class="sumber-slide">· deck: “Praktikum 1: Halaman Sederhana di Dua Platform”</span>
+    </p>
+    <h2>Praktikum 1 — Halaman Sederhana di Dua Platform</h2>
+
+    <ul>
+      <li>Satu halaman berisi judul, deskripsi, dan tombol.</li>
+      <li>Kerjakan dua kali: React Web, lalu React Native.</li>
+      <li>Bandingkan bagian kode yang sama dan yang berganti.</li>
+    </ul>
+
+    <p>
+      Yang dinilai bukan hasil visualnya, melainkan catatan perbandingan: baris mana yang identik dan baris
+      mana yang berganti. Pertanyaan penuntunnya: “Berapa baris yang benar-benar berubah?” — jawabannya
+      biasanya hanya <em>import</em>, nama komponen, dan definisi gaya. Waktu yang disediakan di lab sekitar
+      25 menit.
+    </p>
+
+    <p>
+      Soal lengkap, rubrik, dan kunci ada di <a href="praktikum.html#p1">halaman Praktikum — Praktikum 1</a>.
+    </p>
+
+    <div class="kotak kotak-salah">
+      <p class="kotak-judul">Peringatan</p>
+      <p><code>Text</code> di dalam <code>Text</code> hanya untuk teks bersarang, bukan pengganti <code>View</code>.</p>
+    </div>
+  </section>
+
+  <nav class="langkah" aria-label="Navigasi halaman">
+    <a href="index.html"><span class="arah">Sebelumnya</span>Peta Bab 5</a>
+    <a href="bagian-2.html"><span class="arah">Berikutnya</span>Bagian 2 — Komponen Inti React Native</a>
+  </nav>
+
+</main>
+
+<footer class="kaki">
+  <div class="kaki-isi">
+    <p><strong>Demo web Bab 5 — Dasar React Native.</strong> Pertemuan 6, mata kuliah Pemrograman Mobile.</p>
+    <p>
+      Sumber yang dikutip: <code>slides/bab-05-dasar-react-native.md</code>,
+      <code>buku/bab-05-dasar-react-native.md</code>, <code>praktikum/bab-05-soal-praktikum.md</code>,
+      <code>praktikum/bab-05-kunci-jawaban.md</code>. Semua blok kode di halaman ini disalin verbatim dari
+      berkas tersebut dan diperiksa oleh <code>scripts/verify-demo-web.mjs</code>.
+    </p>
+    <p>Versi yang dipakai di kelas: Expo SDK 57 · React Native 0.86 · React 19.2.</p>
+  </div>
+</footer>
+
+<script src="aset/prism/prism.js"></script>
+<script src="aset/halaman.js"></script>
+</body>
+</html>

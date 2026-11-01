@@ -1,0 +1,120 @@
+/*
+ * Gaya khusus halaman Bagian 5 — Scroller dan Perbedaan Platform.
+ * Dimuat setelah aset/halaman.css; tidak menyentuh berkas bersama.
+ *
+ * Tiga kelompok aturan, semuanya soal BINGKAI, bukan soal React Native:
+ *
+ *   1. Bingkai pendek — layar bingkai sengaja dipendekkan supaya gulir di dalam
+ *      ScrollView tiruan benar-benar terlihat. Bingkai lain tetap memakai tinggi
+ *      bawaan 430px dari aset/akademik.css.
+ *   2. Chrome tiruan — pemisah baris, batas jendela render, dan bilah status bar.
+ *      Ketiganya keterangan gambar milik halaman ini, bukan nilai dari StyleSheet
+ *      React Native mana pun. Nilai gaya React Native tetap ditulis inline pada
+ *      markup tiruan, diambil dari blok kode yang ditampilkan di subbab yang sama.
+ *   3. Label keadaan pada bingkai berdampingan.
+ *
+ * Catatan breakpoint: kalau nanti perlu aturan responsif di dalam bingkai, pakai
+ * `@container layar (min-width: 600px)`, bukan media query — bingkai bisa 390px
+ * di layar 1600px, sehingga media query membaca lebar jendela, bukan lebar bingkai.
+ */
+
+/* --------------------------------------------------------------- bingkai pendek */
+
+.bingkai-pendek .bingkai-layar {
+  height: 240px;
+  /* Gulirnya di dalam ScrollView tiruan, bukan di bingkai — supaya yang bergulir
+     memang area gulir aplikasi, seperti di perangkat. */
+  overflow: hidden;
+}
+
+.bingkai-pendek .rn {
+  height: 100%;
+}
+
+.bingkai-pendek .rn-scroll {
+  height: 100%;
+}
+
+/* ------------------------------------------------------- chrome tiruan (keterangan) */
+
+/* Baris daftar pada Subbab 5.1 dan 5.3: potongan Soal 6 memanggil <BarisMahasiswa />
+   yang gayanya berada di berkas lain dan tidak ikut ditampilkan, jadi jarak dan
+   garis pemisah di sini adalah chrome halaman — bukan angka dari sumber. */
+.baris-tiruan {
+  padding: 10px 12px;
+  border-bottom: 1px solid #e4e9f2;
+}
+
+.baris-tiruan:last-child {
+  border-bottom: none;
+}
+
+.kartu-tiruan {
+  padding: 12px;
+  background: #f8fafc;
+  border-bottom: 1px solid #e4e9f2;
+}
+
+/* Batas jendela render: penanda bahwa FlatList belum membuat baris-baris berikutnya.
+   Garis putus-putus menandakan "bukan tampilan aplikasi".
+   Labelnya anotasi halaman, bukan isi komponen: React Native tidak pernah merender
+   baris ini, jadi ia tidak memakai kelas `.rn-text` dan ukurannya tidak boleh
+   bergantung pada gaya yang menimpa komponen Text. */
+.tiruan-jendela {
+  border-top: 1px dashed #94a3b8;
+  background: #f8fafc;
+  padding: 10px 12px;
+}
+
+.tiruan-jendela-label {
+  font-size: 12px;
+  line-height: 1.35;
+  color: #475569;
+}
+
+/* Layar perbandingan platform: bilah status bar digambar sebagai chrome, lalu pada
+   bingkai Android ditumpangkan di atas isi aplikasi (edge-to-edge). */
+.bingkai-status .bingkai-layar {
+  position: relative;
+}
+
+/* Isi aplikasi mengikuti tingginya sendiri supaya bilah status di atasnya tidak
+   mendorong bingkai ikut bergulir. */
+.bingkai-status .rn {
+  min-height: 0;
+}
+
+.tiruan-bilah-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  background: #1e293b;
+  color: #e2e8f0;
+  font-family: var(--sans);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.tiruan-bilah-status.tumpang {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: rgba(30, 41, 59, 0.55);
+}
+
+/* ---------------------------------------------------- label keadaan pada bingkai */
+
+/* Label keadaan dibaca sebelum bingkainya; .keluaran-kepala tetap dipakai supaya
+   bentuknya sama dengan halaman lain sepanjang bab. */
+
+/* ------------------------------------------------------------------- pemutus baris */
+
+/* Nama paket panjang (mis. react-native-safe-area-context) pada teks berjalan tidak
+   boleh melebarkan halaman di layar sempit. Blok kode tidak terpengaruh: di sana
+   pemenggalan baris memang dilarang. */
+.isi-utama :not(pre) > code {
+  overflow-wrap: anywhere;
+}

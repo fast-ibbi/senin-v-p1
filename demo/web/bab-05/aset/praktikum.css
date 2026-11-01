@@ -1,0 +1,185 @@
+/*
+ * Gaya khusus halaman praktikum.html.
+ *
+ * Dimuat SETELAH aset/halaman.css (lihat urutan <link> di praktikum.html), dan
+ * tidak menyentuh satu pun kelas bersama: .subbab, .kode, .keluaran, .bingkai,
+ * .kotak, .padanan, .tabel tetap milik aset/halaman.css.
+ *
+ * Dua hal di sini sengaja ditulis sendiri, bukan memakai berkas bersama:
+ *
+ *   1. Ambang 600 px pada bingkai katalog memakai @container layar, BUKAN media
+ *      query. Media query membaca lebar jendela; bingkai di halaman ini bisa
+ *      390 px di layar 1280 px, jadi media query tidak akan pernah menyala.
+ *      .bingkai-layar sudah dipasang sebagai container oleh aset/halaman.css.
+ *
+ *   2. Nilai gaya aplikasi tidak pernah ditulis di sini. Warna, jarak, radius,
+ *      dan ukuran tetap ditulis inline pada markup tiruan, persis seperti objek
+ *      StyleSheet pada kode yang ditampilkan. Kelas di bawah hanya mengatur
+ *      SUSUNAN (grid) dan RANGKA untuk hal yang tidak ada di sumber.
+ */
+
+/* ------------------------------------------------------------ daftar soal */
+
+.daftar-soal {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 8px;
+  margin: 0 0 26px;
+  font-size: 14px;
+}
+
+.daftar-soal a {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 3px 11px;
+  color: var(--ink);
+  background: #ffffff;
+}
+
+.daftar-soal a:hover,
+.daftar-soal a:focus-visible {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ------------------------------------------------------- kotak kunci jawaban */
+
+/* Kunci jawaban dilipat. Warnanya hijau supaya tidak tertukar dengan kotak
+   “Salah paham” (kuning) dan “Pertanyaan penuntun” (biru). */
+.kotak-kunci {
+  border-left-color: #15803d;
+  background: #f0fdf4;
+}
+
+.kotak-kunci .kotak-judul {
+  color: #15803d;
+}
+
+.kotak-kunci > details > summary {
+  font-weight: 650;
+}
+
+.kotak-kunci > details {
+  color: #374151;
+}
+
+.kotak-kunci details > .kode:first-of-type {
+  margin-top: 12px;
+}
+
+.kotak-kunci details > :last-child {
+  margin-bottom: 0;
+}
+
+/* ------------------------------------------- rangka: berkas gaya yang tidak ada */
+
+/* Dipakai HANYA ketika kode merujuk sebuah berkas gaya (mis. styles.input,
+   styles.tombol) yang tidak pernah dituliskan di keempat berkas sumber. Yang
+   digambar adalah rangka: garis netral, tanpa warna, tanpa radius — tidak ada
+   angka yang dikarang, dan catatan di bawah bingkai menyebutkannya. */
+.rangka {
+  border: 1px dashed #94a3b8;
+  border-radius: 0;
+  background: transparent;
+}
+
+.isian {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+  min-height: 34px;
+  padding: 6px 10px;
+}
+
+/* Isi kotak isian pada rangka. Ukurannya TIDAK berasal dari kode: TextInput
+   memakai ukuran bawaan platform dan styles.input tidak dituliskan di keempat
+   sumber. 15px dipilih hanya supaya rangka ini terbaca dari belakang kelas. */
+.isian-teks {
+  font-size: 15px;
+  color: #111827;
+}
+
+.isian-placeholder {
+  color: #94a3b8;
+}
+
+/* Keterangan gambar bantu — bukan bagian aplikasi, karena itu bukan .rn-*.
+   Selalu diletakkan di luar .bingkai-layar, supaya tidak ada teks halaman yang
+   menyelinap ke dalam tiruan komponen native. */
+.anotasi {
+  margin: 0 0 8px;
+  font-family: var(--sans);
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--muted);
+  max-width: 62ch;
+}
+
+.anotasi code {
+  font-size: 0.95em;
+}
+
+/* Area sentuh hitSlop: 10 px di tiap sisi, dari kunci Soal 4. */
+.hit-slop {
+  align-self: center;
+  padding: 10px;
+  /* outline, bukan border: garis bantu ini tidak boleh menambah ukuran kotak,
+     supaya area sentuh tetap tepat 100 + 10 + 10 = 120 px. */
+  outline: 1px dashed #1d4ed8;
+}
+
+/* ------------------------------------------------ kisi tetap (numColumns) */
+
+/* FlatList dengan numColumns TIDAK memberi jarak antarkolom: kolomnya sama
+   lebar dan bersentuhan. Grid di bawah meniru persis itu — tanpa gap. */
+.kisi {
+  display: grid;
+}
+
+.kisi-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.kisi-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+/* Kolom grid sama dengan kolom FlatList: teks membungkus mengikuti lebar kolom.
+   Tanpa dua aturan ini, kartu tersempit (numColumns=3 di bingkai 390 px) bisa
+   meluber ke samping karena .rn-text membawa flex-shrink: 0 dari aset/tiruan.css. */
+.kisi .rn-view,
+.katalog-kisi .rn-view {
+  min-width: 0;
+}
+
+.kisi .rn-text,
+.katalog-kisi .rn-text {
+  flex-shrink: 1;
+  min-width: 0;
+}
+
+/* ------------------------------------------- katalog responsif (600 px) */
+
+/* Inilah pengganti media query: container query membaca lebar bingkai. */
+.katalog-kisi {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@container layar (min-width: 600px) {
+  .katalog-kisi {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* Lebar bingkai katalog dikunci supaya ambang 600 px benar-benar terlewati.
+   Penggeser lebar di atas halaman tidak mengubah dua bingkai ini; kalau layar
+   pengunjung lebih sempit, .bingkai tetap menyusut lewat max-width: 100%. */
+.bingkai.katalog-390 {
+  --lebar-bingkai: 390px;
+}
+
+.bingkai.katalog-640 {
+  --lebar-bingkai: 640px;
+}

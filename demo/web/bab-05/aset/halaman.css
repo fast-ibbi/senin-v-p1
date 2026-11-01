@@ -1,0 +1,538 @@
+/*
+ * Komponen halaman demo web: kendali lebar, kartu subbab, blok kode, bingkai ponsel,
+ * dan kotak catatan. Dimuat setelah aset/akademik.css.
+ *
+ * Catatan penting soal bingkai: lebar bingkai diatur satu variabel CSS
+ * (`--lebar-bingkai`) yang diubah penggeser di aset/halaman.js. Bingkai selebar
+ * 390px di layar 1600px tetap 390px, karena itu di dalam bingkai kita memakai
+ * container query (lihat aset/tiruan.css) — bukan media query, yang membaca lebar
+ * jendela, bukan lebar bingkai.
+ */
+
+/* --------------------------------------------------------- kendali lebar bingkai */
+
+.kendali {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: rgba(248, 250, 252, 0.97);
+  border-bottom: 1px solid var(--border);
+  padding: 10px clamp(16px, 4vw, 48px);
+  backdrop-filter: blur(6px);
+}
+
+.kendali-isi {
+  max-width: 1180px;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 18px;
+}
+
+.kendali-judul {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  margin: 0;
+  white-space: nowrap;
+}
+
+.kendali-rentang {
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.kendali-slider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1 1 260px;
+  min-width: 220px;
+}
+
+.kendali-slider input[type="range"] {
+  flex: 1 1 auto;
+  min-width: 120px;
+  accent-color: var(--accent);
+}
+
+.kendali-nilai {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--ink);
+  min-width: 8ch;
+  text-align: right;
+}
+
+.tombol-preset {
+  font-family: var(--sans);
+  font-size: 13px;
+  color: var(--ink);
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 5px 12px;
+  cursor: pointer;
+}
+
+.tombol-preset:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.tombol-preset[aria-pressed="true"] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #ffffff;
+}
+
+.kendali-catatan {
+  flex: 1 1 100%;
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* Di layar ponsel kendali menempel tidak boleh memakan seperempat layar:
+   penggeser mendapat barisnya sendiri, dan catatan panjang disembunyikan
+   (isi yang sama ada di kotak “Yang perlu diketahui” di awal halaman). */
+@media (max-width: 620px) {
+  .kendali {
+    padding: 8px 16px;
+  }
+
+  .kendali-isi {
+    gap: 6px 10px;
+  }
+
+  .kendali-slider {
+    flex: 1 1 100%;
+    min-width: 0;
+  }
+
+  .kendali-rentang {
+    display: none;
+  }
+
+  .kendali-nilai {
+    min-width: 6ch;
+    font-size: 12px;
+  }
+
+  .tombol-preset {
+    font-size: 12px;
+    padding: 4px 10px;
+  }
+
+  .kendali-catatan {
+    display: none;
+  }
+}
+
+/* --------------------------------------------------------------- pengantar halaman */
+
+.pengantar {
+  margin: 0 0 8px;
+}
+
+.pengantar-pertanyaan {
+  border-left: 4px solid var(--accent);
+  background: var(--accent-soft);
+  padding: 14px 18px;
+  margin: 0 0 28px;
+  font-size: 18px;
+}
+
+.pengantar-pertanyaan p:last-child {
+  margin-bottom: 0;
+}
+
+/* ------------------------------------------------------------------ kartu subbab */
+
+.subbab {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: clamp(18px, 2.4vw, 30px);
+  margin: 0 0 30px;
+  background: #ffffff;
+  scroll-margin-top: 96px;
+}
+
+.label-subbab {
+  margin: 0 0 6px;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 650;
+}
+
+.label-subbab .sumber-slide {
+  color: var(--muted);
+  font-weight: 400;
+  letter-spacing: 0.03em;
+  text-transform: none;
+}
+
+.subbab > h2 {
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 0.9em;
+}
+
+/* ------------------------------------------------------------------ dua kolom */
+
+.padanan {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin: 0 0 18px;
+}
+
+.padanan-sisi {
+  min-width: 0; /* tanpa ini, grid kolom melar mengikuti isi terlebar */
+}
+
+.padanan-sisi > h3 {
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 8px;
+}
+
+.padanan-sisi > h3 .peran {
+  color: var(--ink);
+  letter-spacing: 0;
+  text-transform: none;
+  font-size: 15px;
+  font-weight: 650;
+}
+
+@media (max-width: 900px) {
+  .padanan {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ------------------------------------------------------------------ blok kode */
+
+.kode {
+  margin: 0 0 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--code-bg);
+}
+
+.kode-kepala {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 12px;
+  padding: 7px 12px;
+  background: #eef2f7;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+}
+
+.kode-berkas {
+  font-family: var(--mono);
+  color: var(--ink);
+}
+
+.kode-sumber {
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+
+.kode pre[class*="language-"],
+.kode pre {
+  margin: 0;
+  padding: 14px 16px;
+  background: var(--code-bg);
+  border: none;
+  border-left: 4px solid var(--accent);
+  border-radius: 0;
+  font-family: var(--mono);
+  font-size: 13.5px;
+  line-height: 1.55;
+  overflow-x: auto;
+  tab-size: 2;
+}
+
+.kode pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 1em;
+  white-space: pre;
+}
+
+/* ------------------------------------------------------------------ keluaran */
+
+.keluaran {
+  margin: 0 0 16px;
+}
+
+.keluaran-kepala {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 4px 12px;
+  margin: 0 0 8px;
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.keluaran-lebar {
+  font-family: var(--mono);
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--ink);
+}
+
+/* Lebar bingkai dihitung supaya LAYAR-nya tepat selebar yang diminta: 9px bingkai
+   di kiri dan kanan ikut dihitung, sehingga preset “Ponsel 390” benar-benar
+   menghasilkan layar 390px, bukan 372px. */
+.bingkai {
+  --tebal-bingkai: 9px;
+  width: calc(var(--lebar-bingkai) + 2 * var(--tebal-bingkai));
+  max-width: 100%;
+  border: var(--tebal-bingkai) solid #334155;
+  border-radius: 22px;
+  background: #ffffff;
+  overflow: hidden;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
+}
+
+.bingkai-layar {
+  height: var(--tinggi-layar);
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: #ffffff;
+  container-type: inline-size;
+  container-name: layar;
+}
+
+.keluaran-catatan {
+  margin: 8px 0 0;
+  font-size: 14px;
+  color: #374151;
+  max-width: 62ch;
+}
+
+/* Keluaran yang bukan bingkai ponsel: kolom web dirender apa adanya oleh browser. */
+.layar-web {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0;
+  background: #ffffff;
+  overflow: hidden;
+}
+
+.layar-web-bilah {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 10px;
+  background: #eef2f7;
+  border-bottom: 1px solid var(--border);
+  font-family: var(--sans);
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.layar-web-bilah .titik {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #cbd5e1;
+}
+
+.layar-web-isi {
+  padding: 16px;
+  background: #ffffff;
+  min-height: 120px;
+}
+
+/* ------------------------------------------------------------------- kotak catatan */
+
+.kotak {
+  border: 1px solid var(--border);
+  border-left-width: 4px;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin: 0 0 14px;
+  font-size: 15.5px;
+  background: var(--surface);
+}
+
+.kotak > :last-child {
+  margin-bottom: 0;
+}
+
+.kotak-judul {
+  margin: 0 0 4px;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.kotak-salah {
+  border-left-color: #b45309;
+  background: #fffbeb;
+}
+
+.kotak-salah .kotak-judul {
+  color: #b45309;
+}
+
+.kotak-tanya {
+  border-left-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.kotak-tanya .kotak-judul {
+  color: var(--accent);
+}
+
+.kotak-tiruan {
+  border-left-color: #64748b;
+  background: #f1f5f9;
+}
+
+.kotak-tiruan .kotak-judul {
+  color: #475569;
+}
+
+.kotak-jawab {
+  color: #374151;
+}
+
+.kotak-jawab summary {
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--accent);
+}
+
+/* ------------------------------------------------------------------ langkah berikut */
+
+.langkah {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 34px 0 0;
+  padding-top: 18px;
+  border-top: 1px solid var(--border);
+}
+
+.langkah a {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 16px;
+  color: var(--ink);
+  background: #ffffff;
+}
+
+.langkah a:hover,
+.langkah a:focus-visible {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.langkah .arah {
+  display: block;
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* --------------------------------------------------- contoh web yang dirender apa adanya */
+
+/* Blok CSS di bawah DISALIN APA ADANYA dari blok CSS yang ditampilkan di halaman
+   (praktikum Soal 1). Kolom web bukan tiruan: browser benar-benar memakai aturan ini
+   untuk merender panel kiri. Selektornya diberi awalan .contoh-web supaya tidak
+   bocor ke bagian lain halaman. */
+.contoh-web .kartu {
+  display: flex;
+  padding: 16px;
+  background: #fff;
+  border-radius: 12px;
+}
+
+/* ------------------------------------------------------------------- bagan */
+
+.bagan {
+  display: grid;
+  gap: 14px;
+  margin: 0 0 16px;
+}
+
+.bagan-jalur {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.bagan-kotak {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 10px;
+  background: #ffffff;
+  font-family: var(--mono);
+  font-size: 13px;
+}
+
+.bagan-kotak.aksen {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.bagan-panah {
+  color: var(--muted);
+  font-size: 15px;
+}
+
+.bagan-label {
+  flex-basis: 100%;
+  font-size: 13px;
+  color: var(--muted);
+  margin: 0;
+}
+
+/* ------------------------------------------------------------------------- cetak */
+
+@media print {
+  .kendali,
+  .lewati {
+    display: none;
+  }
+
+  .subbab {
+    break-inside: avoid;
+    border: none;
+    border-top: 1px solid var(--border);
+    border-radius: 0;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .bingkai {
+    box-shadow: none;
+  }
+}

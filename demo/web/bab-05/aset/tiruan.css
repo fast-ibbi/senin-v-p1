@@ -1,0 +1,103 @@
+/*
+ * Tiruan CSS untuk output React Native.
+ *
+ * Ini BUKAN renderer React Native. Tidak ada satu baris pun kode React Native yang
+ * dijalankan di halaman ini: yang dirender adalah HTML + CSS yang meniru hasil
+ * akhirnya. Tiga aturan Yoga ditiru secara sengaja karena ketiganya terlihat
+ * berbeda dari CSS biasa, dan ketiganya mudah dibuktikan:
+ *
+ *   1. `flexDirection` bawaan adalah `column` (CSS: `row`)
+ *   2. `alignItems` bawaan adalah `stretch`
+ *   3. `flexShrink` bawaan adalah `0` — komponen tidak mengecil saat ruang sempit
+ *      (CSS: `1`)
+ *
+ * Ditambah dua hal yang sama-sama benar di React Native:
+ *
+ *   4. `box-sizing: border-box` di semua komponen; di CSS ini bukan bawaan,
+ *      sehingga ditulis ulang di setiap kelas di bawah
+ *   5. Tidak ada margin collapse; margin di React Native selalu dijumlahkan
+ *
+ * Nilai yang berasal dari kode aplikasi (warna, jarak, radius) TIDAK ditulis di
+ * sini: nilainya ditulis inline pada markup tiruan, persis seperti objek
+ * `StyleSheet` pada kode yang ditampilkan. Dengan begitu, mengubah satu angka di
+ * kode yang diperlihatkan berarti mengubah satu angka di tiruan juga.
+ *
+ * Lebar layar bingkai dibaca lewat container query `layar` (lihat .bingkai-layar
+ * di aset/halaman.css), bukan media query, karena bingkai bisa 390px di layar
+ * 1600px.
+ */
+
+.rn {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  min-height: 100%;
+  background: #ffffff;
+  color: #000000;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.35;
+}
+
+/* View — wadah. Tanpa gaya tambahan, View tidak menampilkan apa pun. */
+.rn-view {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+/* Pressable — area sentuh. Sama seperti View, tidak punya tampilan bawaan:
+   tanpa `style`, yang terlihat hanya anak-anaknya. */
+.rn-pressable {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+/* Text — satu-satunya komponen yang boleh memuat teks. Tanpa gaya, ukurannya 14pt
+   dan warnanya hitam, tanpa margin. Teks yang lebih panjang membungkus sendiri. */
+.rn-text {
+  display: block;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  margin: 0;
+  padding: 0;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.35;
+  font-weight: 400;
+  color: #000000;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
+
+/* Image — kotak gambar. Tanpa lebar dan tinggi, kotaknya runtuh menjadi 0x0,
+   karena React Native tidak membaca ukuran berkas sebelum gambar termuat. */
+.rn-image {
+  display: block;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  background: #f1f5f9;
+}
+
+/* Penanda kotak gambar yang belum punya ukuran — dipakai untuk memperlihatkan
+   akibat `Image` tanpa width/height, yang di layar asli tak terlihat sama sekali. */
+.rn-image-kosong {
+  border: 1px dashed #cbd5e1;
+}
+
+/* Sumbu baris. Di React Native ini ditulis eksplisit sebagai flexDirection: 'row';
+   di balik layar, container query mengubahnya pada lebar 600 (bagian 4). */
+.rn-baris {
+  flex-direction: row;
+}
+
+/* ScrollView — anak-anaknya tetap dirender semua, hanya jendelanya yang digulir. */
+.rn-scroll {
+  overflow-y: auto;
+  overflow-x: hidden;
+}

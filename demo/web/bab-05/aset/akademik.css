@@ -1,0 +1,285 @@
+/*
+ * Lapisan dasar halaman demo web Bab 5.
+ *
+ * Token warna, keluarga font, dan aturan garis disalin dari
+ * `slides/theme/academic.css` supaya halaman ini terasa satu keluarga dengan deck.
+ * Tidak ada font yang diunduh: seluruhnya font sistem, jadi halaman tetap utuh
+ * saat dibuka tanpa internet (termasuk lewat file://).
+ *
+ * Aturan yang dipegang:
+ *   - terang saja, kontras tinggi, terbaca dari belakang ruang kelas
+ *   - satu warna aksen, satu garis rambut di bawah judul, tanpa hiasan lain
+ *   - ukuran teks isi 17px: nyaman dibaca di layar, cukup besar untuk proyektor
+ */
+
+:root {
+  --accent: #1d4ed8;
+  --accent-soft: #eef2ff;
+  --ink: #111827;
+  --muted: #6b7280;
+  --surface: #f8fafc;
+  --border: #e5e7eb;
+  --code-bg: #f6f8fa;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+
+  /* Lebar bingkai ponsel; diubah oleh penggeser lebar di aset/halaman.js. */
+  --lebar-bingkai: 390px;
+
+  /* Tinggi layar bingkai ponsel. Semua contoh memakai tinggi yang sama supaya
+     perbandingan dua kolom bisa dibandingkan baris demi baris. */
+  --tinggi-layar: 430px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: #ffffff;
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 17px;
+  line-height: 1.62;
+  letter-spacing: 0.002em;
+}
+
+/* ------------------------------------------------------------- lewati navigasi */
+
+.lewati {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  background: var(--accent);
+  color: #ffffff;
+  padding: 10px 16px;
+  z-index: 50;
+}
+
+.lewati:focus {
+  left: 8px;
+  top: 8px;
+}
+
+/* ---------------------------------------------------------------- kepala halaman */
+
+.puncak {
+  border-bottom: 1px solid var(--border);
+  background: #ffffff;
+  padding: 14px clamp(16px, 4vw, 48px) 12px;
+}
+
+.jejak {
+  margin: 0 0 6px;
+  font-size: 13px;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.nav-bab {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+  font-size: 14px;
+}
+
+.nav-bab a {
+  color: var(--ink);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  padding-bottom: 1px;
+}
+
+.nav-bab a:hover,
+.nav-bab a:focus-visible {
+  border-bottom-color: var(--accent);
+}
+
+.nav-bab a[aria-current="page"] {
+  color: var(--accent);
+  font-weight: 650;
+  border-bottom-color: var(--accent);
+}
+
+.nav-bab .pemisah {
+  color: var(--border);
+}
+
+/* ---------------------------------------------------------------------- isi */
+
+.isi-utama {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: clamp(24px, 4vw, 44px) clamp(16px, 4vw, 48px) 72px;
+}
+
+h1 {
+  font-size: clamp(28px, 3.4vw, 40px);
+  line-height: 1.2;
+  font-weight: 700;
+  margin: 0 0 0.5em;
+  padding-bottom: 0.18em;
+  border-bottom: 3px solid var(--accent);
+}
+
+h2 {
+  font-size: clamp(21px, 2.2vw, 27px);
+  line-height: 1.3;
+  font-weight: 650;
+  margin: 0 0 0.4em;
+}
+
+h3 {
+  font-size: 18px;
+  font-weight: 650;
+  margin: 0 0 0.4em;
+}
+
+p {
+  margin: 0 0 0.85em;
+}
+
+.ringkas {
+  font-size: 19px;
+  color: #374151;
+  max-width: 72ch;
+  margin-bottom: 1.2em;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(29, 78, 216, 0.35);
+}
+
+a:hover,
+a:focus-visible {
+  border-bottom-color: var(--accent);
+}
+
+strong {
+  font-weight: 700;
+}
+
+ul,
+ol {
+  margin: 0 0 0.9em;
+  padding-left: 1.25em;
+}
+
+li {
+  margin: 0.28em 0;
+}
+
+li > ul,
+li > ol {
+  margin-top: 0.2em;
+  font-size: 0.95em;
+  color: #374151;
+}
+
+ul li::marker,
+ol li::marker {
+  color: var(--accent);
+}
+
+ol li::marker {
+  font-weight: 600;
+}
+
+/* ------------------------------------------------------------------- kode inline */
+
+code {
+  font-family: var(--mono);
+  font-size: 0.88em;
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.06em 0.32em;
+}
+
+/* --------------------------------------------------------------- tabel */
+
+/* Tabel di layar sempit bisa lebih lebar daripada kolomnya; gulirkan di dalam
+   kotaknya sendiri supaya halaman tidak ikut melebar ke samping. */
+.tabel-gulir {
+  overflow-x: auto;
+  margin: 0 0 1em;
+}
+
+.tabel {
+  width: 100%;
+  min-width: 480px;
+  border-collapse: collapse;
+  font-size: 16px;
+  margin: 0;
+}
+
+.tabel caption {
+  caption-side: top;
+  text-align: left;
+  font-size: 13px;
+  color: var(--muted);
+  padding-bottom: 6px;
+}
+
+.tabel thead th {
+  text-align: left;
+  font-weight: 650;
+  background: var(--accent-soft);
+  border-bottom: 2px solid var(--accent);
+}
+
+.tabel th,
+.tabel td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+
+.tabel tbody tr:last-child td {
+  border-bottom: 1px solid var(--border);
+}
+
+/* ------------------------------------------------------------------ kutipan */
+
+blockquote {
+  margin: 0 0 1em;
+  padding: 0.3em 0 0.3em 0.9em;
+  border-left: 4px solid var(--border);
+  color: #374151;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 1.6em 0;
+}
+
+/* --------------------------------------------------------------- kaki halaman */
+
+.kaki {
+  border-top: 1px solid var(--border);
+  margin-top: 48px;
+  padding: 22px clamp(16px, 4vw, 48px) 40px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.kaki-isi {
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+.kaki p {
+  margin: 0 0 0.4em;
+}

@@ -1,0 +1,126 @@
+/*
+ * Gaya khusus halaman peta Bab 5 (index.html).
+ *
+ * Dimuat setelah halaman.css dan tidak mengubah berkas bersama. Hanya berisi dua
+ * komponen yang tidak dipakai halaman lain: kisi enam kartu peta dan baris versi.
+ * Tidak ada media query di sini; kisi memakai auto-fit supaya menyusut sendiri
+ * tanpa breakpoint, dan halaman ini tidak memuat bingkai ponsel.
+ */
+
+/* -------------------------------------------------------------- kisi kartu peta */
+
+.peta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(258px, 1fr));
+  gap: 18px;
+  margin: 0 0 30px;
+}
+
+/* Kartu peta memakai kerangka .subbab yang sama dengan halaman materi, tetapi
+   ditata sebagai kartu: tanpa jarak bawah, tinggi mengikuti isi. */
+.peta .subbab {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 18px 20px;
+}
+
+.peta .subbab > h2 {
+  font-size: 20px;
+  line-height: 1.3;
+  margin: 0 0 8px;
+  padding-bottom: 0.3em;
+}
+
+.peta .subbab > h2 a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.peta .subbab > h2 a:hover,
+.peta .subbab > h2 a:focus-visible {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+.peta-isi {
+  margin: 0 0 12px;
+  font-size: 15.5px;
+}
+
+.peta-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  margin: auto 0 0;
+  padding-top: 10px;
+  border-top: 1px dashed var(--border);
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.peta-jumlah {
+  flex: 1 1 auto;
+}
+
+.peta-status {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.peta-siap {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+/* ------------------------------------------------------------------- baris versi */
+
+.versi {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  padding: 16px 20px;
+  margin: 0 0 18px;
+}
+
+.versi-kepala {
+  margin: 0 0 8px;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.versi-daftar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 28px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 15.5px;
+}
+
+.versi-daftar li {
+  display: flex;
+  flex-direction: column;
+}
+
+.versi-daftar span {
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+.versi-daftar strong {
+  font-family: var(--mono);
+  font-size: 15.5px;
+  font-variant-numeric: tabular-nums;
+}

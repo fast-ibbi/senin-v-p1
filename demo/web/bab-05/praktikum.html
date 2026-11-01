@@ -1,0 +1,1610 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bab 5 · Praktikum — Lembar Kerja dan Kunci</title>
+<meta name="description" content="Lembar kerja Praktikum Bab 5 (Dasar React Native): sepuluh soal beserta bobot dan rubriknya, kunci jawaban terlipat, praktikum integrasi halaman katalog responsif, dan hasil yang diharapkan.">
+<link rel="stylesheet" href="aset/akademik.css">
+<link rel="stylesheet" href="aset/prism/prism.css">
+<link rel="stylesheet" href="aset/halaman.css">
+<link rel="stylesheet" href="aset/tiruan.css">
+<link rel="stylesheet" href="aset/praktikum.css">
+</head>
+<body>
+<a class="lewati" href="#isi">Lewati ke isi</a>
+
+<header class="puncak">
+  <p class="jejak">Demo web · Bab 5 — Dasar React Native · Pertemuan 6</p>
+  <nav class="nav-bab" aria-label="Navigasi bab">
+    <a href="index.html">Bab 5</a>
+    <span class="pemisah" aria-hidden="true">|</span>
+    <a href="bagian-1.html">Bagian 1 · Web dan Native</a>
+    <span class="pemisah" aria-hidden="true">|</span>
+    <a href="bagian-2.html">Bagian 2 · Komponen Inti</a>
+    <span class="pemisah" aria-hidden="true">|</span>
+    <a href="bagian-3.html">Bagian 3 · Gaya</a>
+    <span class="pemisah" aria-hidden="true">|</span>
+    <a href="bagian-4.html">Bagian 4 · Layout</a>
+    <span class="pemisah" aria-hidden="true">|</span>
+    <a href="bagian-5.html">Bagian 5 · Scroller</a>
+    <span class="pemisah" aria-hidden="true">|</span>
+    <a href="praktikum.html" aria-current="page">Praktikum</a>
+  </nav>
+</header>
+
+<div class="kendali" role="group" aria-label="Kendali lebar bingkai contoh">
+  <div class="kendali-isi">
+    <div class="kendali-slider">
+      <label for="lebar" class="kendali-judul">Lebar layar contoh</label>
+      <input id="lebar" type="range" min="320" max="1024" step="1" value="390" data-kendali-lebar>
+      <span class="kendali-rentang">320–1024 px</span>
+      <output class="kendali-nilai" for="lebar" data-kendali-nilai>390 px</output>
+    </div>
+    <button type="button" class="tombol-preset" data-preset="390" aria-pressed="true">Ponsel 390</button>
+    <button type="button" class="tombol-preset" data-preset="844" aria-pressed="false">Lanskap 844</button>
+    <button type="button" class="tombol-preset" data-preset="834" aria-pressed="false">Tablet 834</button>
+    <p class="kendali-catatan">Penggeser ini mengubah lebar semua bingkai di halaman, kecuali dua bingkai katalog di Praktikum Integrasi yang lebarnya sengaja dikunci agar perbandingan 2 dan 3 kolom bisa dilihat berdampingan.</p>
+  </div>
+</div>
+
+<main class="isi-utama" id="isi">
+
+  <h1>Praktikum Bab 5 — Lembar Kerja dan Kunci</h1>
+
+  <p class="ringkas">
+    Satu halaman untuk dua pembaca. Bagian atas setiap soal memuat <strong>soal apa adanya</strong> —
+    potongan kode, daftar tugas, dan butir yang dinilai — supaya bisa dikerjakan tanpa membuka berkas
+    lain. Kuncinya dilipat di dalam <code>&lt;details&gt;</code>: tertutup saat kelas dimulai, dan baru
+    dibuka saat pembahasan.
+  </p>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Peringatan — jangan bagikan kunci lebih awal</p>
+    <p>
+      Berkas <code>praktikum/bab-05-kunci-jawaban.md</code> ditulis <em>untuk asisten dan dosen</em>, dan
+      memuat kalimat “Jangan dibagikan ke mahasiswa.” Karena itu seluruh kunci di halaman ini berada di
+      dalam lipatan yang harus dibuka dengan sadar, dan sebaiknya dibuka <strong>setelah mahasiswa selesai
+      mengerjakan</strong> — bukan sebelum, dan bukan sebagai contek saat lab berjalan.
+    </p>
+    <p>
+      Satu catatan versi yang ikut disalin dari kunci: perilaku bawaan <code>SafeAreaView</code>, kebijakan
+      <em>edge-to-edge</em> Android 15, dan default Flexbox dapat berubah antar rilis. Acuan yang dipakai
+      adalah Expo SDK 57 / React Native 0.86; verifikasi ulang ke reactnative.dev dan docs.expo.dev bila
+      rilis berganti.
+    </p>
+  </div>
+
+  <p>
+    Halaman ini tidak mengulang penjelasan konsep. Kalau macet pada sebuah butir, tautan yang tepat ada
+    di dalam soalnya: padanan elemen di <a href="bagian-1.html#s1-2">Bagian 1.2</a>, aturan teks dan
+    <code>Text</code> di <a href="bagian-2.html">Bagian 2</a>, <code>StyleSheet</code> dan array gaya di
+    <a href="bagian-3.html">Bagian 3</a>, Flexbox dan layout responsif di
+    <a href="bagian-4.html">Bagian 4</a>, <code>ScrollView</code>/<code>FlatList</code> di
+    <a href="bagian-5.html">Bagian 5</a>.
+  </p>
+
+  <nav class="daftar-soal" aria-label="Daftar soal praktikum">
+    <a href="#persiapan">Persiapan</a>
+    <a href="#p1">1 · Migrasi dari React Web</a>
+    <a href="#p2">2 · Teks di dalam Text</a>
+    <a href="#p3">3 · Dua sumber gambar</a>
+    <a href="#p4">4 · Button atau Pressable</a>
+    <a href="#p5">5 · TextInput</a>
+    <a href="#p6">6 · Satu scroller</a>
+    <a href="#p7">7 · Properti wajib FlatList</a>
+    <a href="#p8">8 · Safe area</a>
+    <a href="#p9">9 · StyleSheet dan Platform</a>
+    <a href="#p10">10 · Flexbox dan responsif</a>
+    <a href="#pi">Integrasi · Katalog</a>
+    <a href="#bobot">Bobot dan rubrik</a>
+  </nav>
+
+  <div class="kotak kotak-tiruan">
+    <p class="kotak-judul">Yang perlu diketahui sebelum membaca bingkai</p>
+    <p>
+      Panel di dalam bingkai adalah <strong>tiruan HTML/CSS</strong>, bukan React Native sungguhan — tidak
+      ada kode React Native yang dijalankan di halaman ini. Nilai warna, jarak, dan radius ditulis inline
+      pada markup tiruan dan diambil dari objek <code>StyleSheet</code> yang ditampilkan; kalau sebuah
+      berkas gaya dirujuk kode tetapi tidak pernah dituliskan di keempat sumber, tiruannya digambar sebagai
+      <em>rangka</em> bergaris putus-putus dan hal itu disebutkan di catatannya, bukan dikarang angkanya.
+      Layar merah sengaja tidak ditiru — lihat “Batas yang disengaja” pada <code>README.md</code>.
+    </p>
+  </div>
+
+  <!-- ============================================================ PERSIAPAN -->
+
+  <section class="subbab" id="persiapan" data-subbab="Persiapan"
+           data-tanpa-output="Struktur folder dan data statis adalah berkas di dalam project, bukan layar aplikasi; tidak ada tampilan yang bisa digambar untuk keduanya.">
+    <p class="label-subbab">
+      Persiapan <span class="sumber-slide">· soal: “Persiapan Praktikum” · 100 poin, individu, dikerjakan di lab</span>
+    </p>
+    <h2>Persiapan Praktikum</h2>
+
+    <ul>
+      <li>Project Expo dari Bab 2 sudah bisa dijalankan (<code>npx expo start</code>).</li>
+      <li>Diuji pada <strong>minimal satu perangkat/emulator Android</strong> dan <strong>satu iOS/Expo Go</strong> — atau dua emulator berbeda.</li>
+      <li>Data statis diletakkan di luar komponen, di <code>data/mahasiswa.js</code>.</li>
+      <li><strong>Metro console wajib dibuka</strong> selama praktikum: beberapa soal hanya bisa dijawab kalau peringatan di sana dibaca.</li>
+      <li>Setiap jawaban <strong>wajib dijalankan</strong> di perangkat/emulator; kode yang tidak pernah dijalankan dianggap belum dikerjakan.</li>
+      <li>Kalau soal meminta perbandingan platform, sebutkan perangkat/emulator yang dipakai.</li>
+    </ul>
+
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">struktur-folder.txt</span>
+        <span class="kode-sumber">soal · Persiapan Praktikum</span>
+      </figcaption>
+      <pre><code class="language-text">   profil-mahasiswa/
+   ├── App.js
+   ├── data/
+   │   └── mahasiswa.js
+   ├── components/
+   │   ├── AvatarPlaceholder.js
+   │   ├── BarisInfo.js
+   │   └── BarisMahasiswa.js
+   └── assets/
+       └── icon.png</code></pre>
+    </figure>
+
+    <p>
+      Folder <code>components/</code> pada struktur di atas memuat tiga berkas yang lahir dari soal-soal
+      berikutnya: <code>AvatarPlaceholder.js</code> (Soal 3), <code>BarisInfo.js</code> dan
+      <code>BarisMahasiswa.js</code> (pola yang sama dengan Kode 3 dan Kode 4 di buku). Lima mahasiswa
+      dipakai berulang sepanjang praktikum, jadi datanya ditulis sekali:
+    </p>
+
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">data/mahasiswa.js</span>
+        <span class="kode-sumber">soal · Persiapan Praktikum</span>
+      </figcaption>
+      <pre><code class="language-js">   export const DAFTAR_MAHASISWA = [
+     { id: "1", nama: "Budi Santoso",  nim: "22101001", prodi: "Sistem Informasi", ipk: 3.62 },
+     { id: "2", nama: "Siti Aminah",   nim: "22101002", prodi: "Informatika",       ipk: 3.18 },
+     { id: "3", nama: "Rizky Pratama", nim: "22101003", prodi: "Sistem Informasi", ipk: 2.87 },
+     { id: "4", nama: "Dewi Lestari",  nim: "22101004", prodi: "Informatika",       ipk: 3.91 },
+     { id: "5", nama: "Andi Wijaya",   nim: "22101005", prodi: "Sistem Informasi", ipk: 3.05 },
+   ];</code></pre>
+    </figure>
+
+    <p>
+      Perhatikan bahwa <code>nim</code> ditulis sebagai string, bukan angka: nol di depan nomor induk harus
+      bertahan, dan tidak ada perhitungan yang menuntutnya menjadi angka. Bandingkan dengan
+      <code>data/mahasiswa.js</code> di buku (Kode 1) yang memuat delapan field — perbedaan isi ini tidak
+      salah; yang penting <em>satu</em> sumber data dipakai konsisten.
+    </p>
+  </section>
+
+  <!-- ============================================================ SOAL 1 -->
+
+  <section class="subbab" id="p1" data-subbab="Soal 1">
+    <p class="label-subbab">
+      Soal 1 · 10 poin <span class="sumber-slide">· soal: “Soal 1 — Migrasi dari React Web” · kunci tersedia</span>
+    </p>
+    <h2>Soal 1 — Migrasi dari React Web</h2>
+
+    <p>
+      Satu komponen React web dipindahkan ke React Native. Konsep yang dipakai sudah dibahas di
+      <a href="bagian-1.html#s1-2">Bagian 1.2</a> (padanan elemen dan CSS ke <code>StyleSheet</code>) dan
+      <a href="bagian-1.html#s1-3">Bagian 1.3</a> (tidak ada browser); di sini yang dinilai adalah
+      pemetaannya, bukan penjelasannya.
+    </p>
+
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">Profil.jsx</span>
+        <span class="kode-sumber">soal · Soal 1</span>
+      </figcaption>
+      <pre><code class="language-jsx">export default function Profil() {
+  const nama = localStorage.getItem("nama");
+  return (
+    &lt;div className="kartu" onClick={() =&gt; alert("Halo")}&gt;
+      &lt;h2 style={{ color: "#1e3a8a" }}&gt;Profil&lt;/h2&gt;
+      &lt;img src="https://example.com/foto.jpg" /&gt;
+      &lt;p&gt;Halo, {nama}&lt;/p&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+    </figure>
+
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">kartu.css</span>
+        <span class="kode-sumber">soal · Soal 1</span>
+      </figcaption>
+      <pre><code class="language-css">.kartu { display: flex; padding: 16px; background: #fff; border-radius: 12px; }</code></pre>
+    </figure>
+
+    <ol>
+      <li>Tuliskan versi React Native-nya dengan <strong>lima</strong> perubahan minimal, dan untuk setiap perubahan sebutkan <strong>baris mana di Tabel 5.1</strong> yang menjadi dasarnya.</li>
+      <li>Jelaskan mengapa baris <code>localStorage.getItem("nama")</code> <strong>tidak dapat diselamatkan</strong> hanya dengan mengganti nama komponen. Apa penggantinya di bab berikutnya?</li>
+      <li>Jelaskan mengapa berkas CSS di atas hilang seluruhnya, dan di mana <code>display: flex</code> serta <code>borderRadius</code> sekarang ditulis.</li>
+      <li>Sebutkan satu hal yang <strong>tidak</strong> berubah dari komponen di atas beserta alasannya.</li>
+    </ol>
+
+    <div class="kotak kotak-kunci">
+      <details class="kotak-jawab">
+        <summary>Kunci jawaban — buka hanya saat pembahasan</summary>
+
+        <figure class="kode">
+          <figcaption class="kode-kepala">
+            <span class="kode-berkas">Profil.js</span>
+            <span class="kode-sumber">kunci · Soal 1</span>
+          </figcaption>
+          <pre><code class="language-jsx">   import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+
+   export default function Profil() {
+     const nama = "Budi Santoso"; // sementara; sumber data nyata → Bab 10/11
+     return (
+       &lt;Pressable style={styles.kartu} onPress={() =&gt; alert("Halo")}&gt;
+         &lt;Text style={styles.judul}&gt;Profil&lt;/Text&gt;
+         &lt;Image source={{ uri: "https://example.com/foto.jpg" }} style={styles.foto} /&gt;
+         &lt;Text&gt;Halo, {nama}&lt;/Text&gt;
+       &lt;/Pressable&gt;
+     );
+   }
+
+   const styles = StyleSheet.create({
+     kartu: { padding: 16, backgroundColor: "#ffffff", borderRadius: 12 },
+     judul: { color: "#1e3a8a", fontSize: 22, fontWeight: "bold" },
+     foto: { width: 72, height: 72, borderRadius: 36 },
+   });</code></pre>
+        </figure>
+
+        <p><strong>Jawaban model ringkas.</strong></p>
+
+        <div class="tabel-gulir">
+        <table class="tabel">
+          <caption>Lima perubahan dan dasarnya · sumber: kunci Soal 1</caption>
+          <thead>
+            <tr><th scope="col">Perubahan</th><th scope="col">Baris Tabel 5.1</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>div</code> → <code>View</code>/<code>Pressable</code></td><td>Rendered element</td></tr>
+            <tr><td><code>h2</code>/<code>p</code> → <code>Text</code></td><td>Rendered element</td></tr>
+            <tr><td><code>img</code> → <code>Image</code> + <code>source</code></td><td>Rendered element</td></tr>
+            <tr><td><code>className</code>/CSS → <code>StyleSheet</code></td><td>Styling</td></tr>
+            <tr><td><code>onClick</code> → <code>onPress</code></td><td>Touch event</td></tr>
+            <tr><td><code>localStorage</code> → dihapus</td><td>Browser API</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <ul>
+          <li><strong>Butir 2.</strong> <code>localStorage</code> adalah API browser. Tidak ada <code>document</code>, <code>window</code>, atau <code>localStorage</code> di React Native, jadi tidak ada yang bisa diganti namanya — mekanismenya tidak ada. Penggantinya penyimpanan lokal perangkat di Bab 11 (AsyncStorage) dan data dari server di Bab 10.</li>
+          <li><strong>Butir 3.</strong> Tidak ada berkas CSS di React Native: gaya adalah objek JavaScript lewat <code>StyleSheet.create</code>. <code>display: flex</code> tidak perlu ditulis karena seluruh layout sudah Flexbox; <code>borderRadius: 12</code> menjadi properti objek.</li>
+          <li><strong>Butir 4.</strong> Yang tidak berubah: komponen fungsi, props, state, dan hooks — JSX tetap ditulis dengan cara yang sama, karena hanya <em>render target</em> yang berganti (DOM → komponen native).</li>
+        </ul>
+
+        <p><strong>Kesalahan umum:</strong> tetap memakai <code>className</code> lalu bingung gayanya tidak berlaku; menulis <code>&lt;div&gt;</code> dan berharap ada polyfill; menjawab “React Native adalah React versi baru” — bukan versi baru, melainkan render target berbeda.</p>
+      </details>
+    </div>
+
+    <div class="keluaran">
+      <p class="keluaran-kepala"><span>Hasil yang diharapkan — kartu Profil</span><span class="keluaran-lebar">390 px</span></p>
+      <div class="bingkai">
+        <div class="bingkai-layar">
+          <div class="rn">
+            <div class="rn-view" style="flex: 1; padding: 16px">
+              <div class="rn-pressable" style="padding: 16px; background-color: #ffffff; border-radius: 12px">
+                <div class="rn-text" style="color: #1e3a8a; font-size: 22px; font-weight: bold">Profil</div>
+                <div class="rn-image rn-image-kosong" style="width: 72px; height: 72px; border-radius: 36px"></div>
+                <div class="rn-text">Halo, Budi Santoso</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="keluaran-catatan">
+        Seluruh angka di sini berasal dari <code>StyleSheet.create</code> pada kunci: <code>padding: 16</code>,
+        <code>borderRadius: 12</code>, <code>fontSize: 22</code>, <code>width/height: 72</code>, dan
+        <code>borderRadius: 36</code> untuk foto bulat. Kotak 72×72 kosong karena <code>source={{ uri }}</code>
+        membutuhkan internet — tetapi ukurannya tidak runtuh, justru karena <code>width</code> dan
+        <code>height</code> ditulis eksplisit (inti Soal 3).
+      </p>
+    </div>
+
+    <p class="keluaran-catatan">
+      Yang dinilai: ketepatan pemetaan DOM → komponen native, pemahaman “tidak ada browser”, pemahaman
+      CSS → <code>StyleSheet</code>, dan kesadaran bahwa model React (props/state/hooks) tetap sama.
+    </p>
+  </section>
+
+  <!-- ============================================================ SOAL 2 -->
+
+  <section class="subbab" id="p2" data-subbab="Soal 2"
+           data-tanpa-output="Hasil sebelum perbaikan adalah layar merah beserta pesan galat di Metro console, bukan tampilan yang bisa ditiru di peramban — lihat batas yang disengaja pada README.md.">
+    <p class="label-subbab">
+      Soal 2 · 8 poin <span class="sumber-slide">· soal: “Soal 2 — Aturan Teks Hanya di Dalam Text” · kunci tersedia</span>
+    </p>
+    <h2>Soal 2 — Aturan Teks Hanya di Dalam <code>Text</code></h2>
+
+    <p>
+      Soal ini menyuruh Anda <em>mengalami</em> pelanggaran aturan, bukan menghafalnya. Kode di bawah
+      sengaja salah pada satu baris; temukan baris itu dengan menjalankannya, bukan dengan membaca.
+    </p>
+
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">Kartu.js</span>
+        <span class="kode-sumber">soal · Soal 2</span>
+      </figcaption>
+      <pre><code class="language-jsx">export default function Kartu() {
+  return (
+    &lt;View style={styles.kartu}&gt;
+      Sistem Informasi Akademik
+      &lt;Text style={styles.judul}&gt;Profil Mahasiswa&lt;/Text&gt;
+      &lt;Text&gt;Selamat datang di aplikasi &lt;Text style={styles.tebal}&gt;mobile&lt;/Text&gt; kampus kami&lt;/Text&gt;
+      &lt;Text numberOfLines={2}&gt;Deskripsi panjang yang bisa memakan banyak baris…&lt;/Text&gt;
+    &lt;/View&gt;
+  );
+}</code></pre>
+    </figure>
+
+    <ol>
+      <li>Jalankan kode di atas. <strong>Sekilas</strong> apa yang muncul di layar dan apa yang muncul di Metro console? Tulis pesan errornya.</li>
+      <li>Perbaiki sehingga seluruh teks tampil, tanpa menghapus satu kata pun.</li>
+      <li>Jelaskan manfaat <code>Text</code> yang <strong>bersarang</strong> pada baris ketiga. Apa yang terjadi jika <code>Text</code> di dalamnya diubah menjadi <code>View</code>?</li>
+      <li>Hapus <code>numberOfLines={2}</code> lalu bandingkan tinggi kartu dan posisi komponen di bawahnya. Jelaskan mengapa <code>numberOfLines</code> penting untuk tata letak yang stabil.</li>
+    </ol>
+
+    <div class="kotak kotak-kunci">
+      <details class="kotak-jawab">
+        <summary>Kunci jawaban — buka hanya saat pembahasan</summary>
+
+        <figure class="kode">
+          <figcaption class="kode-kepala">
+            <span class="kode-berkas">Kartu.js</span>
+            <span class="kode-sumber">kunci · Soal 2</span>
+          </figcaption>
+          <pre><code class="language-jsx">   &lt;View style={styles.kartu}&gt;
+     &lt;Text&gt;Sistem Informasi Akademik&lt;/Text&gt;
+     &lt;Text style={styles.judul}&gt;Profil Mahasiswa&lt;/Text&gt;
+     &lt;Text&gt;Selamat datang di aplikasi &lt;Text style={styles.tebal}&gt;mobile&lt;/Text&gt; kampus kami&lt;/Text&gt;
+     &lt;Text numberOfLines={2}&gt;Deskripsi panjang yang bisa memakan banyak baris…&lt;/Text&gt;
+   &lt;/View&gt;</code></pre>
+        </figure>
+
+        <ul>
+          <li><strong>Butir 1.</strong> Baris <code>Sistem Informasi Akademik</code> ditulis langsung di dalam <code>View</code>. Hasilnya <strong>red screen</strong>, bukan sekadar peringatan, dengan pesan kira-kira: <code>Text strings must be rendered within a &lt;Text&gt; component.</code></li>
+          <li><strong>Butir 2.</strong> Bungkus baris tersebut dengan <code>Text</code> — tidak ada kata yang dihapus.</li>
+          <li><strong>Butir 3.</strong> <code>Text</code> bersarang menebalkan <strong>satu kata</strong> di tengah kalimat tanpa memecah kalimat menjadi beberapa elemen. Jika diubah menjadi <code>View</code>, isinya tidak dirender sebagai teks — kembali ke galat aturan pertama, dan <code>View</code> tidak mewarisi gaya teks.</li>
+          <li><strong>Butir 4.</strong> Tanpa <code>numberOfLines={2}</code>, tinggi kartu mengikuti panjang teks sehingga kartu memanjang dan <em>seluruh komponen di bawahnya bergeser</em>. <code>numberOfLines</code> mengunci tinggi maksimum (dipotong dengan elipsis), jadi tata letak stabil dan daftar tidak “melompat”.</li>
+        </ul>
+
+        <p><strong>Kesalahan umum:</strong> memperbaiki dengan membungkus seluruh <code>View</code> memakai <code>Text</code> (melewatkan maksud aturan); menyebut “warning” padahal ini galat yang memunculkan red screen.</p>
+      </details>
+    </div>
+
+    <p class="keluaran-catatan">
+      Yang dinilai: pengalaman langsung melihat red screen, ketepatan perbaikan, pemahaman
+      <code>numberOfLines</code> terhadap tata letak.
+    </p>
+  </section>
+
+  <!-- ============================================================ SOAL 3 -->
+
+  <section class="subbab" id="p3" data-subbab="Soal 3">
+    <p class="label-subbab">
+      Soal 3 · 9 poin <span class="sumber-slide">· soal: “Soal 3 — Dua Sumber Gambar dan Placeholder Inisial” · kunci tersedia</span>
+    </p>
+    <h2>Soal 3 — Dua Sumber Gambar dan Placeholder Inisial</h2>
+
+    <p>
+      Satu baris saja, dan gambarnya tidak muncul sama sekali. Tugas Anda bukan menambal dengan
+      <code>width: "100%"</code>, melainkan menjelaskan mengapa React Native tidak bisa menebak ukuran
+      gambar yang belum selesai diunduh — tidak ada tata letak intrinsik seperti <code>&lt;img&gt;</code>
+      di web.
+    </p>
+
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">Foto.js</span>
+        <span class="kode-sumber">soal · Soal 3</span>
+      </figcaption>
+      <pre><code class="language-jsx">&lt;Image source={{ uri: "https://example.com/foto/2201001.jpg" }} /&gt;</code></pre>
+    </figure>
+
+    <ol>
+      <li>Jalankan kode di atas <strong>apa adanya</strong>. Gambar tidak muncul sama sekali (kotak nol piksel). Jelaskan mengapa React Native tidak dapat menebak ukurannya, lalu perbaiki dengan gaya eksplisit 72×72 dan foto bulat.</li>
+      <li>Tuliskan dua cara memberi <code>source</code> beserta <strong>kapan</strong> masing-masing dipakai. Kapan sebuah logo sebaiknya di-<em>bundle</em>, bukan diambil dari server?</li>
+      <li>Matikan koneksi internet perangkat, lalu muat ulang. Jelaskan yang terjadi dan mengapa <code>resizeMode="cover"</code> tidak menolong pada kasus ini.</li>
+      <li>Buat komponen <code>AvatarPlaceholder</code> yang menerima props <code>nama</code> dan <code>ukuran</code>, lalu menampilkan <strong>inisial</strong> (mis. “BS” untuk Budi Santoso) dengan latar berwarna. Jelaskan kapan komponen ini dipakai alih-alih <code>Image</code>.</li>
+    </ol>
+
+    <div class="kotak kotak-kunci">
+      <details class="kotak-jawab">
+        <summary>Kunci jawaban — buka hanya saat pembahasan</summary>
+
+        <figure class="kode">
+          <figcaption class="kode-kepala">
+            <span class="kode-berkas">Foto.js</span>
+            <span class="kode-sumber">kunci · Soal 3</span>
+          </figcaption>
+          <pre><code class="language-jsx">   const styles = StyleSheet.create({
+     foto: { width: 72, height: 72, borderRadius: 36 },
+   });
+   &lt;Image source={{ uri: "..." }} style={styles.foto} resizeMode="cover" /&gt;</code></pre>
+        </figure>
+
+        <figure class="kode">
+          <figcaption class="kode-kepala">
+            <span class="kode-berkas">AvatarPlaceholder.js</span>
+            <span class="kode-sumber">kunci · Soal 3</span>
+          </figcaption>
+          <pre><code class="language-jsx">   export default function AvatarPlaceholder({ nama, ukuran = 56 }) {
+     const inisial = nama
+       .split(" ")
+       .slice(0, 2)
+       .map((kata) =&gt; kata[0])
+       .join("")
+       .toUpperCase();
+
+     return (
+       &lt;View
+         style={{
+           width: ukuran,
+           height: ukuran,
+           borderRadius: ukuran / 2,
+           backgroundColor: "#2563eb",
+           alignItems: "center",
+           justifyContent: "center",
+         }}
+       &gt;
+         &lt;Text style={{ color: "#ffffff", fontWeight: "bold" }}&gt;{inisial}&lt;/Text&gt;
+       &lt;/View&gt;
+     );
+   }</code></pre>
+        </figure>
+
+        <ul>
+          <li><strong>Butir 1.</strong> Tanpa <code>width</code>/<code>height</code>, gambar berukuran <strong>0×0 piksel</strong>. <code>borderRadius: 36</code> adalah setengah lebar 72 — itulah yang membuatnya lingkaran.</li>
+          <li><strong>Butir 2.</strong> <code>require("./assets/icon.png")</code> untuk aset lokal yang <em>di-bundle saat build</em>: selalu tersedia, tanpa jaringan — pilihan tepat untuk logo, ikon, dan ilustrasi bawaan. <code>{ uri: "https://…" }</code> diunduh saat aplikasi berjalan, cocok untuk foto pengguna atau konten yang berubah, dan wajib punya dimensi eksplisit.</li>
+          <li><strong>Butir 3.</strong> Tanpa internet kotaknya tetap ada (karena dimensinya tertulis) tetapi <strong>kosong</strong>. <code>resizeMode="cover"</code> hanya mengatur cara gambar <em>yang sudah ada</em> mengisi kotak; ia tidak mengunduh apa pun.</li>
+          <li><strong>Butir 4.</strong> Placeholder dipakai saat foto belum tersedia, gagal dimuat, atau memang tidak ada — supaya kartu tidak memperlihatkan kotak kosong yang terbaca sebagai bug.</li>
+        </ul>
+
+        <p><strong>Kesalahan umum:</strong> menulis <code>src=</code> seperti tag <code>img</code> web; memakai <code>width: "100%"</code> tanpa tinggi sehingga gambar tetap tidak muncul; memakai <code>aspectRatio</code> tanpa menjelaskan; placeholder yang mengabaikan <code>nama</code> kosong — <code>nama[0]</code> galat saat <code>nama</code> bernilai <code>undefined</code>.</p>
+      </details>
+    </div>
+
+    <div class="keluaran">
+      <p class="keluaran-kepala"><span>Hasil yang diharapkan — AvatarPlaceholder ukuran bawaan</span><span class="keluaran-lebar">390 px</span></p>
+      <div class="bingkai">
+        <div class="bingkai-layar">
+          <div class="rn">
+            <div class="rn-view" style="flex: 1; padding: 16px">
+              <div class="rn-view" style="width: 56px; height: 56px; border-radius: 28px; background-color: #2563eb; align-items: center; justify-content: center">
+                <div class="rn-text" style="color: #ffffff; font-weight: bold">BS</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="keluaran-catatan">
+        <code>ukuran = 56</code> adalah nilai bawaan props; <code>borderRadius: ukuran / 2</code> menjadi
+        28, dan lebar serta tinggi dihitung dari angka yang sama — itulah sebabnya satu komponen bisa
+        dipakai untuk avatar besar di kartu maupun kecil di baris daftar. Tidak ada <code>fontSize</code>
+        di gaya <code>inisial</code>, jadi teks memakai ukuran bawaan 14 pt dengan warna
+        <code>#ffffff</code> dan <code>fontWeight: "bold"</code>.
+      </p>
+    </div>
+
+    <p class="keluaran-catatan">
+      Yang dinilai: sebab dimensi wajib, pemilihan <code>require</code> vs <code>uri</code>, pemahaman
+      kegagalan jaringan, dan pola placeholder sebagai solusi (bukan kotak kosong).
+    </p>
+  </section>
+
+  <!-- ============================================================ SOAL 4 -->
+
+  <section class="subbab" id="p4" data-subbab="Soal 4">
+    <p class="label-subbab">
+      Soal 4 · 10 poin <span class="sumber-slide">· soal: “Soal 4 — Button atau Pressable?” · kunci tersedia</span>
+    </p>
+    <h2>Soal 4 — <code>Button</code> atau <code>Pressable</code>?</h2>
+
+    <p>
+      Dua versi tombol untuk pekerjaan yang sama. Yang membedakan bukan mana yang “lebih modern”,
+      melainkan sejauh mana tampilannya boleh Anda tentukan.
+    </p>
+
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">Tombol.js</span>
+        <span class="kode-sumber">soal · Soal 4</span>
+      </figcaption>
+      <pre><code class="language-jsx">// versi A
+&lt;Button title="Simpan Data" onPress={simpan} color="#2563eb" /&gt;
+
+// versi B
+&lt;Pressable onPress={simpan} style={({ pressed }) =&gt; [styles.tombol, pressed &amp;&amp; styles.tombolTertekan]}&gt;
+  &lt;Text style={styles.labelTombol}&gt;Simpan Data&lt;/Text&gt;
+&lt;/Pressable&gt;</code></pre>
+    </figure>
+
+    <ol>
+      <li>Sebutkan perbedaan keduanya, dan <strong>tiga</strong> hal yang tidak bisa dilakukan <code>Button</code> namun bisa dilakukan <code>Pressable</code>.</li>
+      <li>Pada versi B, jelaskan kapan <code>pressed</code> bernilai <code>true</code>, dan mengapa <code>styles.tombolTertekan</code> diletakkan <strong>paling akhir</strong> dalam array.</li>
+      <li>Tambahkan <code>android_ripple</code> pada versi B, lalu jalankan di Android dan iOS. Tulis hasil pengamatan Anda dan jelaskan sebabnya.</li>
+      <li>Tombol di desain hanya berukuran 100×32 piksel. Perbaiki agar mudah ditekan tanpa mengubah tampilan visualnya. Sebutkan nama propertinya dan alasannya.</li>
+      <li>Kapan <code>Button</code> masih pilihan yang wajar?</li>
+    </ol>
+
+    <div class="kotak kotak-kunci">
+      <details class="kotak-jawab">
+        <summary>Kunci jawaban — buka hanya saat pembahasan</summary>
+
+        <figure class="kode">
+          <figcaption class="kode-kepala">
+            <span class="kode-berkas">Tombol.js</span>
+            <span class="kode-sumber">kunci · Soal 4</span>
+          </figcaption>
+          <pre><code class="language-jsx">   &lt;Pressable hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} … /&gt;</code></pre>
+        </figure>
+
+        <ul>
+          <li><strong>Butir 1.</strong> <code>Button</code> adalah tombol siap pakai bergaya platform dengan properti terbatas: <code>title</code>, <code>onPress</code>, <code>color</code>, <code>disabled</code>. Yang tidak bisa: mengganti isi tombol (ikon + teks), mengatur gaya visual sepenuhnya (radius, padding, warna latar bebas), dan memakai umpan balik kustom saat ditekan. <code>Pressable</code> memberi ketiganya karena children-nya bebas dan <code>style</code> boleh berupa fungsi.</li>
+          <li><strong>Butir 2.</strong> <code>pressed</code> bernilai <code>true</code> hanya selama jari menekan, lalu kembali <code>false</code> saat dilepas. Gaya tertekan diletakkan paling akhir karena gaya yang di belakang <strong>menimpa</strong> gaya di depan — gaya dasar tidak perlu ditulis ulang.</li>
+          <li><strong>Butir 3.</strong> <code>android_ripple={{ color: "#c9d9f8" }}</code> memunculkan efek riak <strong>hanya di Android</strong>. Di iOS tidak ada efek apa pun, sebab <code>android_ripple</code> memang properti khusus Android; iOS tetap membutuhkan umpan balik lewat <code>pressed</code> (mis. <code>opacity</code>).</li>
+          <li><strong>Butir 4.</strong> Properti <code>hitSlop</code> memperluas <em>area sentuh</em> di luar batas visual, sehingga target sentuh memenuhi ukuran nyaman (±44×44 pt) tanpa mengubah tampilan. Alternatif yang juga diterima: <code>padding</code> pada pembungkus dengan margin negatif kompensasi, asal alasannya dijelaskan.</li>
+          <li><strong>Butir 5.</strong> <code>Button</code> masih wajar untuk prototipe cepat atau tombol sekali pakai yang desainnya memang mengikuti gaya platform.</li>
+        </ul>
+
+        <p><strong>Kesalahan umum:</strong> menaruh gaya tertekan <em>di depan</em> array lalu menyimpulkan <code>pressed</code> tidak bekerja; mengharapkan ripple di iOS; menjawab “<code>hitSlop</code> memperbesar tombol” tanpa menyebut “tanpa mengubah tampilan”.</p>
+      </details>
+    </div>
+
+    <div class="keluaran">
+      <p class="keluaran-kepala"><span>Hasil yang diharapkan — kotak 100×32 dan area sentuh tambahan</span><span class="keluaran-lebar">390 px</span></p>
+      <p class="anotasi">Garis putus-putus = area sentuh <code>hitSlop</code> {top: 10, bottom: 10, left: 10, right: 10}. Gambar bantu, bukan bagian aplikasi.</p>
+      <div class="bingkai">
+        <div class="bingkai-layar">
+          <div class="rn">
+            <div class="rn-view" style="flex: 1; padding: 16px; justify-content: center">
+              <div class="hit-slop">
+                <div class="rn-pressable rangka" style="width: 100px; height: 32px; align-items: center; justify-content: center">
+                  <div class="rn-text">Simpan Data</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="keluaran-catatan">
+        Ukuran 100×32 berasal dari soal; tambahan <code>hitSlop</code> 10 px di tiap sisi membuat area
+        sentuh menjadi 120×52 px tanpa satu piksel pun bertambah pada tampilan. Kotak tombolnya sendiri
+        digambar sebagai <em>rangka</em>, karena <code>styles.tombol</code> dan <code>styles.labelTombol</code>
+        dirujuk kode tetapi tidak pernah dituliskan di keempat berkas sumber — mewarnainya berarti
+        mengarang nilai. Tampilan <code>Button</code> versi A tidak digambar karena bentuknya milik sistem
+        operasi (iOS dan Android berbeda), dan halaman ini tidak mendemokan dua sistem sekaligus.
+      </p>
+    </div>
+
+    <p class="keluaran-catatan">
+      Yang dinilai: pemilihan komponen berbasis kebutuhan desain, pemahaman style sebagai fungsi,
+      kesadaran perbedaan platform pada efek ripple, dan <code>hitSlop</code>.
+    </p>
+  </section>
+
+  <!-- ============================================================ SOAL 5 -->
+
+  <section class="subbab" id="p5" data-subbab="Soal 5">
+    <p class="label-subbab">
+      Soal 5 · 9 poin <span class="sumber-slide">· soal: “Soal 5 — TextInput sebagai Controlled Component” · kunci tersedia</span>
+    </p>
+    <h2>Soal 5 — <code>TextInput</code> sebagai Controlled Component</h2>
+
+    <p>
+      Satu properti hilang, dan kotak isian menjadi beku. Soal ini menuntut diagnosis dari gejala, bukan
+      dari ingatan: apa yang sebenarnya terjadi setiap kali tombol ditekan?
+    </p>
+
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">FormNama.js</span>
+        <span class="kode-sumber">soal · Soal 5</span>
+      </figcaption>
+      <pre><code class="language-jsx">export default function FormNama() {
+  const [nama, setNama] = useState("");
+
+  return (
+    &lt;View style={styles.form}&gt;
+      &lt;TextInput style={styles.input} value={nama} placeholder="Ketik nama lengkap" /&gt;
+      &lt;Text&gt;Halo, {nama ? nama : "belum ada nama"}!&lt;/Text&gt;
+      &lt;TextInput style={styles.input} value={nama} maxLength={30} /&gt;
+    &lt;/View&gt;
+  );
+}</code></pre>
+    </figure>
+
+    <ol>
+      <li>Ketik pada kotak pertama. Apa yang terjadi? Jelaskan mengapa, dan hubungkan dengan istilah <em>controlled component</em>.</li>
+      <li>Perbaiki kotak pertama agar dapat diketik dan teks sapaan ikut berubah setiap ketukan.</li>
+      <li>Pada kotak kedua, <code>maxLength</code> sudah dipasang. Jelaskan apa yang dijamin <code>maxLength</code>, dan apa yang <strong>tidak</strong> dijaminnya (petunjuk: validasi).</li>
+      <li>Tampilkan penghitung karakter <code>12/30</code> di bawah kotak. Nilai itu <strong>turunan</strong> dari state — jelaskan mengapa tidak perlu <code>useState</code> terpisah.</li>
+      <li>Jika <code>onChangeText</code> dihapus tetapi <code>value</code> dipertahankan, apa yang dialami pengguna? Sebutkan gejalanya secara spesifik.</li>
+    </ol>
+
+    <div class="kotak kotak-kunci">
+      <details class="kotak-jawab">
+        <summary>Kunci jawaban — buka hanya saat pembahasan</summary>
+
+        <figure class="kode">
+          <figcaption class="kode-kepala">
+            <span class="kode-berkas">FormNama.js</span>
+            <span class="kode-sumber">kunci · Soal 5</span>
+          </figcaption>
+          <pre><code class="language-jsx">   &lt;TextInput
+     style={styles.input}
+     value={nama}
+     onChangeText={setNama}
+     placeholder="Ketik nama lengkap"
+   /&gt;</code></pre>
+        </figure>
+
+        <figure class="kode">
+          <figcaption class="kode-kepala">
+            <span class="kode-berkas">Penghitung.js</span>
+            <span class="kode-sumber">kunci · Soal 5</span>
+          </figcaption>
+          <pre><code class="language-jsx">   &lt;Text&gt;{nama.length}/30&lt;/Text&gt;</code></pre>
+        </figure>
+
+        <ul>
+          <li><strong>Butir 1.</strong> Kotak <strong>tidak bisa diketik sama sekali</strong>. <code>value={nama}</code> mengikat isi kotak pada state, sementara tidak ada <code>onChangeText</code> yang memperbarui state — setiap ketukan langsung “dibatalkan” oleh render berikutnya yang mengembalikan nilai lama. Itu gejala khas <em>controlled component</em> yang tidak lengkap.</li>
+          <li><strong>Butir 3.</strong> <code>maxLength={30}</code> menjamin jumlah karakter yang dapat dimasukkan tidak melebihi 30. Yang tidak dijamin: isi yang sah — bisa saja 30 spasi, angka, atau karakter aneh. Validasi isi adalah materi Bab 8.</li>
+          <li><strong>Butir 4.</strong> <code>nama.length</code> adalah nilai turunan dari state <code>nama</code>; menyimpannya di <code>useState</code> terpisah berarti ada dua sumber kebenaran yang bisa berselisih (pelajaran Bab 4: turunan jangan dijadikan state).</li>
+          <li><strong>Butir 5.</strong> Pengguna tidak bisa mengubah isi kotak. Gejala spesifiknya: kursor boleh muncul dan keyboard terbuka, tetapi setiap ketukan hilang seketika — kotak tampak “beku” atau <em>read-only</em>.</li>
+        </ul>
+
+        <p><strong>Kesalahan umum:</strong> memperbaiki dengan menghapus <code>value</code> (menjadi uncontrolled, melanggar pola buku); memakai <code>defaultValue</code> lalu menyebutnya controlled.</p>
+      </details>
+    </div>
+
+    <div class="padanan">
+      <div class="padanan-sisi">
+        <div class="keluaran">
+          <p class="keluaran-kepala"><span>Sebelum perbaikan — nilai tidak pernah sampai ke state</span><span class="keluaran-lebar">390 px</span></p>
+          <p class="anotasi">Kotak isian digambar sebagai rangka: <code>styles.form</code> dan <code>styles.input</code> dirujuk kode tetapi tidak dituliskan di sumber, sehingga jarak dan warnanya tidak diklaim.</p>
+          <div class="bingkai">
+            <div class="bingkai-layar">
+              <div class="rn">
+                <div class="rn-view" style="flex: 1; padding: 16px">
+                  <div class="rangka isian"><span class="isian-teks isian-placeholder">Ketik nama lengkap</span></div>
+                  <div class="rn-text">Halo, belum ada nama!</div>
+                  <div class="rangka isian"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p class="keluaran-catatan">
+            Ketukan tidak pernah sampai ke state, jadi render berikutnya mengembalikan nilai lama:
+            kotak tetap kosong dan sapaan tidak berubah. Perhatikan bunyi sapaan —
+            <code>nama ? nama : "belum ada nama"</code> — yang membuktikan state masih string kosong.
+          </p>
+        </div>
+      </div>
+
+      <div class="padanan-sisi">
+        <div class="keluaran">
+          <p class="keluaran-kepala"><span>Sesudah perbaikan — state diperbarui + penghitung karakter</span><span class="keluaran-lebar">390 px</span></p>
+          <p class="anotasi">Rangka yang sama, kini berisi nilai state. Jarak antarelemen tetap rapat karena <code>styles.form</code> tidak dituliskan di sumber.</p>
+          <div class="bingkai">
+            <div class="bingkai-layar">
+              <div class="rn">
+                <div class="rn-view" style="flex: 1; padding: 16px">
+                  <div class="rangka isian"><span class="isian-teks">Budi Santoso</span></div>
+                  <div class="rn-text">Halo, Budi Santoso!</div>
+                  <div class="rangka isian"><span class="isian-teks">Budi Santoso</span></div>
+                  <div class="rn-text">12/30</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p class="keluaran-catatan">
+            “Budi Santoso” berisi 12 karakter, jadi penghitung menulis <code>12/30</code> — angka itu
+            keluar dari <code>nama.length</code>, bukan dari state kedua. Perhatikan juga bahwa kedua kotak
+            membaca <code>value</code> yang sama: yang diketik di kotak pertama langsung tampil di kotak
+            kedua, karena keduanya membaca satu state.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <p class="keluaran-catatan">
+      Yang dinilai: diagnosis input terkunci, pemahaman siklus state → render, pemisahan state vs nilai
+      turunan, kesadaran batas <code>maxLength</code>.
+    </p>
+  </section>
+
+  <!-- ============================================================ SOAL 6 -->
+
+  <section class="subbab" id="p6" data-subbab="Soal 6"
+           data-tanpa-output="Hasil Soal 6 adalah peringatan di Metro console dan gulir yang berat, bukan tampilan diam yang bisa ditiru: bingkai statis justru tidak akan memperlihatkan apa pun yang rusak.">
+    <p class="label-subbab">
+      Soal 6 · 12 poin <span class="sumber-slide">· soal: “Soal 6 — Satu Layar, Satu Scroller Utama” · kunci tersedia</span>
+    </p>
+    <h2>Soal 6 — Satu Layar, Satu Scroller Utama</h2>
+
+    <p>
+      Kode di bawah berjalan tanpa red screen. Itu justru inti soalnya: kerusakannya senyap, dan hanya
+      terbaca di Metro console. Konsep <code>ScrollView</code> dan <code>FlatList</code> ada di
+      <a href="bagian-5.html">Bagian 5</a>.
+    </p>
+
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">App.js</span>
+        <span class="kode-sumber">soal · Soal 6</span>
+      </figcaption>
+      <pre><code class="language-jsx">&lt;ScrollView&gt;
+  &lt;View style={styles.kartuProfil}&gt;
+    &lt;Text style={styles.judul}&gt;Profil Mahasiswa&lt;/Text&gt;
+    &lt;Text&gt;Total 1.000 mahasiswa&lt;/Text&gt;
+  &lt;/View&gt;
+
+  &lt;FlatList
+    data={DAFTAR_MAHASISWA}
+    keyExtractor={(item) =&gt; item.id}
+    renderItem={({ item }) =&gt; &lt;BarisMahasiswa mahasiswa={item} /&gt;}
+  /&gt;
+&lt;/ScrollView&gt;</code></pre>
+    </figure>
+
+    <p><strong>Langkah kerja:</strong></p>
+    <ol>
+      <li>Jalankan kode di atas. Gulir daftar dan perhatikan <strong>Metro console</strong>.</li>
+      <li>Catat peringatan yang muncul (kata kunci: <code>VirtualizedLists</code>).</li>
+    </ol>
+
+    <p><strong>Tugas:</strong></p>
+    <ol>
+      <li>Tuliskan peringatan yang muncul, kata per kata, dan jelaskan mengapa React Native menganggapnya berbahaya.</li>
+      <li>Jelaskan dua hal yang rusak ketika dua scroller searah bersarang: satu bersifat fungsional (gulir), satu bersifat kinerja (virtualisasi).</li>
+      <li>Perbaiki sehingga hanya ada satu scroller, tanpa memindahkan kartu profil keluar dari halaman. Sebutkan properti <code>FlatList</code> yang Anda pakai.</li>
+      <li>Tuliskan <strong>kapan</strong> alternatif sebaliknya (satu <code>ScrollView</code> untuk seluruh halaman) justru pilihan yang benar. Berikan satu contoh layar.</li>
+      <li>Peringatan ini tidak menghentikan aplikasi. Jelaskan mengapa justru itu yang membuatnya berbahaya, dan bagaimana Anda bisa menemukannya di proyek orang lain (petunjuk: Bab 14).</li>
+    </ol>
+
+    <div class="kotak kotak-kunci">
+      <details class="kotak-jawab">
+        <summary>Kunci jawaban — buka hanya saat pembahasan</summary>
+
+        <figure class="kode">
+          <figcaption class="kode-kepala">
+            <span class="kode-berkas">App.js</span>
+            <span class="kode-sumber">kunci · Soal 6</span>
+          </figcaption>
+          <pre><code class="language-jsx">   &lt;FlatList
+     data={DAFTAR_MAHASISWA}
+     keyExtractor={(item) =&gt; item.id}
+     ListHeaderComponent={
+       &lt;View style={styles.kartuProfil}&gt;
+         &lt;Text style={styles.judul}&gt;Profil Mahasiswa&lt;/Text&gt;
+         &lt;Text&gt;Total {DAFTAR_MAHASISWA.length} mahasiswa&lt;/Text&gt;
+       &lt;/View&gt;
+     }
+     renderItem={({ item }) =&gt; &lt;BarisMahasiswa mahasiswa={item} /&gt;}
+   /&gt;</code></pre>
+        </figure>
+
+        <ul>
+          <li><strong>Butir 1.</strong> Pesan yang muncul kira-kira: <code>VirtualizedLists should never be nested inside plain ScrollViews with the same orientation because it can break windowing and other functionality - use another VirtualizedList-backed container instead.</code> Berbahaya karena <code>FlatList</code> mengandalkan pengukuran tinggi viewport dan posisi gulir untuk menentukan item mana yang dirender; <code>ScrollView</code> luar mengambil alih kendali gulir sehingga perhitungan itu tidak lagi valid.</li>
+          <li><strong>Butir 2.</strong> Yang rusak: <strong>(a) fungsional</strong> — gulir menjadi kaku atau tumpang tindih karena dua komponen berebut kendali; <strong>(b) kinerja</strong> — seluruh item dirender sekaligus, sehingga daftar 1.000 baris memakan memori seperti <code>ScrollView</code>.</li>
+          <li><strong>Butir 3.</strong> <code>FlatList</code> dijadikan scroller terluar, kartu profil dipindah ke <code>ListHeaderComponent</code>.</li>
+          <li><strong>Butir 4.</strong> Satu <code>ScrollView</code> untuk seluruh halaman benar ketika struktur halaman tetap dan pendek — halaman formulir biodata, halaman detail satu mahasiswa, atau halaman pengaturan. Daftar panjang bukan kasusnya.</li>
+          <li><strong>Butir 5.</strong> Berbahaya justru karena aplikasi tetap berjalan, sehingga tidak ada dorongan memperbaikinya; akibatnya baru terasa saat data bertambah. Cara menemukannya: membaca Metro console dan alat debugging Bab 14 — bukan menebak dari gejala.</li>
+        </ul>
+
+        <p><strong>Kesalahan umum:</strong> mematikan peringatan dengan <code>LogBox.ignoreLogs</code> (menghapus gejala, bukan sebab — nilai 0 untuk butir 5); memindahkan kartu keluar <code>ScrollView</code> tetapi tetap membungkus <code>FlatList</code> dengan <code>ScrollView</code> lain; memakai <code>nestedScrollEnabled</code> sebagai solusi.</p>
+      </details>
+    </div>
+
+    <p class="keluaran-catatan">
+      Yang dinilai: reproduksi peringatan, pemahaman mekanisme virtualisasi, ketepatan perbaikan, dan
+      penalaran tentang “peringatan yang mudah diabaikan”.
+    </p>
+  </section>
+
+  <!-- ============================================================ SOAL 7 -->
+
+  <section class="subbab" id="p7" data-subbab="Soal 7">
+    <p class="label-subbab">
+      Soal 7 · 10 poin <span class="sumber-slide">· soal: “Soal 7 — Tiga Properti Wajib FlatList dan numColumns” · kunci tersedia</span>
+    </p>
+    <h2>Soal 7 — Tiga Properti Wajib <code>FlatList</code> dan <code>numColumns</code></h2>
+
+    <p>
+      Properti wajib ketiga sengaja tidak ditulis. Dua bingkai di bawah memperlihatkan apa yang
+      <em>tidak</em> diubah oleh <code>numColumns</code>: jumlah kolomnya, bukan ukuran kartunya.
+    </p>
+
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">App.js</span>
+        <span class="kode-sumber">soal · Soal 7</span>
+      </figcaption>
+      <pre><code class="language-jsx">&lt;FlatList
+  data={DAFTAR_MAHASISWA}
+  renderItem={({ item }) =&gt; &lt;BarisMahasiswa mahasiswa={item} /&gt;}
+  numColumns={2}
+/&gt;</code></pre>
+    </figure>
+
+    <ol>
+      <li>Properti wajib ketiga tidak ditulis. Jalankan, catat peringatan di console, lalu perbaiki dengan nilai yang memenuhi <strong>dua syarat</strong> <code>key</code>. Sebutkan kedua syarat itu.</li>
+      <li>Jelaskan mengapa <code>item.id</code> lebih baik daripada <code>index</code> pada daftar yang bisa difilter atau diurutkan. Hubungkan dengan pengalaman Bab 4.</li>
+      <li>Ganti <code>numColumns</code> dari <code>2</code> menjadi <code>3</code> saat aplikasi berjalan (mis. lewat sebuah tombol atau perubahan lebar layar). Amati hasilnya, lalu jelaskan mengapa <code>FlatList</code> membutuhkan <code>key</code> yang ikut berubah ketika <code>numColumns</code> berubah.</li>
+      <li>Sebutkan empat properti <code>FlatList</code> lain yang Anda pelajari, dan satu situasi tepat untuk masing-masing.</li>
+    </ol>
+
+    <div class="kotak kotak-kunci">
+      <details class="kotak-jawab">
+        <summary>Kunci jawaban — buka hanya saat pembahasan</summary>
+
+        <figure class="kode">
+          <figcaption class="kode-kepala">
+            <span class="kode-berkas">App.js</span>
+            <span class="kode-sumber">kunci · Soal 7</span>
+          </figcaption>
+          <pre><code class="language-jsx">   &lt;FlatList key={jumlahKolom} numColumns={jumlahKolom} … /&gt;</code></pre>
+        </figure>
+
+        <ul>
+          <li><strong>Butir 1.</strong> Properti yang hilang: <code>keyExtractor</code>. Peringatannya <code>Each child in a list should have a unique "key" prop</code> (atau varian <code>VirtualizedList: missing keys for items</code>). Dua syarat <code>key</code>: <strong>unik</strong> di antara saudara, dan <strong>stabil</strong> — tidak berubah antar-render untuk entitas yang sama.</li>
+          <li><strong>Butir 2.</strong> <code>index</code> berubah ketika data difilter atau diurutkan, sehingga React mencocokkan baris lama dengan data baru pada posisi yang sama; state lokal menempel pada posisi, bukan pada mahasiswa. <code>item.id</code> tidak berubah saat urutan berubah.</li>
+          <li><strong>Butir 3.</strong> <code>FlatList</code> tidak dapat mengubah struktur baris yang terlanjur dirender (baris lama berisi 2 item, mode baru mengharapkan 3), sehingga tampilan rusak. Memberi <code>key={jumlahKolom}</code> membuat React membuang daftar lama dan membangun yang baru.</li>
+          <li><strong>Butir 4.</strong> <code>ItemSeparatorComponent</code> (pemisah antarbaris tanpa margin tambahan), <code>ListHeaderComponent</code> (konten tetap di atas daftar), <code>ListEmptyComponent</code> (tampilan saat <code>data</code> kosong), <code>ListFooterComponent</code> (tombol “muat lebih banyak” atau total di akhir daftar), dan <code>numColumns</code> untuk grid.</li>
+        </ul>
+
+        <p><strong>Kesalahan umum:</strong> mengisi <code>keyExtractor={(item) =&gt; Math.random()}</code> — menyebut “unik” tanpa “stabil”; menaruh <code>key</code> di dalam <code>BarisMahasiswa</code> alih-alih lewat <code>keyExtractor</code>.</p>
+      </details>
+    </div>
+
+    <p>
+      Supaya bingkai di bawah bisa dipertanggungjawabkan, komponen baris yang dirender
+      <code>renderItem</code> ikut ditampilkan — inilah <code>BarisMahasiswa</code> yang dipanggil soal
+      tanpa definisinya:
+    </p>
+
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">components/BarisMahasiswa.js</span>
+        <span class="kode-sumber">buku · Kode 4 — BarisMahasiswa</span>
+      </figcaption>
+      <pre><code class="language-jsx">import { Pressable, StyleSheet, Text, View } from 'react-native';
+import AvatarPlaceholder from './AvatarPlaceholder';
+
+function BarisMahasiswa({ mahasiswa, aktif, padaPilih }) {
+  return (
+    &lt;Pressable
+      onPress={padaPilih}
+      style={({ pressed }) =&gt; [
+        styles.baris,
+        aktif &amp;&amp; styles.barisAktif,
+        pressed &amp;&amp; styles.barisTertekan,
+      ]}
+    &gt;
+      &lt;AvatarPlaceholder nama={mahasiswa.nama} ukuran={44} /&gt;
+      &lt;View style={styles.bagianTeks}&gt;
+        &lt;Text style={styles.nama}&gt;{mahasiswa.nama}&lt;/Text&gt;
+        &lt;Text style={styles.nim}&gt;
+          {mahasiswa.nim} · {mahasiswa.prodi}
+        &lt;/Text&gt;
+      &lt;/View&gt;
+      {aktif &amp;&amp; (
+        &lt;View style={styles.lencana}&gt;
+          &lt;Text style={styles.teksLencana}&gt;TERPILIH&lt;/Text&gt;
+        &lt;/View&gt;
+      )}
+    &lt;/Pressable&gt;
+  );
+}
+
+const styles = StyleSheet.create({
+  baris: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#ffffff',
+    borderRadius: 10,
+    padding: 12,
+    gap: 12,
+  },
+  barisAktif: { backgroundColor: '#e3edfd', borderWidth: 1, borderColor: '#2f6fed' },
+  barisTertekan: { opacity: 0.7 },
+  bagianTeks: { flex: 1 },
+  nama: { fontSize: 16, fontWeight: '600' },
+  nim: { fontSize: 13, color: '#667085', marginTop: 2 },
+  lencana: {
+    backgroundColor: '#2f6fed',
+    borderRadius: 6,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+  },
+  teksLencana: { color: '#ffffff', fontSize: 10, fontWeight: 'bold' },
+});
+
+export default BarisMahasiswa;</code></pre>
+    </figure>
+
+    <div class="padanan">
+      <div class="padanan-sisi">
+        <div class="keluaran">
+          <p class="keluaran-kepala"><span>Hasil yang diharapkan — dua kolom</span><span class="keluaran-lebar">390 px</span></p>
+          <div class="bingkai">
+            <div class="bingkai-layar">
+              <div class="rn">
+                <div class="rn-view" style="padding: 0">
+                  <div class="kisi kisi-2">
+                    <div class="rn-pressable" style="flex-direction: row; align-items: center; background-color: #ffffff; border-radius: 10px; padding: 12px; gap: 12px">
+                      <div class="rn-view" style="width: 44px; height: 44px; border-radius: 22px; background-color: #2f6fed; align-items: center; justify-content: center"><div class="rn-text" style="color: #ffffff; font-weight: bold">BS</div></div>
+                      <div class="rn-view" style="flex: 1"><div class="rn-text" style="font-size: 16px; font-weight: 600">Budi Santoso</div><div class="rn-text" style="font-size: 13px; color: #667085; margin-top: 2px">22101001 · Sistem Informasi</div></div>
+                    </div>
+                    <div class="rn-pressable" style="flex-direction: row; align-items: center; background-color: #ffffff; border-radius: 10px; padding: 12px; gap: 12px">
+                      <div class="rn-view" style="width: 44px; height: 44px; border-radius: 22px; background-color: #2f6fed; align-items: center; justify-content: center"><div class="rn-text" style="color: #ffffff; font-weight: bold">SA</div></div>
+                      <div class="rn-view" style="flex: 1"><div class="rn-text" style="font-size: 16px; font-weight: 600">Siti Aminah</div><div class="rn-text" style="font-size: 13px; color: #667085; margin-top: 2px">22101002 · Informatika</div></div>
+                    </div>
+                    <div class="rn-pressable" style="flex-direction: row; align-items: center; background-color: #ffffff; border-radius: 10px; padding: 12px; gap: 12px">
+                      <div class="rn-view" style="width: 44px; height: 44px; border-radius: 22px; background-color: #2f6fed; align-items: center; justify-content: center"><div class="rn-text" style="color: #ffffff; font-weight: bold">RP</div></div>
+                      <div class="rn-view" style="flex: 1"><div class="rn-text" style="font-size: 16px; font-weight: 600">Rizky Pratama</div><div class="rn-text" style="font-size: 13px; color: #667085; margin-top: 2px">22101003 · Sistem Informasi</div></div>
+                    </div>
+                    <div class="rn-pressable" style="flex-direction: row; align-items: center; background-color: #ffffff; border-radius: 10px; padding: 12px; gap: 12px">
+                      <div class="rn-view" style="width: 44px; height: 44px; border-radius: 22px; background-color: #2f6fed; align-items: center; justify-content: center"><div class="rn-text" style="color: #ffffff; font-weight: bold">DL</div></div>
+                      <div class="rn-view" style="flex: 1"><div class="rn-text" style="font-size: 16px; font-weight: 600">Dewi Lestari</div><div class="rn-text" style="font-size: 13px; color: #667085; margin-top: 2px">22101004 · Informatika</div></div>
+                    </div>
+                    <div class="rn-pressable" style="flex-direction: row; align-items: center; background-color: #ffffff; border-radius: 10px; padding: 12px; gap: 12px">
+                      <div class="rn-view" style="width: 44px; height: 44px; border-radius: 22px; background-color: #2f6fed; align-items: center; justify-content: center"><div class="rn-text" style="color: #ffffff; font-weight: bold">AW</div></div>
+                      <div class="rn-view" style="flex: 1"><div class="rn-text" style="font-size: 16px; font-weight: 600">Andi Wijaya</div><div class="rn-text" style="font-size: 13px; color: #667085; margin-top: 2px">22101005 · Sistem Informasi</div></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p class="keluaran-catatan">
+            Lima kartu, dua kolom, baris terakhir hanya terisi satu. Tidak ada jarak antarkolom karena
+            <code>numColumns</code> tidak memasang <code>gap</code>: kartu bersentuhan, dan nama panjang
+            terpotong ke baris berikutnya.
+          </p>
+        </div>
+      </div>
+
+      <div class="padanan-sisi">
+        <div class="keluaran">
+          <p class="keluaran-kepala"><span>Hasil yang diharapkan — tiga kolom</span><span class="keluaran-lebar">390 px</span></p>
+          <div class="bingkai">
+            <div class="bingkai-layar">
+              <div class="rn">
+                <div class="rn-view" style="padding: 0">
+                  <div class="kisi kisi-3">
+                    <div class="rn-pressable" style="flex-direction: row; align-items: center; background-color: #ffffff; border-radius: 10px; padding: 12px; gap: 12px">
+                      <div class="rn-view" style="width: 44px; height: 44px; border-radius: 22px; background-color: #2f6fed; align-items: center; justify-content: center"><div class="rn-text" style="color: #ffffff; font-weight: bold">BS</div></div>
+                      <div class="rn-view" style="flex: 1"><div class="rn-text" style="font-size: 16px; font-weight: 600">Budi Santoso</div><div class="rn-text" style="font-size: 13px; color: #667085; margin-top: 2px">22101001 · Sistem Informasi</div></div>
+                    </div>
+                    <div class="rn-pressable" style="flex-direction: row; align-items: center; background-color: #ffffff; border-radius: 10px; padding: 12px; gap: 12px">
+                      <div class="rn-view" style="width: 44px; height: 44px; border-radius: 22px; background-color: #2f6fed; align-items: center; justify-content: center"><div class="rn-text" style="color: #ffffff; font-weight: bold">SA</div></div>
+                      <div class="rn-view" style="flex: 1"><div class="rn-text" style="font-size: 16px; font-weight: 600">Siti Aminah</div><div class="rn-text" style="font-size: 13px; color: #667085; margin-top: 2px">22101002 · Informatika</div></div>
+                    </div>
+                    <div class="rn-pressable" style="flex-direction: row; align-items: center; background-color: #ffffff; border-radius: 10px; padding: 12px; gap: 12px">
+                      <div class="rn-view" style="width: 44px; height: 44px; border-radius: 22px; background-color: #2f6fed; align-items: center; justify-content: center"><div class="rn-text" style="color: #ffffff; font-weight: bold">RP</div></div>
+                      <div class="rn-view" style="flex: 1"><div class="rn-text" style="font-size: 16px; font-weight: 600">Rizky Pratama</div><div class="rn-text" style="font-size: 13px; color: #667085; margin-top: 2px">22101003 · Sistem Informasi</div></div>
+                    </div>
+                    <div class="rn-pressable" style="flex-direction: row; align-items: center; background-color: #ffffff; border-radius: 10px; padding: 12px; gap: 12px">
+                      <div class="rn-view" style="width: 44px; height: 44px; border-radius: 22px; background-color: #2f6fed; align-items: center; justify-content: center"><div class="rn-text" style="color: #ffffff; font-weight: bold">DL</div></div>
+                      <div class="rn-view" style="flex: 1"><div class="rn-text" style="font-size: 16px; font-weight: 600">Dewi Lestari</div><div class="rn-text" style="font-size: 13px; color: #667085; margin-top: 2px">22101004 · Informatika</div></div>
+                    </div>
+                    <div class="rn-pressable" style="flex-direction: row; align-items: center; background-color: #ffffff; border-radius: 10px; padding: 12px; gap: 12px">
+                      <div class="rn-view" style="width: 44px; height: 44px; border-radius: 22px; background-color: #2f6fed; align-items: center; justify-content: center"><div class="rn-text" style="color: #ffffff; font-weight: bold">AW</div></div>
+                      <div class="rn-view" style="flex: 1"><div class="rn-text" style="font-size: 16px; font-weight: 600">Andi Wijaya</div><div class="rn-text" style="font-size: 13px; color: #667085; margin-top: 2px">22101005 · Sistem Informasi</div></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p class="keluaran-catatan">
+            Tiga kolom pada lebar 390 px: kartu menyempit menjadi sekitar 130 px, avatar 44 px memakan
+            sepertiga lebarnya, dan teks hanya menyisakan ruang beberapa karakter per baris. Inilah
+            alasan butir 3 meminta Anda mengubah <code>numColumns</code> <em>mengikuti lebar layar</em>, bukan
+            menetapkannya sekali.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <p class="keluaran-catatan">
+      Yang dinilai: kelengkapan properti wajib, syarat <code>key</code> (unik <strong>dan</strong> stabil),
+      pemahaman <code>key</code> untuk <code>numColumns</code>, dan pengetahuan lanjutan yang terarah.
+    </p>
+  </section>
+
+  <!-- ============================================================ SOAL 8 -->
+
+  <section class="subbab" id="p8" data-subbab="Soal 8"
+           data-tanpa-output="Perbedaan safe area hanya nyata di perangkat: bingkai tiruan di peramban tidak punya notch, status bar, maupun home indicator, sehingga hasilnya tidak dapat dipertanggungjawabkan.">
+    <p class="label-subbab">
+      Soal 8 · 10 poin <span class="sumber-slide">· soal: “Soal 8 — Safe Area di Dua Platform” · kunci tersedia</span>
+    </p>
+    <h2>Soal 8 — Safe Area di Dua Platform</h2>
+
+    <p>
+      Satu komponen, dua perilaku. Soal ini menuntut Anda menjalankannya di <strong>kedua</strong> platform —
+      jawaban yang hanya diuji di satu platform diberi maksimal 60% dari poin butirnya.
+    </p>
+
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">App.js</span>
+        <span class="kode-sumber">soal · Soal 8</span>
+      </figcaption>
+      <pre><code class="language-jsx">import { SafeAreaView } from "react-native";
+
+export default function App() {
+  return (
+    &lt;SafeAreaView style={styles.layar}&gt;
+      &lt;Text style={styles.judul}&gt;Profil Mahasiswa&lt;/Text&gt;
+    &lt;/SafeAreaView&gt;
+  );
+}</code></pre>
+    </figure>
+
+    <ol>
+      <li>Jalankan di iOS dan di Android. Tulis perbedaan hasilnya, lalu jelaskan sebabnya.</li>
+      <li>Ganti dengan pustaka modern. Tuliskan perintah instalasi, komponen yang dipasang di <strong>akar</strong> aplikasi, dan properti yang mengatur tepi mana yang dilindungi.</li>
+      <li>Jelaskan apa yang dimaksud dengan <em>inset</em>, dan sebutkan <strong>tiga</strong> hal pada layar ponsel yang membuat safe area diperlukan.</li>
+      <li>Jelaskan mengapa sejak Android 15 masalah ini menjadi <strong>wajib</strong>, bukan tambahan.</li>
+      <li>Sebutkan satu risiko yang muncul ketika Anda <strong>meng-hardcode</strong> <code>paddingTop: 44</code> sebagai pengganti safe area, dan hubungkan dengan keberagaman perangkat.</li>
+    </ol>
+
+    <div class="kotak kotak-kunci">
+      <details class="kotak-jawab">
+        <summary>Kunci jawaban — buka hanya saat pembahasan</summary>
+
+        <figure class="kode">
+          <figcaption class="kode-kepala">
+            <span class="kode-berkas">terminal</span>
+            <span class="kode-sumber">kunci · Soal 8</span>
+          </figcaption>
+          <pre><code class="language-bash">   npx expo install react-native-safe-area-context</code></pre>
+        </figure>
+
+        <figure class="kode">
+          <figcaption class="kode-kepala">
+            <span class="kode-berkas">App.js</span>
+            <span class="kode-sumber">kunci · Soal 8</span>
+          </figcaption>
+          <pre><code class="language-jsx">   import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+
+   export default function App() {
+     return (
+       &lt;SafeAreaProvider&gt;
+         &lt;SafeAreaView style={styles.layar} edges={["top", "bottom"]}&gt;
+           &lt;Text style={styles.judul}&gt;Profil Mahasiswa&lt;/Text&gt;
+         &lt;/SafeAreaView&gt;
+       &lt;/SafeAreaProvider&gt;
+     );
+   }</code></pre>
+        </figure>
+
+        <ul>
+          <li><strong>Butir 1.</strong> <code>SafeAreaView</code> bawaan <code>react-native</code> hanya berfungsi di <strong>iOS</strong>; di Android ia tidak menambahkan jarak apa pun, sehingga judul bisa tertutup status bar atau terpotong notch bila dijalankan <em>edge-to-edge</em>. Dokumentasi React Native versi terbaru juga menandai <code>SafeAreaView</code> bawaan sebagai <strong>deprecated</strong>.</li>
+          <li><strong>Butir 2.</strong> Akar aplikasi: <code>SafeAreaProvider</code>; properti pengatur tepi: <code>edges</code> (<code>top</code>, <code>bottom</code>, <code>left</code>, <code>right</code>).</li>
+          <li><strong>Butir 3.</strong> <em>Inset</em> adalah jarak aman (dalam piksel) yang disisakan sistem dari tepi layar. Tiga penyebabnya: <strong>notch/kamera</strong>, <strong>status bar</strong>, dan <strong>home indicator</strong> (garis geser di bawah pada iPhone).</li>
+          <li><strong>Butir 4.</strong> Sejak Android 15 konten dirender <em>edge-to-edge</em>, menembus sampai tepi layar, sehingga tidak ada lagi jarak otomatis dari sistem. Tanpa penanganan safe area, judul atau tombol bisa tertutup status bar maupun gesture bar.</li>
+          <li><strong>Butir 5.</strong> <code>paddingTop: 44</code> akan salah pada perangkat lain: tinggi status bar dan notch berbeda antar model, dan berubah saat rotasi atau saat keyboard muncul. Yang benar: ambil nilai nyata lewat <code>useSafeAreaInsets()</code> atau pakai <code>SafeAreaView</code> dari pustaka.</li>
+        </ul>
+
+        <p><strong>Kesalahan umum:</strong> memasang <code>SafeAreaView</code> pustaka <em>tanpa</em> <code>SafeAreaProvider</code> di akar (nilai inset menjadi 0); menganggap <code>SafeAreaView</code> bawaan sudah lintas platform.</p>
+      </details>
+    </div>
+
+    <p class="keluaran-catatan">
+      Yang dinilai: pengalaman melihat perbedaan nyata antar platform, kemampuan migrasi ke pustaka yang
+      benar, pemahaman insets, dan kesadaran versi (sebutkan sumber verifikasi Anda).
+    </p>
+  </section>
+
+  <!-- ============================================================ SOAL 9 -->
+
+  <section class="subbab" id="p9" data-subbab="Soal 9"
+           data-tanpa-output="Bayangan iOS (shadowColor/shadowOpacity/shadowRadius/shadowOffset) dan Android (elevation) digambar oleh sistem operasi; menirunya dengan box-shadow CSS akan mengarang nilai sekaligus menyamakan dua platform yang justru ingin dibedakan.">
+    <p class="label-subbab">
+      Soal 9 · 10 poin <span class="sumber-slide">· soal: “Soal 9 — StyleSheet, Array Style, dan Perbedaan Platform” · kunci tersedia</span>
+    </p>
+    <h2>Soal 9 — <code>StyleSheet</code>, Array Style, dan Perbedaan Platform</h2>
+
+    <p>
+      Perhatikan <code>judulJudul</code> di blok berikut. Ia bukan salah ketik nama <em>properti</em>; ia
+      hanya tidak pernah dipakai — dan kunci jawaban menjelaskan mengapa keduanya berbeda.
+    </p>
+
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">styles.js</span>
+        <span class="kode-sumber">soal · Soal 9</span>
+      </figcaption>
+      <pre><code class="language-jsx">const styles = StyleSheet.create({
+  baris: { padding: 12, backgroundColor: "#ffffff" },
+  barisAktif: { backgroundColor: "#dbeafe" },
+  barisTertekan: { opacity: 0.7 },
+  judul: { fontSize: 18, fontWeight: "bold" },
+  judulJudul: { color: "#1e3a8a" }, // salah ketik nama style
+});</code></pre>
+    </figure>
+
+    <ol>
+      <li>Jelaskan mengapa <code>StyleSheet.create</code> membuat salah ketik seperti <code>styles.judulJudul</code> lebih mudah ditemukan dibanding CSS biasa. Keuntungan kedua apa yang diberikan <code>StyleSheet.create</code> bagi keterbacaan komponen?</li>
+      <li>Tulis satu <code>Pressable</code> yang memakai <strong>satu array style</strong> berisi gaya dasar, gaya aktif bersyarat (props <code>aktif</code>), dan gaya tertekan sekaligus. Jelaskan urutan prioritasnya dan mengapa <code>false</code>/<code>null</code> di dalam array tidak merusak apa pun.</li>
+      <li>Jelaskan mengapa tidak ada <em>cascade</em> di React Native. Jika sebuah <code>View</code> berisi tiga <code>Text</code> dan Anda ingin semuanya berwarna biru, apa yang harus dilakukan?</li>
+      <li>Tulis gaya <code>kartu</code> yang memiliki bayangan berbeda di iOS dan Android, menggunakan <code>Platform.select</code> di dalam <code>StyleSheet.create</code>. Sebutkan properti yang dipakai masing-masing platform dan mengapa keduanya tidak saling menggantikan.</li>
+      <li>Tanpa melihat slide, tuliskan aturan pemilihan: kapan <code>Platform.select</code>, kapan <code>Platform.OS</code>, dan kapan berkas <code>.ios.js</code>/<code>.android.js</code>?</li>
+    </ol>
+
+    <div class="kotak kotak-kunci">
+      <details class="kotak-jawab">
+        <summary>Kunci jawaban — buka hanya saat pembahasan</summary>
+
+        <figure class="kode">
+          <figcaption class="kode-kepala">
+            <span class="kode-berkas">Baris.js</span>
+            <span class="kode-sumber">kunci · Soal 9</span>
+          </figcaption>
+          <pre><code class="language-jsx">   &lt;Pressable
+     style={({ pressed }) =&gt; [
+       styles.baris,
+       aktif &amp;&amp; styles.barisAktif,
+       pressed &amp;&amp; styles.barisTertekan,
+     ]}
+   &gt;
+     &lt;Text&gt;{mahasiswa.nama}&lt;/Text&gt;
+   &lt;/Pressable&gt;</code></pre>
+        </figure>
+
+        <figure class="kode">
+          <figcaption class="kode-kepala">
+            <span class="kode-berkas">styles.js</span>
+            <span class="kode-sumber">kunci · Soal 9</span>
+          </figcaption>
+          <pre><code class="language-jsx">   kartu: {
+     borderRadius: 12,
+     ...Platform.select({
+       ios: {
+         shadowColor: "#000000",
+         shadowOpacity: 0.15,
+         shadowRadius: 6,
+         shadowOffset: { width: 0, height: 2 },
+       },
+       android: { elevation: 3 },
+       default: {},
+     }),
+   },</code></pre>
+        </figure>
+
+        <ul>
+          <li><strong>Butir 1.</strong> <code>StyleSheet.create</code> memvalidasi <strong>nama properti</strong> saat aplikasi dimuat, sehingga salah ketik seperti <code>fontWight</code> langsung memunculkan peringatan alih-alih gagal diam-diam seperti CSS. Keuntungan kedua: definisi gaya terpusat di luar JSX, sehingga komponen lebih mudah dibaca dan gaya dapat dipakai ulang. <code>judulJudul</code> sendiri hanya tidak pernah direferensikan.</li>
+          <li><strong>Butir 2.</strong> Prioritas: yang paling akhir menang — <code>barisTertekan</code> menimpa <code>barisAktif</code>, yang menimpa <code>baris</code>. Nilai <code>false</code>/<code>null</code> diabaikan React Native, jadi tidak merusak apa pun dan tidak perlu <code>if/else</code>.</li>
+          <li><strong>Butir 3.</strong> Tidak ada cascade karena setiap komponen mendeklarasikan gayanya sendiri; tidak ada pewarisan dari induk ke anak. Untuk tiga <code>Text</code> berwarna biru, warnanya ditulis pada gaya masing-masing <code>Text</code> (atau dibungkus komponen kecil yang sudah membawa gaya itu). Pengecualian: sebagian properti teks memang diwarisi <code>Text</code> bersarang di iOS.</li>
+          <li><strong>Butir 4.</strong> iOS memakai empat properti <code>shadow*</code>, Android memakai <code>elevation</code>. Keduanya tidak saling menggantikan karena berasal dari sistem render berbeda: <code>elevation</code> juga memengaruhi urutan tumpukan pada Android, sedangkan <code>shadow*</code> hanya menggambar bayangan. <code>default: {}</code> menjadi jaring pengaman.</li>
+          <li><strong>Butir 5.</strong> <code>Platform.OS</code> untuk percabangan kecil dan cepat di dalam JSX atau logika; <code>Platform.select</code> untuk perbedaan kecil berupa nilai atau gaya yang tetap ingin berada dalam satu objek; berkas <code>.ios.js</code>/<code>.android.js</code> untuk perbedaan besar — struktur komponen atau logika yang berbeda nyata.</li>
+        </ul>
+
+        <p><strong>Kesalahan umum:</strong> memakai <code>elevation</code> di iOS lalu menyimpulkan gaya bayangan tidak berfungsi; menulis <code>display: "flex"</code> (tidak diperlukan di React Native); membuat dua variabel style terpisah dengan <code>if/else</code> alih-alih array.</p>
+      </details>
+    </div>
+
+    <p class="keluaran-catatan">
+      Yang dinilai: keunggulan <code>StyleSheet</code>, penguasaan pola array style, pemahaman tidak adanya
+      cascade, kelengkapan bayangan dua platform, dan aturan pemilihan alat perbedaan platform.
+    </p>
+  </section>
+
+  <!-- ============================================================ SOAL 10 -->
+
+  <section class="subbab" id="p10" data-subbab="Soal 10"
+           data-tanpa-output="Tampilan responsif Soal 10 sudah digambar di Praktikum Integrasi (id pi) dengan kode yang sama — useWindowDimensions, numColumns, dan key — sehingga menggambarnya dua kali hanya akan mengulang bingkai.">
+    <p class="label-subbab">
+      Soal 10 · 12 poin <span class="sumber-slide">· soal: “Soal 10 — Flexbox column dan Tata Letak Responsif” · kunci tersedia</span>
+    </p>
+    <h2>Soal 10 — Flexbox <code>column</code> dan Tata Letak Responsif</h2>
+
+    <p>
+      Soal terakhir bagian B, dan yang paling banyak angkanya. Dua butir pertama tentang
+      <em>default</em>; tiga butir terakhir tentang membuat angka itu bekerja di lebar layar yang berbeda.
+      Konsepnya di <a href="bagian-4.html">Bagian 4</a>.
+    </p>
+
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">styles.js</span>
+        <span class="kode-sumber">soal · Soal 10</span>
+      </figcaption>
+      <pre><code class="language-jsx">const styles = StyleSheet.create({
+  layar: { flex: 1, padding: 16 },
+  barisJudul: { flexDirection: "row", justifyContent: "space-between" },
+  barisKartu: { flexDirection: "row", flexWrap: "wrap", gap: 10 },
+  kartuKecil: { width: "48%" },
+  kaki: { flex: 1 },
+});</code></pre>
+    </figure>
+
+    <ol>
+      <li>Dua <code>View</code> ditumpuk tanpa <code>flexDirection</code> sama sekali. Tulis hasilnya, lalu jelaskan <strong>mengapa</strong> default React Native berbeda dari web dan apa nama mesin tata letaknya.</li>
+      <li>Dari kode di atas, jelaskan fungsi tiap properti berikut <strong>dalam konteks kode itu</strong>: <code>justifyContent</code>, <code>alignItems</code> (nilainya default), <code>flexWrap</code>, <code>gap</code>, dan <code>flex: 1</code> pada <code>kaki</code>. Untuk <code>kaki</code>, jelaskan pola apa yang dihasilkan.</li>
+      <li>Mengapa <code>width: "48%"</code> dipilih, bukan <code>"50%"</code>? Hitung dan jelaskan dengan <code>gap: 10</code> dalam pikiran.</li>
+      <li>Tulis logika <code>useWindowDimensions</code> yang menghasilkan <strong>3 kolom</strong> pada lebar ≥ 600 dan <strong>2 kolom</strong> di bawahnya, lalu terapkan sebagai <code>numColumns</code>. Jangan lupa <code>key</code>. Jelaskan mengapa <code>key</code> itu diperlukan.</li>
+      <li>Pada ponsel selebar 360 piksel, berapa kolom yang muncul? Buktikan dengan perhitungan atau tangkapan layar.</li>
+      <li>Putar perangkat ke posisi lanskap. Jelaskan mengapa menyimpan lebar layar di variabel biasa pada awal aplikasi berjalan adalah kesalahan.</li>
+    </ol>
+
+    <div class="kotak kotak-kunci">
+      <details class="kotak-jawab">
+        <summary>Kunci jawaban — buka hanya saat pembahasan</summary>
+
+        <figure class="kode">
+          <figcaption class="kode-kepala">
+            <span class="kode-berkas">App.js</span>
+            <span class="kode-sumber">kunci · Soal 10</span>
+          </figcaption>
+          <pre><code class="language-jsx">   const { width } = useWindowDimensions();
+   const jumlahKolom = width &gt;= 600 ? 3 : 2;
+
+   &lt;FlatList
+     key={jumlahKolom}          // wajib: paksa render ulang saat numColumns berubah
+     numColumns={jumlahKolom}
+     data={DAFTAR_MAHASISWA}
+     keyExtractor={(item) =&gt; item.id}
+     renderItem={({ item }) =&gt; &lt;BarisMahasiswa mahasiswa={item} /&gt;}
+   /&gt;</code></pre>
+        </figure>
+
+        <ul>
+          <li><strong>Butir 1.</strong> Kedua <code>View</code> <strong>bertumpuk vertikal</strong>, bukan berdampingan. Mesin tata letaknya bernama <strong>Yoga</strong>, dan default <code>flexDirection</code>-nya <code>column</code> — berbeda dari web yang default <code>row</code>, karena layar ponsel lebih alami dibaca dari atas ke bawah.</li>
+          <li><strong>Butir 2.</strong> <code>justifyContent: "space-between"</code> menaruh judul di kiri dan jumlah di kanan; <code>alignItems</code> default <code>stretch</code> meregangkan anak memenuhi tinggi baris pada sumbu silang; <code>flexWrap: "wrap"</code> memindahkan kartu ke baris baru saat sumbu utama penuh; <code>gap: 10</code> memberi jarak antarkartu tanpa <code>margin</code> berulang; <code>flex: 1</code> pada <code>kaki</code> mengisi seluruh sisa ruang sehingga konten terdorong ke atas — pola klasik “footer di dasar layar”.</li>
+          <li><strong>Butir 3.</strong> <code>48 + 48 = 96%</code> menyisakan 4% untuk <code>gap: 10</code>. Memakai <code>"50%"</code> membuat 100% <em>ditambah</em> 10 px, sehingga kartu kedua terdorong ke baris berikutnya atau meluber.</li>
+          <li><strong>Butir 4.</strong> <code>key</code> diperlukan karena <code>FlatList</code> tidak mendukung perubahan <code>numColumns</code> saat berjalan; mengganti <code>key</code> membuang struktur baris lama dan membangun daftar baru yang konsisten.</li>
+          <li><strong>Butir 5.</strong> Pada lebar 360, <code>360 &gt;= 600</code> bernilai <code>false</code> → <strong>2 kolom</strong>.</li>
+          <li><strong>Butir 6.</strong> Menyimpan lebar di variabel biasa berarti nilainya tidak pernah diperbarui saat orientasi berubah atau layar dilipat. <code>useWindowDimensions</code> berlangganan perubahan dimensi dan memicu re-render.</li>
+        </ul>
+
+        <p><strong>Kesalahan umum:</strong> lupa <code>key={jumlahKolom}</code> (nilai 0 untuk butir 4 walau kode “jalan” dengan dua kolom tetap); memakai <code>Dimensions.get</code> sekali di dalam <code>useEffect</code>; menyebut <code>alignItems</code> sebagai “perataan horizontal” tanpa mengaitkan dengan sumbu silang.</p>
+      </details>
+    </div>
+
+    <p class="keluaran-catatan">
+      Yang dinilai: pemahaman default <code>column</code> pada Yoga, penguasaan enam properti inti Flexbox,
+      ketelitian angka layout, implementasi responsif yang berjalan (termasuk <code>key</code> untuk
+      <code>numColumns</code>), dan kesadaran bahwa <code>useWindowDimensions</code> memicu re-render.
+    </p>
+  </section>
+
+  <!-- ============================================================ INTEGRASI -->
+
+  <section class="subbab" id="pi" data-subbab="Praktikum Integrasi">
+    <p class="label-subbab">
+      Praktikum Integrasi <span class="sumber-slide">· deck: “Praktikum Integrasi: Halaman Katalog Responsif”</span>
+    </p>
+    <h2>Praktikum Integrasi — Halaman Katalog Responsif</h2>
+
+    <ul>
+      <li>Halaman katalog memakai komponen inti, styling, dan layout responsif.</li>
+      <li>Scroller dipilih sesuai struktur data katalog.</li>
+      <li>Diuji pada layar sempit, layar lebar, dan dua platform.</li>
+    </ul>
+
+    <p>
+      Ini praktikum penutup dari rekomendasi lima sesi: satu halaman yang memakai seluruh isi bab. Kerjakan
+      dengan data aplikasi Manajemen Data Mahasiswa — daftar mata kuliah atau daftar mahasiswa — supaya
+      hasilnya bisa dipakai lagi di Bab 6 dan Bab 7. Indikator keberhasilan akhirnya: halaman memakai
+      komponen inti, styling terstruktur, layout responsif, dan pengguliran yang sesuai kebutuhan konten
+      dan platform.
+    </p>
+
+    <p><strong>Yang harus Anda tambahkan pada katalog:</strong></p>
+    <ol>
+      <li><strong>Pencarian.</strong> <code>TextInput</code> di atas daftar, nilai ketikan disimpan pada state <code>kataKunci</code>, lalu data disaring dengan <code>filter</code> sebelum dikirim ke <code>FlatList</code>. Perhatikan bahwa <code>keyExtractor</code> tidak perlu berubah selama nilainya memang identitas item, bukan indeks.</li>
+      <li><strong>Grid 2/3 kolom pada ambang 600 px.</strong> <code>useWindowDimensions</code> + <code>numColumns</code> + <code>key={jumlahKolom}</code>, persis seperti Contoh 2 di bawah.</li>
+      <li><strong><code>ListEmptyComponent</code>.</strong> Tampilan saat data kosong (“tidak ada mahasiswa”), bukan indikator pemuatan yang menutupi daftar kosong.</li>
+    </ol>
+
+    <div class="kotak kotak-tiruan">
+      <p class="kotak-judul">Batas yang jujur</p>
+      <p>
+        Pencarian dan <code>ListEmptyComponent</code> disebut di keempat sumber sebagai prosa — buku §5.6,
+        latihan praktik butir 3 di buku, dan kunci Soal 7 — tetapi <strong>tidak ada blok kodenya</strong>.
+        Karena itu keduanya ditulis sebagai tugas, bukan digambar sebagai kode. Dua blok di bawah adalah
+        yang benar-benar ada di buku, dan bingkai keluarannya hanya memakai nilai gaya dari dua blok itu.
+      </p>
+    </div>
+
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">components/KartuMahasiswa.js</span>
+        <span class="kode-sumber">buku · Contoh praktikum — Contoh 1</span>
+      </figcaption>
+      <pre><code class="language-jsx">import { Image, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+
+function KartuMahasiswa({ mahasiswa, padaTekan }) {
+  return (
+    &lt;Pressable
+      onPress={padaTekan}
+      style={({ pressed }) =&gt; [styles.kartu, pressed &amp;&amp; styles.kartuTertekan]}
+    &gt;
+      &lt;Image
+        source={{ uri: 'https://example.com/foto/' + mahasiswa.nim + '.jpg' }}
+        style={styles.foto}
+        resizeMode="cover"
+        accessibilityLabel={'Foto ' + mahasiswa.nama}
+      /&gt;
+      &lt;View style={styles.bagianTeks}&gt;
+        &lt;Text style={styles.nama}&gt;{mahasiswa.nama}&lt;/Text&gt;
+        &lt;Text style={styles.nim}&gt;{mahasiswa.nim}&lt;/Text&gt;
+      &lt;/View&gt;
+    &lt;/Pressable&gt;
+  );
+}
+
+const styles = StyleSheet.create({
+  kartu: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
+    padding: 12,
+    marginVertical: 6,
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000000',
+        shadowOpacity: 0.15,
+        shadowRadius: 6,
+        shadowOffset: { width: 0, height: 2 },
+      },
+      android: { elevation: 3 },
+      default: {},
+    }),
+  },
+  kartuTertekan: { opacity: 0.7, transform: [{ scale: 0.98 }] },
+  foto: { width: 56, height: 56, borderRadius: 28, marginRight: 12 },
+  bagianTeks: { flex: 1 },
+  nama: { fontSize: 16, fontWeight: '600' },
+  nim: { fontSize: 13, color: '#667085' },
+});
+
+export default KartuMahasiswa;</code></pre>
+    </figure>
+
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">App.js</span>
+        <span class="kode-sumber">buku · Contoh praktikum — Contoh 2</span>
+      </figcaption>
+      <pre><code class="language-jsx">import { FlatList, useWindowDimensions } from 'react-native';
+import KartuMahasiswa from './components/KartuMahasiswa';
+
+const DATA = [
+  { id: '1', nim: '2201001', nama: 'Budi Santoso' },
+  { id: '2', nim: '2201002', nama: 'Siti Aminah' },
+  { id: '3', nim: '2201003', nama: 'Agus Wijaya' },
+];
+
+function GaleriMahasiswa() {
+  const { width } = useWindowDimensions();
+  const jumlahKolom = width &gt;= 600 ? 3 : 2;
+
+  return (
+    &lt;FlatList
+      key={jumlahKolom}
+      data={DATA}
+      keyExtractor={(item) =&gt; item.id}
+      numColumns={jumlahKolom}
+      renderItem={({ item }) =&gt; &lt;KartuMahasiswa mahasiswa={item} /&gt;}
+    /&gt;
+  );
+}</code></pre>
+    </figure>
+
+    <p>
+      Perhatikan bahwa Contoh 2 tidak memasang <code>gap</code> maupun margin horizontal pada kartu:
+      <code>numColumns</code> hanya membagi baris menjadi kolom sama lebar. Menambahkan jarak itulah salah
+      satu pekerjaan Anda, dan buku memintanya secara eksplisit di Tantangan 1 — “pastikan kartu mahasiswa
+      rapi di kedua mode”.
+    </p>
+
+    <div class="keluaran">
+      <p class="keluaran-kepala"><span>Hasil yang diharapkan — 2 kolom, lebar di bawah 600 px</span><span class="keluaran-lebar">390 px</span></p>
+      <div class="bingkai katalog-390">
+        <div class="bingkai-layar">
+          <div class="rn">
+            <div class="rn-view">
+              <div class="katalog-kisi">
+                <div class="rn-pressable" style="flex-direction: row; align-items: center; background-color: #ffffff; border-radius: 12px; padding: 12px; margin-top: 6px; margin-bottom: 6px; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15)">
+                  <div class="rn-image rn-image-kosong" style="width: 56px; height: 56px; border-radius: 28px; margin-right: 12px"></div>
+                  <div class="rn-view" style="flex: 1"><div class="rn-text" style="font-size: 16px; font-weight: 600">Budi Santoso</div><div class="rn-text" style="font-size: 13px; color: #667085">2201001</div></div>
+                </div>
+                <div class="rn-pressable" style="flex-direction: row; align-items: center; background-color: #ffffff; border-radius: 12px; padding: 12px; margin-top: 6px; margin-bottom: 6px; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15)">
+                  <div class="rn-image rn-image-kosong" style="width: 56px; height: 56px; border-radius: 28px; margin-right: 12px"></div>
+                  <div class="rn-view" style="flex: 1"><div class="rn-text" style="font-size: 16px; font-weight: 600">Siti Aminah</div><div class="rn-text" style="font-size: 13px; color: #667085">2201002</div></div>
+                </div>
+                <div class="rn-pressable" style="flex-direction: row; align-items: center; background-color: #ffffff; border-radius: 12px; padding: 12px; margin-top: 6px; margin-bottom: 6px; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15)">
+                  <div class="rn-image rn-image-kosong" style="width: 56px; height: 56px; border-radius: 28px; margin-right: 12px"></div>
+                  <div class="rn-view" style="flex: 1"><div class="rn-text" style="font-size: 16px; font-weight: 600">Agus Wijaya</div><div class="rn-text" style="font-size: 13px; color: #667085">2201003</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="keluaran-catatan">
+        Dua bingkai katalog di sini sengaja dipatok (390 px dan 640 px) agar perbedaan dua dan tiga
+        kolom bisa dibandingkan berdampingan. Tiga kartu dari <code>DATA</code> pada Contoh 2, dua kolom karena lebar bingkai di bawah 600 px.
+        Seluruh angka berasal dari <code>StyleSheet</code> Contoh 1: <code>borderRadius: 12</code>,
+        <code>padding: 12</code>, <code>marginVertical: 6</code>, foto <code>56×56</code> dengan
+        <code>borderRadius: 28</code> dan <code>marginRight: 12</code>, nama 16/<code>600</code>, NIM 13
+        <code>#667085</code>. Bayangan yang digambar adalah cabang <code>ios</code>
+        (<code>shadowOpacity: 0.15</code>, <code>shadowRadius: 6</code>, <code>shadowOffset: {0, 2}</code>);
+        cabang Android memakai <code>elevation: 3</code> yang tidak punya padanan CSS langsung.
+      </p>
+    </div>
+
+    <div class="keluaran">
+      <p class="keluaran-kepala"><span>Hasil yang diharapkan — 3 kolom, lebar 600 px ke atas</span><span class="keluaran-lebar">640 px</span></p>
+      <div class="bingkai katalog-640">
+        <div class="bingkai-layar">
+          <div class="rn">
+            <div class="rn-view">
+              <div class="katalog-kisi">
+                <div class="rn-pressable" style="flex-direction: row; align-items: center; background-color: #ffffff; border-radius: 12px; padding: 12px; margin-top: 6px; margin-bottom: 6px; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15)">
+                  <div class="rn-image rn-image-kosong" style="width: 56px; height: 56px; border-radius: 28px; margin-right: 12px"></div>
+                  <div class="rn-view" style="flex: 1"><div class="rn-text" style="font-size: 16px; font-weight: 600">Budi Santoso</div><div class="rn-text" style="font-size: 13px; color: #667085">2201001</div></div>
+                </div>
+                <div class="rn-pressable" style="flex-direction: row; align-items: center; background-color: #ffffff; border-radius: 12px; padding: 12px; margin-top: 6px; margin-bottom: 6px; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15)">
+                  <div class="rn-image rn-image-kosong" style="width: 56px; height: 56px; border-radius: 28px; margin-right: 12px"></div>
+                  <div class="rn-view" style="flex: 1"><div class="rn-text" style="font-size: 16px; font-weight: 600">Siti Aminah</div><div class="rn-text" style="font-size: 13px; color: #667085">2201002</div></div>
+                </div>
+                <div class="rn-pressable" style="flex-direction: row; align-items: center; background-color: #ffffff; border-radius: 12px; padding: 12px; margin-top: 6px; margin-bottom: 6px; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15)">
+                  <div class="rn-image rn-image-kosong" style="width: 56px; height: 56px; border-radius: 28px; margin-right: 12px"></div>
+                  <div class="rn-view" style="flex: 1"><div class="rn-text" style="font-size: 16px; font-weight: 600">Agus Wijaya</div><div class="rn-text" style="font-size: 13px; color: #667085">2201003</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="keluaran-catatan">
+        Markup yang sama, jumlah kolom berbeda — di aplikasi aslinya perubahan ini datang dari
+        <code>width &gt;= 600 ? 3 : 2</code>; di halaman ini dari container query pada lebar
+        <em>bingkai</em>. Bingkai ini lebarnya dikunci 640 px (bukan mengikuti penggeser) supaya ambang
+        600 px benar-benar terlewati. Kalau layar Anda lebih sempit dari 640 px, bingkainya ikut menyusut
+        dan kolomnya kembali menjadi dua — persis seperti yang akan terjadi di perangkat.
+      </p>
+    </div>
+
+    <div class="keluaran">
+      <p class="keluaran-kepala"><span>Keadaan kosong — data kosong tanpa pengganti</span><span class="keluaran-lebar">390 px</span></p>
+      <div class="bingkai katalog-390">
+        <div class="bingkai-layar">
+          <div class="rn">
+            <div class="rn-view">
+              <div class="katalog-kisi"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="keluaran-catatan">
+        <code>FlatList</code> dengan data kosong tidak merender satu kartu pun, dan kode di atas tidak
+        menyiapkan pengganti: layar hanya menyisakan latar. Di sinilah <code>ListEmptyComponent</code>
+        berperan — dan di sinilah pesan deck berlaku: indikator pemuatan tidak boleh dipakai untuk menutupi
+        daftar kosong. Seperti disebut di kotak di atas, tidak ada blok kode
+        <code>ListEmptyComponent</code> di keempat sumber, jadi tampilan penggantinya tidak digambar di sini.
+      </p>
+    </div>
+
+    <div class="kotak kotak-tanya">
+      <p class="kotak-judul">Pertanyaan penuntun</p>
+      <p>“Bagian mana yang paling lama kamu kerjakan, dan kenapa?”</p>
+      <details class="kotak-jawab">
+        <summary>Lihat jawaban</summary>
+        <p>
+          Jawaban umumnya layout — itulah alasan Subbab 4.1–4.7 mendapat porsi terbesar. Ingatkan juga
+          tenggat dan bahwa hasil praktikum ini menjadi bahan penilaian praktikum bab.
+        </p>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============================================================ BOBOT -->
+
+  <section class="subbab" id="bobot" data-subbab="Penutup"
+           data-tanpa-kode="Bagian penutup hanya menyalin dua tabel dari lembar soal dan satu catatan dari kunci; tidak ada kode yang ditampilkan di sini."
+           data-tanpa-output="Isinya tabel rekap bobot dan rubrik penilaian, bukan hasil menjalankan kode, sehingga tidak ada tampilan aplikasi yang bisa digambar.">
+    <p class="label-subbab">
+      Penutup <span class="sumber-slide">· soal: “Sebaran Bobot” dan “Rubrik Umum (Lampiran A)” · kunci: panduan penilaian</span>
+    </p>
+    <h2>Sebaran Bobot dan Rubrik</h2>
+
+    <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Sebaran bobot sepuluh soal · sumber: praktikum/bab-05-soal-praktikum.md</caption>
+      <thead>
+        <tr><th scope="col">Soal</th><th scope="col">Materi</th><th scope="col">Poin</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>React web vs React Native (Tabel 5.1)</td><td>10</td></tr>
+        <tr><td>2</td><td><code>View</code> &amp; <code>Text</code>, aturan teks</td><td>8</td></tr>
+        <tr><td>3</td><td><code>Image</code>: <code>require</code> vs <code>uri</code>, placeholder inisial</td><td>9</td></tr>
+        <tr><td>4</td><td><code>Button</code> vs <code>Pressable</code>, style fungsi, <code>hitSlop</code></td><td>10</td></tr>
+        <tr><td>5</td><td><code>TextInput</code> controlled component</td><td>9</td></tr>
+        <tr><td>6</td><td><code>ScrollView</code> vs <code>FlatList</code>, scroller bersarang</td><td>12</td></tr>
+        <tr><td>7</td><td>Tiga properti wajib <code>FlatList</code>, <code>keyExtractor</code>, <code>numColumns</code></td><td>10</td></tr>
+        <tr><td>8</td><td>Safe area di iOS &amp; Android</td><td>10</td></tr>
+        <tr><td>9</td><td><code>StyleSheet</code>, array style, <code>Platform.select</code></td><td>10</td></tr>
+        <tr><td>10</td><td>Flexbox <code>column</code>, <code>useWindowDimensions</code>, layout responsif</td><td>12</td></tr>
+        <tr><td><strong>Total</strong></td><td></td><td><strong>100</strong></td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Rubrik Umum (Lampiran A) · sumber: praktikum/bab-05-soal-praktikum.md</caption>
+      <thead>
+        <tr><th scope="col">Aspek</th><th scope="col">Bobot</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Pemahaman konsep (penjelasan tertulis)</td><td>15%</td></tr>
+        <tr><td>Implementasi (kode berjalan di perangkat)</td><td>25%</td></tr>
+        <tr><td>Kualitas kode (penamaan, struktur, tanpa style duplikat)</td><td>15%</td></tr>
+        <tr><td>UI/UX (tata letak rapi, aman dari notch, umpan balik sentuh)</td><td>15%</td></tr>
+        <tr><td>Debugging (proses menemukan bug)</td><td>10%</td></tr>
+        <tr><td>Dokumentasi (<code>README.md</code>, tangkapan layar)</td><td>20%</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <p>
+      Tiga butir dari kunci yang perlu dibaca sebelum menilai. <strong>Ambang kelulusan 60/100</strong>,
+      dengan syarat wajib <strong>Soal 6 dan Soal 10 benar</strong> — keduanya fondasi tampilan Bab 6 dan
+      navigasi Bab 7. <strong>Soal 8 wajib dijalankan di kedua platform</strong>; jawaban yang hanya diuji
+      pada satu platform diberi maksimal 60% dari poin butir tersebut. Dan <strong>tanda jawaban
+      hafalan</strong> — misalnya menyebut “default-nya column” tanpa bisa menjelaskan mengapa, atau
+      menyebut <code>keyExtractor</code> wajib hanya karena “kalau tidak ada, warning” — sebaiknya
+      mengurangi poin penjelasan meski kodenya benar.
+    </p>
+
+    <p>
+      Ketentuan pengumpulan dari lembar soal: kumpulkan folder <code>praktikum-5/</code> berisi seluruh kode
+      sumber <strong>dan</strong> <code>README.md</code> yang memuat cara menjalankan beserta
+      perangkat/emulator yang dipakai (OS dan ukuran layar), potongan pesan console untuk Soal 6 dan 8,
+      serta tiga perbedaan platform yang paling mengejutkan beserta sebabnya. Tangkapan layar wajib untuk
+      Soal 2 (red screen sebelum perbaikan), Soal 3 (kotak kosong sebelum perbaikan), Soal 6 (peringatan
+      <code>VirtualizedLists</code>), Soal 8 (iOS vs Android), dan Soal 10 (2 kolom dan 3 kolom setelah
+      rotasi). Batas waktu: akhir sesi lab Pertemuan 6 — dan project <code>profil-mahasiswa</code>
+      <strong>jangan dihapus</strong>, karena dilanjutkan pada Bab 6 dan Bab 7.
+    </p>
+  </section>
+
+  <nav class="langkah" aria-label="Navigasi halaman">
+    <a href="bagian-5.html"><span class="arah">Sebelumnya</span>Bagian 5 — Scroller</a>
+    <a href="index.html"><span class="arah">Berikutnya</span>Kembali ke peta Bab 5</a>
+  </nav>
+
+</main>
+
+<footer class="kaki">
+  <div class="kaki-isi">
+    <p><strong>Demo web Bab 5 — Dasar React Native.</strong> Pertemuan 6, mata kuliah Pemrograman Mobile.</p>
+    <p>
+      Sumber yang dikutip: <code>slides/bab-05-dasar-react-native.md</code>,
+      <code>buku/bab-05-dasar-react-native.md</code>, <code>praktikum/bab-05-soal-praktikum.md</code>,
+      <code>praktikum/bab-05-kunci-jawaban.md</code>. Semua blok kode di halaman ini disalin verbatim dari
+      berkas tersebut dan diperiksa oleh <code>scripts/verify-demo-web.mjs</code>.
+    </p>
+    <p>Versi yang dipakai di kelas: Expo SDK 57 · React Native 0.86 · React 19.2.</p>
+  </div>
+</footer>
+
+<script src="aset/prism/prism.js"></script>
+<script src="aset/halaman.js"></script>
+</body>
+</html>
