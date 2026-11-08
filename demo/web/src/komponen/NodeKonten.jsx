@@ -1,7 +1,68 @@
-import React from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import Banding from './Banding.jsx'
 import { sorot, ambilBahasa } from '../penyorot.js'
+
+/**
+ * Tombol "Salin" untuk blok kode. Memakai Clipboard API bila tersedia,
+ * dengan cadangan textarea + execCommand untuk konteks non-aman (mis.
+ * situs dibuka lewat alamat IP jaringan lokal, bukan localhost).
+ */
+function TombolSalin({ teks }) {
+  const [tersalin, setTersalin] = useState(false)
+  const pewaktu = useRef(null)
+
+  // Bersihkan pewaktu saat komponen dilepas.
+  useEffect(() => () => clearTimeout(pewaktu.current), [])
+
+  async function salin() {
+    let berhasil = false
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(teks)
+        berhasil = true
+      }
+    } catch {
+      berhasil = false
+    }
+    if (!berhasil) {
+      const area = document.createElement('textarea')
+      area.value = teks
+      area.setAttribute('readonly', '')
+      area.style.position = 'fixed'
+      area.style.opacity = '0'
+      document.body.appendChild(area)
+      area.select()
+      try {
+        berhasil = document.execCommand('copy')
+      } catch {
+        berhasil = false
+      }
+      area.remove()
+    }
+    if (berhasil) {
+      setTersalin(true)
+      clearTimeout(pewaktu.current)
+      pewaktu.current = setTimeout(() => setTersalin(false), 2000)
+    }
+  }
+
+  return (
+    <>
+      <button
+        type="button"
+        className={`kode-salin${tersalin ? ' kode-salin-berhasil' : ''}`}
+        onClick={salin}
+      >
+        {tersalin ? 'Tersalin ✓' : 'Salin'}
+      </button>
+      {/* Pengumuman untuk pembaca layar; label tombol tidak diubah diam-diam. */}
+      <span className="kode-salin-status" aria-live="polite">
+        {tersalin ? 'Kode tersalin ke papan klip.' : ''}
+      </span>
+    </>
+  )
+}
 
 /**
  * Merender <figure class="kode"> dari konten: figcaption apa adanya, lalu kode
@@ -20,7 +81,14 @@ function KodeFigur({ node }) {
 
   return (
     <figure className={node.className}>
-      {figcaption && <RenderaNode node={figcaption} />}
+      {figcaption && (
+        <figcaption {...salinAtribut(figcaption)}>
+          {[...figcaption.childNodes].map((turunan, i) => (
+            <RenderaNode key={i} node={turunan} />
+          ))}
+          <TombolSalin teks={kodeTeks} />
+        </figcaption>
+      )}
       <pre {...preProps}>
         <code
           {...codeProps}
