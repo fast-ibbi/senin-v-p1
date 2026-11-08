@@ -8,6 +8,10 @@ memotong** di bawah memberi tahu apa yang dibuang lebih dulu.
 
 Deck: `slides/bab-05-dasar-react-native.md` · Pertemuan 6 · total sesi 100 menit.
 
+Enam tantangan lab yang menempel pada keenam layar ada di `TANTANGAN-LAB.md` (boleh dibagikan ke
+mahasiswa), kuncinya di `KUNCI-TANTANGAN.md` (hanya dosen). Sesi kelas tidak berubah karena
+keenam tantangan dikerjakan di lab, bukan di sela demo — lihat blok terakhir berkas ini.
+
 ---
 
 ## Sebelum masuk kelas
@@ -217,9 +221,39 @@ tidak pernah dilihat di kelas.
 
 ---
 
-## Tiga hal yang harus dikatakan terang-terangan
+## Pembahasan tantangan — 5 menit pertama pertemuan berikutnya
 
-Demo ini sengaja tidak mengerjakan tiga hal. Sebutkan supaya tidak menjadi kesalahpahaman.
+Ini satu-satunya bagian naskah yang tidak dipakai di pertemuan 6. Taruh di awal pertemuan 7,
+sebelum materi Bab 6: lima menit, tanpa slide, sambil semua orang masih punya sisa perhatian.
+
+**Yang dibahas hanya dua:** T3 (kotak kode yang berkata jujur) dan T5 (angka yang membuktikan
+virtualisasi). Keduanya paling banyak salah paham, dan keduanya bisa dibahas tanpa membuka laptop
+mahasiswa.
+
+Kalimat pembukanya: *"Dua tantangan lab kemarin menguji satu hal yang sama: apakah bukti yang
+kamu lihat di layar benar-benar bukti."*
+
+**T3 — kotak kode yang berkata jujur.** Yang dibongkar: kotak di bawah tombol menyusun namanya
+dari dua nama tetap, bukan dari array yang dipakai. Selama tiga status, kebetulan tidak ada yang
+salah; status keempat yang membongkarnya. Pertanyaan untuk kelas: *"Apa lagi di aplikasimu yang
+mengaku menampilkan sesuatu, padahal menyusunnya sendiri?"* (Jawaban yang diharapkan: angka
+ringkasan, label status stok, apa pun yang dihitung manual alih-alih diturunkan dari data.)
+
+**T5 — angka yang membuktikan virtualisasi.** Yang dibongkar: angka "item dirender" tidak bergerak
+saat digulir, karena ia disalin sekali per pergantian mode; dan yang dihitung adalah pemanggilan
+render, bukan baris unik. Pertanyaan untuk kelas: *"Kalau angkanya tidak berubah saat kamu
+gulir, apakah itu berarti virtualisasi tidak bekerja — atau berarti alat ukurnya yang salah?"*
+Arahkan ke jawaban kedua, lalu sebut bahwa mengganti `10` menjadi `50` pada `initialNumToRender`
+memindahkan angkanya: parameternya benar, alat ukurnya yang perlu diperbaiki.
+
+**Yang tidak perlu dibahas:** T1, T2, T4, T6. Keempatnya soal keterampilan, bukan kesalahpahaman;
+pekerjaannya bisa dilihat langsung di layar kalau ada yang bertanya setelah kelas.
+
+---
+
+## Empat hal yang harus dikatakan terang-terangan
+
+Demo ini sengaja tidak mengerjakan empat hal. Sebutkan supaya tidak menjadi kesalahpahaman.
 
 1. **Perbedaan Android dan iOS tidak didemokan.** Demo berjalan di satu target. Slide "Android dan
    iOS Tidak Selalu Sama" dan "`Platform.OS`" dibawakan dari deck, praktiknya di Praktikum Soal 8
@@ -228,3 +262,5 @@ Demo ini sengaja tidak mengerjakan tiga hal. Sebutkan supaya tidak menjadi kesal
    Android tetap milik Praktikum Soal 8.
 3. **Tidak ada kode yang sengaja dibuat salah.** Red screen, peringatan `VirtualizedLists`, dan
    gambar tanpa ukuran dikerjakan mahasiswa sendiri di praktikum, bukan ditunjukkan di kelas.
+4. **Tantangan tidak dikerjakan di atas demo ini.** Mahasiswa menyalin foldernya lebih dulu
+   (`TANTANGAN-LAB.md`, bagian Persiapan) supaya demo kelas tetap utuh untuk pertemuan berikutnya.

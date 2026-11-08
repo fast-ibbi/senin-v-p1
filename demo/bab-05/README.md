@@ -6,7 +6,9 @@ Enam berhenti, satu per bagian slide, ditutup dengan halaman katalog yang memaka
 bab. Setiap layar menampilkan kartu catatan **"Yang perlu diperhatikan"** di bagian atas, jadi
 kelas tetap tahu apa yang harus dilihat walaupun narasi dosen terlewat.
 
-Panduan mengajar langkah demi langkah ada di [`NASKAH-DEMO.md`](NASKAH-DEMO.md).
+Panduan mengajar langkah demi langkah ada di [`NASKAH-DEMO.md`](NASKAH-DEMO.md). Enam tantangan
+lab yang menempel pada keenam layar ada di [`TANTANGAN-LAB.md`](TANTANGAN-LAB.md) — boleh dibagikan
+ke mahasiswa; kuncinya di `KUNCI-TANTANGAN.md`, untuk dosen saja.
 
 ---
 
@@ -134,5 +136,11 @@ kecil, tetapi jendela render mengikuti tinggi layar, jadi angka pastinya berbeda
 ## Berkas terkait
 
 - `slides/bab-05-dasar-react-native.md` — deck yang didemokan (tidak diubah oleh demo ini)
+- `NASKAH-DEMO.md` — skrip demo kelas per layar, plus pembahasan tantangan 5 menit
+- `TANTANGAN-LAB.md` — enam tantangan lab, satu per layar (boleh dibagikan ke mahasiswa)
+- `KUNCI-TANTANGAN.md` — kunci tantangan, potongan sebelum/sesudah dan gejala jawaban salah (dosen)
 - `praktikum/bab-05-soal-praktikum.md` — soal mahasiswa; demo ini bukan kunci jawabannya
 - `buku/bab-05-dasar-react-native.md` — materi cetak, memakai data mahasiswa
+- `demo/bab-05-mahasiswa/` — project utuh bertema data mahasiswa (satu aplikasi, lima layar)
+  sebagai contoh hasil praktikum integrasi di akhir bab; langkah pembuatannya ada di
+  `TUTORIAL.md` dalam folder itu
