@@ -15,6 +15,8 @@
 
 **Link Slides:** [Bab 1 — Pengantar Pemrograman Mobile](https://fast-ibbi.github.io/senin-v-p1/bab-01-pengantar-pemrograman-mobile)
 
+**Link Demo:** [Demo Bab 1 — Pengantar Pemrograman Mobile](https://fast-ibbi.github.io/senin-v-p1/demo/#/bab/bab-01-pengantar-pemrograman-mobile)
+
 **Tujuan Pembelajaran:**
 
 - Menjelaskan pengertian dan karakteristik aplikasi mobile
@@ -31,6 +33,8 @@
 
 **Link Slides:** [Bab 2 — Persiapan Lingkungan Pengembangan](https://fast-ibbi.github.io/senin-v-p1/bab-02-persiapan-lingkungan-pengembangan)
 
+**Link Demo:** [Demo Bab 2 — Persiapan Lingkungan Pengembangan](https://fast-ibbi.github.io/senin-v-p1/demo/#/bab/bab-02-persiapan-lingkungan-pengembangan)
+
 **Tujuan Pembelajaran:**
 
 - Menjelaskan peran Node.js, npm, dan npx dalam ekosistem Expo
@@ -46,6 +50,8 @@
 **Topik:** JavaScript Modern untuk React Native (bagian 1)
 
 **Link Slides:** [Bab 3 — JavaScript Modern untuk React Native](https://fast-ibbi.github.io/senin-v-p1/bab-03-javascript-modern-untuk-react-native)
+
+**Link Demo:** [Demo Bab 3 — JavaScript Modern untuk React Native](https://fast-ibbi.github.io/senin-v-p1/demo/#/bab/bab-03-javascript-modern-untuk-react-native)
 
 **Tujuan Pembelajaran:**
 
@@ -65,6 +71,11 @@
 - [Bab 3 — JavaScript Modern untuk React Native](https://fast-ibbi.github.io/senin-v-p1/bab-03-javascript-modern-untuk-react-native)
 - [Bab 4 — Dasar React](https://fast-ibbi.github.io/senin-v-p1/bab-04-dasar-react)
 
+**Link Demo:**
+
+- [Demo Bab 3 — JavaScript Modern untuk React Native](https://fast-ibbi.github.io/senin-v-p1/demo/#/bab/bab-03-javascript-modern-untuk-react-native)
+- [Demo Bab 4 — Dasar React](https://fast-ibbi.github.io/senin-v-p1/demo/#/bab/bab-04-dasar-react)
+
 **Tujuan Pembelajaran:**
 
 - Mengevaluasi module `import`/`export` dan pola asinkron `async`/`await`
@@ -80,6 +91,8 @@
 
 **Link Slides:** [Bab 4 — Dasar React](https://fast-ibbi.github.io/senin-v-p1/bab-04-dasar-react)
 
+**Link Demo:** [Demo Bab 4 — Dasar React](https://fast-ibbi.github.io/senin-v-p1/demo/#/bab/bab-04-dasar-react)
+
 **Tujuan Pembelajaran:**
 
 - Menganalisis perbedaan props dan state serta memperbarui state secara immutable
@@ -94,6 +107,8 @@
 **Topik:** Dasar React Native
 
 **Link Slides:** [Bab 5 — Dasar React Native](https://fast-ibbi.github.io/senin-v-p1/bab-05-dasar-react-native)
+
+**Link Demo:** [Demo Bab 5 — Dasar React Native](https://fast-ibbi.github.io/senin-v-p1/demo/#/bab/bab-05-dasar-react-native)
 
 **Tujuan Pembelajaran:**
 
@@ -113,6 +128,11 @@
 
 - [Bab 6 — Membangun User Interface Mobile](https://fast-ibbi.github.io/senin-v-p1/bab-06-membangun-user-interface-mobile)
 - [Bab 7 — Navigasi Aplikasi](https://fast-ibbi.github.io/senin-v-p1/bab-07-navigasi-aplikasi)
+
+**Link Demo:**
+
+- [Demo Bab 6 — Membangun User Interface Mobile](https://fast-ibbi.github.io/senin-v-p1/demo/#/bab/bab-06-membangun-user-interface-mobile)
+- [Demo Bab 7 — Navigasi Aplikasi](https://fast-ibbi.github.io/senin-v-p1/demo/#/bab/bab-07-navigasi-aplikasi)
 
 **Tujuan Pembelajaran:**
 
@@ -152,6 +172,11 @@
 - [Bab 8 — Form, Input, dan Validasi](https://fast-ibbi.github.io/senin-v-p1/bab-08-form-input-dan-validasi)
 - [Bab 9 — State Management](https://fast-ibbi.github.io/senin-v-p1/bab-09-state-management)
 
+**Link Demo:**
+
+- [Demo Bab 8 — Form, Input, dan Validasi](https://fast-ibbi.github.io/senin-v-p1/demo/#/bab/bab-08-form-input-dan-validasi)
+- [Demo Bab 9 — State Management](https://fast-ibbi.github.io/senin-v-p1/demo/#/bab/bab-09-state-management)
+
 **Tujuan Pembelajaran:**
 
 - Menjelaskan props utama `TextInput` dan strategi penanganan keyboard mobile
@@ -170,6 +195,8 @@
 
 **Link Slides:** [Bab 10 — REST API dan Backend Integration](https://fast-ibbi.github.io/senin-v-p1/bab-10-rest-api-dan-backend-integration)
 
+**Link Demo:** [Demo Bab 10 — REST API dan Backend Integration](https://fast-ibbi.github.io/senin-v-p1/demo/#/bab/bab-10-rest-api-dan-backend-integration)
+
 **Tujuan Pembelajaran:**
 
 - Menjelaskan arsitektur client–server dan peran API di dalamnya
@@ -186,6 +213,8 @@
 
 **Link Slides:** [Bab 10 — REST API dan Backend Integration](https://fast-ibbi.github.io/senin-v-p1/bab-10-rest-api-dan-backend-integration)
 
+**Link Demo:** [Demo Bab 10 — REST API dan Backend Integration](https://fast-ibbi.github.io/senin-v-p1/demo/#/bab/bab-10-rest-api-dan-backend-integration)
+
 **Tujuan Pembelajaran:**
 
 - Mengimplementasikan POST, PUT/PATCH, dan DELETE ke server
@@ -200,6 +229,8 @@
 **Topik:** Penyimpanan Data Lokal
 
 **Link Slides:** [Bab 11 — Penyimpanan Data Lokal](https://fast-ibbi.github.io/senin-v-p1/bab-11-penyimpanan-data-lokal)
+
+**Link Demo:** [Demo Bab 11 — Penyimpanan Data Lokal](https://fast-ibbi.github.io/senin-v-p1/demo/#/bab/bab-11-penyimpanan-data-lokal)
 
 **Tujuan Pembelajaran:**
 
@@ -218,6 +249,8 @@
 
 **Link Slides:** [Bab 12 — Mengakses Fitur Perangkat](https://fast-ibbi.github.io/senin-v-p1/bab-12-mengakses-fitur-perangkat)
 
+**Link Demo:** [Demo Bab 12 — Mengakses Fitur Perangkat](https://fast-ibbi.github.io/senin-v-p1/demo/#/bab/bab-12-mengakses-fitur-perangkat)
+
 **Tujuan Pembelajaran:**
 
 - Menjelaskan API perangkat dan model izin runtime Android dan iOS
@@ -233,6 +266,8 @@
 **Topik:** Autentikasi dan Keamanan Aplikasi
 
 **Link Slides:** [Bab 13 — Autentikasi dan Keamanan Aplikasi](https://fast-ibbi.github.io/senin-v-p1/bab-13-autentikasi-dan-keamanan-aplikasi)
+
+**Link Demo:** [Demo Bab 13 — Autentikasi dan Keamanan Aplikasi](https://fast-ibbi.github.io/senin-v-p1/demo/#/bab/bab-13-autentikasi-dan-keamanan-aplikasi)
 
 **Tujuan Pembelajaran:**
 
@@ -252,6 +287,11 @@
 
 - [Bab 14 — Debugging, Testing, dan Quality Assurance](https://fast-ibbi.github.io/senin-v-p1/bab-14-debugging-testing-dan-quality-assurance)
 - [Bab 15 — Build dan Deployment](https://fast-ibbi.github.io/senin-v-p1/bab-15-build-dan-deployment)
+
+**Link Demo:**
+
+- [Demo Bab 14 — Debugging, Testing, dan Quality Assurance](https://fast-ibbi.github.io/senin-v-p1/demo/#/bab/bab-14-debugging-testing-dan-quality-assurance)
+- [Demo Bab 15 — Build dan Deployment](https://fast-ibbi.github.io/senin-v-p1/demo/#/bab/bab-15-build-dan-deployment)
 
 **Tujuan Pembelajaran:**
 
@@ -308,7 +348,26 @@
 ## Indeks Demo Web
 
 Situs demo interaktif (React SPA): penjelasan per bab dari slides, snippet kode verbatim,
-dan perbandingan sebelum/sesudah. Bab 4 dan 5 sudah lengkap; bab lain menyusul.
+dan perbandingan sebelum/sesudah. Semua 15 bab sudah lengkap — tiap bab punya halaman
+sendiri di `/demo/#/bab/<slug>`.
 
 - [Demo Web — Pemrograman Mobile](https://fast-ibbi.github.io/senin-v-p1/demo/)
 - Dokumentasi: [`demo/web/README.md`](demo/web/README.md)
+
+| Bab | Topik                                                             | Demo                                                                                                                                |
+| --- | ----------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Pengantar Pemrograman Mobile                                      | [demo](https://fast-ibbi.github.io/senin-v-p1/demo/#/bab/bab-01-pengantar-pemrograman-mobile)                                        |
+| 2   | Persiapan Lingkungan Pengembangan                                 | [demo](https://fast-ibbi.github.io/senin-v-p1/demo/#/bab/bab-02-persiapan-lingkungan-pengembangan)                                   |
+| 3   | JavaScript Modern untuk React Native                              | [demo](https://fast-ibbi.github.io/senin-v-p1/demo/#/bab/bab-03-javascript-modern-untuk-react-native)                                |
+| 4   | Dasar React                                                       | [demo](https://fast-ibbi.github.io/senin-v-p1/demo/#/bab/bab-04-dasar-react)                                                         |
+| 5   | Dasar React Native                                                | [demo](https://fast-ibbi.github.io/senin-v-p1/demo/#/bab/bab-05-dasar-react-native)                                                  |
+| 6   | Membangun User Interface Mobile                                   | [demo](https://fast-ibbi.github.io/senin-v-p1/demo/#/bab/bab-06-membangun-user-interface-mobile)                                     |
+| 7   | Navigasi Aplikasi                                                 | [demo](https://fast-ibbi.github.io/senin-v-p1/demo/#/bab/bab-07-navigasi-aplikasi)                                                   |
+| 8   | Form, Input, dan Validasi                                         | [demo](https://fast-ibbi.github.io/senin-v-p1/demo/#/bab/bab-08-form-input-dan-validasi)                                             |
+| 9   | State Management                                                  | [demo](https://fast-ibbi.github.io/senin-v-p1/demo/#/bab/bab-09-state-management)                                                    |
+| 10  | REST API dan Backend Integration                                  | [demo](https://fast-ibbi.github.io/senin-v-p1/demo/#/bab/bab-10-rest-api-dan-backend-integration)                                    |
+| 11  | Penyimpanan Data Lokal                                            | [demo](https://fast-ibbi.github.io/senin-v-p1/demo/#/bab/bab-11-penyimpanan-data-lokal)                                              |
+| 12  | Mengakses Fitur Perangkat                                         | [demo](https://fast-ibbi.github.io/senin-v-p1/demo/#/bab/bab-12-mengakses-fitur-perangkat)                                           |
+| 13  | Autentikasi dan Keamanan Aplikasi                                 | [demo](https://fast-ibbi.github.io/senin-v-p1/demo/#/bab/bab-13-autentikasi-dan-keamanan-aplikasi)                                   |
+| 14  | Debugging, Testing, dan Quality Assurance                         | [demo](https://fast-ibbi.github.io/senin-v-p1/demo/#/bab/bab-14-debugging-testing-dan-quality-assurance)                             |
+| 15  | Build dan Deployment                                              | [demo](https://fast-ibbi.github.io/senin-v-p1/demo/#/bab/bab-15-build-dan-deployment)                                                |
