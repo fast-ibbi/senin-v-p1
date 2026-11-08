@@ -149,10 +149,6 @@ body {
   .kerangka {
     grid-template-columns: minmax(0, 1fr);
   }
-
-  .sisi {
-    position: static;
-  }
 }
 
 /* ----------------------------------------------------------------- bilah sisi */
@@ -261,6 +257,116 @@ body {
 
 .sisi-balik:hover {
   border-bottom-color: var(--accent);
+}
+
+/* -------------------------------------------- bilah sisi di layar sempit: laci */
+
+/* Tombol "Menu" dan layar latar hanya muncul di layar sempit. */
+.tombol-sisi,
+.sisi-penutup {
+  display: none;
+}
+
+@media (max-width: 980px) {
+  .puncak-atas {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .tombol-sisi {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink);
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 6px 12px;
+    cursor: pointer;
+  }
+
+  .tombol-sisi:hover,
+  .tombol-sisi:focus-visible {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .tombol-sisi-ikon {
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 16px;
+    height: 12px;
+  }
+
+  .tombol-sisi-ikon span {
+    display: block;
+    height: 2px;
+    border-radius: 2px;
+    background: currentColor;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+  }
+
+  /* Ikon berubah menjadi silang saat laci terbuka. */
+  .tombol-sisi[aria-expanded="true"] .tombol-sisi-ikon span:nth-child(1) {
+    transform: translateY(5px) rotate(45deg);
+  }
+
+  .tombol-sisi[aria-expanded="true"] .tombol-sisi-ikon span:nth-child(2) {
+    opacity: 0;
+  }
+
+  .tombol-sisi[aria-expanded="true"] .tombol-sisi-ikon span:nth-child(3) {
+    transform: translateY(-5px) rotate(-45deg);
+  }
+
+  /* Bilah sisi menjadi laci di luar layar; meluncur masuk saat .terbuka. */
+  .sisi {
+    position: fixed;
+    inset: 0 auto 0 0;
+    width: min(320px, 86vw);
+    max-height: none;
+    margin: 0;
+    padding: 20px 18px 32px;
+    background: #ffffff;
+    border-right: 1px solid var(--border);
+    box-shadow: 0 16px 48px rgba(17, 24, 39, 0.22);
+    transform: translateX(-104%);
+    visibility: hidden;
+    transition: transform 0.25s ease, visibility 0s linear 0.25s;
+    z-index: 70;
+    overscroll-behavior: contain;
+  }
+
+  .sisi.terbuka {
+    transform: translateX(0);
+    visibility: visible;
+    transition: transform 0.25s ease;
+  }
+
+  .sisi-penutup {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 65;
+    padding: 0;
+    border: 0;
+    background: rgba(17, 24, 39, 0.45);
+    cursor: default;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sisi,
+  .sisi.terbuka,
+  .tombol-sisi-ikon span {
+    transition: none;
+  }
 }
 
 /* ---------------------------------------------------------------------- isi */
