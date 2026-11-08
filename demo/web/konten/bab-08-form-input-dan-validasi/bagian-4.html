@@ -1,0 +1,474 @@
+<h1>Bagian 4 — Implementasi dan Studi Kasus</h1>
+
+<p class="ringkas">
+  Subbab 8.7. Bagian ini merakit seluruh materi menjadi tiga formulir utuh. Begitu satu
+  formulir dipahami, dua lainnya terbaca tanpa usaha baru — itulah pesan utama bagian ini.
+</p>
+
+<section class="subbab" id="s4-1">
+  <p class="label-subbab">
+    Subbab 8.7 <span class="sumber-slide">· deck: “Empat Lapisan dengan Tanggung Jawab Masing-Masing” · buku §8.7 &amp; §Praktikum</span>
+  </p>
+  <h2>Empat Lapisan dengan Tanggung Jawab Masing-Masing</h2>
+
+  <p>
+    Praktikum bab ini membangun empat lapis yang sudah dipelajari pada materi:
+    <code>validators.js</code> sebagai pustaka fungsi murni, <code>FormField.js</code> sebagai
+    komponen reusable, <code>FormMahasiswa.js</code> sebagai layar yang merangkai aturan, chip,
+    dan penanganan papan ketik, serta <code>tambah.js</code> sebagai rute tipis yang menyimpan
+    data.
+  </p>
+
+  <p>
+    Pemisahan layar dari rute adalah penerapan pemisahan tanggung jawab, bukan sekadar
+    kerapian folder: rute mengatur <em>posisi</em> layar dalam navigasi, layar mengatur
+    <em>isi</em> dan perilakunya. Ketiga formulir bab ini memakai pola internal yang identik,
+    dan perbedaannya hanya pada daftar field serta tabel aturannya.
+  </p>
+
+  <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Pemetaan formulir ke rute · sumber: buku §8.7, Tabel 8.3</caption>
+      <thead>
+        <tr><th scope="col">Formulir</th><th scope="col">Berkas layar</th><th scope="col">Rute, dibuat di Bab 7</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Login</td><td><code>screens/FormLogin.js</code></td><td><code>app/login.js</code> — isi placeholder diganti komponen ini</td></tr>
+        <tr><td>Registrasi</td><td><code>screens/FormRegistrasi.js</code></td><td><code>app/registrasi.js</code> — rute baru, pola sama dengan login</td></tr>
+        <tr><td>Data Mahasiswa</td><td><code>screens/FormMahasiswa.js</code></td><td><code>app/(app)/mahasiswa/tambah.js</code> — lihat Praktikum 8</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    Keempat lapisan itu bertemu pada daftar impor sebuah layar formulir. Inilah bentuk
+    nyatanya.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">screens/FormMahasiswa.js</span>
+      <span class="kode-sumber">buku §8.7 · daftar impor</span>
+    </figcaption>
+    <pre><code class="language-jsx">import { useState } from 'react';
+import {
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
+import FormField from '../components/FormField';
+import {
+  jalankanAturan,
+  validasiAngkatan,
+  validasiEmail,
+  validasiIpk,
+  validasiNim,
+  validasiPanjang,
+  validasiTelepon,
+  wajibDiisi,
+} from '../utils/validators';</code></pre>
+  </figure>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Kapan pemisahan ini terasa manfaatnya? (Jawaban: saat penyimpanan lokal diganti API di
+      Bab 10 — kode formulirnya tidak perlu berubah sama sekali.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s4-2">
+  <p class="label-subbab">
+    Subbab 8.7 <span class="sumber-slide">· deck: “Satu Pola Internal Melayani Ketiga Formulir” · buku §8.7</span>
+  </p>
+  <h2>Satu Pola Internal Melayani Ketiga Formulir</h2>
+
+  <p>
+    Ketiga formulir memakai lima mekanisme yang sama. Kalau kamu sudah menguasai
+    <code>FormLogin</code>, <code>FormRegistrasi</code> dan <code>FormMahasiswa</code> hanya
+    berisi daftar field yang lebih panjang.
+  </p>
+
+  <ol>
+    <li><code>ATURAN_*</code> — tabel aturan per field.</li>
+    <li><code>validasiSatuField</code> — menjalankan <code>jalankanAturan</code> untuk satu field.</li>
+    <li><code>validasiSemuaField</code> — mengumpulkan pesan menjadi objek <code>errors</code>.</li>
+    <li><code>handleChange</code> — memperbarui formulir; ikut memvalidasi saat <code>sudahDikirim</code> bernilai benar.</li>
+    <li><code>handleSubmit</code> — memvalidasi, mengisi <code>errors</code>, memanggil <code>onSubmit</code>.</li>
+  </ol>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">screens/FormMahasiswa.js</span>
+      <span class="kode-sumber">buku §8.7 · empat mekanisme inti</span>
+    </figcaption>
+    <pre><code class="language-jsx">  function validasiSatuField(namaField, nilai) {
+    return jalankanAturan(ATURAN_MAHASISWA[namaField] || [], nilai);
+  }
+
+  function validasiSemuaField() {
+    const hasil = {};
+    for (const namaField of Object.keys(ATURAN_MAHASISWA)) {
+      hasil[namaField] = validasiSatuField(namaField, form[namaField]);
+    }
+    return hasil;
+  }
+
+  function handleChange(namaField, nilai) {
+    setForm((sebelumnya) =&gt; ({ ...sebelumnya, [namaField]: nilai }));
+    if (sudahDikirim) {
+      setErrors((sebelumnya) =&gt; ({
+        ...sebelumnya,
+        [namaField]: validasiSatuField(namaField, nilai),
+      }));
+    }
+  }
+
+  function handleSubmit() {
+    const hasil = validasiSemuaField();
+    setErrors(hasil);
+    setSudahDikirim(true);
+    const formValid = Object.values(hasil).every((pesan) =&gt; pesan === '');
+    if (formValid) {
+      onSubmit(form);
+      setForm({ ...FORM_KOSONG, ...dataAwal });
+      setErrors({});
+      setSudahDikirim(false);
+    }
+  }</code></pre>
+  </figure>
+
+  <p>
+    Perhatikan pemeriksaan seluruh formulir pada <code>handleSubmit</code>:
+    <code>Object.values(hasil).every((pesan) =&gt; pesan === '')</code>. Satu field gagal berarti
+    formulir belum valid.
+  </p>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Dua jalur akhir tidak berjalan bersamaan. Kalau satu field gagal validasi,
+      <code>onSubmit</code> tidak pernah dipanggil — Alert “Data Tersimpan” tidak muncul, dan
+      itu memang perilaku yang benar.
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s4-3">
+  <p class="label-subbab">
+    Subbab 8.7 <span class="sumber-slide">· deck: “FormRegistrasi: Validasi yang Membaca Field Lain” · buku §8.7</span>
+  </p>
+  <h2>FormRegistrasi: Validasi yang Membaca Field Lain</h2>
+
+  <p>
+    <code>FormRegistrasi</code> menambahkan dua hal yang memperkaya pemahaman: aturan
+    bertingkat untuk nama, serta field konfirmasi kata sandi yang bergantung pada field lain.
+    Ini satu-satunya tempat di bab ini di mana validasi membutuhkan nilai field lain.
+  </p>
+
+  <p>
+    Skenarionya nyata: pengguna mengetik konfirmasi lebih dulu, lalu mengubah kata sandi.
+    Konfirmasi yang tadinya benar menjadi salah. Karena itu, ketika kata sandi berubah, galat
+    konfirmasi ikut dihitung ulang — pembandingnya berubah, sehingga kesimpulan lama tidak lagi
+    berlaku.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">screens/FormRegistrasi.js</span>
+      <span class="kode-sumber">buku §8.7 · aturan bertingkat dan konteks pembanding</span>
+    </figcaption>
+    <pre><code class="language-jsx">const ATURAN_NAMA = [wajibDiisi, (nilai) =&gt; validasiPanjang(nilai, 50)];
+const ATURAN_EMAIL = [wajibDiisi, validasiEmail];
+const ATURAN_PASSWORD = [wajibDiisi, validasiPassword];
+const ATURAN_KONFIRMASI = [wajibDiisi, validasiKonfirmasiPassword];
+
+  function validasiSatuField(namaField, nilai) {
+    if (namaField === 'konfirmasiPassword') {
+      // Butuh nilai password saat ini sebagai konteks pembanding.
+      return jalankanAturan(ATURAN_KONFIRMASI, nilai, form.password);
+    }
+    if (namaField === 'nama') return jalankanAturan(ATURAN_NAMA, nilai);
+    if (namaField === 'email') return jalankanAturan(ATURAN_EMAIL, nilai);
+    return jalankanAturan(ATURAN_PASSWORD, nilai);
+  }</code></pre>
+  </figure>
+
+  <p>
+    Aturan bernama memakai fungsi panah <code>(nilai) =&gt; validasiPanjang(nilai, 50)</code>
+    supaya aturan berparameter tetap cocok dengan <code>jalankanAturan</code>.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">screens/FormRegistrasi.js</span>
+      <span class="kode-sumber">buku §8.7 · hitung ulang lintas field</span>
+    </figcaption>
+    <pre><code class="language-jsx">  function handleChange(namaField, nilai) {
+    const formBaru = { ...form, [namaField]: nilai };
+    setForm(formBaru);
+    if (sudahDikirim) {
+      setErrors((sebelumnya) =&gt; {
+        const hasil = { ...sebelumnya, [namaField]: validasiSatuField(namaField, nilai) };
+        // Jika password berubah, konfirmasi password harus dicek ulang
+        // karena kemungkinan besar menjadi tidak sama.
+        if (namaField === 'password') {
+          hasil.konfirmasiPassword = validasiSatuField(
+            'konfirmasiPassword',
+            formBaru.konfirmasiPassword
+          );
+        }
+        return hasil;
+      });
+    }
+  }</code></pre>
+  </figure>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Kenapa galat konfirmasi harus dihitung ulang saat kata sandi berubah? (Jawaban: karena
+      pembandingnya berubah, sehingga kesimpulan lama tidak lagi berlaku. Sinkronisasi lintas
+      field ini hanya mungkin berkat sumber kebenaran tunggal.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s4-4">
+  <p class="label-subbab">
+    Subbab 8.7 <span class="sumber-slide">· deck: “Chip Menggantikan Dropdown, Angka Dapat Papan Ketik” · buku §8.7 &amp; §Praktikum</span>
+  </p>
+  <h2>Chip Menggantikan Dropdown, Angka Dapat Papan Ketik</h2>
+
+  <p>
+    <code>FormMahasiswa</code> memperluas pola <code>FormLogin</code> dengan dua bentuk input
+    baru. Program studi memakai <strong>chip</strong> — tombol <code>Pressable</code> berbentuk
+    pil yang menyala bila dipilih. Chip lebih ramah layar sentuh daripada daftar pilihan turun
+    karena tidak memerlukan gulir dan area ketuknya lega.
+  </p>
+
+  <p>
+    Nilai program studi yang dipilih tetap tersimpan lewat
+    <code>handleChange('prodi', prodi)</code>, sehingga ia divalidasi seperti field lain. Field
+    angka — NIM, angkatan, dan IPK — memakai <code>keyboardType</code> yang sesuai beserta
+    <code>maxLength</code>.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">screens/FormMahasiswa.js</span>
+      <span class="kode-sumber">buku §Praktikum · chip program studi</span>
+    </figcaption>
+    <pre><code class="language-jsx">        &lt;Text style={styles.label}&gt;Program Studi&lt;/Text&gt;
+        &lt;View style={styles.barisProdi}&gt;
+          {DAFTAR_PRODI.map((prodi) =&gt; {
+            const aktif = form.prodi === prodi;
+            return (
+              &lt;Pressable
+                key={prodi}
+                onPress={() =&gt; handleChange('prodi', prodi)}
+                style={[styles.chip, aktif &amp;&amp; styles.chipAktif]}
+              &gt;
+                &lt;Text style={[styles.teksChip, aktif &amp;&amp; styles.teksChipAktif]}&gt;{prodi}&lt;/Text&gt;
+              &lt;/Pressable&gt;
+            );
+          })}
+        &lt;/View&gt;
+        {errors.prodi !== undefined &amp;&amp; errors.prodi !== '' &amp;&amp; (
+          &lt;Text style={styles.error}&gt;{errors.prodi}&lt;/Text&gt;
+        )}</code></pre>
+  </figure>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">screens/FormMahasiswa.js</span>
+      <span class="kode-sumber">buku §8.7 · field angka dengan papan ketik khusus</span>
+    </figcaption>
+    <pre><code class="language-jsx">        &lt;FormField
+          label="NIM"
+          value={form.nim}
+          onChangeText={(teks) =&gt; handleChange('nim', teks)}
+          placeholder="contoh: 2201001"
+          keyboardType="number-pad"
+          maxLength={10}
+          returnKeyType="next"
+          error={errors.nim}
+        /&gt;</code></pre>
+  </figure>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Field prodi tidak memakai <code>FormField</code> karena bukan input teks, sehingga pesan
+      galatnya harus dirender terpisah. Bagian itu sering lupa ditambahkan, dan akibatnya
+      formulir menolak submit tanpa menjelaskan alasannya.
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s4-5">
+  <p class="label-subbab">
+    Subbab 8.7 <span class="sumber-slide">· deck: “Rute Tipis sebagai Pemilik Data” · buku §8.7 &amp; §Praktikum</span>
+  </p>
+  <h2>Rute Tipis sebagai Pemilik Data</h2>
+
+  <p>
+    Rute <code>tambah.js</code> menjadi pemilik data: ia menyimpan daftar mahasiswa hasil
+    submit pada state lokal dan menambahkan data baru dengan menyebar objek formulir ditambah
+    <code>id</code> unik dari <code>Date.now()</code>.
+  </p>
+
+  <p>
+    Layar formulir hanya melaporkan data valid melalui <code>onSubmit</code>, tanpa tahu
+    bagaimana data itu dipakai. Pemisahan inilah yang nanti memudahkan penggantian penyimpanan
+    lokal dengan API di Bab 10 atau Context di Bab 9, tanpa menyentuh kode formulir.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Rute gemuk: formulir dan penyimpanan menyatu"
+       data-label-benar="Rute tipis sebagai pemilik data"
+       data-petunjuk="Panel kanan sengaja tidak tahu apa pun tentang bentuk formulirnya; itulah yang membuat penyimpanan bisa diganti tanpa menyentuh layar formulir.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">rute-gemuk.jsx</span>
+        <span class="kode-sumber">ilustrasi · buku §8.7</span>
+      </figcaption>
+      <pre><code class="language-jsx">// ✗ layar formulir sekaligus menyimpan data:
+//   mengganti penyimpanan berarti menyunting
+//   layar, validasi, dan tata letaknya.
+export default function TambahMahasiswa() {
+  const [form, setForm] = useState(FORM_KOSONG);
+  const [daftar, setDaftar] = useState([]);
+  // ...ratusan baris field dan aturan...
+}</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">app/(app)/mahasiswa/tambah.js</span>
+        <span class="kode-sumber">buku §Praktikum</span>
+      </figcaption>
+      <pre><code class="language-jsx">import { useState } from 'react';
+import { Alert, StyleSheet, Text } from 'react-native';
+import FormMahasiswa from '../../screens/FormMahasiswa';
+
+export default function TambahMahasiswa() {
+  const [daftarMahasiswa, setDaftarMahasiswa] = useState([]);
+
+  function simpanMahasiswa(dataForm) {
+    const dataBaru = { id: Date.now(), ...dataForm };
+    setDaftarMahasiswa((lama) =&gt; [...lama, dataBaru]);
+    Alert.alert(
+      'Data Tersimpan',
+      `${dataForm.nama} (${dataForm.nim}) masuk daftar lokal. Total: ${daftarMahasiswa.length + 1}.`
+    );
+  }
+
+  return (
+    &lt;&gt;
+      &lt;Text style={styles.infobox}&gt;
+        Daftar lokal sesi ini: {daftarMahasiswa.length} mahasiswa. Data hilang saat aplikasi
+        ditutup; penyimpanan permanen dibahas di Bab 11 dan API sungguhan di Bab 10.
+      &lt;/Text&gt;
+      &lt;FormMahasiswa onSubmit={simpanMahasiswa} /&gt;
+    &lt;/&gt;
+  );
+}
+
+const styles = StyleSheet.create({
+  infobox: {
+    margin: 16,
+    padding: 12,
+    backgroundColor: '#e0f2fe',
+    borderRadius: 8,
+    color: '#075985',
+  },
+});</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Formulir yang kosong kembali setelah submit sukses bukan bug, melainkan perilaku yang
+      dirancang. Data barunya dibaca dari <code>daftarMahasiswa</code>, bukan dengan menahan isi
+      formulir. Daftar itu hilang saat aplikasi ditutup — itulah alasan Bab 9, Bab 10, dan Bab 11
+      ada.
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s4-6">
+  <p class="label-subbab">
+    Subbab 8.7 <span class="sumber-slide">· deck: “Studi Kasus: Kualitas Data di Portal Akademik” · buku §Studi Kasus</span>
+  </p>
+  <h2>Studi Kasus: Kualitas Data di Portal Akademik</h2>
+
+  <p>
+    Sebuah universitas membangun ulang portal akademiknya. Keluhan yang paling sering masuk ke
+    helpdesk bukan soal fitur, melainkan soal data: mahasiswa tidak menerima informasi penting
+    karena email salah ketik saat pendaftaran ulang; dosen wali tidak dapat menghubungi orang
+    tua karena nomor telepon kurang digit; laporan ke Pangkalan Data Pendidikan Tinggi
+    diperbaiki berulang kali karena NIM dan angkatan tidak konsisten.
+  </p>
+
+  <p>
+    Setiap koreksi data memakan waktu administrasi dan berpotensi menunda penerbitan dokumen
+    resmi seperti KRS dan transkrip. Karena itu, keputusan subbab 8.5 diambil dengan sadar:
+    portal melayani ribuan mahasiswa dengan beragam perangkat, sehingga pesan per field
+    mengajarkan syarat formulir secara eksplisit, sedangkan tombol kelabu membiarkan pengguna
+    menebak-nebak.
+  </p>
+
+  <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Keluhan helpdesk dan aturan yang mencegahnya · sumber: buku §Studi Kasus &amp; §8.4</caption>
+      <thead>
+        <tr><th scope="col">Keluhan yang sampai ke helpdesk</th><th scope="col">Aturan yang mencegahnya</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Email salah ketik saat daftar ulang, informasi tidak sampai</td><td><code>wajibDiisi</code> dan <code>validasiEmail</code></td></tr>
+        <tr><td>Nomor telepon kurang digit, dosen wali tidak dapat menghubungi</td><td><code>validasiTelepon</code></td></tr>
+        <tr><td>NIM dan angkatan tidak konsisten, laporan PDDikti diperbaiki berulang</td><td><code>validasiNim</code> dan <code>validasiAngkatan</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">utils/validators.js</span>
+      <span class="kode-sumber">buku §Praktikum · penjaga konsistensi data</span>
+    </figcaption>
+    <pre><code class="language-js">export function validasiNim(nilai = '') {
+  if (nilai === '') return '';
+  if (!/^\d+$/.test(nilai)) return 'NIM hanya boleh berisi angka';
+  return nilai.length &lt;= 10 ? '' : 'NIM maksimal 10 digit';
+}
+
+export function validasiAngkatan(nilai = '') {
+  if (nilai === '') return '';
+  if (!/^\d{4}$/.test(nilai)) return 'Angkatan berupa 4 digit, contoh: 2024';
+  const tahun = Number(nilai);
+  return tahun &gt;= 2000 &amp;&amp; tahun &lt;= 2030 ? '' : 'Angkatan di luar rentang 2000 sampai 2030';
+}</code></pre>
+  </figure>
+
+  <p>
+    Tetapi validasi klien hanyalah lapis pertama. Data yang lolos dari formulir tetap harus
+    diperiksa ulang di server, karena aplikasi bukan satu-satunya pintu masuk data, dan data
+    lama perlu dibersihkan secara berkala.
+  </p>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Kenapa pengguna diberi pesan per field, bukan tombol nonaktif, di portal yang melayani
+      ribuan mahasiswa? (Jawaban: karena pesan eksplisit mengajarkan syarat formulir, sedangkan
+      tombol kelabu membiarkan pengguna menebak-nebak.)
+    </p>
+  </div>
+</section>

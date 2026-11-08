@@ -1,0 +1,547 @@
+<h1>Bagian 1 — Variabel, Tipe Data &amp; Kendali</h1>
+
+<p class="ringkas">
+  Subbab 3.1–3.4. Bagian ini fondasi yang wajib: <code>const</code> dan <code>let</code>, enam
+  tipe data dan operator, percabangan dan perulangan, lalu fungsi biasa dan arrow function.
+  Subbab 3.1 dan 3.4 jangan dilewati — keduanya membentuk kebiasaan menulis kode React.
+</p>
+
+<section class="subbab" id="s1-1">
+  <p class="label-subbab">
+    Subbab 3.1 <span class="sumber-slide">· deck: “React Hampir Selalu Memakai <code>const</code>, Ini Sebabnya” &amp; “<code>const</code> Menjaga Alamat Objek, Bukan Isinya” · buku §3.1</span>
+  </p>
+  <h2>Variabel: <code>const</code> dan <code>let</code></h2>
+
+  <p>
+    <strong>Variabel</strong> adalah tempat menyimpan nilai di dalam program. JavaScript versi
+    lama hanya mengenal <code>var</code>, yang bersifat <em>function scope</em> dan mudah
+    menimbulkan bug karena nilainya dapat diubah di mana saja tanpa disadari. Sejak ES6 (2015)
+    ada dua cara deklarasi yang lebih aman: <code>const</code> untuk nilai yang diisi sekali dan
+    <code>let</code> untuk nilai yang memang berubah. Keduanya bersifat <em>block scope</em>:
+    hanya berlaku di dalam pasangan kurung kurawal terdekat.
+  </p>
+
+  <p>
+    Mengapa perlu dua jenis deklarasi? Jawabannya disiplin. <code>const</code> memberi sinyal
+    bahwa nilai tidak boleh diubah sepanjang hidupnya, sehingga kemungkinan salah ubah yang tidak
+    disengaja menurun. <code>let</code> dipakai ketika nilai memang harus diperbarui, misalnya
+    pencacah perulangan. Analoginya: <code>const</code> seperti tulisan tinta, <code>let</code>
+    seperti tulisan pensil.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">praktik-js/01-variabel.js</span>
+      <span class="kode-sumber">buku §3.1</span>
+    </figcaption>
+    <pre><code class="language-js">const namaAplikasi = 'Aplikasi Mahasiswa';
+let jumlahMahasiswa = 5;
+
+jumlahMahasiswa = jumlahMahasiswa + 1; // boleh: let dapat diisi ulang
+console.log(namaAplikasi, jumlahMahasiswa); // Aplikasi Mahasiswa 6
+
+// namaAplikasi = 'Nama Lain'; // ERROR: const tidak dapat diisi ulang
+
+const mahasiswa = { nama: 'Budi Santoso', ipk: 3.45 };
+mahasiswa.ipk = 3.5; // BOLEH: properti objek tetap bisa diubah
+console.log(mahasiswa.ipk); // 3.5</code></pre>
+  </figure>
+
+  <p>
+    Baris-baris terakhir memperlihatkan sifat penting <code>const</code> terhadap objek: nilai
+    properti seperti <code>ipk</code> boleh diubah, karena yang dijaga <code>const</code> hanyalah
+    rujukan (alamat memori) objeknya. Pola ini muncul di React sebagai
+    <code>const [nilai, setNilai] = useState(0)</code> pada Bab 4: variabel <code>nilai</code>
+    tidak pernah diisi ulang langsung, melainkan diganti melalui fungsi <code>setNilai</code>.
+  </p>
+
+  <div class="banding"
+       data-label-lama="var: function scope, longgar tanpa peringatan"
+       data-label-benar="let dan const: block scope, disiplin sejak awal"
+       data-petunjuk="Yang membedakan bukan panjang penulisannya, melainkan sampai mana nilai itu hidup dan siapa yang boleh mengubahnya.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">var-lama.js</span>
+        <span class="kode-sumber">ilustrasi · deck: “React Hampir Selalu Memakai const” · buku §3.1</span>
+      </figcaption>
+      <pre><code class="language-js">// var: hidup sampai ujung fungsi, bukan sampai ujung blok.
+for (var i = 0; i &lt; 3; i++) {
+  // ...
+}
+console.log(i); // 3 — i masih hidup di luar blok
+
+var nama = 'Budi';
+var nama = 'Siti'; // deklarasi ulang diizinkan, tanpa peringatan</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">let-const-baru.mjs</span>
+        <span class="kode-sumber">ilustrasi · buku §3.1</span>
+      </figcaption>
+      <pre><code class="language-js">// let dan const: hidup hanya di dalam blok tempat ia ditulis.
+for (let i = 0; i &lt; 3; i++) {
+  // ...
+}
+// console.log(i); // ReferenceError: i tidak dikenal di sini
+
+const nama = 'Budi';
+// const nama = 'Siti'; // SyntaxError: deklarasi ulang ditolak</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Peringatan yang paling sering muncul: “<code>const</code> berarti datanya tidak bisa
+      berubah sama sekali”. Yang dijaga <code>const</code> adalah alamat objek di memori, bukan
+      nilai propertinya. Bila dijalankan, <code>namaAplikasi = 'Nama Lain'</code> memunculkan
+      <code>TypeError</code>; tunjukkan langsung di editor supaya kamu melihat pesannya sendiri.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Mengapa React hampir selalu memakai <code>const</code>? (Jawaban: nilai state tidak diganti langsung, melainkan lewat fungsi pengubah dari <code>useState</code> di Bab 4.)</p>
+  </div>
+</section>
+
+<section class="subbab" id="s1-2">
+  <p class="label-subbab">
+    Subbab 3.2 <span class="sumber-slide">· deck: “Enam Tipe Data yang Kamu Pakai Setiap Hari” &amp; “Selalu <code>===</code>, Jangan Pakai <code>==</code>” · buku §3.2</span>
+  </p>
+  <h2>Enam Tipe Data dan Operator</h2>
+
+  <p>
+    JavaScript memiliki enam tipe data dasar yang perlu dikuasai: <strong>string</strong> (teks),
+    <strong>number</strong> (angka, termasuk desimal), <strong>boolean</strong> (benar atau
+    salah), <strong>undefined</strong> (belum terdefinisi), <strong>null</strong> (sengaja
+    dikosongkan), dan <strong>object</strong> yang di dalamnya termasuk array dan fungsi.
+    Operator <code>typeof</code> dipakai untuk memeriksa tipe sebuah nilai, tetapi jangan
+    mengandalkannya sendirian: <code>typeof []</code> dan <code>typeof null</code> sama-sama
+    menghasilkan <code>"object"</code>.
+  </p>
+
+  <p>
+    Pengertian tipe data bukan sekadar teori, karena tipe menentukan perilaku operator.
+    <code>"1" + 1</code> menghasilkan teks <code>"11"</code> (penggabungan), sedangkan
+    <code>"1" - 1</code> menghasilkan angka <code>0</code> (pengurangan). Perbedaan inilah yang
+    membuat <em>strict equality</em> <code>===</code> wajib dipakai dibandingkan <code>==</code>,
+    karena <code>==</code> mengubah tipe otomatis dan sering menghasilkan perbandingan yang
+    mengecoh.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">praktik-js/02-tipe-data.js</span>
+      <span class="kode-sumber">buku §3.2</span>
+    </figcaption>
+    <pre><code class="language-js">const nim = '2201001';          // string
+const ipk = 3.45;               // number
+const aktif = true;             // boolean
+const nilaiBelumDiketahui = undefined;
+const nilaiKosong = null;
+
+console.log(typeof nim);        // string
+console.log(typeof ipk);        // number
+console.log(typeof aktif);      // boolean
+console.log(typeof nilaiBelumDiketahui); // undefined
+console.log(typeof nilaiKosong);         // object (khas JavaScript)
+console.log(typeof [1, 2, 3]);           // object
+
+console.log('3' == 3);  // true  — konversi otomatis, hindari
+console.log('3' === 3); // false — kesetaraan ketat, gunakan ini
+console.log(0.1 + 0.2 === 0.3); // false — bilangan desimal tidak persis
+
+const nama = 'Budi Santoso';
+const pesan = `Selamat datang, ${nama}!`;
+console.log(pesan); // Selamat datang, Budi Santoso!</code></pre>
+  </figure>
+
+  <p>
+    Baris <code>0.1 + 0.2 === 0.3</code> yang mencetak <code>false</code> adalah kejutan klasik
+    bagi pemula: komputer menyimpan bilangan desimal dalam biner sehingga hasilnya
+    <code>0.30000000000000004</code>. Implikasinya, dalam aplikasi keuangan jangan membandingkan
+    hasil hitung desimal secara langsung dengan <code>===</code>; bulatkan dengan
+    <code>toFixed()</code> atau bandingkan dengan selisih yang sangat kecil.
+  </p>
+
+  <div class="banding"
+       data-label-lama="== : tipe diubah lebih dulu"
+       data-label-benar="=== : tipe ikut dibandingkan"
+       data-petunjuk="Empat hasil true di kiri terlihat seperti bantuan, padahal itulah sumber kesalahan yang paling sulit dilacak.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">kesetaraan-longgar.js</span>
+        <span class="kode-sumber">ilustrasi · deck: “Selalu ===, Jangan Pakai ==” · buku §3.2</span>
+      </figcaption>
+      <pre><code class="language-js">// == : JavaScript mengubah tipe lebih dulu, lalu membandingkan.
+console.log('3' == 3);           // true
+console.log(0 == '');           // true
+console.log(null == undefined); // true
+console.log([] == false);       // true</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">kesetaraan-ketat.js</span>
+        <span class="kode-sumber">ilustrasi · buku §3.2</span>
+      </figcaption>
+      <pre><code class="language-js">// === : tipe ikut dibandingkan, tanpa konversi apa pun.
+console.log('3' === 3);          // false
+console.log(0 === '');           // false
+console.log(null === undefined); // false
+console.log([] === false);       // false
+
+// Satu aturan untuk seluruh buku: pakai === dan !==.</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Kalau sebuah properti yang tidak ada diakses, hasilnya error atau <code>undefined</code>? (Jawaban: <code>undefined</code> — dan nilai itu harus ditangani dengan hati-hati.)</p>
+  </div>
+</section>
+
+<section class="subbab" id="s1-3">
+  <p class="label-subbab">
+    Subbab 3.2 <span class="sumber-slide">· deck: “<code>?.</code> dan <code>??</code> Menjaga Akses ke Data Kosong” · buku §3.2</span>
+  </p>
+  <h2><code>?.</code> dan <code>??</code> Menjaga Akses ke Data Kosong</h2>
+
+  <p>
+    Dua operator modern yang paling sering dipakai di React Native adalah <em>optional
+    chaining</em> <code>?.</code> yang mengamankan akses properti yang mungkin kosong, dan
+    <em>nullish coalescing</em> <code>??</code> yang menyediakan nilai bawaan hanya ketika
+    nilainya <code>null</code> atau <code>undefined</code>. Keduanya lahir untuk mengurangi pola
+    <code>if (objek &amp;&amp; objek.profil)</code> yang panjang.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">praktik-js/03-operator.js</span>
+      <span class="kode-sumber">buku §3.2</span>
+    </figcaption>
+    <pre><code class="language-js">const a = 10;
+const b = 3;
+console.log(a + b, a - b, a * b, a / b, a % b); // 13 7 30 3.3333333333333335 1
+
+const nilaiAkhir = 85;
+const predikat = nilaiAkhir &gt;= 80 ? 'Memuaskan' : 'Cukup';
+console.log(predikat); // Memuaskan
+
+const mahasiswa = { nama: 'Siti Aminah', alamat: null };
+console.log(mahasiswa.alamat?.kota);  // undefined, tidak error
+console.log(mahasiswa.alamat ?? 'Alamat tidak tercatat'); // Alamat tidak tercatat
+console.log(`Lulus Cumlaude: ${mahasiswa.ipk &gt;= 3.5}`);   // Lulus Cumlaude: false</code></pre>
+  </figure>
+
+  <p>
+    Operator <code>%</code> (modulo) menghasilkan sisa pembagian — <code>10 % 3</code> adalah
+    <code>1</code> — yang berguna misalnya untuk menentukan baris ganjil atau genap dalam
+    tampilan daftar. Operator ternary <code>? :</code> adalah cara paling ringkas menulis
+    percabangan satu baris dan akan sering kamu lihat di kode React. Pada contoh terakhir,
+    properti <code>ipk</code> tidak terdefinisi sehingga perbandingannya menghasilkan
+    <code>false</code>: mengakses properti yang tidak ada tidak selalu error, tetapi nilainya
+    <code>undefined</code>.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Rantai pemeriksaan manual"
+       data-label-benar="Rantai opsional dan nilai bawaan"
+       data-petunjuk="Yang dihapus bukan hanya barisnya, melainkan juga satu kelas kesalahan: satu mata rantai terlewat berarti TypeError.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">akses-manual.js</span>
+        <span class="kode-sumber">ilustrasi · deck: “?. dan ?? Menjaga Akses ke Data Kosong” · buku §3.2</span>
+      </figcaption>
+      <pre><code class="language-js">// Tanpa ?.: setiap mata rantai diperiksa sendiri.
+if (mahasiswa &amp;&amp; mahasiswa.alamat &amp;&amp; mahasiswa.alamat.kota) {
+  console.log(mahasiswa.alamat.kota);
+}
+
+// Satu mata rantai terlewat, dan yang muncul TypeError.</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">akses-aman.js</span>
+        <span class="kode-sumber">buku §3.2</span>
+      </figcaption>
+      <pre><code class="language-js">const mahasiswa = { nama: 'Siti Aminah', alamat: null };
+
+console.log(mahasiswa.alamat?.kota);  // undefined, tidak error
+console.log(mahasiswa.alamat ?? 'Alamat tidak tercatat'); // Alamat tidak tercatat</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Apa bedanya <code>??</code> dan <code>||</code>? (Jawaban: <code>||</code> juga menyala untuk <code>0</code> dan <code>''</code>, sedangkan <code>??</code> hanya untuk <code>null</code> dan <code>undefined</code> — sebabnya nilai nol tidak boleh hilang.)</p>
+  </div>
+</section>
+
+<section class="subbab" id="s1-4">
+  <p class="label-subbab">
+    Subbab 3.3 <span class="sumber-slide">· deck: “Urutan Kondisi Menentukan Benar atau Salahnya Hasil” &amp; “Hanya Enam Nilai yang Dianggap Salah” · buku §3.3</span>
+  </p>
+  <h2>Percabangan dan Enam Nilai yang Dianggap Salah</h2>
+
+  <p>
+    <strong>Percabangan</strong> memungkinkan kode berjalan hanya ketika kondisi terpenuhi.
+    Setiap kondisi dievaluasi sebagai <em>truthy</em> (dianggap benar) atau <em>falsy</em>
+    (dianggap salah); yang tergolong falsy hanyalah <code>false</code>, <code>0</code>,
+    <code>''</code>, <code>null</code>, <code>undefined</code>, dan <code>NaN</code>. Semua nilai
+    lain truthy — termasuk array kosong <code>[]</code> dan objek kosong <code>{}</code>.
+  </p>
+
+  <p>
+    Percabangan hadir dalam tiga gaya dengan tujuan berbeda: <code>if</code>/<code>else</code>
+    untuk kondisi kompleks, <strong>ternary</strong> untuk memilih di antara dua nilai sederhana,
+    dan <code>switch</code> untuk membandingkan satu nilai dengan banyak kasus. Rantai
+    <code>if</code>/<code>else if</code>/<code>else</code> berhenti pada cabang pertama yang benar,
+    sehingga urutannya menentukan hasil.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">praktik-js/04-percabangan.js</span>
+      <span class="kode-sumber">buku §3.3</span>
+    </figcaption>
+    <pre><code class="language-js">const ipk = 3.45;
+
+if (ipk &gt;= 3.5) {
+  console.log('Predikat Cumlaude');
+} else if (ipk &gt;= 3.0) {
+  console.log('Predikat Sangat Memuaskan');
+} else {
+  console.log('Predikat Memuaskan');
+}
+
+const statusKelulusan = ipk &gt;= 2.0 ? 'Lulus' : 'Tidak Lulus';
+console.log(statusKelulusan); // Lulus
+
+const kodeProdi = 'SI';
+switch (kodeProdi) {
+  case 'SI':
+    console.log('Sistem Informasi');
+    break;
+  case 'TI':
+    console.log('Teknik Informatika');
+    break;
+  default:
+    console.log('Prodi lain');
+}</code></pre>
+  </figure>
+
+  <p>
+    Kata kunci <code>break</code> di dalam <code>switch</code> menghentikan pengecekan agar
+    eksekusi tidak jatuh ke kasus berikutnya. Cara kerja inilah yang membuat <code>switch</code>
+    lebih cocok untuk banyak kemungkinan nilai dari satu variabel, misalnya kode hari atau status
+    pesanan.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Syarat longgar ditulis lebih dulu"
+       data-label-benar="Syarat ketat ditulis lebih dulu"
+       data-petunjuk="Kedua blok dijalankan pada data yang sama persis. Yang berubah hanya urutan barisnya, tetapi predikat yang tercetak berbeda.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">urutan-salah.js</span>
+        <span class="kode-sumber">ilustrasi · deck: “Urutan Kondisi Menentukan Benar atau Salahnya Hasil” · buku §3.3</span>
+      </figcaption>
+      <pre><code class="language-js">const ipk = 3.45;
+
+if (ipk &gt;= 3.0) {
+  console.log('Sangat Memuaskan'); // tercetak, padahal seharusnya Cumlaude
+} else if (ipk &gt;= 3.5) {
+  console.log('Cumlaude');         // tidak pernah tercapai
+}</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">urutan-benar.js</span>
+        <span class="kode-sumber">buku §3.3</span>
+      </figcaption>
+      <pre><code class="language-js">const ipk = 3.45;
+
+if (ipk &gt;= 3.5) {
+  console.log('Predikat Cumlaude');
+} else if (ipk &gt;= 3.0) {
+  console.log('Predikat Sangat Memuaskan');
+}</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Salah paham paling mahal di bagian ini: “kosong berarti salah”. Padahal
+      <code>if ([])</code> selalu masuk cabang benar, dan <code>if (daftarMahasiswa)</code> juga
+      selalu benar walaupun daftarnya kosong. Tulis syaratnya eksplisit:
+      <code>if (daftarMahasiswa.length &gt; 0)</code>.
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s1-5">
+  <p class="label-subbab">
+    Subbab 3.3 <span class="sumber-slide">· deck: “Tiga Bentuk Perulangan, Satu Cara Memilih” &amp; “Tiga Jebakan yang Paling Sering Terjadi” · buku §3.3</span>
+  </p>
+  <h2>Tiga Bentuk Perulangan, Satu Cara Memilih</h2>
+
+  <p>
+    JavaScript menyediakan <code>for</code> saat jumlah putaran sudah diketahui,
+    <code>while</code> saat berhenti bergantung kondisi, dan <code>for...of</code> untuk
+    menelusuri nilai setiap elemen array. <code>for...of</code> adalah pilihan paling aman dan
+    paling terbaca untuk array: ia menghilangkan seluruh kelas kesalahan “di luar batas array”.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">praktik-js/05-perulangan.js</span>
+      <span class="kode-sumber">buku §3.3</span>
+    </figcaption>
+    <pre><code class="language-js">for (let i = 1; i &lt;= 3; i++) {
+  console.log(`Perulangan ke-${i}`);
+}
+
+let sisaPercobaan = 3;
+while (sisaPercobaan &gt; 0) {
+  console.log(`Login gagal, sisa ${sisaPercobaan} kali`);
+  sisaPercobaan--;
+}
+
+const daftarNilai = [3.45, 3.82, 3.2, 3.61, 2.95];
+let total = 0;
+for (const nilai of daftarNilai) {
+  total = total + nilai;
+}
+console.log(`Total IPK: ${total}`); // Total IPK: 17.03</code></pre>
+  </figure>
+
+  <p>
+    Blok <code>for</code> klasik terdiri dari tiga bagian — inisialisasi penghitung, kondisi
+    berhenti, dan pembaruan penghitung — dan bagian-bagian inilah yang rawan salah tulis.
+    Perulangan <code>while</code> cocok ketika jumlah putaran tidak diketahui sebelumnya, misalnya
+    membatasi percobaan login; pola yang sama kembali di Bab 13. Pola <code>for...of</code> juga
+    menjadi dasar pemahaman iterasi yang dipakai React untuk merender daftar komponen di Bab 4.
+  </p>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      <code>for (const nilai in daftarNilai)</code> pada array tidak mencetak nilainya, melainkan
+      indeksnya: <code>0, 1, 2, …</code>. Perulangan yang ditulis
+      <code>for (let i = 1; i &lt;= 5; i--)</code> juga tidak pernah berhenti karena syaratnya selalu
+      benar. Perulangan tanpa henti hanya membekukan terminal, tidak merusak komputer — ajarkan
+      <code>Ctrl+C</code> supaya kamu tidak panik saat praktikum.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Untuk menelusuri array, mengapa <code>for...of</code> lebih dipilih daripada <code>for (let i = 0; ...)</code>? (Jawaban: tidak ada indeks yang perlu dijaga, sehingga tidak ada kesalahan batas bawah maupun batas atas.)</p>
+  </div>
+</section>
+
+<section class="subbab" id="s1-6">
+  <p class="label-subbab">
+    Subbab 3.4 <span class="sumber-slide">· deck: “Arrow Function Menyingkat dan Tidak Terikat Objek Pemanggil” · buku §3.4</span>
+  </p>
+  <h2>Fungsi dan Arrow Function</h2>
+
+  <p>
+    <strong>Fungsi</strong> adalah blok kode bernama yang dapat dipanggil berulang kali — unit
+    dasar penataan logika aplikasi. JavaScript modern mengenal deklarasi fungsi klasik dan
+    <strong>arrow function</strong> yang diperkenalkan ES6. Keduanya dapat dipakai untuk tujuan
+    yang sama, tetapi arrow function lebih ringkas dan tidak memiliki <code>this</code> sendiri;
+    di dalamnya <code>this</code> merujuk ke lingkup di luar fungsi tersebut.
+  </p>
+
+  <p>
+    Itulah alasan ekosistem React nyaris selalu memakai arrow function untuk penangan peristiwa:
+    kita tidak ingin <code>this</code> berubah ketika fungsi dipanggil sebagai tanggapan atas
+    sentuhan pengguna. Perbedaan praktis lainnya, arrow function dengan tubuh satu ekspresi
+    mengembalikan nilai secara implisit, sedangkan deklarasi fungsi klasik diangkat
+    (<em>hoisting</em>) sehingga dapat dipanggil sebelum baris deklarasinya.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">praktik-js/06-fungsi.js</span>
+      <span class="kode-sumber">buku §3.4</span>
+    </figcaption>
+    <pre><code class="language-js">function tentukanPredikat(ipk = 0) {
+  if (ipk &gt;= 3.5) return 'Cumlaude';
+  if (ipk &gt;= 3.0) return 'Sangat Memuaskan';
+  return 'Memuaskan';
+}
+
+const tentukanStatus = (ipk) =&gt; (ipk &gt;= 2.0 ? 'Lulus' : 'Tidak Lulus');
+
+const jumlahkan = (...angka) =&gt; angka.reduce((total, nilai) =&gt; total + nilai, 0);
+
+console.log(tentukanPredikat(3.82)); // Cumlaude
+console.log(tentukanPredikat());     // Memuaskan (parameter default 0)
+console.log(tentukanStatus(2.95));   // Lulus
+console.log(jumlahkan(1, 2, 3, 4));  // 10</code></pre>
+  </figure>
+
+  <p>
+    Keempat fungsi di atas menunjukkan spektrum gaya penulisan. <code>tentukanPredikat</code>
+    memakai pola <em>early return</em>: setiap cabang mengembalikan nilai dan mengakhiri fungsi,
+    menghindari rantai <code>else if</code> yang bertingkat. <code>jumlahkan</code> memperlihatkan
+    <em>rest parameter</em>: semua argumen masuk ke array <code>angka</code> lalu dijumlahkan
+    dengan <code>reduce</code>. Pola “fungsi kecil yang melakukan satu hal dengan jelas” inilah
+    fondasi <em>pure function</em> yang akan diuji di Bab 14.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Fungsi biasa: this mengikuti pemanggil"
+       data-label-benar="Arrow function: this mengikuti tempat penulisan"
+       data-petunjuk="Bacanya dari mana this ditentukan, bukan dari panjang penulisannya. Inilah bedanya, bukan sekadar fungsi yang lebih pendek.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">this-fungsi-biasa.js</span>
+        <span class="kode-sumber">ilustrasi · deck: “Arrow Function Menyingkat dan Tidak Terikat Objek Pemanggil” · buku §3.4</span>
+      </figcaption>
+      <pre><code class="language-js">// Fungsi biasa: this ditentukan saat fungsi dipanggil.
+const tombol = {
+  label: 'Simpan',
+  klik: function () {
+    console.log(this.label); // 'Simpan'
+  },
+};
+
+tombol.klik();</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">this-arrow.js</span>
+        <span class="kode-sumber">ilustrasi · buku §3.4</span>
+      </figcaption>
+      <pre><code class="language-js">// Arrow function: this mengikuti lingkup tempat ia ditulis.
+const tombol = {
+  label: 'Simpan',
+  klik: () =&gt; {
+    console.log(this.label); // undefined — this bukan milik tombol
+  },
+};
+
+tombol.klik();</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Arrow function bukan sekadar “fungsi yang lebih pendek”. Yang membedakan adalah
+      <code>this</code> yang menunjuk ke lingkup luar, dan itulah sebabnya React memakainya untuk
+      penangan peristiwa. Salah paham ini biasanya baru terasa di Bab 4, ketika penangan sentuhan
+      mengakses nilai yang tidak seharusnya.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Apa yang terjadi bila <code>tentukanPredikat()</code> dipanggil tanpa argumen? (Jawaban: parameter default <code>ipk = 0</code> dipakai, sehingga hasilnya <code>'Memuaskan'</code> dan bukan error.)</p>
+  </div>
+</section>

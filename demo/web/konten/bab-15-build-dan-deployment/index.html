@@ -1,0 +1,96 @@
+<h1>Bab 15 — Build dan Deployment</h1>
+
+<p class="ringkas">
+  Development build dan production build, EAS Build dengan tiga profilnya, APK dan AAB,
+  konfigurasi <code>app.json</code>, environment variable <code>EXPO_PUBLIC_</code>, signing,
+  serta distribusi ke Google Play dan App Store. Satu kalimat mengikat semuanya: kode yang
+  sama, konfigurasi berbeda · Pertemuan 15. Hari ini kita menghasilkan satu berkas yang bisa
+  dipasang siapa saja.
+</p>
+
+<div class="pengantar-pertanyaan">
+  <p><strong>Pertanyaan pembuka deck:</strong> “Apa yang kamu lakukan kalau temanmu minta mencoba aplikasimu?”</p>
+  <p>
+    Tampung dua sampai tiga jawaban tanpa dikoreksi dulu — jawaban itu akan dibandingkan
+    dengan jalur rilis resmi di bagian 3.
+  </p>
+  <p>
+    Kalimat pembuka deck yang menyiapkan seluruh pertemuan: “Sepanjang Bab 1 sampai 14 kita
+    hanya menjalankan aplikasi di emulator sendiri; hari ini kita menghasilkan satu berkas
+    yang bisa dipasang siapa saja.”
+  </p>
+</div>
+
+<h2>Tujuan pembelajaran</h2>
+
+<p>Setelah bab ini, kamu bisa:</p>
+
+<ul>
+  <li>Membedakan development build dan production build beserta pemakaiannya</li>
+  <li>Menjelaskan peran EAS Build dan tiga profil build beserta produknya (APK/AAB)</li>
+  <li>Mengonfigurasi <code>app.json</code>: name, slug, application ID, versi, ikon, dan splash screen</li>
+  <li>Menganalisis peran environment variable <code>EXPO_PUBLIC_</code> dan batasannya terhadap secret</li>
+  <li>Mengidentifikasi konsep signing dan risiko kehilangan kunci penandatanganan</li>
+  <li>Merancang strategi distribusi Google Play dan memahami alur App Store</li>
+</ul>
+
+<p>
+  Butir pertama dan ketiga paling mungkin muncul di ujian akhir, dan keduanya berbasis
+  perbandingan, bukan hafalan. Butir kelima dan keenam konseptual: praktikum pertemuan ini
+  hanya sampai build Android, jadi alur iOS cukup dipahami urutannya.
+</p>
+
+<h2>Peta halaman</h2>
+
+<ul>
+  <li><strong>Bagian 1 — Dari Kode ke Berkas yang Bisa Dipasang</strong> (subbab 15.1–15.4): dev dan production build, EAS Build dengan tiga profil, <code>eas.json</code>, urutan perintah build, APK dan AAB, serta build iOS yang konseptual.</li>
+  <li><strong>Bagian 2 — Identitas Aplikasi dan Keaslian Berkas</strong> (subbab 15.5–15.7): <code>app.json</code> dan dua pembaca versi, application ID yang permanen, ikon adaptif dan splash, environment variable, serta signing dan risiko keystore yang hilang.</li>
+  <li><strong>Bagian 3 — Distribusi dan Tiga Lingkungan</strong> (subbab 15.8–15.10): empat jalur rilis Google Play, alur unggah AAB, App Store, tiga lingkungan build, dan studi kasus insiden SIAKAD Mobile.</li>
+  <li><strong>Praktikum</strong>: melengkapi <code>app.json</code>, memeriksa dengan <code>npx expo config --type public</code>, membuat <code>eas.json</code> tiga profil, memisahkan alamat API ke <code>.env</code>, lalu menutup dengan <code>LAPORAN-BUILD.md</code>.</li>
+</ul>
+
+<p>
+  Deck aslinya hanya punya dua bagian. Bagian 1 halaman ini sama dengan “Bagian 1 — Dari Kode
+  ke Berkas yang Bisa Dipasang”; “Bagian 2 — Identitas, Keaslian &amp; Distribusi” milik deck
+  dipecah menjadi bagian 2 dan bagian 3 halaman ini agar tiap halaman tetap terbaca dalam satu
+  duduk.
+</p>
+
+<div class="kotak kotak-tiruan">
+  <p class="kotak-judul">Yang perlu diketahui sebelum membaca</p>
+  <p>
+    Bab ini tidak menambah fitur aplikasi satu pun. Yang dibahas adalah pengemasan dan
+    pendistribusian aplikasi yang sudah kita bangun di Bab 6–8 dengan backend Bab 10; bab ini
+    menuntaskan jaminan kualitas yang dimulai di Bab 14.
+  </p>
+  <p>
+    Beberapa keterangan ditandai <em>sensitif versi</em> (bahasa sumber: <em>version-sensitive</em>):
+    durasi dan antrean build EAS, kebijakan paket gratis atau berbayar, skema <code>eas.json</code>,
+    perilaku <code>autoIncrement</code>, spesifikasi area aman ikon adaptif, cara konfigurasi
+    splash antarsdk, kebijakan format unggahan Play Console, biaya dan kuota Apple, serta
+    perilaku berkas <code>.env</code>. Semuanya dapat berubah, sehingga harus dicocokkan dengan
+    docs.expo.dev dan situs resmi Play Console atau Apple Developer. Halaman ini tidak mengarang
+    detail teknis di luar sumbernya.
+  </p>
+  <p>
+    Pertemuan ini digabung dengan Bab 14 dan dinilai lewat Tugas 3: laporan QA Bab 14 bersama
+    laporan build bab ini.
+  </p>
+  <p class="kotak-jawab">
+    Setiap kode di halaman-halaman berikut disalin verbatim dari
+    <code>buku/bab-15-build-dan-deployment.md</code> atau deck
+    <code>slides/bab-15-build-dan-deployment.md</code>; label <code>kode-sumber</code> menyebut
+    asalnya, dan panel berlabel <em>ilustrasi</em> memang bukan salinan berkas. Perbandingan
+    <strong>sebelum/sesudah</strong> menampilkan pola yang salah di samping pola yang benar;
+    tombol di kepala panel untuk berpindah.
+  </p>
+</div>
+
+<div class="kotak kotak-tanya">
+  <p class="kotak-judul">Pertanyaan penuntun</p>
+  <p>
+    Konsep mana yang paling sering tertukar di bab ini? APK dan AAB — pembedanya sederhana:
+    APK adalah berkas yang dipasang, AAB adalah berkas yang diunggah. Sesudah itu versi manusia
+    dan versi mesin. Perhatikan subbab 15.1 di bagian 1, lalu subbab 15.5 di bagian 2.
+  </p>
+</div>

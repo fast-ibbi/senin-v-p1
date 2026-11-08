@@ -1,0 +1,493 @@
+<h1>Bagian 1 — Pola Pikir, Component &amp; Props</h1>
+
+<p class="ringkas">
+  Subbab 4.1 Konsep React · 4.2 Component dan JSX · 4.3 Props · 4.4 State. Bagian ini
+  konseptual dan paling menentukan: subbab 4.4 dan seterusnya mengandaikan kamu sudah
+  memegang <code>UI = f(state)</code>.
+</p>
+
+<section class="subbab" id="s1-1">
+  <p class="label-subbab">
+    Subbab 4.1 <span class="sumber-slide">· deck: “Kenapa React Perlu Ada?” · buku §4.1</span>
+  </p>
+  <h2>Kenapa React Perlu Ada?</h2>
+
+  <p>
+    Sebelum React, pengembang web menulis UI secara <strong>imperatif</strong>: serangkaian
+    perintah “ambil elemen ini, ubah teksnya, tambahkan baris itu” yang menebar di banyak
+    tempat. Makin besar aplikasi, makin sulit melacak kondisi layar: satu data berubah tetapi
+    lima bagian layar tidak ikut diperbarui karena perintahnya terlewat.
+  </p>
+
+  <p>
+    React lahir (2013, dikembangkan Meta) untuk menyelesaikan masalah ini dengan pendekatan
+    sebaliknya, yaitu <strong>deklaratif</strong>: kita cukup mendeskripsikan <em>apa yang
+    tampil</em> berdasarkan data, dan React yang memutuskan <em>bagaimana
+    memperbaruinya</em>. Analoginya: imperatif itu seperti memberi sopir daftar belokan satu
+    per satu; deklaratif itu seperti menulis alamat tujuan lalu membiarkan sopir memilih
+    jalannya.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Imperatif — perintah satu per satu"
+       data-label-benar="Deklaratif — tampilan mengikuti data"
+       data-petunjuk="Kode mengelola sendiri setiap bagian layar; satu perintah terlewat berarti tampilan tidak cocok dengan data.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">contoh-imperatif.js</span>
+        <span class="kode-sumber">ilustrasi pola imperatif · buku §4.1</span>
+      </figcaption>
+      <pre><code class="language-js">// Setiap perubahan data harus diikuti perintah pembaruan layar sendiri.
+el.textContent = nama;
+list.appendChild(kartu);
+cart.textContent = total;
+
+// Satu perintah terlewat → data dan tampilan tidak lagi cocok.
+// update the cart count   ← terlewat, ikon keranjang tetap "Cart (3)"</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">contoh-deklaratif.js</span>
+        <span class="kode-sumber">ilustrasi pola deklaratif · buku §4.1</span>
+      </figcaption>
+      <pre><code class="language-js">// Satu sumber data; React memperbarui setiap bagian yang bergantung padanya.
+const data = { keranjang: 3 };
+
+// Di dalam JSX, tampilan cukup menyebut data:
+//   <IkonKeranjang jumlah={data.keranjang} />
+//   <DaftarItem jumlah={data.keranjang} /></code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Deklaratif sering dianggap berarti “tidak menulis logika”. Yang berpindah hanya
+      <em>tempat</em> logikanya (dari perintah pembaruan layar menjadi deskripsi tampilan),
+      bukan jumlahnya.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Aplikasi apa yang pernah kamu pakai, di mana data berubah di satu tempat tetapi tidak berubah di tempat lain?</p>
+  </div>
+</section>
+
+<section class="subbab" id="s1-2">
+  <p class="label-subbab">
+    Subbab 4.1 <span class="sumber-slide">· deck: “UI = f(state)” · buku §4.1</span>
+  </p>
+  <h2>UI = f(state): Tampilan adalah Fungsi dari State</h2>
+
+  <p>
+    Prinsip inti React dirumuskan sebagai <code>UI = f(state)</code>: tampilan adalah fungsi
+    dari state (keadaan). Setiap kali state berubah, React menghitung tampilan baru secara
+    otomatis dan memperbarui bagian layar yang benar-benar berubah saja. Sambungkan dengan
+    istilah fungsi dari Bab 3: component menerima data lalu mengembalikan tampilan, persis
+    seperti fungsi yang menerima argumen lalu mengembalikan nilai.
+  </p>
+
+  <p>
+    Mekanisme pembandingannya disebut <strong>reconciliation</strong>
+    (rekonsiliasi/pencocokan) — cukup dipahami sebagai gagasan, tidak perlu dihafal
+    detailnya: React menyimpan gambaran tampilan (virtual), membandingkannya dengan gambaran
+    sebelumnya, lalu menerapkan perbedaan (diff) yang minimal ke layar.
+  </p>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Kalau state tidak berubah tetapi layarnya berubah juga, apa yang salah? (Jawaban: ada yang mengubah data di luar state, misalnya isi array diubah langsung.)</p>
+  </div>
+</section>
+
+<section class="subbab" id="s1-3">
+  <p class="label-subbab">
+    Subbab 4.2 <span class="sumber-slide">· deck: “Component: Satuan Terkecil Antarmuka” · buku §4.2</span>
+  </p>
+  <h2>Component: Satuan Terkecil Antarmuka</h2>
+
+  <p>
+    <strong>Component</strong> adalah fungsi JavaScript yang menerima data (props) dan
+    mengembalikan gambaran tampilan. Aplikasi besar disusun dari puluhan component kecil;
+    React modern hanya mengenal <strong>function component</strong>, bukan class component.
+    Kamu sudah menulis fungsi seperti ini di Bab 3, jadi hambatannya rendah.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">components/Sapaan.jsx</span>
+      <span class="kode-sumber">buku §4.2</span>
+    </figcaption>
+    <pre><code class="language-jsx">export default function Sapaan() {
+  return &lt;Text&gt;Halo, mahasiswa!&lt;/Text&gt;;
+}</code></pre>
+  </figure>
+
+  <p>
+    Perhatikan: component adalah <em>fungsinya</em>; elemen adalah <em>hasil
+    pemanggilannya</em>, yaitu gambaran tampilan. <code>&lt;Text&gt;</code> adalah component
+    bawaan React Native (dibahas di Bab 5); di web, <code>&lt;p&gt;</code> biasa boleh ditulis
+    langsung. Component di atas belum muncul di layar sampai diimpor dan dipakai oleh
+    component induk — <code>App.js</code> di akar project adalah <strong>root
+    component</strong>, pintu masuk seluruh tampilan.
+  </p>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Apa bedanya component dan elemen? (Jawaban: component adalah fungsinya, elemen adalah hasil pemanggilannya.)</p>
+  </div>
+</section>
+
+<section class="subbab" id="s1-4">
+  <p class="label-subbab">
+    Subbab 4.2 <span class="sumber-slide">· deck: “Enam Aturan Menulis JSX” · buku §4.2</span>
+  </p>
+  <h2>Enam Aturan Menulis JSX</h2>
+
+  <p>
+    <strong>JSX</strong> (JavaScript XML) adalah sintaks mirip markup yang dikompilasi menjadi
+    pemanggilan fungsi JavaScript. Karena itu ia punya aturan yang berbeda dari HTML biasa.
+    Mulailah dari dua aturan yang paling sering membuat error di praktikum: camelCase dan
+    satu elemen akar.
+  </p>
+
+  <ol>
+    <li><strong>Satu elemen akar.</strong> Component harus mengembalikan satu elemen pembungkus. Untuk beberapa elemen tanpa pembungkus visual, pakai <strong>fragment</strong> <code>&lt;&gt;…&lt;/&gt;</code>.</li>
+    <li><strong>Semua tag ditutup</strong>, termasuk tag yang “sendiri” seperti <code>&lt;Image /&gt;</code>.</li>
+    <li><strong>Atribut ditulis camelCase.</strong> Tidak ada <code>class</code> atau <code>for</code> — karena keduanya kata kunci JavaScript — padanannya <code>className</code> (di web) dan <code>style</code>/<code>onPress</code> (di React Native).</li>
+    <li><strong>Ekspresi JavaScript ditulis di dalam kurung kurawal</strong> <code>{'{}'}</code>: variabel, pemanggilan fungsi, operasi.</li>
+    <li><strong>Komentar ditulis <code>{'/* … */'}</code></strong> di dalam JSX.</li>
+    <li><strong>Teks harus berada di dalam komponen teks.</strong> Di React Native, string telanjang di luar <code>&lt;Text&gt;</code> memicu error “Text strings must be rendered within a &lt;Text&gt; component”.</li>
+  </ol>
+
+  <div class="banding"
+       data-label-lama="Ditulis seperti HTML — error"
+       data-label-benar="Aturan JSX — valid"
+       data-petunjuk="Dua elemen bersaudara tanpa pembungkus menghasilkan error; fragment adalah solusinya.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">contoh-salah.jsx</span>
+        <span class="kode-sumber">aturan 1 &amp; 3 · buku §4.2</span>
+      </figcaption>
+      <pre><code class="language-jsx">// Error: dua elemen akar, dan atribut class tidak dikenali.
+return (
+  &lt;p&gt;Nama: {nama}&lt;/p&gt;
+  &lt;p class="kartu"&gt;NIM: {nim}&lt;/p&gt;
+);</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">contoh-benar.jsx</span>
+        <span class="kode-sumber">aturan 1 &amp; 3 · buku §4.2</span>
+      </figcaption>
+      <pre><code class="language-jsx">// Fragment membungkus dua elemen; className memakai camelCase.
+return (
+  &lt;&gt;
+    &lt;p&gt;Nama: {nama}&lt;/p&gt;
+    &lt;p className="kartu"&gt;NIM: {nim}&lt;/p&gt;
+  &lt;/&gt;
+);</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Kondisi yang membutuhkan <code>if</code> sering membuat mahasiswa menulis <code>if</code>
+      di dalam JSX. Yang dibutuhkan hanya <em>ekspresi</em> (ternary, <code>&amp;&amp;</code>,
+      atau <code>null</code>) — dibahas di bagian 2.
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s1-5">
+  <p class="label-subbab">
+    Subbab 4.3 <span class="sumber-slide">· deck: “Props: Data Turun dari Induk ke Anak” · buku §4.3</span>
+  </p>
+  <h2>Props: Data Turun dari Induk ke Anak</h2>
+
+  <p>
+    <strong>Props</strong> (properties) adalah cara data mengalir dari component induk ke
+    component anak — ibarat parameter fungsi untuk sebuah component. Component anak tidak
+    perlu tahu dari mana datanya datang; ia cukup menerima satu objek <code>mahasiswa</code>
+    lewat props dan menampilkannya. Kurung kurawal di parameter adalah destructuring (Bab 3
+    subbab 3.6): cara singkat membuka objek props.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">components/KartuMahasiswa.jsx</span>
+      <span class="kode-sumber">buku §4.3</span>
+    </figcaption>
+    <pre><code class="language-jsx">export default function KartuMahasiswa({ mahasiswa }) {
+  return (
+    &lt;View&gt;
+      &lt;Text&gt;{mahasiswa.nama}&lt;/Text&gt;
+      &lt;Text&gt;NIM {mahasiswa.nim}&lt;/Text&gt;
+    &lt;/View&gt;
+  );
+}</code></pre>
+  </figure>
+
+  <p>Pemakaiannya di component induk terlihat seperti memakai elemen HTML biasa:</p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">App.jsx</span>
+      <span class="kode-sumber">buku §4.3</span>
+    </figcaption>
+    <pre><code class="language-jsx">&lt;KartuMahasiswa
+  mahasiswa={mahasiswaBudi}
+/&gt;</code></pre>
+  </figure>
+
+  <div class="banding"
+       data-label-lama="Tanpa component — data ditulis ulang"
+       data-label-benar="Dengan component — satu kali, dipakai sepuluh kali"
+       data-petunjuk="Kalau data yang sama ditampilkan sepuluh kali, berapa component yang harus ditulis? Satu — dipakai sepuluh kali dengan props berbeda.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">tanpa-component.jsx</span>
+        <span class="kode-sumber">ilustrasi · buku §4.3</span>
+      </figcaption>
+      <pre><code class="language-jsx">// Setiap mahasiswa butuh salinan markup yang sama.
+&lt;View&gt;
+  &lt;Text&gt;Budi Santoso&lt;/Text&gt;
+  &lt;Text&gt;NIM 2201001&lt;/Text&gt;
+&lt;/View&gt;
+&lt;View&gt;
+  &lt;Text&gt;Siti Aminah&lt;/Text&gt;
+  &lt;Text&gt;NIM 2201002&lt;/Text&gt;
+&lt;/View&gt;
+{/* … dan seterusnya untuk setiap mahasiswa */}</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">dengan-component.jsx</span>
+        <span class="kode-sumber">ilustrasi · buku §4.3</span>
+      </figcaption>
+      <pre><code class="language-jsx">&lt;KartuMahasiswa mahasiswa={mahasiswaBudi} /&gt;
+&lt;KartuMahasiswa mahasiswa={mahasiswaSiti} /&gt;
+&lt;KartuMahasiswa mahasiswa={mahasiswaAgus} /&gt;
+{/* Satu component, data berbeda — tampilan sama. */}</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Props bukan “variabel global”. Props selalu mengalir <em>satu arah</em>: dari induk ke
+      anak, tidak pernah sebaliknya.
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s1-6">
+  <p class="label-subbab">
+    Subbab 4.3 <span class="sumber-slide">· deck: “Props: Hanya Baca, Nilai Default, dan children” · buku §4.3</span>
+  </p>
+  <h2>Props: Hanya Baca, Nilai Default, dan children</h2>
+
+  <p>
+    <strong>Pertama, props bersifat read-only (hanya baca):</strong> component anak dilarang
+    mengubah nilai props yang diterimanya. Kalau anak boleh mengubah data milik induk, sumber
+    kebenaran datanya menjadi kabur; perubahan data harus diminta kepada pemiliknya.
+  </p>
+
+  <p>
+    <strong>Kedua, props boleh memiliki nilai default.</strong> Di React 19.2, nilai default
+    cukup ditulis di parameter fungsi — <code>defaultProps</code> adalah cara lama. Kalau
+    induk lupa mengirim props, component tetap jalan dengan nilai default, tanpa error.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">components/KartuMahasiswa.jsx</span>
+      <span class="kode-sumber">buku §4.3</span>
+    </figcaption>
+    <pre><code class="language-jsx">export default function KartuMahasiswa({ mahasiswa = {} }) {
+  return (
+    &lt;View&gt;
+      &lt;Text&gt;{mahasiswa.nama ?? 'Tanpa nama'}&lt;/Text&gt;
+      &lt;Text&gt;NIM {mahasiswa.nim}&lt;/Text&gt;
+    &lt;/View&gt;
+  );
+}</code></pre>
+  </figure>
+
+  <p>
+    <strong>Ketiga, props punya bentuk khusus bernama <code>children</code>:</strong> isi yang
+    ditulis di antara tag pembuka dan penutup component otomatis menjadi prop
+    <code>children</code>. Bentuk ini menjadi dasar komposisi component (dibahas di bagian 2)
+    dan dipakai untuk membangun component wadah seperti kartu atau panel.
+  </p>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Kalau induk lupa mengirim props mahasiswa, apa yang terjadi? (Jawaban: component tetap jalan dengan nilai default, tidak ada error.)</p>
+  </div>
+</section>
+
+<section class="subbab" id="s1-7">
+  <p class="label-subbab">
+    Subbab 4.4 <span class="sumber-slide">· deck: “State dan useState” · buku §4.4</span>
+  </p>
+  <h2>State dan useState</h2>
+
+  <p>
+    Jika props adalah data yang <em>masuk</em> dari luar dan tidak boleh diubah,
+    <strong>state</strong> adalah data <em>internal</em> yang dimiliki component dan boleh
+    berubah seiring waktu. Perubahan state inilah yang memicu re-render. Analoginya: props
+    itu seperti paket dari luar yang isinya tidak boleh dibuka sendiri; state itu seperti
+    buku catatan pribadi yang pemiliknya boleh menulis ulang.
+  </p>
+
+  <p>
+    State dideklarasikan dengan hook <strong><code>useState</code></strong> — fungsi bawaan
+    React berawalan <code>use</code> yang “mengaitkan” fitur React ke component fungsi.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">App.jsx</span>
+      <span class="kode-sumber">buku §4.4</span>
+    </figcaption>
+    <pre><code class="language-jsx">const [kategoriProdi, setKategoriProdi] = useState('Semua');</code></pre>
+  </figure>
+
+  <p>
+    <code>useState('Semua')</code> menerima nilai awal dan mengembalikan sepasang nilai:
+    state itu sendiri (<code>kategoriProdi</code>) dan setter-nya
+    (<code>setKategoriProdi</code>). Ketika <code>setKategoriProdi('Informatika')</code>
+    dipanggil, React menyimpan nilai baru, menjalankan ulang component, dan seluruh JSX yang
+    bergantung pada <code>kategoriProdi</code> otomatis menyesuaikan — tanpa satu pun
+    perintah manipulasi tampilan ditulis.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Mengubah state langsung — layar diam"
+       data-label-benar="Lewat setter — React melihat perubahan"
+       data-petunjuk="React hanya tahu state berubah kalau setter dipanggil; perubahan langsung tidak terdeteksi.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">cara-lama.jsx</span>
+        <span class="kode-sumber">ilustrasi · buku §4.4</span>
+      </figcaption>
+      <pre><code class="language-jsx">// Menetapkan variabel biasa tidak memicu re-render.
+const [kategoriProdi, setKategoriProdi] = useState('Semua');
+
+function pilihKategori(prodi) {
+  kategoriProdi = prodi;      // ✗ layar tidak berubah
+}</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">cara-benar.jsx</span>
+        <span class="kode-sumber">buku §4.4</span>
+      </figcaption>
+      <pre><code class="language-jsx">const [kategoriProdi, setKategoriProdi] = useState('Semua');
+
+function pilihKategori(prodi) {
+  setKategoriProdi(prodi);    // ✓ re-render, layar mengikuti
+}</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Mana yang boleh diubah component: props atau state? (Jawaban: hanya state miliknya sendiri, dan hanya lewat setter.)</p>
+  </div>
+</section>
+
+<section class="subbab" id="s1-8">
+  <p class="label-subbab">
+    Subbab 4.4 <span class="sumber-slide">· deck: “Aturan Emas: State Tidak Diubah, tetapi Diganti” · buku §4.4</span>
+  </p>
+  <h2>Aturan Emas: State Tidak Diubah, tetapi Diganti</h2>
+
+  <p>
+    Aturan emas state adalah <strong>immutability</strong> (ketidakberubahan): jangan pernah
+    mengubah state secara langsung, karena React tidak melihat state sebagai “berubah”.
+    <code>push</code> mengubah isi array yang sama sehingga referensinya tetap; operator
+    spread membuat array baru sehingga React mendeteksi perubahannya. Operator spread sudah
+    kamu kuasai dari Bab 3 — yang baru hanyalah kebiasaan <em>menyalin dulu sebelum
+    diubah</em>.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Mutasi — referensi sama, layar tidak diperbarui"
+       data-label-benar="Nilai baru — referensi baru, layar mengikuti"
+       data-petunjuk="Yang dilarang adalah mengubah state — bukan memakai operasi yang mengembalikan nilai baru.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">mutasi.jsx</span>
+        <span class="kode-sumber">buku §4.4</span>
+      </figcaption>
+      <pre><code class="language-jsx">// push mengubah array yang sama → referensi tidak berubah.
+data.push(mahasiswaBaru);      // ✗ React tidak melihat perubahan
+
+// Layar tidak diperbarui, padahal isi array sudah bertambah.</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">nilai-baru.jsx</span>
+        <span class="kode-sumber">buku §4.4</span>
+      </figcaption>
+      <pre><code class="language-jsx">// spread membuat array baru → referensi baru → React mendeteksi.
+setData([...data, mahasiswaBaru]);   // ✓ re-render
+
+// Array lama tetap utuh; state diganti dengan salinan plus data baru.</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Banyak mahasiswa menyimpulkan array tidak boleh diubah sama sekali. Yang dilarang adalah
+      mengubah <em>state</em>, bukan memakai operasi yang mengembalikan nilai baru —
+      <code>map</code>, <code>filter</code>, dan spread justru dianjurkan.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Kalau datanya sudah benar tetapi layarnya tidak berubah, apa tersangka pertamamu? (Jawaban: state diubah langsung, bukan lewat setter.)</p>
+  </div>
+</section>
+
+<section class="subbab" id="s1-9">
+  <p class="label-subbab">
+    Subbab 4.4 <span class="sumber-slide">· deck: “Props dan State: Dua Sumber Data” · buku §4.4</span>
+  </p>
+  <h2>Props dan State: Dua Sumber Data</h2>
+
+  <p>
+    Baik props maupun state berujung pada hal yang sama: keduanya adalah data yang menentukan
+    tampilan. Perbedaannya hanya <em>siapa yang memiliki</em> dan <em>siapa yang boleh
+    mengubah</em>.
+  </p>
+
+  <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Perbedaan props dan state · sumber: buku §4.4</caption>
+      <thead>
+        <tr><th scope="col">Aspek</th><th scope="col">Props</th><th scope="col">State</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Asal data</td><td>dari component induk</td><td>internal component itu sendiri</td></tr>
+        <tr><td>Boleh berubah?</td><td>tidak (read-only)</td><td>ya, lewat setter</td></tr>
+        <tr><td>Memicu re-render?</td><td>ya, jika induk mengirim nilai baru</td><td>ya, jika setter dipanggil</td></tr>
+        <tr><td>Pemilik</td><td>component induk</td><td>component yang mendeklarasikannya</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Props tetap bisa memicu re-render — tetapi bukan anak yang mengubahnya, melainkan induk
+      yang mengirim nilai baru. Beda tipis ini sering tertukar di ujian.
+    </p>
+  </div>
+</section>

@@ -1,0 +1,567 @@
+<h1>Bagian 2 — JSON, Cache &amp; Token</h1>
+
+<p class="ringkas">
+  Subbab 11.3–11.5. Bagian ini adalah bagian yang paling sering keluar di ujian: serialisasi
+  JSON, tiga lapis pengaman saat membaca, tiga komponen cache, dan larangan menyimpan token
+  di penyimpanan biasa.
+</p>
+
+<section class="subbab" id="s2-1">
+  <p class="label-subbab">
+    Subbab 11.3 <span class="sumber-slide">· deck: “JSON: Jembatan dari Objek ke String” · buku §11.3</span>
+  </p>
+  <h2>JSON: Jembatan dari Objek ke String</h2>
+
+  <p>
+    Konsekuensi langsung dari aturan “nilai harus string” adalah: setiap data yang bukan
+    string — angka, boolean, objek, array — harus dikonversi secara eksplisit. Jembatannya
+    adalah <strong>JSON</strong>, format pertukaran data yang sudah dikenal sejak Bab 3. Dua
+    fungsinya bekerja berpasangan: <code>JSON.stringify(data)</code> mengubah objek atau array
+    menjadi string JSON, dan <code>JSON.parse(teks)</code> mengembalikannya menjadi objek atau
+    array.
+  </p>
+
+  <p>
+    Mengubah bentuk data menjadi string agar bisa disimpan disebut <strong>serialisasi</strong>;
+    proses kebalikannya disebut <strong>deserialisasi</strong>. Keduanya adalah keterampilan
+    inti penyimpanan lokal, karena hampir semua data yang disimpan di AsyncStorage melewati
+    proses ini. Objek yang dikirim langsung ke <code>setItem</code> tidak menjadi objek di
+    penyimpanan, melainkan teks <code>[object Object]</code> — dan teks itu tidak bisa
+    dikembalikan menjadi objek lagi.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Satu kunci untuk seluruh daftar"
+       data-label-benar="Satu kunci per catatan"
+       data-petunjuk="Bab ini memilih cara kiri karena daftarnya pendek; cara kanan baru masuk akal ketika daftar tumbuh menjadi ribuan baris atau perlu ditulis sebagian-sebagian.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">satu-kunci.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §11.3</span>
+      </figcaption>
+      <pre><code class="language-text">catatan:v1  →  "[{...},{...},{...}]"
+✓ satu kali baca untuk seluruh daftar
+✓ mudah dicadangkan dan dipindahkan
+✗ setiap perubahan menulis ulang semuanya
+✗ daftar sangat panjang = operasi berat</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">kunci-per-catatan.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §11.3</span>
+      </figcaption>
+      <pre><code class="language-text">catatan:1  →  "{...}"
+catatan:2  →  "{...}"
+✓ satu perubahan hanya menulis satu kunci
+✓ cocok untuk data besar atau per-baris
+✗ daftar kunci harus dicari lewat getAllKeys
+✗ tidak ada kueri, tidak ada relasi</code></pre>
+    </figure>
+  </div>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">storage/notesStorage.js</span>
+      <span class="kode-sumber">buku §11.3 · pola serialisasi</span>
+    </figcaption>
+    <pre><code class="language-js">const daftarCatatan = [
+  { id: '1', judul: 'Belanja mingguan', isi: 'Beras 5 kg, minyak 2 botol', createdAt: '2026-09-02T08:30:00.000Z' },
+  { id: '2', judul: 'Ide tugas akhir', isi: 'Aplikasi presensi berbasis lokasi', createdAt: '2026-09-02T09:00:00.000Z' },
+];
+
+// Menyimpan: ubah array menjadi string JSON
+const teks = JSON.stringify(daftarCatatan);
+await AsyncStorage.setItem('catatan:v1', teks);
+
+// Membaca: ubah string JSON kembali menjadi array
+const tersimpan = await AsyncStorage.getItem('catatan:v1');
+const daftarLagi = tersimpan === null ? [] : JSON.parse(tersimpan);</code></pre>
+  </figure>
+
+  <div class="kotak kotak-tiruan">
+    <p class="kotak-judul">Catatan tentang tanggal</p>
+    <p>
+      Pada entitas catatan, <code>createdAt</code> disimpan sebagai string ISO 8601 hasil
+      <code>new Date().toISOString()</code>. Menyimpannya sebagai string aman untuk JSON dan
+      urutannya kronologis, sehingga mudah diurutkan. Pemformatan untuk tampilan — misalnya
+      menjadi “02/09/2026 08:30” — dilakukan saat render, bukan saat penyimpanan.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Apa yang tersimpan bila objek dikirim langsung ke <code>setItem</code> tanpa
+      serialisasi, dan mengapa nilainya tidak bisa dipulihkan? (Jawaban:
+      <code>[object Object]</code> — pemanggilan <code>toString()</code> bawaan JavaScript
+      menghapus seluruh isi objek, sehingga tidak ada yang bisa di-parse kembali.)
+    </p>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      JSON dan AsyncStorage hanya tepat untuk data berbentuk teks dan berukuran kecil.
+      Menyimpan foto sebagai string base64 menggelembungkan ukuran data sekitar 33 persen dan
+      cepat menghabiskan kapasitas. Pahami AsyncStorage sebagai lemari kecil, bukan gudang.
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s2-2">
+  <p class="label-subbab">
+    Subbab 11.3 <span class="sumber-slide">· deck: “Membaca Data Lokal dengan Tiga Lapis Pengaman” · buku §11.3</span>
+  </p>
+  <h2>Membaca Data Lokal dengan Tiga Lapis Pengaman</h2>
+
+  <p>
+    <strong>Kegagalan parsing</strong> adalah musuh utama pola serialisasi.
+    <code>JSON.parse</code> melempar <code>SyntaxError</code> bila teks yang diberikan bukan
+    JSON yang sah — misalnya data yang tersimpan rusak, terpotong karena proses penyimpanan
+    terhenti, atau berasal dari versi aplikasi lama dengan struktur berbeda. Tanpa penanganan,
+    aplikasi crash saat dibuka dan pengguna tidak punya jalan masuk sama sekali.
+  </p>
+
+  <p>
+    Pola aman yang selalu dipakai adalah membungkus parsing dengan <code>try/catch</code> dan
+    memvalidasi bentuk hasilnya. Bacalah sebagai urutan pemeriksaan, bukan sebagai blok yang
+    dihafal: (1) ada isinya? (2) bisa dibaca? (3) bentuknya benar?
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">storage/notesStorage.js</span>
+      <span class="kode-sumber">buku §11.3 · pola aman membaca</span>
+    </figcaption>
+    <pre><code class="language-js">export async function muatCatatan() {
+  try {
+    const teks = await AsyncStorage.getItem('catatan:v1');
+    if (teks === null) return [];
+    const data = JSON.parse(teks);
+    return Array.isArray(data) ? data : [];
+  } catch (error) {
+    console.warn('Gagal membaca catatan:', error);
+    return [];
+  }
+}</code></pre>
+  </figure>
+
+  <ol>
+    <li><strong>Lapis 1:</strong> <code>null</code> dikembalikan sebagai array kosong <code>[]</code>.</li>
+    <li><strong>Lapis 2:</strong> error parsing ditangkap blok <code>catch</code>, dicatat lewat <code>console.warn</code>, lalu fungsi tetap mengembalikan <code>[]</code>.</li>
+    <li><strong>Lapis 3:</strong> hasil parsing diperiksa dengan <code>Array.isArray</code> supaya bentuk tak terduga — misalnya objek tunggal, bukan array — ikut ditolak.</li>
+  </ol>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      <code>catch</code> yang menelan error tanpa jejak sama buruknya dengan tidak menangani
+      error sama sekali. Selalu catat lewat <code>console.warn</code> — jejak itulah yang
+      dipakai Bab 14 saat menelusuri kegagalan aplikasi — lalu kembalikan nilai bawaan yang
+      aman.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Mengapa perlu tiga lapis, bukan satu pemeriksaan saja? (Jawaban: ketiganya menangani
+      kegagalan yang berbeda — kunci belum ada, teks tidak bisa di-parse, dan bentuk data yang
+      tidak sesuai. Satu lapis hanya menutup satu kemungkinan.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s2-3">
+  <p class="label-subbab">
+    Subbab 11.3 <span class="sumber-slide">· deck: “Data Rusak Tidak Boleh Membuat Aplikasi Crash” · buku §11.3</span>
+  </p>
+  <h2>Data Rusak Tidak Boleh Membuat Aplikasi Crash</h2>
+
+  <p>
+    Sumber kerusakan data lokal ada beberapa: penyimpanan terputus di tengah penulisan, data
+    terpotong, atau struktur dari versi aplikasi lama yang tidak lagi cocok. Semuanya berujung
+    pada satu gejala: <code>JSON.parse</code> melempar <code>SyntaxError</code>, dan bila tidak
+    ditangani aplikasi berhenti bekerja. Prinsipnya, <strong>membaca data lokal tidak boleh
+    pernah membuat aplikasi crash</strong> — penyimpanan lokal adalah sumber yang tidak selalu
+    bisa dipercaya, dan aplikasi harus menghadapinya dengan tenang.
+  </p>
+
+  <div class="banding"
+       data-label-lama="JSON.parse tanpa penjagaan"
+       data-label-benar="Tiga lapis pengaman saat membaca"
+       data-petunjuk="Selisih keduanya hanya beberapa baris, tetapi akibatnya berbeda jauh: satu baris yang gagal dibaca bisa menutup seluruh aplikasi bagi pengguna.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">parse-tanpa-penjagaan.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §11.3</span>
+      </figcaption>
+      <pre><code class="language-text">const teks = await AsyncStorage.getItem('catatan:v1');
+const daftar = JSON.parse(teks);
+→ teks null: JSON.parse(null) → null, lalu .map() melempar
+→ teks terpotong: SyntaxError
+→ layar error, pengguna tidak bisa masuk sama sekali</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">muatCatatan — tiga lapis</span>
+        <span class="kode-sumber">ilustrasi · buku §11.3</span>
+      </figcaption>
+      <pre><code class="language-text">const teks = await AsyncStorage.getItem('catatan:v1');
+if (teks === null) return [];              // lapis 1
+const data = JSON.parse(teks);             // lapis 2: try/catch
+return Array.isArray(data) ? data : [];    // lapis 3
+→ selalu mengembalikan array yang bisa dipakai</code></pre>
+    </figure>
+  </div>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">versi-kunci.txt</span>
+      <span class="kode-sumber">buku §11.3 · versi kunci (key versioning)</span>
+    </figcaption>
+    <pre><code class="language-text">struktur lama            struktur baru (menambah kolom penting)
+catatan:v1  →  [...]     catatan:v2  →  [...]
+
+bila struktur berubah:
+1. baca catatan:v1 dengan tiga lapis pengaman
+2. tambahkan nilai bawaan pada tiap catatan lama
+3. tulis hasilnya ke catatan:v2
+4. kunci lama dibiarkan, tidak dihapus sebelum migrasi terbukti
+
+tanpa versi kunci: data lama dibaca sebagai data baru
+→ bentuk tak terduga ditolak Array.isArray
+→ daftar terlihat kosong padahal datanya masih ada</code></pre>
+  </figure>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Apa yang dialami pengguna bila aplikasi dibuka dan langsung memanggil
+      <code>JSON.parse</code> tanpa <code>try/catch</code>, dan apa yang seharusnya dilakukan
+      pengembangnya? (Jawaban: aplikasi crash begitu dibuka. Perbaikannya bukan menghapus data,
+      melainkan menangkap error, mencatatnya, dan memakai nilai bawaan.)
+    </p>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Menghapus seluruh data pengguna ketika datanya rusak memang bisa dibenarkan, tetapi itu
+      jalan terakhir — dan pengguna harus diberi tahu. Untuk data bernilai tinggi, kehilangan
+      data lokal seharusnya dijawab dengan cadangan atau sinkronisasi ke server.
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s2-4">
+  <p class="label-subbab">
+    Subbab 11.4 <span class="sumber-slide">· deck: “Cache: Salinan agar Aplikasi Tetap Berguna” · buku §11.4</span>
+  </p>
+  <h2>Cache: Salinan agar Aplikasi Tetap Berguna</h2>
+
+  <p>
+    <strong>Cache</strong> adalah salinan data yang disimpan di tempat yang lebih dekat dengan
+    pemakainya agar bisa diakses lebih cepat atau tanpa sumber aslinya. Di aplikasi mobile,
+    pola yang paling umum adalah menyimpan salinan jawaban API ke penyimpanan lokal: saat
+    aplikasi berhasil mengambil data dari server, salinannya disimpan; saat jaringan bermasalah,
+    salinan itu yang ditampilkan alih-alih layar kosong.
+  </p>
+
+  <p>
+    Cache memberi tiga keuntungan sekaligus: <strong>ketersediaan</strong> (aplikasi tetap
+    berfungsi offline), <strong>kecepatan</strong> (data lokal langsung tampil), dan
+    <strong>penghematan kuota</strong>. Yang dikorbankan adalah <strong>kesegaran</strong>:
+    data yang tampil belum tentu yang terbaru. Inilah lanjutan langsung dari <code>fetch</code>
+    dan penanganan error Bab 10.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">utils/apiMahasiswa.js</span>
+      <span class="kode-sumber">buku §Contoh 3 · alur cache saat jaringan gagal</span>
+    </figcaption>
+    <pre><code class="language-js">import { simpanCache, ambilCache, cacheKadaluarsa } from '../storage/apiCache';
+
+// Alamat backend buku (lihat Bab 10; ganti sesuai lingkungan, mis.
+// alamat IP komputer bila memakai perangkat fisik) *⚠ version-sensitive*
+const BASE_URL = 'http://10.0.2.2:3000/api';
+const BATAS_CACHE_MS = 5 * 60 * 1000; // cache dianggap basi setelah 5 menit
+
+export async function ambilDataMahasiswa() {
+  try {
+    const respons = await fetch(`${BASE_URL}/mahasiswa`);
+    if (!respons.ok) throw new Error('Respons server tidak normal');
+    const data = await respons.json();
+    await simpanCache('mahasiswa', data); // simpan snapshot terbaru
+    return { data, dariCache: false };
+  } catch (error) {
+    const paket = await ambilCache('mahasiswa');
+    if (paket && !cacheKadaluarsa(paket, BATAS_CACHE_MS)) {
+      return { data: paket.data, dariCache: true }; // fallback offline
+    }
+    throw error; // tidak ada koneksi dan tidak ada cache yang layak
+  }
+}</code></pre>
+  </figure>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Aplikasi profesional tidak diam-diam menampilkan data basi. Cabang cache wajib membawa
+      penanda, misalnya spanduk kecil “Menampilkan data tersimpan (mode offline)”, plus tombol
+      untuk mencoba memuat ulang saat koneksi pulih. Tanpa penanda, pengguna mengira datanya
+      terbaru padahal tidak.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Aplikasi apa di HP-mu yang masih bisa dibuka dalam mode pesawat? (Jawaban: aplikasi yang
+      menyimpan salinan datanya — bukan yang selalu menunggu jawaban server. Itulah bukti
+      cache bekerja.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s2-5">
+  <p class="label-subbab">
+    Subbab 11.4 <span class="sumber-slide">· deck: “Tiga Komponen Cache: Snapshot, Timestamp, TTL” · buku §11.4</span>
+  </p>
+  <h2>Tiga Komponen Cache: Snapshot, Timestamp, TTL</h2>
+
+  <p>
+    Cache paling sederhana terdiri dari tiga bagian: <strong>snapshot</strong> (salinan data),
+    <strong>timestamp</strong> (waktu penyimpanan), dan <strong>kebijakan kedaluwarsa</strong>
+    yang sering disebut <strong>TTL</strong> (<em>time to live</em>), yaitu batas umur cache
+    sebelum dianggap basi. Gambaran satu paketnya hanya berisi dua informasi, karena TTL
+    disimpan sebagai aturan, bukan sebagai isi paket.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">storage/apiCache.js</span>
+      <span class="kode-sumber">buku §11.4 · bentuk paket cache</span>
+    </figcaption>
+    <pre><code class="language-js">const paket = {
+  data: [...] ,             // snapshot jawaban API
+  timestamp: '2026-09-02T08:30:00.000Z', // kapan disimpan
+};</code></pre>
+  </figure>
+
+  <p>
+    Dua keputusan desain menyertainya. Pertama, <strong>berapa TTL yang tepat</strong>: data
+    yang berubah cepat seperti harga pasar butuh TTL pendek atau tanpa cache, sedangkan data
+    yang stabil seperti daftar mata kuliah per semester boleh bercache berjam-jam. Kedua,
+    <strong>apa yang tampil ke pengguna</strong>: selalu beri penanda saat data berasal dari
+    cache, dan sediakan jalan untuk memperbaruinya.
+  </p>
+
+  <div class="banding"
+       data-label-lama="TTL pendek"
+       data-label-benar="TTL panjang"
+       data-petunjuk="TTL bukan perlindungan keamanan, melainkan pengatur umur. Larangan meng-cache data sensitif tetap berlaku berapa pun TTL yang dipilih.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">ttl-pendek.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §11.4</span>
+      </figcaption>
+      <pre><code class="language-text">harga pasar, stok, ketersediaan kamar
+✓ data hampir selalu segar
+✗ sering gagal saat offline
+✗ kuota lebih cepat terpakai</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">ttl-panjang.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §11.4</span>
+      </figcaption>
+      <pre><code class="language-text">kalender akademik, daftar mata kuliah, katalog
+✓ andal saat offline
+✓ hemat kuota dan baterai
+✗ berisiko menampilkan data usang
+→ wajib penanda "data tersimpan"</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Larangan meng-cache data sensitif tetap berlaku berapa pun TTL yang dipilih. TTL
+      mengatur umur data, bukan melindunginya — kalimat “asal ada TTL berarti aman” adalah
+      kesimpulan yang keliru.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Mengapa paket cache hanya berisi data dan timestamp, tanpa TTL? (Jawaban: TTL adalah
+      kebijakan yang diputuskan modul pemakai saat membaca — nilai <code>batasMs</code> —
+      sehingga satu paket yang sama bisa dipakai dengan batas umur berbeda tanpa menulis ulang
+      penyimpanan.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s2-6">
+  <p class="label-subbab">
+    Subbab 11.4 <span class="sumber-slide">· deck: “Modul Cache: Menyimpan dan Memeriksa Umur” · buku §11.4</span>
+  </p>
+  <h2>Modul Cache: Menyimpan dan Memeriksa Umur</h2>
+
+  <p>
+    Seperti penyimpanan catatan, cache juga dipisahkan ke modul sendiri. Bedanya, modul ini
+    generik: nama cache menjadi bagian dari kunci, sehingga satu modul melayani katalog,
+    jadwal, dan daftar mahasiswa sekaligus tanpa saling menimpa.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">storage/apiCache.js</span>
+      <span class="kode-sumber">buku §Contoh 3 · modul cache lengkap</span>
+    </figcaption>
+    <pre><code class="language-js">import AsyncStorage from '@react-native-async-storage/async-storage';
+
+// Menyimpan snapshot data di bawah kunci "cache:&lt;nama&gt;"
+export async function simpanCache(nama, data) {
+  const paket = {
+    data,
+    timestamp: new Date().toISOString(),
+  };
+  try {
+    await AsyncStorage.setItem(`cache:${nama}`, JSON.stringify(paket));
+  } catch (error) {
+    console.warn('Gagal menyimpan cache:', error);
+  }
+}
+
+// Membaca paket cache; null bila belum pernah disimpan
+export async function ambilCache(nama) {
+  try {
+    const teks = await AsyncStorage.getItem(`cache:${nama}`);
+    if (teks === null) return null;
+    return JSON.parse(teks);
+  } catch (error) {
+    console.warn('Gagal membaca cache:', error);
+    return null;
+  }
+}
+
+// Memeriksa apakah cache melewati batas umur (TTL)
+export function cacheKadaluarsa(paket, batasMs) {
+  if (!paket) return true;
+  const umur = Date.now() - new Date(paket.timestamp).getTime();
+  return umur > batasMs;
+}</code></pre>
+  </figure>
+
+  <p>
+    <code>cacheKadaluarsa</code> membandingkan umur paket dengan batas TTL: paket tanpa
+    timestamp atau dengan umur melebihi batas dianggap basi. Perhatikan bahwa
+    <code>ambilCache</code> mengikuti pola pembacaan catatan — <code>getItem</code> dan
+    <code>JSON.parse</code> di dalam <code>try/catch</code>, mengembalikan <code>null</code>
+    bila gagal.
+  </p>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      TTL dan <em>timeout</em> dua hal berbeda. TTL adalah batas umur <em>data</em> sebelum
+      dianggap basi; timeout adalah batas waktu menunggu <em>jawaban server</em>. Menambah TTL
+      tidak membuat permintaan jaringan lebih sabar, dan memperbesar timeout tidak membuat data
+      tersimpan lebih segar.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      TTL pendek atau panjang untuk daftar mata kuliah per semester? Dan untuk harga pasar?
+      (Jawaban berturut-turut: panjang, karena datanya stabil dan diubah hanya tiap semester;
+      pendek atau tanpa cache, karena harga berubah dalam hitungan menit.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s2-7">
+  <p class="label-subbab">
+    Subbab 11.5 <span class="sumber-slide">· deck: “Token Tidak Boleh Tinggal di AsyncStorage” · buku §11.5</span>
+  </p>
+  <h2>Token Tidak Boleh Tinggal di AsyncStorage</h2>
+
+  <p>
+    <strong>Token</strong> adalah data yang diberikan server setelah login: semacam kartu
+    identitas yang dikirim pada setiap permintaan API berikutnya (subbab 10.8). Karena harus
+    dikirim ulang terus-menerus, wajar jika terpikir untuk menyimpannya di AsyncStorage agar
+    pengguna tidak perlu login berulang kali. Jangan lakukan itu — masalahnya bukan pada
+    mekanismenya, melainkan pada tingkat perlindungan datanya.
+  </p>
+
+  <p>
+    Data di AsyncStorage <strong>tidak dienkripsi</strong>: nilainya tersimpan sebagai teks
+    polos di dalam sandbox aplikasi. Kode apa pun yang berhasil berjalan di dalam aplikasi —
+    modul pihak ketiga, kode yang disisipkan lewat celah, atau aplikasi lain pada perangkat yang
+    di-root (Android) atau di-jailbreak (iOS) — dapat membacanya. Token yang dicuri berarti
+    penyerang bisa memanggil API atas nama pengguna: membaca data pribadi, atau melakukan aksi
+    yang seharusnya hanya boleh dilakukan pemilik akun.
+  </p>
+
+  <div class="banding"
+       data-label-lama="AsyncStorage untuk semua data"
+       data-label-benar="Pisahkan menurut sensitivitas"
+       data-petunjuk="Analogi buku: AsyncStorage seperti lemari tanpa kunci di dalam kamar, secure storage seperti peti yang kuncinya menempel pada perangkat kerasnya.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">semua-di-asyncstorage.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §11.5</span>
+      </figcaption>
+      <pre><code class="language-text">preferensi:tema   → teks polos   ✓ wajar
+catatan:v1        → teks polos   ✓ wajar
+sesi:token        → teks polos   ✗ dapat dibaca
+                                  siapa pun yang
+                                  menjalankan kode</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">dipisah-menurut-sensitivitas.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §11.5</span>
+      </figcaption>
+      <pre><code class="language-text">preferensi, catatan, cache → AsyncStorage
+token, kata sandi, kunci API → secure storage
+                               (Keychain iOS,
+                                Android Keystore,
+                                expo-secure-store — Bab 13)
+prinsip: saat ragu, jangan simpan sama sekali</code></pre>
+    </figure>
+  </div>
+
+  <p>
+    <strong>Secure storage</strong> adalah jawabannya: penyimpanan yang memanfaatkan fasilitas
+    keamanan perangkat keras sistem operasi — <strong>Keychain</strong> di iOS dan
+    <strong>Android Keystore</strong> di Android. Datanya dienkripsi dengan kunci yang disimpan
+    di area perangkat keras yang terlindungi. Di ekosistem Expo pustakanya
+    <code>expo-secure-store</code>, dan penerapannya ditulis penuh di Bab 13 bersama alur login
+    dan logout, supaya tidak ada dua versi penjelasan yang saling bertentangan.
+  </p>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      “Aplikasi saya tidak penting, jadi tidak akan diserang” adalah alasan yang paling sering
+      menyesatkan di praktikum. Yang dicuri bukan aplikasinya, melainkan akun penggunanya — dan
+      kerugiannya ditanggung pengguna, bukan pengembang.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Menyimpan token di AsyncStorage berarti pengguna tidak perlu login lagi. Apakah kemudahan
+      itu sepadan? (Jawaban: tidak. Akun yang dibajak jauh lebih mahal daripada satu kali
+      login, dan Bab 13 menunjukkan bahwa keduanya bisa didapat sekaligus dengan secure
+      storage.)
+    </p>
+  </div>
+</section>

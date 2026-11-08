@@ -1,0 +1,264 @@
+<h1>Bagian 2 — Expo, Expo Go &amp; Metro</h1>
+
+<p class="ringkas">
+  Subbab 2.4. Empat alat yang menyusun pengalaman “ubah kode, lihat hasil”: Expo CLI yang
+  tidak perlu dipasang, Expo Go yang memutar proyek di ponsel, Metro yang menggabungkan modul,
+  dan Fast Refresh yang membuat layar mengikuti simpanan berkas. Bagian ini menjelaskan
+  pekerjaan masing-masing sebelum kamu memakainya di praktikum.
+</p>
+
+<section class="subbab" id="s2-1">
+  <p class="label-subbab">
+    Subbab 2.4 <span class="sumber-slide">· deck: “Expo CLI Dijalankan Lewat npx, Tanpa Pemasangan Global” · buku §2.4</span>
+  </p>
+  <h2>Expo CLI Dijalankan Lewat npx, Tanpa Pemasangan Global</h2>
+
+  <p>
+    <strong>Expo</strong> adalah framework dan rantai alat yang menyederhanakan pengembangan
+    React Native. Konsep dan cara kerjanya sudah kamu kenali di Bab 1; di sini kita fokus pada
+    bagian yang kamu jalankan, yaitu <strong>Expo CLI</strong> — antarmuka baris perintah untuk
+    membuat, menjalankan, dan mengelola proyek Expo.
+  </p>
+
+  <p>
+    Yang perlu ditegaskan: Expo CLI tidak perlu dipasang global. Semua perintahnya dijalankan
+    lewat npx, sehingga tidak ada pemasangan yang harus diurus dan versi alatnya selalu segar
+    dari registry. Tiga perintah berikut menutup hampir seluruh kebutuhan bab ini dan
+    bab-bab berikutnya.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">(terminal)</span>
+      <span class="kode-sumber">buku §2.2 &amp; §2.4 · deck “Expo CLI…”</span>
+    </figcaption>
+    <pre><code class="language-bash">npx create-expo-app
+npx expo start
+npx expo install &lt;paket&gt;</code></pre>
+  </figure>
+
+  <p>
+    <code>create-expo-app</code> membuat proyek baru; <code>expo start</code> menyalakan server
+    pengembangan; <code>expo install</code> menambah paket bawaan SDK dengan versi yang otomatis
+    cocok. Perintah ketiga akan terasa manfaatnya jauh nanti, misalnya saat Bab 12 memakai
+    kamera.
+  </p>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Nanti <code>npx expo install</code> dipakai untuk apa? (Jawaban: memasang paket bawaan
+      SDK, misalnya kamera di Bab 12, supaya versinya otomatis cocok dengan SDK proyek.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s2-2">
+  <p class="label-subbab">
+    Subbab 2.4 <span class="sumber-slide">· deck: “Expo Go Cepat, tetapi Tidak Semua Fitur Bisa Diuji” · buku §2.4</span>
+  </p>
+  <h2>Expo Go Cepat, tetapi Tidak Semua Fitur Bisa Diuji</h2>
+
+  <p>
+    <strong>Expo Go</strong> adalah aplikasi yang dipasang di ponsel Android maupun iOS dan
+    berfungsi sebagai “pemutar” proyek Expo. Selama ponsel dan komputer berada dalam jaringan
+    Wi-Fi yang sama, aplikasi yang sedang kamu kembangkan langsung tampil di Expo Go tanpa
+    proses build — dipindai lewat kode QR, selesai dalam hitungan detik.
+  </p>
+
+  <p>
+    Mengapa teknologi ini ada? Membangun aplikasi mobile secara tradisional membutuhkan
+    <em>build</em>, yaitu penerjemahan kode menjadi berkas aplikasi, yang lambat dan rumit.
+    Expo Go menghapus hambatan itu untuk tahap belajar. Analoginya: build tradisional seperti
+    mencetak buku sebelum bisa dibaca, sedangkan Expo Go seperti membaca naskah langsung dari
+    layar penulisnya.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Build tradisional"
+       data-label-benar="Expo Go"
+       data-petunjuk="Harga seluruh kolom kiri dibayar oleh seluruh kolom kanan; keduanya tidak berpasangan satu lawan satu."
+    >
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">build-tradisional.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §2.4</span>
+      </figcaption>
+      <pre><code class="language-text">tulis kode
+→ proses build (lambat, rumit)
+→ berkas aplikasi terpasang
+→ jalankan, lihat hasil
+→ ulangi build untuk setiap uji</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">expo-go.txt</span>
+        <span class="kode-sumber">buku §2.4</span>
+      </figcaption>
+      <pre><code class="language-text">tulis kode
+→ npx expo start (Metro menyala)
+→ pindai kode QR di Expo Go
+→ terlihat dalam hitungan detik
+✓ tanpa build sama sekali</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Expo Go hanya mendukung API yang tersedia pada paket Expo dan tidak memuat kode native
+      buatanmu sendiri. Untuk fitur khusus atau pengujian yang mendekati produksi, kamu perlu
+      <em>development build</em> — topik Bab 15. Satu catatan lagi yang sensitif versi: karena
+      SDK 57 baru dirilis, versi Expo Go di Google Play dan App Store bisa masih menunggu
+      persetujuan, sehingga sementara waktu pemasangannya lewat <code>eas go</code> untuk iOS
+      atau lewat fasilitas Expo CLI untuk Android sesuai petunjuk resmi docs.expo.dev.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Kapan Expo Go tidak lagi cukup? (Jawaban: saat aplikasi membutuhkan kode native sendiri
+      atau pengujian yang mendekati produksi, sehingga perlu development build di Bab 15.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s2-3">
+  <p class="label-subbab">
+    Subbab 2.4 <span class="sumber-slide">· deck: “Metro Membundel Kode, Perangkat Hanya Menerima Hasilnya” · buku §2.4</span>
+  </p>
+  <h2>Metro Membundel Kode, Perangkat Hanya Menerima Hasilnya</h2>
+
+  <p>
+    Di balik layar, <code>npx expo start</code> menjalankan <strong>Metro Bundler</strong> —
+    <em>bundler</em> JavaScript buatan Meta yang menjadi bawaan React Native. Metro membaca
+    seluruh modul yang diimpor aplikasimu, menggabungkannya menjadi satu berkas, lalu
+    mengirimkannya ke perangkat melalui jaringan pada port bawaan <strong>8081</strong>.
+  </p>
+
+  <p>
+    Inilah sebabnya laptopmu menjadi “dapur” dan perangkat hanya menerima hidangan yang sudah
+    matang. Alamat yang muncul di terminal, misalnya <code>exp://192.168.x.x:8081</code>,
+    adalah alamat LAN tempat Metro menyajikan hasil olahannya — bukan alamat berkas di
+    komputermu.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">alur-metro.txt</span>
+      <span class="kode-sumber">ilustrasi · buku §2.4 · deck “Metro Membundel Kode…”</span>
+    </figcaption>
+    <pre><code class="language-text">App.js + seluruh modul yang diimpor
+→ Metro membaca dan menggabungkan
+→ satu berkas bundle
+→ dikirim lewat jaringan, port 8081
+→ Expo Go / emulator / perangkat
+   hanya menjalankan hasilnya</code></pre>
+  </figure>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Kenapa perangkat tidak perlu tahu kode asli aplikasinya? (Jawaban: yang dikirim adalah
+      bundle hasil kerja Metro, bukan berkas sumbernya; perangkat cukup menjalankan bundle
+      itu.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s2-4">
+  <p class="label-subbab">
+    Subbab 2.4 <span class="sumber-slide">· deck: “Menjalankan Development Server dan Membaca Layarnya” · buku §2.4</span>
+  </p>
+  <h2>Fast Refresh: Simpan, dan Layar Mengikuti</h2>
+
+  <p>
+    Metro mendukung <strong>Fast Refresh</strong>: ketika kamu menyimpan perubahan pada berkas
+    kode, aplikasi di layar diperbarui otomatis dalam sekejap tanpa kehilangan keadaan
+    (<em>state</em>) yang sedang berjalan. Siklus “ubah–simpan–lihat” yang tadinya menuntut
+    puluhan detik kini selesai dalam satu sampai dua detik, dan itulah pengalaman yang akan
+    sangat terasa di Praktikum 2.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Muat ulang manual"
+       data-label-benar="Fast Refresh"
+       data-petunjuk="Bedanya bukan pada kecepatan menekan tombol, melainkan pada apa yang hilang: keadaan aplikasi ikut terhapus setiap kali kamu memuat ulang."
+    >
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">tanpa-fast-refresh.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §2.4</span>
+      </figcaption>
+      <pre><code class="language-text">simpan berkas
+→ tekan r (muat ulang manual)
+→ aplikasi mulai dari awal
+→ state yang sedang berjalan hilang
+→ ulangi untuk setiap perubahan</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">dengan-fast-refresh.txt</span>
+        <span class="kode-sumber">buku §2.4</span>
+      </figcaption>
+      <pre><code class="language-text">simpan berkas
+→ Metro mengirim ulang bagian yang berubah
+→ layar diperbarui 1–2 detik
+✓ state tetap seperti sebelumnya</code></pre>
+    </figure>
+  </div>
+
+  <p>
+    Tombol <strong>r</strong> di terminal Expo tetap ada gunanya: ia memuat ulang secara manual
+    ketika Fast Refresh gagal diam-diam. Perhatikan terminal — Fast Refresh melaporkan
+    statusnya di sana; bila layar tidak berubah, terminal biasanya sudah memberi tahu alasannya.
+  </p>
+</section>
+
+<section class="subbab" id="s2-5">
+  <p class="label-subbab">
+    Subbab 2.7–2.9 <span class="sumber-slide">· deck: “Enam Perintah yang Paling Sering Kamu Pakai” · buku §2.9</span>
+  </p>
+  <h2>Enam Perintah yang Paling Sering Kamu Pakai</h2>
+
+  <p>
+    Tabel ini adalah rujukan, bukan bacaan berurutan. Boleh difoto, boleh ditempel di dekat
+    meja kerja; yang penting kamu tahu fungsi tiap baris saat terminal menjawab sesuatu yang
+    tidak kamu duga.
+  </p>
+
+  <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Perintah yang paling sering dipakai di bab ini · sumber: deck “Enam Perintah…”, buku §2.9</caption>
+      <thead>
+        <tr><th scope="col">Perintah</th><th scope="col">Fungsi</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>node --version</code> / <code>npm --version</code></td><td>Memeriksa versi Node.js dan npm</td></tr>
+        <tr><td><code>npx create-expo-app &lt;nama&gt; --template blank</code></td><td>Membuat proyek Expo JavaScript</td></tr>
+        <tr><td><code>npx expo start</code></td><td>Menjalankan Metro Bundler</td></tr>
+        <tr><td><code>npx expo start --tunnel</code></td><td>Server lewat tunnel publik</td></tr>
+        <tr><td><code>npx expo start --port 8082</code></td><td>Memakai port lain bila 8081 terpakai</td></tr>
+        <tr><td><code>adb devices</code></td><td>Menampilkan perangkat Android yang terhubung</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    Yang tidak masuk tabel sama sekali: tombol pintasan <strong>a</strong>, <strong>i</strong>,
+    <strong>w</strong>, <strong>r</strong> dan <strong>Ctrl+C</strong> di terminal Expo;
+    perintah <code>cd</code> dan <code>code .</code>; opsi <code>--android</code> untuk langsung
+    membuka emulator; serta opsi pembersihan cache pada perintah <code>start</code>. Semuanya
+    dibahas di bagian 4 dan di praktikum.
+  </p>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Kapan opsi <code>--tunnel</code> dipakai? (Jawaban: saat ponsel dan komputer tidak berada
+      di satu jaringan, misalnya Wi-Fi kampus yang memblokir komunikasi antarperangkat — lihat
+      bagian 3, subbab 2.9.)
+    </p>
+  </div>
+</section>

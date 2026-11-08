@@ -1,0 +1,75 @@
+<h1>Bab 10 — REST API dan Backend Integration</h1>
+
+<p class="ringkas">
+  Dari data statis ke data di server · Pertemuan 10–11 · Sub-CPMK 5.1 &amp; 5.2. Sembilan
+  pertemuan pertama memakai data yang kamu ketik sendiri di dalam kode; bab ini memindahkan
+  data itu ke mesin lain dan mengajari aplikasi memintanya dengan sopan — arsitektur
+  client–server, HTTP, REST, JSON, metode GET/POST/PUT/PATCH/DELETE, status code,
+  <code>fetch</code>, tiga state antarmuka, base URL, pemisahan <code>api/</code> dan
+  <code>screens/</code>, serta pengantar autentikasi API.
+</p>
+
+<div class="pengantar-pertanyaan">
+  <p><strong>Pertanyaan pembuka deck:</strong> “Siapa yang pernah melihat pesan gagal memuat data di aplikasi dan tidak tahu harus berbuat apa?”</p>
+  <p>Tampung jawaban tanpa dikoreksi dulu. Bandingkan lagi di akhir pertemuan, saat tiga state antarmuka dibahas di bagian 4.</p>
+</div>
+
+<h2>Tujuan pembelajaran</h2>
+
+<p>Setelah bab ini, kamu bisa:</p>
+
+<ul>
+  <li>Menjelaskan arsitektur client–server dan peran API di dalamnya</li>
+  <li>Mengidentifikasi peran HTTP, REST, dan JSON dalam pertukaran data</li>
+  <li>Menganalisis pemilihan metode HTTP untuk setiap operasi data</li>
+  <li>Menafsirkan status code respons server, baik sukses maupun gagal</li>
+  <li>Menerapkan <code>fetch</code> dengan header <code>Content-Type</code> dan serialisasi JSON</li>
+  <li>Merancang tiga state antarmuka: loading, error, dan empty state</li>
+  <li>Mengintegrasikan aplikasi dengan server <code>backend/</code> bawaan buku</li>
+</ul>
+
+<blockquote>
+  <strong>API</strong> (<em>Application Programming Interface</em>) — antarmuka pemrograman
+  aplikasi: perantara antara aplikasi dan server.
+</blockquote>
+
+<p>
+  Empat butir pertama adalah isi Kuis 2 (materi HTTP dan REST API, pertemuan 10) dan dipakai
+  lagi di Bab 13 saat membaca token autentikasi; tiga butir terakhir adalah inti praktikum
+  pertemuan 11: CRUD penuh dengan pengalaman pengguna yang jujur.
+</p>
+
+<h2>Peta halaman</h2>
+
+<ul>
+  <li><strong><a href="bagian-1.html">Bagian 1 — Client–Server, HTTP, REST, dan JSON</a></strong> (subbab 10.1–10.2): data statis vs dinamis, dua program terpisah, trade-off satu sumber kebenaran, HTTP, REST, dan JSON.</li>
+  <li><strong><a href="bagian-2.html">Bagian 2 — Metode HTTP dan Status Code</a></strong> (subbab 10.3–10.4): pemetaan CRUD, aman dan idempoten, PUT vs PATCH, kelompok status code, dan membaca pertukaran HTTP.</li>
+  <li><strong><a href="bagian-3.html">Bagian 3 — fetch: GET, POST, PUT, DELETE</a></strong> (subbab 10.5): tiga langkah GET, tiga opsi POST, menghapus dengan respons kosong, kesalahan status 500, dan normalisasi respons.</li>
+  <li><strong><a href="bagian-4.html">Bagian 4 — Tiga State Antarmuka, Base URL, dan Struktur File</a></strong> (subbab 10.6–10.7): loading/error/empty, base URL, pemetaan endpoint, pemisahan <code>api/</code> dan <code>screens/</code>, alur integrasi.</li>
+  <li><strong><a href="bagian-5.html">Bagian 5 — Studi Kasus dan Pengantar Autentikasi</a></strong> (subbab 10.7–10.8): tiga sistem tiga IPK, mitigasi titik kegagalan tunggal, dan token Bearer.</li>
+  <li><strong><a href="praktikum.html">Praktikum</a></strong>: menghubungkan Aplikasi Manajemen Data Mahasiswa ke server <code>backend/</code> — CRUD penuh, tiga state antarmuka, troubleshooting, dan kuis kilat.</li>
+</ul>
+
+<div class="kotak kotak-tiruan">
+  <p class="kotak-judul">Yang perlu diketahui sebelum membaca</p>
+  <p>
+    Bab ini memakai alat yang sudah kamu punya: <code>async/await</code> dan
+    <code>JSON.stringify</code> (Bab 3), <code>ActivityIndicator</code> dan
+    <code>FlatList</code> (Bab 5), rute serta <code>useFocusEffect</code> (Bab 7), dan
+    aplikasi Data Mahasiswa dari Bab 6–8. Tidak ada dependency baru yang perlu dipasang:
+    <code>fetch</code> adalah fungsi bawaan JavaScript dan langsung tersedia di Expo.
+  </p>
+  <p class="kotak-jawab">
+    Setiap kode di halaman-halaman berikut disalin verbatim dari
+    <code>slides/bab-10-rest-api-dan-backend-integration.md</code> atau
+    <code>buku/bab-10-rest-api-dan-backend-integration.md</code>; label sumber ada di kepala
+    setiap blok kode. Perbandingan <strong>sebelum/sesudah</strong> menampilkan cara lama yang
+    salah atau naif di samping cara yang benar; kode bertanda <em>ilustrasi</em> adalah
+    ringkasan pola dari buku, bukan isi file sungguhan.
+  </p>
+</div>
+
+<div class="kotak kotak-tanya">
+  <p class="kotak-judul">Pertanyaan penuntun</p>
+  <p>Konsep apa di bab ini yang paling sering diuji? Pemilihan metode HTTP dan pembacaan status code — keduanya bahasa bersama industri yang muncul di log server, di Project Akhir, dan lagi di Bab 13.</p>
+</div>

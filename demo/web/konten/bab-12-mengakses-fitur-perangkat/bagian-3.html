@@ -1,0 +1,423 @@
+<h1>Bagian 3 — Notifikasi, File &amp; Info Perangkat</h1>
+
+<p class="ringkas">
+  Subbab 12.4–12.5. Notifikasi lokal dijadwalkan perangkat sendiri, push dikirim server —
+  dan bab ini hanya membahas yang pertama. Sesudah itu kita masuk ke lemari berkas privat
+  aplikasi, lalu ke informasi perangkat yang berguna sekaligus berisiko.
+</p>
+
+<section class="subbab" id="s3-1">
+  <p class="label-subbab">
+    Subbab 12.4 <span class="sumber-slide">· deck: “Notifikasi Lokal Dijadwalkan Perangkat, Push Dikirim Server” · buku §12.4, §Contoh 3</span>
+  </p>
+  <h2>Notifikasi Lokal Dijadwalkan Perangkat, Push Dikirim Server</h2>
+
+  <p>
+    <strong>Notifikasi</strong> adalah pesan yang muncul di luar antarmuka aplikasi — di laci
+    notifikasi Android atau banner iOS — sehingga pengguna tetap diingatkan meski sedang memakai
+    aplikasi lain. Alasannya sederhana: aplikasi tidak selalu terbuka saat momen penting terjadi,
+    misalnya jadwal ujian atau tenggat pengumpulan tugas. Notifikasi memindahkan pekerjaan
+    “mengingatkan” ke tingkat sistem operasi.
+  </p>
+
+  <p>
+    <code>expo-notifications</code> menyediakan dua kategori yang berbeda jauh. Notifikasi lokal
+    dijadwalkan dan ditampilkan oleh perangkat itu sendiri, tanpa melibatkan jaringan.
+    Notifikasi push jarak jauh dikirim dari server, misalnya pemberitahuan nilai baru dari
+    sistem akademik, dan tidak dapat ditangani <code>expo-notifications</code> sendirian.
+  </p>
+
+  <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Notifikasi lokal dan push jarak jauh · sumber: deck Bab 12 &amp; buku §12.4</caption>
+      <thead>
+        <tr><th scope="col">Aspek</th><th scope="col">Notifikasi lokal</th><th scope="col">Push notification</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Pengirim</td><td>Perangkat itu sendiri</td><td>Server pengirim</td></tr>
+        <tr><td>Jaringan</td><td>Tidak butuh jaringan</td><td>Butuh layanan push</td></tr>
+        <tr><td>Contoh</td><td>Pengingat jadwal kuliah</td><td>Pemberitahuan nilai baru</td></tr>
+        <tr><td>Penanganan</td><td><code>expo-notifications</code></td><td>Expo Push Service, FCM (Android), APNs (iOS)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="banding"
+       data-label-lama="Push: server yang menentukan kapan pesan tiba"
+       data-label-benar="Lokal: perangkat menjadwalkan sendiri"
+       data-petunjuk="Yang kanan bisa diuji tanpa server; yang kiri menuntut layanan pengirim di luar aplikasi. Buku menandai ketergantungan push ini sensitif versi, karena penyedia layanannya dapat berubah.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">alur-push.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §12.4</span>
+      </figcaption>
+      <pre><code class="language-text">server aplikasi
+→ Expo Push Service / FCM (Android) / APNs (iOS)
+→ perangkat pengguna
+→ laci notifikasi
+
+butuh jaringan, kredensial server,
+dan token perangkat
+✗ tidak bisa dikerjakan expo-notifications saja</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">utils/notifikasiUjian.js</span>
+        <span class="kode-sumber">buku §Contoh 3 · verbatim</span>
+      </figcaption>
+      <pre><code class="language-js">import * as Notifications from 'expo-notifications';
+
+export async function ingatkanUjian(waktuUjian) {
+  const izin = await Notifications.requestPermissionsAsync();
+  if (!izin.granted) {
+    return false;
+  }
+  await Notifications.scheduleNotificationAsync({
+    content: {
+      title: 'Jadwal Ujian',
+      body: 'Ujian Pemrograman Mobile dimulai sebentar lagi.',
+    },
+    trigger: waktuUjian,
+  });
+  return true;
+}</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Mengira <code>scheduleNotificationAsync</code> dapat mengirim pesan ke ponsel mahasiswa
+      lain. Yang dijadwalkan fungsi itu adalah notifikasi di perangkat yang menjalankannya
+      sendiri. Mengirim ke perangkat lain menuntut server pengirim dan token perangkat — di
+      luar cakupan bab ini, dan baru masuk akal setelah pola API di Bab 10 dikuasai.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Kalau perangkat tidak punya internet, notifikasi mana yang tetap muncul? (Jawaban:
+      notifikasi lokal, karena penjadwalannya tersimpan di perangkat.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s3-2">
+  <p class="label-subbab">
+    Subbab 12.4 <span class="sumber-slide">· deck: “Kanal Notifikasi Bukan Pilihan Gaya, Melainkan Syarat” · buku §12.4</span>
+  </p>
+  <h2>Kanal Notifikasi Bukan Pilihan Gaya, Melainkan Syarat</h2>
+
+  <p>
+    Di Android, pengguna mengelompokkan notifikasi per <strong>kanal notifikasi</strong>
+    (notification channel) agar dapat mengatur bunyi dan tingkat gangguan tiap jenis pesan.
+    Analoginya seperti folder surel: satu folder dapat dibisukan tanpa mematikan seluruh
+    notifikasi aplikasi. Bagi pengembang, konsekuensinya bukan pilihan gaya melainkan syarat —
+    notifikasi tanpa kanal dapat dibuang sistem.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">utils/kirimNotifikasi.js (potongan)</span>
+      <span class="kode-sumber">deck Bab 12 · verbatim</span>
+    </figcaption>
+    <pre><code class="language-js">await Notifications.setNotificationChannelAsync('pengingat-kuliah', {
+  name: 'Pengingat Kuliah',
+  importance: Notifications.AndroidImportance.DEFAULT,
+});</code></pre>
+  </figure>
+
+  <p>
+    <code>setNotificationChannelAsync</code> membuat kanal bernama
+    <code>'pengingat-kuliah'</code> dengan tingkat kepentingan <code>DEFAULT</code>: berbunyi,
+    tanpa layar penuh. Kanal dibuat sekali di awal aplikasi, bukan di dalam fungsi yang jarang
+    dipanggil, dan harus sudah ada sebelum penjadwalan dilakukan. Di Android 13 ke atas, sistem
+    juga menanyakan izin notifikasi secara eksplisit seperti izin lainnya; pada versi yang lebih
+    lama permintaan itu langsung disetujui.
+  </p>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Menyimpulkan penjadwalan gagal karena notifikasi tidak muncul, padahal penjadwalannya
+      berhasil. Gejala yang membingungkan ini hampir selalu berasal dari kanal yang belum dibuat
+      atau izin notifikasi yang ditolak — bukan dari fungsi penjadwalnya.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Mengapa notifikasi bisa “terjadwal” tetapi tidak pernah terlihat? (Jawaban: kanalnya belum
+      dibuat sehingga sistem membuangnya, atau izin notifikasi ditolak sehingga tidak ada yang
+      ditampilkan.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s3-3">
+  <p class="label-subbab">
+    Subbab 12.4 <span class="sumber-slide">· deck: “Pengingat Butuh Izin, Isi Pesan, dan Pemicu” · buku §12.4</span>
+  </p>
+  <h2>Pengingat Butuh Izin, Isi Pesan, dan Pemicu</h2>
+
+  <p>
+    Alur notifikasi lokal terdiri dari tiga langkah: membuat kanal (khusus Android), meminta
+    izin, lalu menjadwalkan. Fungsi di bawah menjalankan ketiganya sekaligus, dan mengembalikan
+    <code>false</code> ketika pengguna menolak — nilai itulah yang memberi tahu layar bahwa
+    pengingatnya tidak akan pernah muncul.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">utils/kirimNotifikasi.js</span>
+      <span class="kode-sumber">buku §12.4 · verbatim</span>
+    </figcaption>
+    <pre><code class="language-js">import * as Notifications from 'expo-notifications';
+
+export async function kirimPengingat(judulPesan, isiPesan, detik) {
+  await Notifications.setNotificationChannelAsync('pengingat-kuliah', {
+    name: 'Pengingat Kuliah',
+    importance: Notifications.AndroidImportance.DEFAULT,
+  });
+
+  const izin = await Notifications.requestPermissionsAsync();
+  if (!izin.granted) {
+    return false;
+  }
+
+  await Notifications.scheduleNotificationAsync({
+    content: {
+      title: judulPesan,
+      body: isiPesan,
+    },
+    trigger: {
+      type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+      seconds: detik,
+      channelId: 'pengingat-kuliah',
+    },
+  });
+  return true;
+}</code></pre>
+  </figure>
+
+  <p>
+    Bacalah sebagai tiga bagian. Pertama, permintaan izin lewat
+    <code>requestPermissionsAsync</code>. Kedua, <code>content</code> berisi judul dan isi pesan
+    yang akan dibaca pengguna. Ketiga, <code>trigger</code> menentukan kapan notifikasi muncul:
+    <code>TIME_INTERVAL</code> dengan <code>seconds</code> berarti “muncul setelah N detik”,
+    bukan jam tertentu dalam sehari. Kanal ditunjuk lewat <code>channelId</code>, dan itulah
+    alasan urutan pemanggilan menentukan berhasil atau tidaknya notifikasi di Android.
+  </p>
+
+  <div class="kotak kotak-tiruan">
+    <p class="kotak-judul">Catatan peka versi</p>
+    <p>
+      Buku menandai bagian ini <em>sensitif versi</em> (bahasa sumber:
+      <em>version-sensitive</em>): bentuk <code>trigger</code> bernama-tipe diperkenalkan di SDK
+      yang lebih baru, sedangkan pada versi lama cukup <code>trigger: { seconds: 5 }</code>.
+      Cocokkan dengan dokumentasi resmi <code>expo-notifications</code> sebelum menyalin.
+    </p>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Mengira <code>TIME_INTERVAL</code> berarti “notifikasi muncul pada jam tertentu”. Nilai itu
+      menyatakan jeda: muncul setelah N detik dihitung dari saat penjadwalan. Untuk jam tertentu
+      dipakai pemicu <code>DATE</code> berisi objek tanggal.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Kenapa fungsi ini mengembalikan boolean, bukan langsung menampilkan pesan? (Jawaban: agar
+      layar yang memutuskan umpan baliknya — fungsi ini hanya melaporkan berhasil atau gagal.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s3-4">
+  <p class="label-subbab">
+    Subbab 12.5 <span class="sumber-slide">· deck: “Folder Privat Aplikasi: Tanpa Izin, tetapi Cache Bisa Dibersihkan” · buku §12.5</span>
+  </p>
+  <h2>Folder Privat Aplikasi: Tanpa Izin, tetapi Cache Bisa Dibersihkan</h2>
+
+  <p>
+    Aplikasi mobile hidup di dalam sandbox berkas: setiap aplikasi memiliki direktori privat
+    yang tidak dapat dibaca aplikasi lain. Ada dua ruang di dalamnya — direktori dokumen untuk
+    berkas permanen milik aplikasi, dan direktori cache untuk berkas sementara yang boleh
+    dibersihkan sistem. Sandbox inilah yang membuat ponsel aman: aplikasi catatan tidak bisa
+    mengintip foto aplikasi kamera.
+  </p>
+
+  <p>
+    <code>expo-file-system</code> memberi akses terkelola ke direktori privat tersebut dengan API
+    berorientasi objek <code>File</code> dan <code>Paths</code>. Karena berkasnya privat, tidak
+    diperlukan izin khusus untuk operasi ini — berbeda dengan kamera atau lokasi. Contoh
+    membaca dan menulis berkas teks sederhana:
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">utils/catatanBerkas.js</span>
+      <span class="kode-sumber">buku §12.5 · verbatim</span>
+    </figcaption>
+    <pre><code class="language-js">import { File, Paths } from 'expo-file-system';
+
+export async function simpanCatatan(isian) {
+  const berkas = new File(Paths.document, 'catatan-saya.txt');
+  await berkas.write(isian);
+  return berkas.uri;
+}
+
+export async function bacaCatatan() {
+  const berkas = new File(Paths.document, 'catatan-saya.txt');
+  if (!berkas.exists) {
+    return '';
+  }
+  return await berkas.text();
+}</code></pre>
+  </figure>
+
+  <p>
+    <code>Paths.document</code> menunjuk direktori dokumen aplikasi, dan
+    <code>new File(Paths.document, 'catatan-saya.txt')</code> mewakili satu berkas di dalamnya.
+    <code>berkas.write(isian)</code> menulis teks — sekaligus membuat berkas bila belum ada —
+    <code>berkas.text()</code> membaca isinya, dan properti <code>berkas.exists</code> menghindari
+    galat saat berkas belum pernah dibuat. Pola ini pula yang menjadi jawaban permanen untuk
+    foto: <code>uri</code> hasil pemilih gambar hanyalah berkas sementara.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Menyimpan uri cache apa adanya"
+       data-label-benar="Menyalin berkas ke Paths.document lebih dulu"
+       data-petunjuk="AsyncStorage hanya menyimpan teks JSON, bukan berkasnya. Karena itu yang disimpan harus alamat berkas yang benar-benar bertahan.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">foto-cache.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §12.2, §12.5</span>
+      </figcaption>
+      <pre><code class="language-text">hasil.assets[0].uri
+  = file:///.../cache/ImagePicker/abc.jpg
+
+disimpan ke AsyncStorage sebagai
+satu-satunya rujukan foto
+→ sistem berhak membersihkan cache
+→ seminggu kemudian: foto hilang
+✗ pengguna merasa kehilangan data</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">foto-dokumen.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §12.5</span>
+      </figcaption>
+      <pre><code class="language-text">salin berkas ke Paths.document
+  new File(Paths.document, 'profil.jpg')
+
+simpan alamat hasil salinan
+ke AsyncStorage
+→ berada di direktori privat permanen
+→ tetap tampil setelah aplikasi
+   ditutup dan dibuka kembali
+✓ bertahan sampai dihapus sendiri</code></pre>
+    </figure>
+  </div>
+
+  <p>
+    Perlu diingat bahwa API <code>File</code> dan <code>Paths</code> menggantikan fungsi lama
+    seperti <code>writeAsStringAsync</code> yang sudah ditinggalkan di SDK terbaru. Buku menandai
+    hal ini <em>sensitif versi</em> (bahasa sumber: <em>version-sensitive</em>), sehingga bentuk
+    API terkini perlu dicocokkan dengan dokumentasi resmi <code>expo-file-system</code>.
+  </p>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Mengira AsyncStorage menyimpan foto. Yang disimpan hanya teks JSON berisi alamat berkas;
+      berkasnya sendiri tetap berada di sistem berkas. Itulah sebabnya kesalahan “menyimpan uri
+      cache” tidak terlihat saat pengujian hari ini, lalu muncul sebagai foto yang hilang
+      beberapa hari kemudian.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Kalau foto profil disimpan hanya sebagai <code>uri</code> dari pemilih gambar, apa yang
+      terjadi seminggu kemudian? (Jawaban: berkas sementaranya dibersihkan sistem dan fotonya
+      hilang — padahal data profilnya masih tersimpan.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s3-5">
+  <p class="label-subbab">
+    Subbab 12.5 <span class="sumber-slide">· deck: “Data Perangkat Berguna Sekaligus Berisiko” · buku §12.5</span>
+  </p>
+  <h2>Data Perangkat Berguna Sekaligus Berisiko</h2>
+
+  <p>
+    <code>expo-device</code> membaca informasi perangkat: nama perangkat, model, sistem operasi
+    beserta versinya, merek, dan <code>isDevice</code> untuk membedakan perangkat fisik dari
+    emulator. Informasi ini berguna untuk menyesuaikan tampilan, mengelompokkan statistik
+    pengguna, atau menolak fitur tertentu pada emulator — misalnya aplikasi presensi yang hanya
+    menerima kehadiran dari perangkat fisik.
+  </p>
+
+  <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Properti informasi perangkat · sumber: deck Bab 12 &amp; buku §12.5</caption>
+      <thead>
+        <tr><th scope="col">Properti</th><th scope="col">Isinya</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>deviceName</code></td><td>Nama perangkat</td></tr>
+        <tr><td><code>modelName</code></td><td>Model, misalnya “Pixel 7”</td></tr>
+        <tr><td><code>osName</code> dan <code>osVersion</code></td><td>Sistem operasi dan versinya</td></tr>
+        <tr><td><code>isDevice</code></td><td>Membedakan perangkat fisik dari emulator</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">screens/ProfilMahasiswa.js (potongan)</span>
+      <span class="kode-sumber">buku §Praktikum · verbatim</span>
+    </figcaption>
+    <pre><code class="language-js">  function isiInfoPerangkat() {
+    setPerangkat({
+      nama: Device.deviceName || 'Tidak diketahui',
+      model: Device.modelName || 'Tidak diketahui',
+      sistem: `${Device.osName} ${Device.osVersion}`,
+    });
+  }</code></pre>
+  </figure>
+
+  <p>
+    Nilai bawaan seperti <code>'Tidak diketahui'</code> penting: tidak semua perangkat
+    melaporkan nama atau model, dan layar tidak boleh menampilkan <code>undefined</code>. Perlu
+    diingat juga bahwa data perangkat bukan data teknis yang netral — kombinasi nama, model, dan
+    versi sistem dapat dipakai untuk <strong>fingerprinting</strong>, yaitu identifikasi unik
+    pengguna. Karena itu ia tetap tunduk pada prinsip minimalisasi data di subbab 12.6.
+  </p>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Menampilkan seluruh data perangkat di layar debug tanpa alasan, lalu membiarkannya sampai
+      versi rilis. Yang dibutuhkan layar profil hanya tiga nilai yang benar-benar ditampilkan;
+      sisanya menambah risiko tanpa menambah manfaat.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Apakah aplikasi profil ini benar-benar perlu semua properti perangkat? (Jawaban: tidak —
+      hanya yang ditampilkan di layar; sisanya termasuk pengumpulan data yang tidak dibutuhkan.)
+    </p>
+  </div>
+</section>

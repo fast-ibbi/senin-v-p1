@@ -1,0 +1,351 @@
+<h1>Bagian 2 — Error Umum dan Debugging Jaringan</h1>
+
+<p class="ringkas">
+  Enam pesan error React Native yang muncul berulang di semua project, penyebab tipikal, dan
+  solusinya; lalu satu prinsip jaringan: uji endpoint sebelum menyalahkan aplikasi. Pesan error
+  adalah penunjuk arah, bukan pengumuman kegagalan.
+</p>
+
+<section class="subbab" id="s2-1">
+  <p class="label-subbab">
+    Subbab 14.2 <span class="sumber-slide">· deck: “Enam Error React Native yang Paling Sering Muncul” · buku §14.2</span>
+  </p>
+  <h2>Enam error React Native yang paling sering muncul</h2>
+  <p>
+    Error yang sama dapat muncul berulang pada semua project React Native. Mengenali pesan
+    error sama pentingnya dengan mengenali sintaks bahasa: pesan itu adalah penunjuk arah, bukan
+    sekadar pengumuman kegagalan. Empat error pertama menghentikan aplikasi (error fatal); dua
+    terakhir muncul sebagai peringatan, tetapi tetap harus ditangani karena menandakan desain
+    yang rawan bug.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">(pesan error di RedBox dan terminal)</span>
+      <span class="kode-sumber">buku §14.2 · pesan error verbatim</span>
+    </figcaption>
+    <pre><code class="language-text">Error 1 — "Unable to resolve module './components/KartuMahasiswa' from 'app/index.js'"
+Error 2 — "Invalid hook call. Hooks can only be called inside of the body of a function component."
+Error 3 — "'undefined' is not an object (evaluating 'mahasiswa.nama')"
+Error 4 — "Text strings must be rendered within a &lt;Text&gt; component."
+Error 5 — "VirtualizedLists should never be nested inside plain ScrollViews with the same orientation"
+Error 6 — "Warning: Each child in a list should have a unique 'key' prop."</code></pre>
+  </figure>
+
+  <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Enam error umum dan sifatnya · sumber: deck “Enam Error React Native” &amp; buku §14.2</caption>
+      <thead>
+        <tr><th scope="col">#</th><th scope="col">Pesan error (disingkat)</th><th scope="col">Sifat</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td><code>Unable to resolve module</code></td><td>Fatal</td></tr>
+        <tr><td>2</td><td><code>Invalid hook call</code></td><td>Fatal</td></tr>
+        <tr><td>3</td><td><code>'undefined' is not an object</code></td><td>Fatal</td></tr>
+        <tr><td>4</td><td><code>Text strings must be rendered within a &lt;Text&gt;</code></td><td>Fatal</td></tr>
+        <tr><td>5</td><td><code>VirtualizedLists should never be nested inside plain ScrollViews</code></td><td>Peringatan</td></tr>
+        <tr><td>6</td><td><code>Each child in a list should have a unique 'key' prop</code></td><td>Peringatan</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    Error fatal ditampilkan pada layar merah penuh yang disebut <strong>RedBox</strong>. RedBox
+    adalah fitur bantuan, bukan hukuman: pesan di dalamnya selalu memuat nama file dan nomor
+    baris tempat kesalahan terjadi — bacalah bagian itu lebih dulu sebelum menebak penyebabnya.
+  </p>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Empat yang mana yang menghentikan aplikasi? (Jawaban: error pertama sampai keempat; dua terakhir hanya peringatan, tetapi menandakan rancangan yang rawan bug.)</p>
+  </div>
+</section>
+
+<section class="subbab" id="s2-2">
+  <p class="label-subbab">
+    Subbab 14.2 <span class="sumber-slide">· deck: “Dua Error Fatal: Module dan Hook” · buku §14.2 · Error 1–2</span>
+  </p>
+  <h2>Dua error fatal pertama: module dan hook</h2>
+  <p>
+    Pesan <code>Unable to resolve module</code> berarti modul yang kamu import tidak ditemukan
+    oleh <strong>Metro</strong> (bundler React Native, alat yang menggabungkan semua berkas
+    JavaScript menjadi satu bundel). Penyebabnya path salah, nama berkas salah ketik, atau —
+    sering terjadi di Windows — perbedaan huruf kapital antara <code>KartuMahasiswa.js</code>
+    dan <code>kartumahasiswa.js</code>.
+  </p>
+  <p>
+    Pesan <code>Invalid hook call</code> berarti sebuah hook dipanggil di tempat yang dilarang.
+    Hook seperti <code>useState</code> dan <code>useEffect</code> hanya boleh dipanggil di
+    tingkat atas fungsi komponen, tanpa syarat. Penyebab paling umum: memanggil hook di dalam
+    percabangan <code>if</code>, di dalam callback event, atau di dalam fungsi biasa yang bukan
+    komponen.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">(pesan error di RedBox)</span>
+      <span class="kode-sumber">buku §14.2 · Error 1–2 verbatim</span>
+    </figcaption>
+    <pre><code class="language-text">Error 1 — "Unable to resolve module './components/KartuMahasiswa' from 'app/index.js'"
+Error 2 — "Invalid hook call. Hooks can only be called inside of the body of a function component."</code></pre>
+  </figure>
+
+  <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Penyebab dan solusi dua error fatal pertama · sumber: deck “Dua Error Fatal” &amp; buku §14.2</caption>
+      <thead>
+        <tr><th scope="col">Error</th><th scope="col">Penyebab lazim</th><th scope="col">Solusi</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong><code>Unable to resolve module</code></strong></td>
+          <td>Path atau nama berkas salah; beda huruf besar-kecil; paket npm belum terpasang</td>
+          <td>Perbaiki path; untuk paket npm jalankan <code>npx expo install react-native-xyz</code>, lalu tekan <code>r</code></td>
+        </tr>
+        <tr>
+          <td><strong><code>Invalid hook call</code></strong></td>
+          <td>Hook dipanggil di dalam <code>if</code>, callback, atau fungsi biasa</td>
+          <td>Pindahkan pemanggilan hook ke level teratas komponen; hitung nilai bersyarat setelah hook dipanggil</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Aturan emasnya satu kalimat: jangan pernah memanggil hook di dalam <code>if</code>,
+      <code>for</code>, atau fungsi bersarang. Cabang yang menyelinap di antara dua hook terlihat
+      wajar di mata pemula, tetapi melanggar aturan urutan hook — dan React menolaknya bukan
+      karena gaya penulisan, melainkan karena ia kehilangan cara memasangkan state.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Kenapa React peduli di mana hook dipanggil? (Jawaban: React memasangkan state menurut urutan pemanggilan hook, dan urutan itu harus sama pada setiap render.)</p>
+  </div>
+</section>
+
+<section class="subbab" id="s2-3">
+  <p class="label-subbab">
+    Subbab 14.2 <span class="sumber-slide">· deck: “Error Ketiga: Properti Dibaca Sebelum Datanya Tiba” · buku §14.2 · Error 3</span>
+  </p>
+  <h2>Error ketiga: properti dibaca sebelum datanya tiba</h2>
+  <p>
+    Kamu mencoba membaca properti dari nilai yang belum ada — biasanya karena data belum dimuat
+    dari API saat komponen pertama dirender. Ada dua penyebab tersembunyi yang mudah terlewat:
+    salah menulis nama properti (<code>nama</code> versus <code>name</code>), dan respons API
+    yang bentuknya tidak seperti dugaanmu. Bentuk respons yang dipakai buku ini adalah
+    <code>{ data: [...] }</code> (Bab 10).
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">(pesan error di RedBox)</span>
+      <span class="kode-sumber">buku §14.2 · Error 3 verbatim</span>
+    </figcaption>
+    <pre><code class="language-text">'undefined' is not an object (evaluating 'mahasiswa.nama')</code></pre>
+  </figure>
+
+  <div class="banding"
+       data-label-lama="Membaca properti sebelum data tiba"
+       data-label-benar="Tiga pertahanan pada satu jalur data"
+       data-petunjuk="Panel kanan menyusun pertahanan berlapis: nilai awal state, penanda pemuatan, lalu akses aman dengan operator opsional."
+    >
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">tanpa-pertahanan.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §14.2</span>
+      </figcaption>
+      <pre><code class="language-text">✗ state awal tanpa nilai: mahasiswa masih undefined
+✗ properti langsung dibaca: mahasiswa.nama
+✗ layar dirender sebelum data tiba
+✗ respons API dipetakan tanpa dicetak dulu
+✗ hasilnya RedBox: 'undefined' is not an object</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">tiga-pertahanan.txt</span>
+        <span class="kode-sumber">buku §14.2 · Error 3</span>
+      </figcaption>
+      <pre><code class="language-text">✓ beri default nilai [] atau null pada state awal
+✓ tampilkan indikator pemuatan sebelum data datang
+✓ gunakan operator opsional: mahasiswa?.nama
+✓ cetak respons API dengan console.log sebelum
+  dipetakan ke tampilan
+✓ periksa struktur jawaban: { data: [...] } (Bab 10)</code></pre>
+    </figure>
+  </div>
+
+  <p>
+    Pola ini sudah kamu pakai di bagian 1: state <code>ipk</code> dimulai sebagai
+    <code>null</code> dan layarnya menampilkan “memuat...” — pola yang justru mencegah error
+    ini muncul.
+  </p>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Bagaimana kamu tahu struktur jawaban API sebelum menuliskannya? (Jawaban: dengan mencetak jawabannya sekali saat integrasi pertama — <code>console.log</code> sebelum dipetakan.)</p>
+  </div>
+</section>
+
+<section class="subbab" id="s2-4">
+  <p class="label-subbab">
+    Subbab 14.2 <span class="sumber-slide">· deck: “Error Keempat dan Dua Peringatan yang Sering Diabaikan” · buku §14.2 · Error 4–6</span>
+  </p>
+  <h2>Error keempat dan dua peringatan yang sering diabaikan</h2>
+  <p>
+    Error keempat adalah aturan Bab 5 yang terlupa: React Native tidak mengizinkan teks polos
+    berada langsung di dalam <code>View</code>; seluruh teks harus dibungkus komponen
+    <code>&lt;Text&gt;</code>. Peringatan kelima menandakan rancangan yang rapuh:
+    <code>FlatList</code> di dalam <code>ScrollView</code> dengan arah gulir yang sama membuat
+    React Native tidak dapat menghitung tinggi konten dengan benar, sehingga performa menurun
+    dan perilaku gulir menjadi aneh. Peringatan keenam tidak menghentikan aplikasi, tetapi React
+    bisa menggambar data yang salah atau kehilangan state baris saat datanya diperbarui.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">(pesan error dan peringatan)</span>
+      <span class="kode-sumber">buku §14.2 · Error 4–6 verbatim</span>
+    </figcaption>
+    <pre><code class="language-text">Error 4 — "Text strings must be rendered within a &lt;Text&gt; component."
+Error 5 — "VirtualizedLists should never be nested inside plain ScrollViews with the same orientation"
+Error 6 — "Warning: Each child in a list should have a unique 'key' prop."</code></pre>
+  </figure>
+
+  <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Arti dan solusi · sumber: deck “Error Keempat dan Dua Peringatan” &amp; buku §14.2</caption>
+      <thead>
+        <tr><th scope="col">Error</th><th scope="col">Arti dan solusi</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong><code>Text strings must be rendered within a &lt;Text&gt;</code></strong></td>
+          <td>Teks polos di dalam <code>View</code>; bungkus dengan <code>&lt;Text&gt;Halo&lt;/Text&gt;</code> (aturan Bab 5)</td>
+        </tr>
+        <tr>
+          <td><strong><code>VirtualizedLists should never be nested inside plain ScrollViews</code></strong></td>
+          <td><code>FlatList</code> di dalam <code>ScrollView</code> searah; pakai <code>ListHeaderComponent</code>/<code>ListFooterComponent</code> atau <code>ScrollView</code> + <code>map</code> bila data sedikit</td>
+        </tr>
+        <tr>
+          <td><strong><code>Each child in a list should have a unique 'key' prop</code></strong></td>
+          <td>Beri <code>key={item.nim}</code> pada elemen pertama hasil <code>map</code>; jangan pakai indeks array bila datanya bisa berubah urutan</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="banding"
+       data-label-lama="Membungkam peringatan"
+       data-label-benar="Memperbaiki sebab peringatannya"
+       data-petunjuk="Peringatan adalah gejala, bukan gangguan. Yang dihilangkan panel kanan adalah penyebabnya, sehingga gejalanya tidak kembali pada data berikutnya."
+    >
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">membungkam-peringatan.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §14.2</span>
+      </figcaption>
+      <pre><code class="language-text">✗ peringatan diabaikan sampai menumpuk
+✗ layar dibuat bersih dengan mematikan LogBox
+✗ key diisi indeks array: key={index}
+✗ FlatList ditumpuk di dalam ScrollView searah
+✗ gejalanya kembali saat data berubah urutan</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">memperbaiki-sebabnya.txt</span>
+        <span class="kode-sumber">buku §14.2 · Error 5–6</span>
+      </figcaption>
+      <pre><code class="language-text">✓ key={item.nim} pada elemen pertama hasil map
+✓ key dari id unik, bukan indeks array
+✓ ListHeaderComponent untuk bagian atas daftar
+✓ satu komponen daftar utama per halaman
+✓ setiap teks tampak berada di dalam &lt;Text&gt;</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Kenapa indeks array buruk sebagai <code>key</code>? (Jawaban: karena saat urutan data berubah, React kehilangan jejak baris mana yang berubah dan bisa menggambar data yang salah.)</p>
+  </div>
+</section>
+
+<section class="subbab" id="s2-5">
+  <p class="label-subbab">
+    Subbab 14.3 <span class="sumber-slide">· deck: “Uji Endpoint Dulu Sebelum Menyalahkan Aplikasi” &amp; “Server atau Aplikasi? Satu Perintah, Dua Kesimpulan” &amp; “Alamat Berbeda untuk Tiap Target” · buku §14.3</span>
+  </p>
+  <h2>Uji endpoint dulu sebelum menyalahkan aplikasi</h2>
+  <p>
+    Aplikasi yang memakai API (Bab 10) memiliki satu lagi sumber kesalahan: jaringan. Prinsip
+    pertamanya satu kalimat — uji endpoint sebelum mengintegrasikannya ke aplikasi. Bila server
+    backend buku sudah berjalan, kamu dapat memeriksa endpoint langsung dari browser, atau dari
+    terminal dengan <code>curl</code>: program baris perintah yang mengirim permintaan HTTP dan
+    mencetak respons mentahnya.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">(terminal)</span>
+      <span class="kode-sumber">buku §14.3</span>
+    </figcaption>
+    <pre><code class="language-bash">curl http://localhost:3000/api/mahasiswa</code></pre>
+  </figure>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">(terminal · Node.js 22)</span>
+      <span class="kode-sumber">buku §Contoh 2</span>
+    </figcaption>
+    <pre><code class="language-bash">node -e "fetch('http://localhost:3000/api/mahasiswa').then(r =&gt; { console.log('Status:', r.status); return r.json(); }).then(d =&gt; console.table(d.data)).catch(err =&gt; console.warn('Gagal:', err.message))"</code></pre>
+  </figure>
+
+  <p>
+    Satu perintah, dua kesimpulan berbeda. Jika <code>curl</code> berhasil tetapi aplikasi
+    gagal, masalahnya di sisi aplikasi — kode, konfigurasi, atau alamat. Jika <code>curl</code>
+    pun gagal, masalahnya di server: belum berjalan, port salah, atau error status 404/500.
+    Syarat kesimpulan pertama harus disebut: endpoint berhasil <em>tetapi</em> aplikasi tetap
+    gagal. Endpoint yang menjawab 200 sementara aplikasi berjalan normal bukan masalah sama
+    sekali.
+  </p>
+
+  <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Alamat server untuk tiap target · sumber: deck “Alamat Berbeda untuk Tiap Target” &amp; buku §14.3</caption>
+      <thead>
+        <tr><th scope="col">Target</th><th scope="col">Alamat server backend</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Komputer pengembang</td><td><code>http://localhost:3000</code></td></tr>
+        <tr><td>Emulator Android</td><td><code>http://10.0.2.2:3000</code></td></tr>
+        <tr><td>Perangkat fisik</td><td>IP komputer di jaringan lokal (LAN)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    Pesan “Network request failed” paling sering berarti alamatnya salah untuk target itu,
+    server mati, atau perangkat dan komputer berada di jaringan berbeda. Pola yang dianjurkan
+    Bab 10 — <code>try/catch</code>, pemeriksaan <code>response.ok</code>, dan state
+    loading/error/empty — sekaligus berfungsi sebagai alat debugging: letakkan
+    <code>console.warn</code> pada blok <code>catch</code> dan pada cabang
+    <code>!response.ok</code> agar setiap kegagalan meninggalkan jejak di terminal.
+  </p>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Alamat berbeda untuk tiap target sudah dibahas di Bab 10; di sini ia dipakai sebagai
+      langkah pertama debugging jaringan, bukan materi baru. Bila aplikasi menampilkan “Network
+      request failed”, jangan langsung membongkar kode: periksa alamat untuk target itu, lalu
+      pastikan server berjalan.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p><code>curl</code> berhasil tetapi aplikasi gagal — di mana masalahnya? (Jawaban: di sisi aplikasi: kode, konfigurasi, atau alamat yang dipakai aplikasi.)</p>
+  </div>
+</section>

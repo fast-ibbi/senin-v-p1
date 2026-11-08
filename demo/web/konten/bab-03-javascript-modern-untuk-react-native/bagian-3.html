@@ -1,0 +1,454 @@
+<h1>Bagian 3 — Modul &amp; Pemrograman Asinkron</h1>
+
+<p class="ringkas">
+  Subbab 3.8–3.10. Bagian ini yang membedakan “bisa menulis JavaScript” dari “siap memakai React
+  Native”: aplikasi mobile selalu memanggil data dari luar dirinya, dan semuanya berbentuk operasi
+  asinkron.
+</p>
+
+<section class="subbab" id="s3-1">
+  <p class="label-subbab">
+    Subbab 3.8 <span class="sumber-slide">· deck: “Modul Memecah Kode Menjadi File” · buku §3.8</span>
+  </p>
+  <h2>Module: <code>import</code> dan <code>export</code></h2>
+
+  <p>
+    Ketika program membesar, menyimpan semua kode dalam satu berkas menjadi tidak terkelola.
+    <strong>Module</strong> memecah kode menjadi beberapa berkas yang berbagi fungsi dan data
+    melalui <code>export</code> dan <code>import</code>. Dulu JavaScript dimuat lewat tag
+    <code>script</code> sehingga semua variabel berbagi satu ruang nama global; dua berkas yang
+    mendeklarasikan <code>daftarMahasiswa</code> saling menimpa tanpa peringatan. Sistem modul
+    menjawabnya: setiap berkas punya ruang lingkup sendiri, dan hanya yang diekspor dapat dipakai
+    berkas lain.
+  </p>
+
+  <p>
+    Ada dua jenis ekspor: <em>named export</em> untuk nilai yang diekspor satu per satu, dan
+    <em>default export</em> untuk nilai utama sebuah berkas yang diimpor tanpa kurung kurawal.
+    Aturan praktisnya: berkas data memakai named export bila memuat beberapa hal, sedangkan
+    komponen utama di Bab 4 lazim memakai default export.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">praktik-js/data-mahasiswa.mjs</span>
+      <span class="kode-sumber">buku §3.8</span>
+    </figcaption>
+    <pre><code class="language-js">export const daftarMahasiswa = [
+  { nim: '2201001', nama: 'Budi Santoso', prodi: 'Sistem Informasi', ipk: 3.45 },
+  { nim: '2201002', nama: 'Siti Aminah', prodi: 'Teknik Informatika', ipk: 3.82 },
+];
+
+export const namaAplikasi = 'Aplikasi Manajemen Data Mahasiswa';</code></pre>
+  </figure>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">praktik-js/cetak-data.mjs</span>
+      <span class="kode-sumber">buku §3.8</span>
+    </figcaption>
+    <pre><code class="language-js">import { daftarMahasiswa, namaAplikasi } from './data-mahasiswa.mjs';
+
+console.log(namaAplikasi); // Aplikasi Manajemen Data Mahasiswa
+daftarMahasiswa.forEach((m) =&gt; console.log(m.nim, m.nama));
+// 2201001 Budi Santoso
+// 2201002 Siti Aminah</code></pre>
+  </figure>
+
+  <p>
+    Nama di dalam kurung kurawal <code>import</code> harus sama persis dengan nama ekspornya, dan
+    path-nya relatif — <code>'./data-mahasiswa.mjs'</code> berarti “di folder yang sama”. Struktur
+    folder project Expo yang kamu lihat di Bab 2 memakai pola yang persis sama, hanya saja
+    targetnya komponen React.
+  </p>
+
+  <div class="banding"
+       data-label-lama="CommonJS: require dan module.exports"
+       data-label-benar="ESM: import dan export"
+       data-petunjuk="Yang kanan adalah standar JavaScript, dipakai Node.js maupun React Native. Yang kiri hanya dikenal Node.js, jadi kode React Native tidak dapat memakainya.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">gaya-lama-commonjs.js</span>
+        <span class="kode-sumber">ilustrasi · buku §3.8</span>
+      </figcaption>
+      <pre><code class="language-js">// CommonJS — gaya lama, khusus Node.js.
+const { daftarMahasiswa } = require('./data-mahasiswa.js');
+
+module.exports = { namaAplikasi: 'Aplikasi Manajemen Data Mahasiswa' };</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">gaya-baru-esm.mjs</span>
+        <span class="kode-sumber">ilustrasi · buku §3.8</span>
+      </figcaption>
+      <pre><code class="language-js">// ESM — standar JavaScript, dipakai Node.js dan React Native.
+import { daftarMahasiswa } from './data-mahasiswa.mjs';
+
+export const namaAplikasi = 'Aplikasi Manajemen Data Mahasiswa';</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Nama di dalam kurung kurawal dianggap sekadar “hiasan” dan boleh ditulis bebas. Padahal
+      <code>import</code> mencari nama ekspor yang sama persis; satu huruf besar-kecil yang berbeda
+      sudah cukup untuk menggagalkannya.
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s3-2">
+  <p class="label-subbab">
+    Subbab 3.8 <span class="sumber-slide">· deck: “Menjalankan Modul di Node.js Butuh Dua Langkah” · buku §3.8</span>
+  </p>
+  <h2>Menjalankan Modul di Node.js</h2>
+
+  <p>
+    Secara bawaan, berkas berekstensi <code>.js</code> diperlakukan Node.js sebagai modul CommonJS
+    gaya lama, sehingga menulis <code>import</code> di dalamnya memicu
+    <code>SyntaxError</code>. Ada dua cara mengaktifkan ESM: mengubah ekstensi berkas menjadi
+    <code>.mjs</code>, atau menambahkan <code>"type": "module"</code> ke <code>package.json</code>
+    di folder project. Cara pertama paling cepat untuk praktikum bab ini; cara kedua lebih tepat
+    untuk project sungguhan.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">(terminal, dari dalam folder praktik-js)</span>
+      <span class="kode-sumber">buku §3.8</span>
+    </figcaption>
+    <pre><code class="language-bash">node cetak-data.mjs
+node --check cetak-data.mjs</code></pre>
+  </figure>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">praktik-js/package.json</span>
+      <span class="kode-sumber">deck “Menjalankan Modul di Node.js” · catatan penyaji</span>
+    </figcaption>
+    <pre><code class="language-json">{ "type": "module" }</code></pre>
+  </figure>
+
+  <p>
+    Pilihan praktis bab ini adalah memakai ekstensi <code>.mjs</code> karena paling cepat, tanpa
+    berkas konfigurasi tambahan. Bila kamu memilih <code>"type": "module"</code>, seluruh berkas
+    <code>.js</code> di folder itu diperlakukan sebagai ESM, dan ekstensi <code>.mjs</code> tidak
+    lagi diperlukan.
+  </p>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Tidak ada keluaran dari <code>node --check</code> sering disangka gagal. Padahal perintah itu
+      memang hanya memeriksa tata tulis, dan keberhasilan ditandai dengan diamnya terminal serta
+      kode keluar 0. Periksa dengan <code>echo $?</code> di macOS atau Linux, atau
+      <code>echo %errorlevel%</code> di Windows.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Apa yang terjadi bila <code>import</code> menunjuk nama berkas yang salah? (Jawaban: <code>ERR_MODULE_NOT_FOUND</code>, karena nama berkas di Node.js peka huruf besar-kecil.)</p>
+  </div>
+</section>
+
+<section class="subbab" id="s3-3">
+  <p class="label-subbab">
+    Subbab 3.9 <span class="sumber-slide">· deck: “Promise Punya Tiga Keadaan” &amp; “<code>.then</code>, <code>.catch</code>, <code>.finally</code>: Membaca Promise” · buku §3.9</span>
+  </p>
+  <h2><em>Promise</em> Punya Tiga Keadaan</h2>
+
+  <p>
+    JavaScript berjalan pada satu utas; bila sebuah operasi lambat memblokir utas itu, seluruh
+    aplikasi membeku. Jawabannya pemrograman asinkron: operasi lambat dijalankan di latar belakang,
+    dan ketika selesai kode tertentu dipanggil. Cara tradisionalnya adalah <em>callback</em>, yang
+    bila berlapis menghasilkan <em>callback hell</em>: kode bersarang makin dalam dan makin sulit
+    diperbaiki.
+  </p>
+
+  <p>
+    <strong>Promise</strong> adalah objek yang mewakili hasil operasi asinkron yang belum tentu
+    selesai. Ia berstatus <em>pending</em> (menunggu), lalu berubah menjadi <em>fulfilled</em>
+    (berhasil, membawa nilai) atau <em>rejected</em> (gagal, membawa alasan kegagalan). Alih-alih
+    menumpuk callback, kita merantai perilaku dengan <code>.then</code> dan <code>.catch</code> —
+    alur yang rata dan terbaca. Analoginya seperti nomor antrean layanan: barangnya belum ada,
+    tetapi kamu sudah punya bukti bahwa hasilnya akan ada atau bahwa permintaannya gagal.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">praktik-js/10-promise.js</span>
+      <span class="kode-sumber">buku §3.9</span>
+    </figcaption>
+    <pre><code class="language-js">// Simulasi pengambilan data dari server: selesai setelah 1 detik.
+
+function ambilDataMahasiswa() {
+  return new Promise((resolve, reject) =&gt; {
+    setTimeout(() =&gt; {
+      resolve({ nim: '2201001', nama: 'Budi Santoso', ipk: 3.45 });
+    }, 1000);
+  });
+}
+
+console.log('Mengambil data...');
+ambilDataMahasiswa()
+  .then((data) =&gt; {
+    console.log(`Data diterima: ${data.nama} (IPK ${data.ipk})`);
+  })
+  .catch((error) =&gt; {
+    console.error('Gagal mengambil data:', error.message);
+  })
+  .finally(() =&gt; {
+    console.log('Proses selesai.');
+  });</code></pre>
+  </figure>
+
+  <p>
+    Fungsi pelaksana menerima dua parameter: <code>resolve</code> untuk menandai keberhasilan
+    dengan membawa data, dan <code>reject</code> untuk kegagalan. <code>setTimeout</code> di sini
+    hanya alat bantu agar terasa seperti latensi jaringan; di Bab 10 perannya digantikan
+    <code>fetch</code>. <code>.finally</code> selalu dijalankan apa pun hasilnya — tempat yang tepat
+    menutup indikator “memuat…”. Bila beberapa <em>promise</em> ditunggu sekaligus, gunakan
+    <code>Promise.all([...])</code>.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Callback bersarang: makin dalam"
+       data-label-benar="Rantai .then: rata dan terbaca"
+       data-petunjuk="Perhatikan bentuk lekukannya, bukan jumlah barisnya. Yang kiri menjorok ke kanan, yang kanan lurus ke bawah.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">callback-bersarang.js</span>
+        <span class="kode-sumber">ilustrasi · deck: “Promise Punya Tiga Keadaan” · buku §3.9</span>
+      </figcaption>
+      <pre><code class="language-js">// Callback bersarang: tiap langkah menambah satu tingkat lekukan.
+ambilDataMahasiswa(function (data) {
+  ambilNilaiMahasiswa(data.nim, function (nilai) {
+    simpanRekap(nilai, function (hasil) {
+      console.log('Selesai:', hasil);
+    });
+  });
+});</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">rantai-then.mjs</span>
+        <span class="kode-sumber">ilustrasi · buku §3.9</span>
+      </figcaption>
+      <pre><code class="language-js">// Rantai .then: setiap langkah sejajar, dibaca dari atas ke bawah.
+ambilDataMahasiswa()
+  .then((data) =&gt; ambilNilaiMahasiswa(data.nim))
+  .then((nilai) =&gt; simpanRekap(nilai))
+  .then((hasil) =&gt; console.log('Selesai:', hasil))
+  .catch((error) =&gt; console.error('Gagal:', error.message));</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Mahasiswa sering mengira harus sering membuat <em>Promise</em> sendiri. Yang wajib adalah
+      bisa memakainya, karena <code>fetch</code> di Bab 10 mengembalikan <em>promise</em>. Menulis
+      <code>new Promise</code> untuk hal yang sudah asinkron justru menambah lapisan yang tidak
+      perlu.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Di mana tulisan “Mengambil data…” dipasang dan di mana dihapus? (Jawaban: sebelum pemanggilan, dan di dalam <code>.finally</code>.)</p>
+  </div>
+</section>
+
+<section class="subbab" id="s3-4">
+  <p class="label-subbab">
+    Subbab 3.10 <span class="sumber-slide">· deck: “<code>async</code>/<code>await</code> Membuat Asinkron Terbaca Berurutan” · buku §3.10</span>
+  </p>
+  <h2><code>async</code>/<code>await</code></h2>
+
+  <p>
+    Rantai <code>.then</code> sudah jauh lebih baik daripada callback, tetapi untuk operasi
+    berurutan yang panjang kode tetap terlihat melompat-lompat. Sintaks
+    <strong><code>async</code>/<code>await</code></strong> membuat kode asinkron ditulis seperti kode
+    sinkron biasa, tanpa mengorbankan sifat tidak memblokir: fungsi bertanda <code>async</code>
+    selalu mengembalikan <em>promise</em>, dan <code>await</code> menghentikan sementara fungsi itu
+    — bukan seluruh program — hingga <em>promise</em> yang ditunggu selesai.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">praktik-js/11-async-await.js</span>
+      <span class="kode-sumber">buku §3.10</span>
+    </figcaption>
+    <pre><code class="language-js">function ambilDataMahasiswa() {
+  return new Promise((resolve, reject) =&gt; {
+    setTimeout(() =&gt; resolve({ nim: '2201004', nama: 'Dewi Lestari', ipk: 3.61 }), 500);
+  });
+}
+
+async function tampilkanData() {
+  try {
+    console.log('Memuat data...');
+    const data = await ambilDataMahasiswa();
+    console.log(`Data diterima: ${data.nama} (IPK ${data.ipk})`);
+    return data;
+  } catch (error) {
+    console.error('Terjadi kegagalan:', error.message);
+  }
+}
+
+tampilkanData();</code></pre>
+  </figure>
+
+  <p>
+    Satu-satunya baris yang berbeda dari kode sinkron adalah
+    <code>const data = await ambilDataMahasiswa();</code> — fungsi menunggu <em>promise</em>
+    selesai, lalu <code>data</code> berisi objek hasilnya. Itulah daya tarik sintaksis ini untuk
+    tiga langkah berurutan seperti “ambil data, olah, simpan”. Ingat bahwa <code>await</code> hanya
+    sah di dalam fungsi <code>async</code> atau di tingkat teratas sebuah modul.
+  </p>
+
+  <div class="banding"
+       data-label-lama=".then: hasil menempel pada rantai"
+       data-label-benar="await: hasil menempel pada variabel biasa"
+       data-petunjuk="Keduanya setara dan sama-sama tidak memblokir. Pilih yang kanan ketika ada tiga langkah berurutan, karena yang dibaca tinggal alur baris demi baris.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">versi-then.mjs</span>
+        <span class="kode-sumber">ilustrasi · buku §3.9</span>
+      </figcaption>
+      <pre><code class="language-js">// .then: nilai hanya hidup di dalam callback.
+function tampilkanData() {
+  return ambilDataMahasiswa()
+    .then((data) =&gt; {
+      console.log(`Data diterima: ${data.nama}`);
+      return data;
+    })
+    .catch((error) =&gt; console.error('Gagal:', error.message));
+}</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">versi-await.mjs</span>
+        <span class="kode-sumber">ilustrasi · buku §3.10</span>
+      </figcaption>
+      <pre><code class="language-js">// await: nilai menjadi variabel biasa, bisa dipakai di baris berikutnya.
+async function tampilkanData() {
+  try {
+    const data = await ambilDataMahasiswa();
+    console.log(`Data diterima: ${data.nama}`);
+    return data;
+  } catch (error) {
+    console.error('Gagal:', error.message);
+  }
+}</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Mengapa <em>promise</em> harus ada sama sekali? (Jawaban: JavaScript berjalan pada satu utas, sehingga operasi lambat yang dibiarkan memblokir akan membekukan seluruh aplikasi.)</p>
+  </div>
+</section>
+
+<section class="subbab" id="s3-5">
+  <p class="label-subbab">
+    Subbab 3.10 <span class="sumber-slide">· deck: “<code>try</code>/<code>catch</code>: Aplikasi Tidak Boleh Diam Saja” · buku §Contoh 3</span>
+  </p>
+  <h2><code>try</code>/<code>catch</code>: Aplikasi Tidak Boleh Diam Saja</h2>
+
+  <p>
+    Blok <code>try</code> berisi operasi yang berisiko; bila salah satunya melempar
+    <em>exception</em>, eksekusi langsung melompat ke blok <code>catch</code> yang menerima objek
+    error. Aplikasi yang baik tidak diam membisu saat jaringan putus, melainkan memberi tahu
+    pengguna dengan pesan yang jelas. Bab 10 memakai persis pola ini untuk menampilkan pesan “Gagal
+    memuat data” di layar.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">praktik-js/contoh-asinkron.mjs</span>
+      <span class="kode-sumber">buku §Contoh 3</span>
+    </figcaption>
+    <pre><code class="language-js">// Contoh 3: Promise + async/await + try/catch menyimulasikan proses bertahap.
+function prosesBerjangka(label, durasiMs) {
+  return new Promise((resolve) =&gt; {
+    setTimeout(() =&gt; resolve(`${label} selesai`), durasiMs);
+  });
+}
+
+async function jalankanAlur() {
+  try {
+    const langkah1 = await prosesBerjangka('Validasi data', 300);
+    const langkah2 = await prosesBerjangka('Simpan ke file', 500);
+    const langkah3 = await prosesBerjangka('Kirim notifikasi', 400);
+    console.log(langkah1);
+    console.log(langkah2);
+    console.log(langkah3);
+    console.log('Semua proses selesai secara berurutan.');
+  } catch (error) {
+    console.error('Alur gagal:', error.message);
+  }
+}
+
+await jalankanAlur();</code></pre>
+  </figure>
+
+  <p>
+    <code>prosesBerjangka</code> adalah <em>promise</em> generik yang menandakan selesainya satu
+    tahap setelah jeda tertentu — bayangkan setiap tahap sebagai operasi nyata seperti validasi,
+    penulisan berkas, atau pengiriman notifikasi. Karena ketiga tahap ditunggu satu per satu,
+    keluarannya selalu berurutan. Berkas ini memakai <code>await</code> langsung di tingkat
+    teratas, sehingga disimpan dengan ekstensi <code>.mjs</code>.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Catch kosong: error lenyap"
+       data-label-benar="Catch yang memilih bereaksi"
+       data-petunjuk="Catch kosong terlihat rapi karena tidak ada yang berisik di terminal — dan justru itu masalahnya: pengguna tidak tahu apa pun.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">catch-kosong.mjs</span>
+        <span class="kode-sumber">ilustrasi · deck: “try/catch: Aplikasi Tidak Boleh Diam Saja” · buku §3.10</span>
+      </figcaption>
+      <pre><code class="language-js">// Blok catch kosong: error lenyap tanpa jejak.
+async function muatData() {
+  try {
+    const data = await ambilDataMahasiswa();
+    return data;
+  } catch (error) {}
+}</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">catch-bereaksi.mjs</span>
+        <span class="kode-sumber">ilustrasi · buku §3.10</span>
+      </figcaption>
+      <pre><code class="language-js">// Catch yang bereaksi: pesan dicatat, pengguna diberi tahu.
+async function muatData() {
+  try {
+    const data = await ambilDataMahasiswa();
+    return data;
+  } catch (error) {
+    console.error('Gagal memuat data:', error.message);
+  }
+}</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Blok <code>catch</code> dianggap tempat menyembunyikan error. Padahal ia tempat aplikasi
+      memilih bereaksi: menampilkan pesan, mencatat kejadian, atau menawarkan percobaan ulang.
+      Blok <code>catch</code> kosong membuat error lenyap tanpa jejak — selalu tampilkan atau catat
+      pesan kegagalannya.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Aplikasi apa yang pernah kamu pakai dan diam saja saat gagal memuat? (Arahkan ke kesimpulan bahwa diam adalah pilihan desain yang buruk.)</p>
+  </div>
+</section>

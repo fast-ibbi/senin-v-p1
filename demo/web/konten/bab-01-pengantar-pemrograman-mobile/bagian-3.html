@@ -1,0 +1,273 @@
+<h1>Bagian 3 — React Native &amp; Expo</h1>
+
+<p class="ringkas">
+  Subbab 1.5–1.7. Bagian ini menjawab tiga pertanyaan berurutan: bagaimana React Native
+  bekerja, apa peran Expo di atasnya, dan kapan pilihan itu tepat — lengkap dengan harga
+  yang harus dibayar.
+</p>
+
+<section class="subbab" id="s3-1">
+  <p class="label-subbab">
+    Subbab 1.5 <span class="sumber-slide">· deck: “Ditulis Sekali, Digambar Native di Dua Platform” · buku §1.5</span>
+  </p>
+  <h2>Ditulis Sekali, Digambar Native di Dua Platform</h2>
+
+  <p>
+    <strong>React Native</strong> (disingkat RN) adalah framework sumber terbuka yang
+    dikembangkan Meta untuk membangun aplikasi Android dan iOS menggunakan
+    <strong>JavaScript</strong> — bahasa yang sama dengan web. Ia turunan dari pustaka React
+    untuk antarmuka web; pola pikirnya (component, props, state — lihat Bab 4) dibawa utuh ke
+    dunia mobile, tetapi elemen antarmukanya berubah dari tag HTML menjadi komponen khusus
+    mobile.
+  </p>
+
+  <p>
+    Konsep intinya sederhana namun revolusioner: <em>tulis antarmuka sekali dengan JavaScript,
+    dan React Native akan menggambar antarmuka itu menggunakan komponen UI native milik
+    masing-masing platform</em>. Ketika kamu menulis komponen <code>View</code> (wadah tata
+    letak), di Android ia menjadi <code>ViewGroup</code> dan di iOS menjadi
+    <code>UIView</code> — bukan kotak abu-abu di dalam halaman web, melainkan elemen antarmuka
+    sungguhan milik sistem operasi.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Hybrid: halaman web di dalam WebView"
+       data-label-benar="Cross-platform: komponen native sungguhan"
+       data-petunjuk="Yang menentukan pengalaman pengguna bukan bahasanya, melainkan apa yang akhirnya dirender oleh sistem operasi.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">alur-hybrid.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §1.2 &amp; §1.5</span>
+      </figcaption>
+      <pre><code class="language-text">JavaScript → HTML/CSS
+→ WebView (peramban tertanam)
+→ digambar oleh mesin render web
+→ terasa seperti halaman web
+✗ animasi berat tersendat</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">alur-react-native.txt</span>
+        <span class="kode-sumber">buku §1.5</span>
+      </figcaption>
+      <pre><code class="language-text">JavaScript (mesin Hermes)
+→ lapisan penghubung (bridge)
+→ komponen native: View, Text, ...
+→ digambar oleh sistem operasi
+✓ terasa seperti aplikasi native</code></pre>
+    </figure>
+  </div>
+</section>
+
+<section class="subbab" id="s3-2">
+  <p class="label-subbab">
+    Subbab 1.5 <span class="sumber-slide">· deck: “JavaScript Memerintah, Native yang Menggambar” · buku §1.5</span>
+  </p>
+  <h2>JavaScript Memerintah, Native yang Menggambar</h2>
+
+  <p>
+    Di dalam aplikasi React Native terdapat dua “dunia” yang hidup bersamaan: dunia
+    JavaScript tempat logika aplikasi berjalan (dijalankan mesin JavaScript bernama
+    <strong>Hermes</strong> yang dioptimalkan untuk perangkat mobile), dan dunia native tempat
+    antarmuka digambar. Kedua dunia berkomunikasi melalui lapisan penghubung yang meneruskan
+    pesan bolak-balik: JavaScript memerintahkan “buat tombol hijau di sini”, lapisan native
+    menerjemahkannya menjadi tombol asli, lalu melaporkan kejadian seperti ketukan pengguna
+    kembali ke JavaScript.
+  </p>
+
+  <p>
+    Selain antarmuka native, React Native mewarisi keunggulan pengembangan dari ekosistem web:
+    <strong>hot reload</strong> (perubahan kode langsung terlihat tanpa membangun ulang
+    aplikasi), pembaruan cepat, dan akses ke jutaan pustaka npm. Saat aplikasi dijalankan dalam
+    mode pengembangan, bundler bernama <strong>Metro</strong> menggabungkan seluruh berkas
+    JavaScript menjadi satu dan mengirimkannya ke perangkat — inilah yang akan kamu lihat
+    berjalan saat <code>npx expo start</code> di Bab 2.
+  </p>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Lapisan penghubung sering disebut “bridge” dan dianggap selamanya lambat. Sebenarnya
+      arsitekturnya terus disempurnakan dengan renderer dan mekanisme komunikasi yang lebih
+      cepat. <em>Detail arsitektur React Native terkini sebaiknya diverifikasi di dokumentasi
+      resmi reactnative.dev</em>, karena terus diperbarui.
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s3-3">
+  <p class="label-subbab">
+    Subbab 1.5 <span class="sumber-slide">· deck: “React Native Bukan Penerjemah Kode” · buku §1.5</span>
+  </p>
+  <h2>React Native Bukan Penerjemah Kode</h2>
+
+  <p>
+    Perlu ditegaskan apa yang <em>bukan</em> React Native: ia bukan penerjemah kode ke bahasa
+    native (Kotlin/Swift) dan bukan pembungkus halaman web. Kode JavaScript tetap berjalan
+    sebagai JavaScript; yang “native” adalah tampilan antarmukanya.
+  </p>
+
+  <p>
+    Konsekuensinya penting untuk memilih teknologi: aplikasi React Native unggul untuk
+    aplikasi berbasis data (form, daftar, integrasi server) — bukan untuk permainan ber-grafik
+    berat yang tetap lebih baik ditulis native.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Anggapan keliru"
+       data-label-benar="Cara kerja sebenarnya"
+       data-petunjuk="Ketiga anggapan keliru di kiri sering muncul di diskusi kelas, dan semuanya berujung pada kesimpulan yang salah tentang kapan React Native dipakai.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">anggapan.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §1.5</span>
+      </figcaption>
+      <pre><code class="language-text">✗ "JavaScript-nya diterjemahkan
+   jadi Kotlin dan Swift."
+✗ "Isinya website yang dibungkus
+   jadi aplikasi."
+✗ "Karena satu codebase, hasilnya
+   pasti sama persis di semua
+   perangkat."</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">kenyataan.txt</span>
+        <span class="kode-sumber">buku §1.5</span>
+      </figcaption>
+      <pre><code class="language-text">✓ JavaScript berjalan di mesin Hermes;
+  yang native adalah antarmukanya.
+✓ Tidak ada WebView: komponen asli
+  sistem operasi yang dipakai.
+✓ Satu logika, dua sistem render:
+  perilaku visual bisa sedikit
+  berbeda antarponsel.</code></pre>
+    </figure>
+  </div>
+</section>
+
+<section class="subbab" id="s3-4">
+  <p class="label-subbab">
+    Subbab 1.6 <span class="sumber-slide">· deck: “Expo: Tiga Komponen Utama” · buku §1.6</span>
+  </p>
+  <h2>Expo: Tiga Komponen Utama</h2>
+
+  <p>
+    React Native menyelesaikan masalah “dua codebase”, tetapi meninggalkan pekerjaan rumah
+    lain: membangun dan mengonfigurasi project native (Xcode/Android Studio), menangani modul
+    perangkat, dan membangun berkas rilis. <strong>Expo</strong> adalah framework di atas
+    React Native yang merapikan pekerjaan rumah itu. Jika React Native adalah “bahasa dan
+    mesin”, Expo adalah “lingkungan kerja yang membuat mesin itu mudah dipakai”.
+  </p>
+
+  <ol>
+    <li>
+      <strong>Expo SDK</strong> — kumpulan pustaka resmi yang menyatukan akses ke fitur
+      perangkat (kamera, lokasi, notifikasi, penyimpanan) dengan API yang konsisten lintas
+      platform. Buku ini memakai Expo SDK 57.
+    </li>
+    <li>
+      <strong>Expo Go</strong> — aplikasi perangkat yang memungkinkan project Expo dijalankan
+      langsung di ponsel tanpa membangun aplikasi native sama sekali. Ketik
+      <code>npx expo start</code>, pindai kode QR, aplikasi tampil — proses yang ideal untuk
+      belajar karena menghilangkan hambatan instalasi Android Studio atau Xcode di tahap awal.
+    </li>
+    <li>
+      <strong>EAS (Expo Application Services)</strong> — layanan cloud untuk membangun dan
+      menerbitkan aplikasi ke toko aplikasi, termasuk menghasilkan berkas APK/AAB untuk
+      Android. EAS dipakai di Bab 15.
+    </li>
+  </ol>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Mengapa Expo ada di atas React Native? (Jawaban: alasan yang sama dengan mengapa React Native ada di atas native — mengurangi kerja berulang.)</p>
+  </div>
+</section>
+
+<section class="subbab" id="s3-5">
+  <p class="label-subbab">
+    Subbab 1.6 <span class="sumber-slide">· deck: “Setiap Kemudahan Expo Punya Harganya” · buku §1.6</span>
+  </p>
+  <h2>Setiap Kemudahan Expo Punya Harganya</h2>
+
+  <p>
+    Bagi mahasiswa, manfaat terbesar Expo adalah kurva belajar: dari nol hingga aplikasi
+    berjalan di ponsel hanya butuh beberapa langkah — pengalaman pertama yang menyenangkan,
+    bukan frustrasi konfigurasi. Tentu ada harga yang dibayar, dan kamu berhak mengetahuinya
+    sejak awal.
+  </p>
+
+  <ul>
+    <li>Aplikasi Expo cenderung <strong>lebih besar ukurannya</strong>.</li>
+    <li>Jika project membutuhkan modul native yang belum didukung Expo, kamu harus keluar dari jalur nyaman dan melakukan <em>prebuild</em> atau <em>development build</em> — pekerjaan yang lebih rumit, dibahas konseptual di Bab 15.</li>
+    <li>Fitur perangkat mutakhir kadang baru tersedia setelah tim Expo menyesuaikannya ke SDK terbaru, sehingga ada jeda antara rilis fitur native dan dukungan Expo.</li>
+  </ul>
+
+  <p>
+    Bagi mayoritas aplikasi sistem informasi, ketiga keterbatasan ini tidak menghalangi; bagi
+    project khusus, inilah pertimbangan trade-off yang harus dievaluasi.
+  </p>
+</section>
+
+<section class="subbab" id="s3-6">
+  <p class="label-subbab">
+    Subbab 1.7 <span class="sumber-slide">· deck: “Keunggulan dan Keterbatasan React Native” &amp; “Kapan React Native Tepat Dipakai?” · buku §1.7</span>
+  </p>
+  <h2>Keunggulan dan Keterbatasan React Native</h2>
+
+  <p>
+    Keputusan memilih React Native tidak boleh didasarkan pada tren, melainkan pada analisis
+    keunggulan dan keterbatasannya — itulah esensi analisis pertukaran yang menjadi ciri
+    berpikir profesional.
+  </p>
+
+  <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Keunggulan dan keterbatasan React Native · sumber: buku §1.7, Tabel 1.3</caption>
+      <thead>
+        <tr><th scope="col">Keunggulan</th><th scope="col">Keterbatasan</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Satu basis kode untuk Android dan iOS</td><td>Performa di bawah native untuk beban ekstrem</td></tr>
+        <tr><td>Tim JavaScript dapat langsung produktif</td><td>Aplikasi lebih besar dan lebih boros memori</td></tr>
+        <tr><td>Ekosistem npm yang sangat luas</td><td>Fitur platform terbaru kadang terlambat diadopsi</td></tr>
+        <tr><td>Hot reload mempercepat iterasi</td><td>Debugging lintas lapisan (JS + native) lebih rumit</td></tr>
+        <tr><td>Pembaruan aplikasi tanpa membangun ulang</td><td>Modul native khusus tetap butuh keahlian native</td></tr>
+        <tr><td>Komunitas besar dan banyak materi belajar</td><td>Bergantung pada kestabilan versi pustaka pihak ketiga</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    Mari bedah tiap sisi. <strong>Keunggulan:</strong> penghematan terbesar dari satu basis
+    kode justru terjadi pada pemeliharaan jangka panjang, bukan pada penulisan awal;
+    kesinambungan keterampilan berarti tim yang menguasai JavaScript bisa langsung membangun
+    antarmuka native; ekosistem npm dan komunitas besar mempercepat penyelesaian masalah; hot
+    reload menghasilkan siklus “ubah–lihat hasil” yang pendek dan sangat mendukung belajar;
+    pembaruan kecil bisa dikirim tanpa peninjauan ulang toko; dan tenaga kerja dengan
+    keterampilan React Native relatif mudah ditemukan.
+  </p>
+
+  <p>
+    <strong>Keterbatasan:</strong> aplikasi yang menuntut rendering grafis real-time kelas
+    berat (game 3D, editor video) tetap lebih baik native; aplikasi membawa runtime JavaScript
+    sehingga berkasnya lebih besar dan konsumsi memorinya lebih tinggi; ketika Apple atau
+    Google merilis fitur baru, perlu waktu sebelum React Native mendukungnya; kesalahan bisa
+    terjadi di lapisan JavaScript, lapisan native, atau keduanya (Bab 14 melatih
+    penelusurannya); dan modul native yang sangat khusus tetap menuntut keahlian Kotlin/Swift.
+  </p>
+
+  <p>
+    <strong>Kapan tepat dipakai?</strong> Pola umumnya: aplikasi yang kaya antarmuka dan data
+    tetapi tidak menuntut performa ekstrem — aplikasi bisnis, e-commerce, layanan, sistem
+    informasi — justru mendapat manfaat terbesar, karena kecepatan pengembangan lebih penting
+    daripada keunggulan performa marginal. Inilah profil mayoritas aplikasi di dunia nyata,
+    dan inilah alasan buku ini memilih React Native.
+  </p>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Kalau atasanmu bertanya “kenapa bukan native saja?”, jawaban yang benar bukan “karena React Native modern”, melainkan… (Jawaban: karena beban pemeliharaan dua codebase lebih mahal daripada selisih performa yang tidak dirasakan pengguna pada aplikasi berbasis data.)</p>
+  </div>
+</section>

@@ -1,0 +1,261 @@
+<h1>Bagian 1 — Empat Prinsip Desain UI Mobile</h1>
+
+<p class="ringkas">
+  Subbab 6.1: empat prinsip yang menjadi kriteria keputusan desain. Bagian ini konseptual
+  tetapi tidak boleh dilewati: setiap keputusan di praktikum nanti bisa dilacak balik ke
+  salah satu prinsip di sini.
+</p>
+
+<div class="pengantar-pertanyaan">
+  <p><strong>Pertanyaan pembuka deck:</strong> “Kenapa dua aplikasi dengan fitur yang mirip bisa terasa sangat jauh beda kenyamanannya?”</p>
+  <p>Jawabannya tersebar di tiga tempat: prinsip (6.1), component (6.2), dan adaptasi layar (6.5–6.6). Bagian ini menjawab bagian prinsipnya.</p>
+</div>
+
+<section class="subbab" id="s1-1" data-subbab="6.1">
+  <p class="label-subbab">
+    Subbab 6.1 <span class="sumber-slide">· deck: “Kenapa Dua Aplikasi Mirip Terasa Jauh Berbeda?” · buku §6.1</span>
+  </p>
+  <h2>Antarmuka Disusun dengan Alasan, Bukan Coba-Coba</h2>
+
+  <p>
+    Sebelum menulis satu baris kode, perancang UI profesional menjawab satu pertanyaan:
+    mengapa sebuah aplikasi terasa mudah atau sulit dipakai? Jawabannya jarang terletak
+    pada teknologi, melainkan pada seperangkat prinsip yang mengatur cara elemen disusun,
+    diwarnai, dan merespons sentuhan.
+  </p>
+
+  <p>
+    Prinsip itu lahir bukan dari selera, melainkan dari pengamatan bertahun-tahun terhadap
+    cara manusia membaca, memegang, dan bereaksi terhadap layar sentuh.
+    Memahaminya berarti kita membangun antarmuka dengan alasan, bukan dengan coba-coba —
+    kemampuan yang membedakan pengembang aplikasi dari perakit layar.
+    Pertanyaan pertama seorang perancang bukan soal teknologi, melainkan soal kenapa
+    sebuah antarmuka terasa enak atau susah dipakai.
+  </p>
+
+  <p>
+    Bab 5 sudah membekali kita dengan bahan mentahnya (<code>View</code>, <code>Text</code>,
+    <code>StyleSheet</code>, Flexbox, <code>FlatList</code>); bab ini mengajarkan cara
+    menyusun bahan itu menjadi antarmuka yang beralasan.
+  </p>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Menganggap “antarmuka yang bagus itu soal selera”, sehingga tiap layar boleh ditata
+      sesukanya. Prinsip bukan selera: ia lahir dari pengamatan cara orang membaca dan
+      memegang ponsel, dan bisa dijelaskan alasannya.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Kalau dua tombol punya fungsi berbeda, apa yang membedakannya di mata pengguna? (Jawaban: tampilan dan posisinya, bukan niat pengembangnya.)</p>
+  </div>
+</section>
+
+<section class="subbab" id="s1-2" data-subbab="6.1">
+  <p class="label-subbab">
+    Subbab 6.1 <span class="sumber-slide">· deck: “Prinsip 1 — Elemen Serupa Tampil Serupa” · buku §6.1</span>
+  </p>
+  <h2>Prinsip 1 — Konsistensi: Elemen Serupa Tampil Serupa</h2>
+
+  <p>
+    Elemen yang serupa harus tampil dan berperilaku serupa: tombol menyimpan data selalu
+    berwarna sama, jarak antar kartu selalu sama, istilah pada label selalu sama.
+    Konsistensi menurunkan <strong>biaya kognitif</strong> pengguna: setelah belajar satu
+    layar, pengguna dapat menebak layar lain tanpa perlu belajar ulang.
+  </p>
+
+  <p>
+    Di dunia Sistem Informasi, tempat aplikasi dipakai staf dengan jenjang literasi
+    digital beragam, konsistensi bukan sekadar estetika: ia mengurangi kesalahan input
+    dan mempercepat pelatihan pengguna baru.
+    Bentuk teknisnya adalah <strong>design token</strong> — satu tempat yang menyimpan
+    warna dan ukuran yang dipakai ulang.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Nilai tersebar di tiap layar"
+       data-label-benar="Token desain di satu tempat"
+       data-petunjuk="Warna tersebar bisa menyimpang sendiri-sendiri; satu tempat membuat elemen serupa selalu tampil serupa.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">contoh-nilai-tersebar.js</span>
+        <span class="kode-sumber">ilustrasi · buku §6.1</span>
+      </figcaption>
+      <pre><code class="language-js">// Layar A dan Layar B menulis warna sendiri-sendiri.
+const kartu = { backgroundColor: '#2563EB', borderRadius: 10, padding: 16 };
+const kotak = { backgroundColor: '#3B82F6', borderRadius: 12, padding: 18 };
+
+// Saat warna utama berubah, dua tempat ini mudah lupa disesuaikan.</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">contoh-token-desain.js</span>
+        <span class="kode-sumber">ilustrasi · buku §6.1</span>
+      </figcaption>
+      <pre><code class="language-js">// Token desain: satu tempat menyimpan warna dan ukuran.
+const TOKEN = { warnaUtama: '#2563EB', radius: 12, paddingKartu: 16 };
+
+const kartu = { backgroundColor: TOKEN.warnaUtama, borderRadius: TOKEN.radius, padding: TOKEN.paddingKartu };
+const kotak = { backgroundColor: TOKEN.warnaUtama, borderRadius: TOKEN.radius, padding: TOKEN.paddingKartu };</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Konsisten sering disangka berarti semua layar harus identik. Layar dasbor dan layar
+      formulir boleh berbeda sedikit, asal aturan dasar warna, huruf, dan jarak tetap sama.
+      Konsistensi yang terlalu kaku justru bisa memblokir solusi khusus satu konteks.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Kenapa konsistensi penting di aplikasi kampus? (Jawaban: staf dengan literasi digital beragam cukup dilatih sekali.)</p>
+  </div>
+</section>
+
+<section class="subbab" id="s1-3" data-subbab="6.1">
+  <p class="label-subbab">
+    Subbab 6.1 <span class="sumber-slide">· deck: “Prinsip 2 — Mata Memindai, Bukan Membaca” · buku §6.1</span>
+  </p>
+  <h2>Prinsip 2 — Hierarki Visual: Mata Memindai, Bukan Membaca</h2>
+
+  <p>
+    Mata manusia memindai layar, bukan membacanya baris demi baris.
+    Dengan mengatur ukuran, ketebalan huruf, warna, dan posisi, kita memberi tahu
+    pengguna mana yang harus dilihat lebih dulu: judul layar paling menonjol, lalu konten
+    utama, lalu keterangan tambahan yang paling redup.
+    Hierarki yang baik membuat layar dapat dipindai dalam hitungan detik.
+  </p>
+
+  <p>
+    Ada dua mode kegagalan yang berlawanan. Hierarki yang terlalu agresif — semua teks
+    besar dan tebal — membuat layar berteriak sekaligus; hierarki yang terlalu datar
+    membuat pengguna tidak tahu harus mulai dari mana.
+  </p>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Menganggap layar yang rapi adalah layar yang semua teksnya sama ukuran (hierarki
+      datar). Hasilnya justru bingung: tidak ada petunjuk mana yang harus dibaca lebih
+      dulu.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Dari dua layar — yang semua teksnya besar dan tebal, atau yang satu judulnya benar-benar menonjol — mana yang bisa kamu pindai dalam satu detik? (Jawaban: yang kedua; hierarki datar justru memperlambat pembacaan.)</p>
+  </div>
+</section>
+
+<section class="subbab" id="s1-4" data-subbab="6.1">
+  <p class="label-subbab">
+    Subbab 6.1 <span class="sumber-slide">· deck: “Prinsip 3 — Setiap Sentuhan Butuh Jawaban” · buku §6.1</span>
+  </p>
+  <h2>Prinsip 3 — Umpan Balik: Setiap Sentuhan Butuh Jawaban</h2>
+
+  <p>
+    Setiap tindakan pengguna harus mendapat respons: tombol yang ditekan menjadi lebih
+    redup, kartu yang diketuk memberi efek visual, layar yang sedang memuat menampilkan
+    indikator.
+    Umpan balik menjawab kecemasan dasar pengguna: “apakah sentuhan saya diterima?”
+  </p>
+
+  <p>
+    Prinsip ini lahir dari kenyataan bahwa layar sentuh tidak memberi sensasi fisik
+    seperti tombol keyboard mekanik; umpan balik visual menggantikan sensasi itu.
+    Tanpa umpan balik, pengguna menekan tombol berulang kali dan menyimpulkan
+    aplikasinya rusak — walaupun kodenya benar.
+    Analoginya: menekan tombol lift yang tidak menyala, orang menekannya berkali-kali,
+    bukan menyerah.
+  </p>
+
+  <p>
+    Umpan balik dipilih secara bertingkat: respons visual pada sentuhan itu wajib
+    (mudah dilakukan dengan <code>Pressable</code>), sedangkan getaran dan animasi boleh
+    dipertimbangkan belakangan.
+  </p>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Mengira getaran dan animasi wajib dipasang sejak awal. Keduanya boleh, bukan wajib;
+      yang wajib adalah respons sentuh yang terlihat.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Respons mana yang wajib, dan mana yang boleh menyusul? (Jawaban: respons sentuh yang terlihat itu wajib; getaran dan animasi boleh dipertimbangkan belakangan.)</p>
+  </div>
+</section>
+
+<section class="subbab" id="s1-5" data-subbab="6.1">
+  <p class="label-subbab">
+    Subbab 6.1 <span class="sumber-slide">· deck: “Prinsip 4 — Jangkauan Ibu Jari Menentukan Posisi” · buku §6.1</span>
+  </p>
+  <h2>Prinsip 4 — Ramah Ibu Jari: Jangkauan Menentukan Posisi</h2>
+
+  <p>
+    Sebagian besar interaksi ponsel dilakukan dengan satu ibu jari, dan jangkauannya
+    terbatas: bagian bawah dan tengah layar mudah dijangkau, sudut atas sulit.
+    Karena itu aksi penting — tombol simpan, navigasi bawah — ditempatkan di zona mudah
+    dijangkau, sedangkan area atas disediakan untuk judul dan status.
+  </p>
+
+  <p>
+    Perhatikan bagaimana ponsel modern menaruh tombol aksi utama di bawah — itu bukan
+    kebetulan. Pengorbanannya nyata: sebagian kepadatan layout dilepas demi kenyamanan
+    jangkauan, dan jangkauan kadang bentrok dengan kebiasaan, misalnya tombol kembali
+    tradisional di kiri atas.
+  </p>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Mempertahankan tombol kembali di kiri atas semata-mata karena kebiasaan. Kebiasaan
+      itu sah, tetapi keputusan posisi tetap harus dipertimbangkan melawan jangkauan ibu
+      jari — bukan dipertahankan tanpa alasan.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Tombol Simpan di formulir panjang sebaiknya di mana? (Jawaban: mengikuti ibu jari — menempel di bawah formulir, bukan di sudut atas.)</p>
+  </div>
+</section>
+
+<section class="subbab" id="s1-6" data-subbab="6.1">
+  <p class="label-subbab">
+    Subbab 6.1 <span class="sumber-slide">· deck: “Empat Prinsip Ini Tidak Berdiri Sendiri” · buku §6.1</span>
+  </p>
+  <h2>Empat Prinsip Ini Tidak Berdiri Sendiri</h2>
+
+  <p>
+    Keempat prinsip saling menopang. Hierarki tanpa konsistensi membuat setiap layar
+    mengiklankan caranya sendiri; umpan balik tanpa hierarki memberi respons yang sama
+    untuk tindakan yang berbeda.
+  </p>
+
+  <blockquote>
+    Prinsip menjadi nyata lewat token desain, skala tipografi, palet warna, dan gaya
+    <code>Pressable</code> saat ditekan atau nonaktif.
+  </blockquote>
+
+  <p>
+    Peta perwujudannya: konsistensi berwujud token desain (6.2), hierarki berwujud skala
+    tipografi (6.4), umpan balik berwujud gaya <code>Pressable</code> saat ditekan (6.2),
+    dan ramah ibu jari berwujud posisi aksi serta navigasi bawah (6.3).
+    Saat lupa sebuah prinsip, kembali ke subbab asalnya.
+  </p>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Pilih satu prinsip, lalu sebut satu pelanggarannya di aplikasi yang kamu pakai sehari-hari. (Latihan berpasangan: yang dinilai mutu penalarannya, bukan pilihan aplikasinya.)</p>
+  </div>
+</section>

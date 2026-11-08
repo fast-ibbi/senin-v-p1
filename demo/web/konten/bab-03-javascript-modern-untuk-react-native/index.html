@@ -1,0 +1,92 @@
+<h1>Bab 3 — JavaScript Modern untuk React Native</h1>
+
+<p class="ringkas">
+  Variabel, tipe data, operator, percabangan, perulangan, fungsi dan arrow function, array dan
+  objek, <em>destructuring</em>, <em>spread</em>, serta <code>map</code>, <code>filter</code>,
+  dan <code>reduce</code>; dilanjutkan dengan modul <code>import</code>/<code>export</code> dan
+  pemrograman asinkron lewat <em>Promise</em>, <code>async</code>/<code>await</code>, dan
+  <code>try</code>/<code>catch</code>. Fondasi bahasa sebelum menulis component · Pertemuan 3–4.
+  Belum ada satu layar pun di bab ini, dan itu disengaja: React Native pada akhirnya adalah
+  JavaScript.
+</p>
+
+<div class="pengantar-pertanyaan">
+  <p><strong>Pertanyaan pembuka deck:</strong> “React Native sebenarnya memakai bahasa apa?”</p>
+  <p>
+    Tampung semua tebakan sebelum dijawab. Jawaban yang benar: JavaScript — bukan Kotlin atau
+    Swift, karena keduanya bahasa native yang tidak dipakai di buku ini. Seluruh kode hari ini
+    berjalan di Node.js, belum ada antarmuka sama sekali.
+  </p>
+</div>
+
+<h2>Tujuan pembelajaran</h2>
+
+<p>Setelah bab ini, kamu bisa:</p>
+
+<ul>
+  <li>Menjelaskan <code>const</code> dan <code>let</code> beserta akibat <em>scope</em>-nya</li>
+  <li>Menerapkan tipe data, operator, percabangan, dan perulangan</li>
+  <li>Menganalisis fungsi biasa dan arrow function, termasuk perilaku <code>this</code></li>
+  <li>Menerapkan <em>destructuring</em>, <em>spread</em>, <code>map</code>, <code>filter</code>, dan <code>reduce</code></li>
+  <li>Mengevaluasi modul <code>import</code>/<code>export</code> serta pola <code>async</code>/<code>await</code></li>
+</ul>
+
+<p>
+  Tujuan 1 sampai 4 dinilai lewat Latihan Bab 3 dan Kuis 1 di pertemuan berikutnya, sedangkan
+  tujuan 5 baru terpakai penuh saat kita memanggil server di Bab 10. Mahasiswa yang dapat
+  menjelaskan <code>const</code> dan <code>map</code> dengan kata-kata sendiri sudah aman masuk
+  Bab 4, karena keduanya muncul di hampir setiap component React.
+</p>
+
+<h2>Peta halaman</h2>
+
+<ul>
+  <li><strong>Bagian 1 — Variabel, Tipe Data &amp; Kendali</strong> (subbab 3.1–3.4): <code>const</code> dan <code>let</code> beserta jebakan <code>var</code>, enam tipe data dan operator, enam nilai yang dianggap salah, tiga bentuk perulangan, serta fungsi biasa dan arrow function.</li>
+  <li><strong>Bagian 2 — Array, Objek &amp; Pengolahan Data</strong> (subbab 3.5–3.7): tipe rujukan dan bahaya <em>aliasing</em>, <em>destructuring</em> dan <em>spread</em>, lalu <code>map</code>, <code>filter</code>, <code>reduce</code>, dan <code>find</code> sampai studi kasus laporan akademik.</li>
+  <li><strong>Bagian 3 — Modul &amp; Pemrograman Asinkron</strong> (subbab 3.8–3.10): <code>import</code>/<code>export</code> dan ekstensi <code>.mjs</code>, tiga keadaan <em>Promise</em>, rantai <code>.then</code>/<code>.catch</code>/<code>.finally</code>, <code>async</code>/<code>await</code>, dan <code>try</code>/<code>catch</code>.</li>
+  <li><strong>Praktikum</strong>: <code>data-mahasiswa.mjs</code>, <code>pengolah-nilai.mjs</code>, <code>package.json</code>, dan rekap lima mahasiswa yang tersimpan sebagai <code>hasil-rekap.json</code>.</li>
+</ul>
+
+<p>
+  Deck bab ini hanya punya dua bagian besar. “Bagian 1 — Bahasa JavaScript &amp; Pengolahan Data”
+  memuat tujuh subbab sekaligus, jadi dipecah menjadi dua halaman: bagian 1 (subbab 3.1–3.4) dan
+  bagian 2 (subbab 3.5–3.7). “Bagian 2 — Modul &amp; Pemrograman Asinkron” menjadi halaman
+  bagian 3.
+</p>
+
+<div class="kotak kotak-tiruan">
+  <p class="kotak-judul">Yang perlu diketahui sebelum membaca</p>
+  <p>
+    Setiap blok kode di halaman-halaman berikut disalin verbatim dari
+    <code>buku/bab-03-javascript-modern-untuk-react-native.md</code> atau deck
+    <code>slides/bab-03-javascript-modern-untuk-react-native.md</code>; label
+    <code>kode-sumber</code> menyebut asalnya, dan blok yang memang disusun untuk halaman ini
+    diberi label <code>ilustrasi</code>. Perbandingan <strong>sebelum/sesudah</strong>
+    menampilkan pola yang tertukar atau naif di samping pola yang benar; tombol di kepala panel
+    untuk berpindah antara keduanya.
+  </p>
+  <p>
+    Semua contoh berjalan dengan Node.js di folder <code>praktik-js</code> tanpa dependency
+    tambahan, jadi kegagalan hampir selalu berasal dari ekstensi berkas atau folder kerja yang
+    salah. Nama berkas di label dibaca sebagai label teknik, bukan sebagai path yang wajib ada di
+    komputer kamu.
+  </p>
+  <p>
+    Data yang dipakai konsisten sepanjang buku: lima mahasiswa dengan bentuk
+    <code>{ id, nim, nama, prodi, angkatan, ipk, email, telepon }</code>. Struktur yang sama
+    dipakai dari Bab 4 sampai Project Akhir, jadi jangan mengarang data lain di latihan.
+  </p>
+  <p class="kotak-jawab">
+    Dua kebiasaan yang dibawa dari bab ini sampai akhir buku: selalu memakai <code>===</code>, dan
+    memperlakukan data sebagai sesuatu yang disalin, bukan diubah.
+  </p>
+</div>
+
+<div class="kotak kotak-tanya">
+  <p class="kotak-judul">Pertanyaan penuntun</p>
+  <p>
+    Konsep mana yang paling sering tertukar di bab ini? <em>Spread</em> dan <em>rest</em> —
+    keduanya memakai tiga titik yang sama, tetapi tugasnya berlawanan. Perhatikan subbab 2.3 dan
+    subbab 1.6.
+  </p>
+</div>

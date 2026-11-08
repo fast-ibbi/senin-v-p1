@@ -1,0 +1,582 @@
+<h1>Praktikum Bab 9 — Keranjang Belanja TokoKu</h1>
+
+<p class="ringkas">
+  Enam berkas, satu aplikasi kecil bernama TokoKu: katalog empat produk, badge keranjang,
+  kendali qty, dan total harga yang dihitung — bukan disimpan. Semua konsep bab ini hidup di
+  dalamnya, dan tidak ada satu pun layar yang memanggil <code>setItems</code>.
+</p>
+
+<div class="kotak kotak-tiruan">
+  <p class="kotak-judul">Tujuan praktikum</p>
+  <p>Setelah menyelesaikan praktikum ini, kamu mampu:</p>
+  <ol>
+    <li>mengimplementasikan global state keranjang belanja dengan Context API dan <code>useState</code>;</li>
+    <li>membungkus akses context dalam custom hook <code>useCart</code> agar komponen tidak bergantung pada detail context;</li>
+    <li>membangun dua layar yang membaca dan menulis state yang sama: daftar produk dan layar keranjang;</li>
+    <li>menampilkan badge jumlah item yang selalu sinkron dengan isi keranjang;</li>
+    <li>menghitung total harga sebagai nilai turunan (derived state);</li>
+    <li>mengidentifikasi titik penyisipan persistensi yang akan diimplementasikan di Bab 11.</li>
+  </ol>
+</div>
+
+<h2>Kebutuhan</h2>
+
+<ul>
+  <li>Project Expo berbasis JavaScript (template <code>blank</code>) dengan Expo Router terpasang — pemasangan dan konfigurasinya dikerjakan di Bab 7.</li>
+  <li>Expo Go atau emulator Android (Bab 2).</li>
+  <li>Node.js LTS minimal 22 pada komputer kerja.</li>
+  <li>Rasa ingin tahu: semua konsep state pada bab ini akan hidup dalam satu aplikasi kecil bernama <code>TokoKu</code>.</li>
+</ul>
+
+<h2>Persiapan</h2>
+
+<ol>
+  <li>Pastikan Node.js LTS terpasang, lalu buka terminal baru.</li>
+  <li>Buat project baru dengan perintah di bawah, lalu masuk ke foldernya.</li>
+  <li>Pasang Expo Router beserta dependensi pendukungnya persis seperti Bab 7 §7.2–7.3 — entri utama <code>expo-router/entry</code>, field <code>scheme</code>, dan plugin di <code>app.json</code>.</li>
+  <li>Buat struktur folder di dalam <code>TokoKu</code>: <code>app/</code>, <code>context/</code>, <code>hooks/</code>, dan <code>data/</code>.</li>
+  <li>Buka VS Code dan pastikan folder kerja yang terbuka adalah <code>TokoKu</code>.</li>
+</ol>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">(terminal)</span>
+    <span class="kode-sumber">buku §Praktikum · Persiapan</span>
+  </figcaption>
+  <pre><code class="language-bash">npx create-expo-app TokoKu --template blank
+cd TokoKu</code></pre>
+</figure>
+
+<h2>Langkah kerja</h2>
+
+<ol>
+  <li>Buat <code>data/produk.js</code> berisi katalog empat produk: Buku 45000, Bolpoin 5000, Tinta 25000, dan Tipe-X 12000.</li>
+  <li>Buat <code>context/CartContext.js</code> — jantung praktikum: context keranjang, provider, dan seluruh operasi keranjang.</li>
+  <li>Buat <code>hooks/useCart.js</code> — custom hook yang membungkus akses ke context.</li>
+  <li>Buat <code>app/_layout.js</code> — layout akar yang membungkus seluruh rute dengan <code>CartProvider</code>.</li>
+  <li>Buat <code>app/index.js</code> — layar daftar produk dengan tombol “Tambah” dan badge keranjang.</li>
+  <li>Buat <code>app/keranjang.js</code> — layar isi keranjang dengan kendali tambah, kurang, hapus, dan total harga.</li>
+  <li>Jalankan <code>npx expo start</code>, lalu buka aplikasi di Expo Go.</li>
+  <li>Uji skenario: tambah 2 Buku dan 1 Tipe-X dari layar produk, periksa badge, buka layar keranjang, periksa rincian dan total, kurangi dan hapus item, lalu kosongkan keranjang sebagai latihan.</li>
+  <li>Tutup aplikasi dan buka kembali; amati bahwa keranjang kosong. Catat bahwa ini batas penyimpanan di memori, dan perbaikannya dibahas di Bab 11.</li>
+</ol>
+
+<h2>Kode: data/produk.js</h2>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">data/produk.js</span>
+    <span class="kode-sumber">buku §Praktikum · Kode</span>
+  </figcaption>
+  <pre><code class="language-js">export const PRODUK = [
+  { id: 'p1', nama: 'Buku', harga: 45000 },
+  { id: 'p2', nama: 'Bolpoin', harga: 5000 },
+  { id: 'p3', nama: 'Tinta', harga: 25000 },
+  { id: 'p4', nama: 'Tipe-X', harga: 12000 },
+];</code></pre>
+</figure>
+
+<h2>Kode: context/CartContext.js</h2>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">context/CartContext.js</span>
+    <span class="kode-sumber">buku §Praktikum · Kode</span>
+  </figcaption>
+  <pre><code class="language-jsx">import { createContext, useState } from 'react';
+
+export const CartContext = createContext(null);
+
+export function CartProvider({ children }) {
+  const [items, setItems] = useState([]);
+
+  const tambahItem = (produk) =&gt; {
+    setItems((sekarang) =&gt; {
+      const ada = sekarang.find((i) =&gt; i.id === produk.id);
+      if (ada) {
+        return sekarang.map((i) =&gt;
+          i.id === produk.id ? { ...i, qty: i.qty + 1 } : i
+        );
+      }
+      return [...sekarang, { ...produk, qty: 1 }];
+    });
+  };
+
+  const kurangiItem = (id) =&gt; {
+    setItems((sekarang) =&gt;
+      sekarang
+        .map((i) =&gt; (i.id === id ? { ...i, qty: i.qty - 1 } : i))
+        .filter((i) =&gt; i.qty &gt; 0)
+    );
+  };
+
+  const hapusItem = (id) =&gt; {
+    setItems((sekarang) =&gt; sekarang.filter((i) =&gt; i.id !== id));
+  };
+
+  const jumlahItem = items.reduce((total, i) =&gt; total + i.qty, 0);
+  const totalHarga = items.reduce((total, i) =&gt; total + i.qty * i.harga, 0);
+
+  // TODO (Bab 11): muat items dari AsyncStorage saat provider dibuat,
+  // dan simpan items setiap kali berubah, agar keranjang bertahan
+  // setelah aplikasi ditutup.
+
+  return (
+    &lt;CartContext.Provider
+      value={{ items, tambahItem, kurangiItem, hapusItem, jumlahItem, totalHarga }}
+    &gt;
+      {children}
+    &lt;/CartContext.Provider&gt;
+  );
+}</code></pre>
+</figure>
+
+<h2>Kode: hooks/useCart.js</h2>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">hooks/useCart.js</span>
+    <span class="kode-sumber">buku §Praktikum · Kode</span>
+  </figcaption>
+  <pre><code class="language-js">import { useContext } from 'react';
+import { CartContext } from '../context/CartContext';
+
+export function useCart() {
+  const ctx = useContext(CartContext);
+  if (ctx === null) {
+    throw new Error('useCart harus dipakai di dalam &lt;CartProvider&gt;.');
+  }
+  return ctx;
+}</code></pre>
+</figure>
+
+<h2>Kode: app/_layout.js</h2>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">app/_layout.js</span>
+    <span class="kode-sumber">buku §Praktikum · Kode</span>
+  </figcaption>
+  <pre><code class="language-jsx">import { Stack } from 'expo-router';
+import { CartProvider } from '../context/CartContext';
+
+export default function RootLayout() {
+  return (
+    &lt;CartProvider&gt;
+      &lt;Stack screenOptions={{ headerTitleAlign: 'center' }} /&gt;
+    &lt;/CartProvider&gt;
+  );
+}</code></pre>
+</figure>
+
+<h2>Kode: app/index.js</h2>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">app/index.js</span>
+    <span class="kode-sumber">buku §Praktikum · Kode</span>
+  </figcaption>
+  <pre><code class="language-jsx">import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Link } from 'expo-router';
+import { PRODUK } from '../data/produk';
+import { useCart } from '../hooks/useCart';
+
+function formatRupiah(nilai) {
+  return 'Rp ' + String(nilai).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+}
+
+export default function DaftarProduk() {
+  const { tambahItem, jumlahItem } = useCart();
+
+  const renderProduk = ({ item }) =&gt; (
+    &lt;View style={styles.kartu}&gt;
+      &lt;View style={styles.info}&gt;
+        &lt;Text style={styles.nama}&gt;{item.nama}&lt;/Text&gt;
+        &lt;Text style={styles.harga}&gt;{formatRupiah(item.harga)}&lt;/Text&gt;
+      &lt;/View&gt;
+      &lt;Pressable
+        style={({ pressed }) =&gt; [styles.tombol, pressed &amp;&amp; styles.tombolDitekan]}
+        onPress={() =&gt; tambahItem(item)}
+      &gt;
+        &lt;Text style={styles.teksTombol}&gt;Tambah&lt;/Text&gt;
+      &lt;/Pressable&gt;
+    &lt;/View&gt;
+  );
+
+  return (
+    &lt;View style={styles.layar}&gt;
+      &lt;Link href="/keranjang" style={styles.badge}&gt;
+        &lt;Text style={styles.teksBadge}&gt;Keranjang ({jumlahItem})&lt;/Text&gt;
+      &lt;/Link&gt;
+      &lt;FlatList
+        data={PRODUK}
+        keyExtractor={(item) =&gt; item.id}
+        renderItem={renderProduk}
+        contentContainerStyle={styles.daftar}
+      /&gt;
+    &lt;/View&gt;
+  );
+}
+
+const styles = StyleSheet.create({
+  layar: { flex: 1, backgroundColor: '#f5f6fa' },
+  badge: {
+    alignSelf: 'flex-end',
+    marginRight: 16,
+    marginTop: 8,
+    backgroundColor: '#2f3542',
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 20,
+  },
+  teksBadge: { color: 'white', fontWeight: '600' },
+  daftar: { paddingHorizontal: 16, paddingBottom: 24 },
+  kartu: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: 'white',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+  },
+  info: { flex: 1 },
+  nama: { fontSize: 16, fontWeight: '600', color: '#2f3542' },
+  harga: { marginTop: 4, fontSize: 14, color: '#57606f' },
+  tombol: {
+    backgroundColor: '#3742fa',
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    marginLeft: 12,
+  },
+  tombolDitekan: { opacity: 0.7 },
+  teksTombol: { color: 'white', fontWeight: '600' },
+});</code></pre>
+</figure>
+
+<h2>Kode: app/keranjang.js</h2>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">app/keranjang.js</span>
+    <span class="kode-sumber">buku §Praktikum · Kode</span>
+  </figcaption>
+  <pre><code class="language-jsx">import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Link } from 'expo-router';
+import { useCart } from '../hooks/useCart';
+
+function formatRupiah(nilai) {
+  return 'Rp ' + String(nilai).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+}
+
+export default function Keranjang() {
+  const { items, tambahItem, kurangiItem, hapusItem, totalHarga, jumlahItem } =
+    useCart();
+
+  const renderItem = ({ item }) =&gt; (
+    &lt;View style={styles.baris}&gt;
+      &lt;View style={styles.info}&gt;
+        &lt;Text style={styles.nama}&gt;{item.nama}&lt;/Text&gt;
+        &lt;Text style={styles.sub}&gt;
+          {formatRupiah(item.harga)} x {item.qty} ={' '}
+          {formatRupiah(item.harga * item.qty)}
+        &lt;/Text&gt;
+      &lt;/View&gt;
+      &lt;View style={styles.kendali}&gt;
+        &lt;Pressable style={styles.tombolKecil} onPress={() =&gt; kurangiItem(item.id)}&gt;
+          &lt;Text style={styles.teksTombol}&gt;-&lt;/Text&gt;
+        &lt;/Pressable&gt;
+        &lt;Text style={styles.qty}&gt;{item.qty}&lt;/Text&gt;
+        &lt;Pressable style={styles.tombolKecil} onPress={() =&gt; tambahItem(item)}&gt;
+          &lt;Text style={styles.teksTombol}&gt;+&lt;/Text&gt;
+        &lt;/Pressable&gt;
+        &lt;Pressable style={styles.tombolHapus} onPress={() =&gt; hapusItem(item.id)}&gt;
+          &lt;Text style={styles.teksHapus}&gt;Hapus&lt;/Text&gt;
+        &lt;/Pressable&gt;
+      &lt;/View&gt;
+    &lt;/View&gt;
+  );
+
+  return (
+    &lt;View style={styles.layar}&gt;
+      {items.length === 0 ? (
+        &lt;View style={styles.kosong}&gt;
+          &lt;Text style={styles.teksKosong}&gt;Keranjang masih kosong.&lt;/Text&gt;
+          &lt;Link href="/" style={styles.tombolBelanja}&gt;
+            &lt;Text style={styles.teksBelanja}&gt;Mulai Belanja&lt;/Text&gt;
+          &lt;/Link&gt;
+        &lt;/View&gt;
+      ) : (
+        &lt;&gt;
+          &lt;FlatList
+            data={items}
+            keyExtractor={(item) =&gt; item.id}
+            renderItem={renderItem}
+            contentContainerStyle={styles.daftar}
+          /&gt;
+          &lt;View style={styles.ringkasan}&gt;
+            &lt;Text style={styles.teksRingkasan}&gt;
+              Total ({jumlahItem} item): {formatRupiah(totalHarga)}
+            &lt;/Text&gt;
+            &lt;Pressable style={styles.tombolBeli}&gt;
+              &lt;Text style={styles.teksBeli}&gt;Beli Sekarang&lt;/Text&gt;
+            &lt;/Pressable&gt;
+          &lt;/View&gt;
+        &lt;/&gt;
+      )}
+    &lt;/View&gt;
+  );
+}
+
+const styles = StyleSheet.create({
+  layar: { flex: 1, backgroundColor: '#f5f6fa' },
+  daftar: { paddingHorizontal: 16, paddingBottom: 16 },
+  baris: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: 'white',
+    borderRadius: 12,
+    padding: 16,
+    marginTop: 12,
+  },
+  info: { flex: 1 },
+  nama: { fontSize: 16, fontWeight: '600', color: '#2f3542' },
+  sub: { marginTop: 4, fontSize: 13, color: '#57606f' },
+  kendali: { flexDirection: 'row', alignItems: 'center' },
+  tombolKecil: {
+    backgroundColor: '#3742fa',
+    borderRadius: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+  },
+  qty: {
+    marginHorizontal: 10,
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#2f3542',
+  },
+  tombolHapus: { marginLeft: 10, paddingHorizontal: 6, paddingVertical: 6 },
+  teksTombol: { color: 'white', fontWeight: '700', fontSize: 15 },
+  teksHapus: { color: '#e84118', fontWeight: '600', fontSize: 13 },
+  ringkasan: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: 'white',
+    padding: 16,
+    borderTopWidth: 1,
+    borderTopColor: '#e0e0e0',
+  },
+  teksRingkasan: { fontSize: 15, fontWeight: '600', color: '#2f3542' },
+  tombolBeli: {
+    backgroundColor: '#2f3542',
+    borderRadius: 8,
+    paddingHorizontal: 18,
+    paddingVertical: 10,
+  },
+  teksBeli: { color: 'white', fontWeight: '700' },
+  kosong: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  teksKosong: { fontSize: 16, color: '#57606f', marginBottom: 16 },
+  tombolBelanja: {
+    backgroundColor: '#3742fa',
+    borderRadius: 8,
+    paddingHorizontal: 18,
+    paddingVertical: 10,
+  },
+  teksBelanja: { color: 'white', fontWeight: '700' },
+});</code></pre>
+</figure>
+
+<h2>Penjelasan kode</h2>
+
+<p>
+  <strong><code>context/CartContext.js</code></strong> adalah satu-satunya tempat state
+  keranjang disimpan dan diubah. State <code>items</code> berisi larik objek
+  <code>{ id, nama, harga, qty }</code>. Tiga keputusan penting ada di dalamnya. Pertama,
+  setiap operasi memakai pembaruan fungsional <code>setItems((sekarang) =&gt; …)</code> agar
+  nilainya selalu dihitung dari keadaan terbaru. Kedua, <code>tambahItem</code> mencari item
+  dengan <code>find</code>; bila sudah ada, qty dinaikkan lewat <code>map</code>, bila belum,
+  item baru ditambahkan dengan spread <code>{ ...produk, qty: 1 }</code>. Ketiga,
+  <code>kurangiItem</code> menggabungkan <code>map</code> dan <code>filter</code>, sehingga qty
+  tidak pernah nol atau negatif. <code>jumlahItem</code> dan <code>totalHarga</code> dihitung
+  ulang dari <code>items</code> pada setiap render, jadi keduanya tidak mungkin tertinggal.
+</p>
+
+<p>
+  <strong><code>hooks/useCart.js</code></strong> adalah jembatan konsumsi, bukan penyimpanan.
+  Ia memisahkan dua tanggung jawab: komponen tidak perlu tahu nama context, nilai awalnya, atau
+  cara mendeteksi kesalahan; dan logika pembacaan dapat ditingkatkan di satu tempat — misalnya
+  menambahkan pencatatan — tanpa menyentuh layar. Pemeriksaan <code>ctx === null</code> bekerja
+  karena nilai awal context memang <code>null</code>, sehingga pemakaian di luar provider
+  dilaporkan dengan pesan yang menyebut perbaikannya.
+</p>
+
+<p>
+  <strong><code>app/_layout.js</code></strong> menentukan cakupan global. Karena
+  <code>CartProvider</code> membungkus <code>&lt;Stack&gt;</code>, setiap rute berada di dalam
+  subtree-nya. Apabila suatu saat ada area yang tidak membutuhkan keranjang, provider dapat
+  dipindah lebih rendah — cakupan provider yang tepat mengurangi render ulang yang tidak perlu.
+</p>
+
+<p>
+  <strong>Dua layar</strong> adalah konsumen murni: membaca nilai, memanggil fungsi, lalu
+  menampilkan hasil. <code>app/index.js</code> memakai dua nilai dari <code>useCart()</code> —
+  <code>tambahItem</code> untuk menulis dan <code>jumlahItem</code> untuk badge.
+  <code>app/keranjang.js</code> memakai enam nilai. Baris item menampilkan
+  “harga satuan x qty = subtotal”; tombol <code>-</code> memanggil
+  <code>kurangiItem(item.id)</code>, tombol <code>+</code> memanggil
+  <code>tambahItem(item)</code>, dan “Hapus” memanggil <code>hapusItem(item.id)</code>.
+  Ketika <code>items.length === 0</code>, layar menampilkan pesan dan tautan “Mulai Belanja”
+  alih-alih daftar kosong — pola empty state yang akan kamu temui lagi di Bab 10.
+  Fragmen <code>&lt;&gt;…&lt;/&gt;</code> dipakai agar <code>FlatList</code> dan ringkasan
+  menjadi satu grup tanpa menambah node layout.
+</p>
+
+<p>
+  Alur satu penekanan tombol “Tambah”: <code>onPress</code> di <code>app/index.js</code>
+  memanggil <code>tambahItem(item)</code> → <code>setItems</code> memperbarui state → nilai
+  context berubah → React me-render ulang semua komponen yang memakai <code>useCart()</code> →
+  badge dan daftar keranjang ikut berubah. Alur ini satu arah dan mudah ditelusuri; itulah
+  alasan pola Context plus custom hook menjadi standar untuk aplikasi skala kecil-menengah.
+</p>
+
+<h2>Hasil yang diharapkan</h2>
+
+<ol>
+  <li>Layar awal menampilkan empat kartu produk — Buku Rp 45.000, Bolpoin Rp 5.000, Tinta Rp 25.000, Tipe-X Rp 12.000 — dan badge “Keranjang (0)” di kanan atas.</li>
+  <li>Setiap penekanan “Tambah” menaikkan badge; dua kali pada Buku menjadikan badge “Keranjang (2)”.</li>
+  <li>Layar keranjang menampilkan satu baris per produk dengan qty yang benar: untuk 2 Buku dan 1 Tipe-X, baris Buku “Rp 45.000 x 2 = Rp 90.000”, Tipe-X “Rp 12.000 x 1 = Rp 12.000”, dan ringkasan “Total (3 item): Rp 102.000”.</li>
+  <li>Menekan “-” pada item ber-qty 1 menghapus barisnya; menekan “-” pada qty 2 menurunkannya menjadi 1 tanpa pernah menjadi 0 atau negatif; “Hapus” langsung menghilangkan baris.</li>
+  <li>Setelah semua item dihapus, layar menampilkan “Keranjang masih kosong.” beserta tombol “Mulai Belanja” yang kembali ke daftar produk.</li>
+  <li>Menutup lalu membuka kembali aplikasi mengembalikan keranjang ke keadaan kosong — wajar, karena penyimpanan masih di memori.</li>
+</ol>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">(ringkasan tampilan layar keranjang)</span>
+    <span class="kode-sumber">disusun dari buku §Praktikum · Hasil yang Diharapkan — bukan keluaran terminal</span>
+  </figcaption>
+  <pre><code class="language-text">Buku
+Rp 45.000 x 2 = Rp 90.000          [-]  2  [+]  Hapus
+
+Tipe-X
+Rp 12.000 x 1 = Rp 12.000          [-]  1  [+]  Hapus
+
+Total (3 item): Rp 102.000              [ Beli Sekarang ]</code></pre>
+</figure>
+
+<h2>Troubleshooting</h2>
+
+<div class="tabel-gulir">
+  <table class="tabel">
+    <caption>Ketika keranjang belum berperilaku seperti harapan · sumber: buku §Troubleshooting</caption>
+    <thead>
+      <tr><th scope="col">Gejala</th><th scope="col">Penyebab</th><th scope="col">Solusi</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>“Unable to resolve module expo-router”, atau layar hanya menampilkan latar kosong</td>
+        <td>Expo Router belum terpasang, atau field <code>main</code> di <code>package.json</code> belum diarahkan ke <code>expo-router/entry</code></td>
+        <td>Jalankan <code>npx expo install expo-router react-native-safe-area-context react-native-screens expo-linking expo-constants expo-status-bar</code>, setel <code>"main": "expo-router/entry"</code>, tambahkan <code>scheme</code> dan plugin router di <code>app.json</code>, lalu muat ulang dengan <code>npx expo start --clear</code></td>
+      </tr>
+      <tr>
+        <td>Error “useCart harus dipakai di dalam &lt;CartProvider&gt;.”, atau keranjang tidak pernah berubah setelah tombol ditekan</td>
+        <td>Komponen memanggil <code>useCart()</code> tetapi tidak berada di dalam subtree <code>CartProvider</code> — provider dipasang di satu layar, bukan di <code>app/_layout.js</code>, atau berkas layout belum tersimpan</td>
+        <td>Pastikan <code>app/_layout.js</code> membungkus <code>&lt;Stack&gt;</code> dengan <code>&lt;CartProvider&gt;</code>, lalu muat ulang aplikasi dengan menekan <code>r</code> pada terminal Metro</td>
+      </tr>
+      <tr>
+        <td>Badge “Keranjang (0)” tidak bertambah meskipun tombol “Tambah” ditekan berkali-kali, tanpa pesan error</td>
+        <td>Ada dua salinan <code>CartContext</code> — misalnya <code>CartContext.js</code> dan <code>cartContext.js</code> di folder berbeda — sehingga layar dan provider memakai context berbeda; atau sisa bundel lama masih dimuat Metro</td>
+        <td>Pastikan hanya ada satu <code>context/CartContext.js</code> dan seluruh <code>import</code> memakai path serta penulisan huruf yang sama persis; tekan <code>r</code>, dan bila perlu <code>npx expo start --clear</code></td>
+      </tr>
+      <tr>
+        <td>Menekan “-” pada item ber-qty 1 membuat baris tetap tampil dengan qty 0, atau qty menjadi negatif</td>
+        <td>Logika <code>kurangiItem</code> tidak membuang item yang qty-nya menjadi 0 — <code>filter</code> terlewat atau membandingkan sebelum pengurangan</td>
+        <td>Terapkan urutan <code>map</code> lalu <code>filter</code> seperti pada kode, dan uji kasus tepi — qty 1 lalu kurangi — setiap kali fungsi ditulis ulang</td>
+      </tr>
+      <tr>
+        <td>Metro menampilkan “Unable to resolve ../hooks/useCart” atau “../context/CartContext”</td>
+        <td>Nama berkas atau path import tidak sama persis, termasuk perbedaan huruf besar/kecil, antara pernyataan <code>import</code> dan nama file di disk</td>
+        <td>Periksa penulisan <code>import</code> di setiap berkas yang bermasalah dan samakan dengan nama file aktual; gunakan huruf kecil konsisten untuk nama folder dan nama file non-komponen</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="kotak kotak-salah">
+  <p class="kotak-judul">Salah paham</p>
+  <p>
+    Badge yang tidak bertambah tanpa pesan error bukan tanda bahwa Context API gagal.
+    Tanpa error berarti kode berjalan, tetapi mungkin menulis ke context yang berbeda.
+    Kebiasaan yang perlu ditanamkan: buat berkas lewat VS Code agar path import terselesaikan
+    otomatis, dan tetapkan satu lokasi serta satu konvensi penamaan untuk seluruh project.
+  </p>
+</div>
+
+<h2>Yang harus teramati</h2>
+
+<ul>
+  <li><strong>Badge yang hidup</strong> — “Keranjang (0)” menjadi “Keranjang (2)” setelah tombol “Tambah” ditekan dua kali pada Buku.</li>
+  <li><strong>Rincian baris</strong> — “Rp 45.000 x 2 = Rp 90.000” dan “Rp 12.000 x 1 = Rp 12.000”.</li>
+  <li><strong>Ringkasan bawah</strong> — “Total (3 item): Rp 102.000”.</li>
+  <li><strong>Qty yang terjaga</strong> — tidak pernah menjadi 0 atau negatif saat tombol “-” ditekan.</li>
+  <li><strong>Kondisi kosong</strong> — setelah semua item dihapus, pesan “Keranjang masih kosong.” muncul bersama tombol “Mulai Belanja”.</li>
+  <li><strong>Batas memori</strong> — menutup dan membuka aplikasi mengembalikan keranjang ke keadaan kosong.</li>
+</ul>
+
+<blockquote>
+  Laporan yang baik menyertakan tangkapan layar setiap butir, bukan hanya tulisan “berhasil”.
+</blockquote>
+
+<h2>Kuis kilat</h2>
+
+<ol>
+  <li>Kalau state hanya dipakai satu komponen, bagaimana sebaiknya disimpan?</li>
+  <li>Bagaimana urutan pemakaian Context API yang benar?</li>
+  <li>Mana yang merupakan nilai turunan (derived state) pada keranjang?</li>
+  <li>Kenapa <code>CartProvider</code> diletakkan di <code>app/_layout.js</code>?</li>
+  <li>Siapa yang boleh memanggil <code>setItems</code>, dan apa akibatnya bagi keterlacakan?</li>
+  <li>Apa yang terjadi pada keranjang ketika aplikasi ditutup, dan di bab mana perbaikannya dibahas?</li>
+</ol>
+
+<div class="kotak kotak-jawab">
+  <details>
+    <summary>Kunci kuis kilat</summary>
+    <ol>
+      <li>State lokal dengan <code>useState</code> — hanya satu komponen yang memakainya.</li>
+      <li><code>createContext</code> → <code>Provider</code> → <code>useContext</code> — wadah, penyedia, lalu pembaca.</li>
+      <li><code>totalHarga</code> (dan <code>jumlahItem</code>) — dihitung dari <code>items</code>, jadi tidak perlu disimpan.</li>
+      <li>Agar setiap rute berada di dalam subtree provider dan dapat memanggil <code>useCart()</code>.</li>
+      <li>Tidak ada layar yang memanggilnya; hanya fungsi di dalam provider. Karena itu setiap perubahan melewati satu pintu dan perilakunya mudah diprediksi serta diuji.</li>
+      <li>Keranjang kembali kosong karena penyimpanannya masih di memori; perbaikannya dibahas di Bab 11 (Penyimpanan Data Lokal).</li>
+    </ol>
+  </details>
+</div>
+
+<h2>Ringkasan bab</h2>
+
+<ol>
+  <li>State adalah data yang berubah dan memengaruhi tampilan; state lokal cukup bila data hanya dipakai satu komponen.</li>
+  <li>Global state diperlukan ketika data dipakai banyak komponen yang berjauhan, berubah lintas layar, atau ditulis banyak pihak sekaligus.</li>
+  <li>Lifting state up menaikkan state ke induk terdekat dan menurunkannya lewat props serta callback, menciptakan sumber kebenaran tunggal.</li>
+  <li>Prop drilling — props yang melewati komponen perantara — adalah tanda untuk mempertimbangkan Context API.</li>
+  <li>Context API bekerja lewat <code>createContext</code>, <code>Provider</code>, dan <code>useContext</code>; seluruh komponen dalam subtree provider dapat membaca nilainya tanpa props.</li>
+  <li>Context cocok untuk data yang benar-benar lintas wilayah — tema, bahasa, sesi, keranjang — dan dihindari untuk data satu-dua komponen.</li>
+  <li>Custom hook berawalan <code>use</code> membungkus logika state; <code>useCart</code> memisahkan komponen dari detail context dan memungkinkan logika diuji.</li>
+  <li>Nilai turunan seperti total harga dihitung ulang dari sumber data, bukan disimpan, agar tidak pernah tidak sinkron.</li>
+  <li>Zustand dan Redux Toolkit menyelesaikan masalah skala besar dengan trade-off kurva belajar dan kode tambahan; keduanya hanya dibahas konseptual di buku ini.</li>
+  <li>Keranjang pada bab ini hidup di memori; membuatnya bertahan setelah aplikasi ditutup adalah materi Bab 11.</li>
+</ol>
+
+<div class="kotak kotak-tanya">
+  <p class="kotak-judul">Pertanyaan penutup</p>
+  <p>
+    Bab ini mengajari aplikasi mengingat data; bab berikutnya mengajari aplikasi mengambil data
+    dari tempat lain. Sebelum menutup, jawab satu pertanyaan: di mana keranjang TokoKu sebaiknya
+    tinggal kalau katalognya kelak diambil dari server — dan bagian rancangan mana yang harus
+    berubah agar keputusan itu tidak membongkar layarnya? (Petunjuk: bukan layarnya yang
+    berubah, melainkan isi <code>CartProvider</code> dan lapisan data di Bab 10.)
+  </p>
+</div>

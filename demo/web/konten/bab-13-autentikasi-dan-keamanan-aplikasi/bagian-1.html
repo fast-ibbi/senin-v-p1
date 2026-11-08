@@ -1,0 +1,455 @@
+<h1>Bagian 1 — Autentikasi, Session &amp; Token</h1>
+
+<p class="ringkas">
+  Subbab 13.1–13.3. Bagian ini menjawab tiga pertanyaan berurutan: apa yang dibuktikan saat
+  pengguna masuk, mekanisme apa yang mengingatnya, dan apa isi tiket masuk itu. Seluruh istilah
+  baru di sini dipakai lagi di bagian 2 dan di praktikum.
+</p>
+
+<section class="subbab" id="s1-1">
+  <p class="label-subbab">
+    Subbab 13.1 <span class="sumber-slide">· deck: “Autentikasi Membuktikan Identitas, Otorisasi Menentukan Hak” &amp; “Peran di SIAKAD Menentukan Apa yang Boleh Dibuka” · buku §13.1</span>
+  </p>
+  <h2>Autentikasi Membuktikan Identitas, Otorisasi Menentukan Hak</h2>
+
+  <p>
+    <strong>Autentikasi</strong> adalah proses pembuktian bahwa pengguna benar-benar pihak yang
+    ia klaim; <strong>otorisasi</strong> adalah proses penentuan hak akses apa saja yang boleh
+    dilakukan oleh pengguna yang identitasnya sudah terbukti. Urutannya selalu tetap:
+    autentikasi lebih dulu, otorisasi sesudahnya. Autentikasi menjawab “siapa kamu?”, sedangkan
+    otorisasi menjawab “apa yang boleh kamu lakukan?”.
+  </p>
+
+  <p>
+    Analogi bab ini sederhana dan bertahan lama: saat masuk gedung kantor, petugas membaca kartu
+    identitasmu — inilah autentikasi; setelah identitas terbukti, lencana akses menentukan
+    lantai mana yang boleh kamu masuki — inilah otorisasi. Kartu identitas membuktikan siapa
+    kamu, tetapi tidak otomatis membuka pintu ruang server.
+  </p>
+
+  <p>
+    Pada sistem informasi akademik (SIAKAD), perbedaannya terlihat jelas. Saat mahasiswa
+    mengetik email dan kata sandi lalu menekan tombol Masuk, sistem mencocokkan
+    <strong>kredensial</strong> dengan data yang tersimpan. Setelah terbukti, sistem membaca
+    <strong>peran</strong> pengguna, lalu menentukan haknya. Peran yang berbeda tetap menjalani
+    autentikasi yang sama; yang membedakan adalah hasil otorisasinya.
+  </p>
+
+  <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Peran di SIAKAD dan yang boleh dilakukan · sumber: deck Bab 13</caption>
+      <thead>
+        <tr><th scope="col">Peran</th><th scope="col">Yang boleh dilakukan</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>mahasiswa</code></td><td>Melihat nilai sendiri</td></tr>
+        <tr><td><code>dosen</code></td><td>Mengisi nilai mata kuliah yang diampu</td></tr>
+        <tr><td><code>admin</code></td><td>Mengelola data seluruh pengguna</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    Di dalam kode, otorisasi biasanya muncul sebagai pemeriksaan seperti “jika peran pengguna
+    adalah admin, tampilkan tombol tambah data”. Perlu diingat: pemeriksaan di sisi aplikasi
+    hanyalah kenyamanan antarmuka. Keputusan otorisasi yang sesungguhnya harus dijatuhkan oleh
+    server, karena pengguna dapat memodifikasi aplikasi klien — pembahasannya di subbab 13.6.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Pemeriksaan peran di layar klien"
+       data-label-benar="Keputusan otorisasi di server"
+       data-petunjuk="Yang menentukan keamanan data bukan tampilan yang disembunyikan, melainkan penolakan yang dijatuhkan server.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">peran-di-klien.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §13.1</span>
+      </figcaption>
+      <pre><code class="language-text">if (pengguna.peran === 'admin') {
+  tampilkanTombolTambahData();   // hanya tombol
+}
+✗ tombol hilang, endpoint tetap terbuka
+✗ aplikasi bisa dibongkar dan diubah
+✗ klien adalah lingkungan tak dipercaya</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">peran-di-server.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §13.1 &amp; §13.4</span>
+      </figcaption>
+      <pre><code class="language-text">POST /api/mahasiswa
+  → middleware memeriksa header Authorization
+  → peran dibaca dari klaim token
+  ✓ ditolak bila peran tidak berhak
+  ✓ klien hanya mengatur pengalaman navigasi</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Salah paham tersering: menganggap “login” sudah mencakup autentikasi dan otorisasi
+      sekaligus. Ujilah dengan pertanyaan ini — kalau kamu sudah masuk sebagai mahasiswa,
+      bolehkah kamu membuka nilai mahasiswa lain? Jawabannya tidak, dan yang melarang bukan
+      login, melainkan otorisasi di server.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Kalau tombol Tambah Data disembunyikan dari mahasiswa, apakah datanya sudah aman?
+      (Jawaban: belum — mahasiswa masih bisa memanggil endpoint POST langsung dengan alat
+      penguji API, dan yang seharusnya menolak adalah server.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s1-2">
+  <p class="label-subbab">
+    Subbab 13.2 <span class="sumber-slide">· deck: “Register dan Login: Dua Endpoint, Satu Tiket Masuk” · buku §13.2</span>
+  </p>
+  <h2>Register dan Login: Dua Endpoint, Satu Tiket Masuk</h2>
+
+  <p>
+    <strong>Login</strong> adalah proses pengguna memberikan kredensial — biasanya email dan
+    kata sandi — untuk dibuktikan kebenarannya oleh server. <strong>Register</strong> adalah
+    proses pembuatan akun baru. Pada backend buku, keduanya disediakan sebagai endpoint REST
+    yang berdiri sendiri.
+  </p>
+
+  <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Dua endpoint pintu masuk · sumber: deck Bab 13</caption>
+      <thead>
+        <tr><th scope="col">Endpoint (<code>POST</code>)</th><th scope="col">Fungsi</th><th scope="col">Jawaban berhasil</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>/api/auth/register</code></td><td>Membuat akun baru</td><td><code>201 Created</code></td></tr>
+        <tr><td><code>/api/auth/login</code></td><td>Mencocokkan kredensial, memberi token</td><td><code>200 OK</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    Kredensial yang salah dijawab server dengan <code>401 Unauthorized</code>. Arti status itu
+    bagi aplikasi: identitas pengguna belum terbukti, sehingga aplikasi harus mengembalikan
+    pengguna ke layar login — penanganannya di subbab 13.4, bagian 2.
+  </p>
+
+  <p>
+    Server buku dijalankan dari folder <code>backend/</code>. Cara lengkapnya sudah dibahas di
+    Bab 10; yang perlu kamu ingat di sini hanyalah bahwa tanpa server berjalan, tidak ada
+    endpoint yang bisa diuji.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">(terminal)</span>
+      <span class="kode-sumber">deck Bab 13 · verbatim</span>
+    </figcaption>
+    <pre><code class="language-bash">cd backend &amp;&amp; npm install &amp;&amp; npm start</code></pre>
+  </figure>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Peringatan sensitif versi</p>
+    <p>
+      Bentuk persis jawaban server — nama field, misalnya <code>token</code> dan
+      <code>user</code> — mengikuti <code>backend/README.md</code>. Bila berbeda, sesuaikan
+      kode pada praktikum, bukan memaksa server menyesuaikan slide.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Apa arti <code>401 Unauthorized</code> bagi aplikasi? (Jawaban: identitas pengguna belum
+      terbukti, jadi aplikasi harus mengembalikan pengguna ke layar login.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s1-3">
+  <p class="label-subbab">
+    Subbab 13.2 <span class="sumber-slide">· deck: “Password Tidak Pernah Disimpan sebagai Teks Polos” · buku §13.2</span>
+  </p>
+  <h2>Password Tidak Pernah Disimpan sebagai Teks Polos</h2>
+
+  <p>
+    Ada satu aturan keamanan yang tidak bisa ditawar pada sisi server: kata sandi tidak pernah
+    disimpan sebagai teks polos. Server menyimpan hasil <strong>hashing</strong> — pengacakan
+    satu arah — misalnya dengan algoritma seperti bcrypt, ditambah <strong>salt</strong> agar dua
+    pengguna dengan kata sandi sama menghasilkan nilai hash yang berbeda.
+  </p>
+
+  <p>
+    Sifat satu arah itu penting: dari nilai hash tidak dapat diperoleh kembali kata sandi
+    aslinya. Kebocoran basis data tidak langsung membuka akun pengguna, dan itulah sebabnya
+    aplikasi yang lupa kata sandi mengirim tautan pengaturan ulang, bukan mengirim kata sandi
+    lama.
+  </p>
+
+  <p>
+    Di sisi klien, kata sandi juga tidak boleh dicetak ke layar, disimpan, atau dimasukkan ke
+    dalam log. Pada buku ini kata sandi selalu ditulis sebagai placeholder
+    <code>••••••••</code>, dan konvensi itu dipakai juga di halaman ini.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Kata sandi disimpan apa adanya"
+       data-label-benar="Kata sandi disimpan sebagai hash + salt"
+       data-petunjuk="Yang disimpan server bukan kata sandinya, melainkan jejak satu arah yang tidak bisa dikembalikan.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">tabel-pengguna-salah.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §13.2</span>
+      </figcaption>
+      <pre><code class="language-text">email              yang disimpan
+budi@kampus.ac.id  ••••••••   (teks asli)
+sari@kampus.ac.id  ••••••••
+✗ satu baris bocor = satu akun terbuka
+✗ seluruh akun terbuka bila basis data bocor</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">tabel-pengguna-benar.txt</span>
+        <span class="kode-sumber">buku §13.2</span>
+      </figcaption>
+      <pre><code class="language-text">email              yang disimpan
+budi@kampus.ac.id  hash satu arah (mis. bcrypt) + salt
+sari@kampus.ac.id  hash lain, walau kata sandinya sama
+✓ hash satu arah: kata sandi asli tidak bisa dipulihkan
+✓ salt: dua kata sandi sama tetap terlihat berbeda</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Kalau kamu lupa kata sandi, kenapa aplikasi mengirim tautan pengaturan ulang, bukan
+      mengirim kata sandimu? (Jawaban: karena server sendiri tidak menyimpannya — yang ada
+      hanyalah nilai hash satu arah.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s1-4">
+  <p class="label-subbab">
+    Subbab 13.2 <span class="sumber-slide">· deck: “Tabel 13.1 — Session Menyimpan State, Token Tidak” &amp; “Server yang Mengingat Butuh Tempat Berbagi, yang Stateless Cukup Satu Kunci” · buku §13.2</span>
+  </p>
+  <h2>Session Menyimpan State, Token Tidak</h2>
+
+  <p>
+    Setelah login berhasil, aplikasi membutuhkan cara untuk “mengingat” bahwa pengguna sudah
+    terautentikasi. Ada dua mekanisme utama, dan keduanya bertolak dari tempat yang berbeda.
+  </p>
+
+  <p>
+    <strong>Session</strong> menyimpan state di server: server membuat catatan sesi, memberikan
+    sebuah <em>session ID</em> kepada klien, dan setiap permintaan berikutnya membawa ID itu
+    untuk dicocokkan. Keunggulannya, sesi dapat dicabut kapan saja. Kelemahannya, server harus
+    menyimpan dan mencari state pada setiap permintaan, sehingga ketika server digandakan, sesi
+    harus dibagikan di antara banyak server.
+  </p>
+
+  <p>
+    <strong>Token</strong> bekerja sebaliknya: server tidak menyimpan apa pun. Setelah
+    autentikasi berhasil, server menerbitkan token, klien menyimpannya, dan setiap permintaan
+    berikutnya menyertakan token itu. Server cukup memverifikasi keabsahannya tanpa mencari
+    catatan di basis data.
+  </p>
+
+  <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Tabel 13.1 — Session dan token · sumber: buku §13.2</caption>
+      <thead>
+        <tr><th scope="col">Aspek</th><th scope="col">Session</th><th scope="col">Token</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>State di server</td><td>Disimpan (basis data/memori)</td><td>Tidak disimpan (stateless)</td></tr>
+        <tr><td>Pencabutan</td><td>Mudah: hapus sesi di server</td><td>Sulit: tunggu token kedaluwarsa</td></tr>
+        <tr><td>Skalabilitas</td><td>Perlu infrastruktur berbagi sesi</td><td>Server dapat ditambah bebas</td></tr>
+        <tr><td>Cocok untuk</td><td>Aplikasi web tradisional</td><td>REST API dan aplikasi mobile</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    Pada aplikasi mobile yang berbicara dengan REST API, pola token lebih lazim: server API
+    dirancang <em>stateless</em> sehingga mudah diskalakan, dan aplikasi tidak bergantung pada
+    <em>cookie</em> peramban seperti aplikasi web.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Session: server mencatat setiap tamu"
+       data-label-benar="Token: server memeriksa stempel"
+       data-petunjuk="Session menang di kemudahan pencabutan; token menang di skalabilitas. Keduanya bukan versi yang lebih benar, melainkan pertukaran.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">session.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §13.2</span>
+      </figcaption>
+      <pre><code class="language-text">✓ server menyimpan catatan sesi (basis data/memori)
+✓ pencabutan seketika: hapus catatan sesi
+✗ setiap permintaan = satu pencarian state
+✗ server digandakan → sesi harus dibagi</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">token.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §13.2 &amp; §13.3</span>
+      </figcaption>
+      <pre><code class="language-text">✓ server tidak menyimpan catatan apa pun
+✓ verifikasi: secret key, aritmetika, klaim exp
+✓ server mana pun yang memegang kunci bisa memverifikasi
+✗ pencabutan tidak seketika: tunggu exp</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Kalau aplikasi kampus menambah tiga server API, apa yang harus berubah pada mekanisme
+      session? (Jawaban: sesi harus dibagi antar server, misalnya lewat penyimpanan bersama —
+      inilah biaya infrastruktur yang tidak dimiliki token.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s1-5">
+  <p class="label-subbab">
+    Subbab 13.3 <span class="sumber-slide">· deck: “JWT: Tiga Bagian, Dua Titik Pemisah” · buku §13.3</span>
+  </p>
+  <h2>JWT: Tiga Bagian, Dua Titik Pemisah</h2>
+
+  <p>
+    Ada banyak format token; yang paling populer untuk REST API adalah <strong>JWT</strong>
+    (<em>JSON Web Token</em>), yaitu tanda akses berbentuk JSON yang ditandatangani. JWT adalah
+    string panjang berisi tiga bagian yang dipisahkan titik.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">(contoh token)</span>
+      <span class="kode-sumber">buku §13.3 · verbatim</span>
+    </figcaption>
+    <pre><code class="language-text">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyMjAxMDAxIiwibmFtYSI6IkJ1ZGkgU2FudG9zbyIsImlhdCI6MTc2NzIwMDAwMCwiZXhwIjoxNzY3MjA2MDAwfQ.4kA8xnW9yYkuz3CvQfW2n0Z4kzv3YJm8rPzFqBceLl8</code></pre>
+  </figure>
+
+  <p>Ketiga bagian tersebut adalah:</p>
+
+  <ol>
+    <li>
+      <strong>Header</strong> — menyatakan algoritma penandatanganan dan jenis token, misalnya
+      <code>{"alg":"HS256","typ":"JWT"}</code>.
+    </li>
+    <li>
+      <strong>Payload</strong> — berisi <em>claim</em> (klaim), yaitu pernyataan tentang
+      pengguna: <code>sub</code> (identitas pengguna), <code>nama</code>, <code>iat</code>
+      (waktu diterbitkan), dan <code>exp</code> (waktu kedaluwarsa).
+    </li>
+    <li>
+      <strong>Signature</strong> — hasil perhitungan kriptografis dari header dan payload
+      menggunakan <strong>secret key</strong> yang hanya diketahui server.
+    </li>
+  </ol>
+
+  <p>
+    Cara membacanya: bagian pertama dan kedua adalah teks yang di-<em>encode</em> dengan
+    <strong>base64url</strong> — penyandian agar karakter JSON aman disimpan dalam string —
+    sedangkan bagian ketiga adalah tanda tangan. Tanda tangan inilah yang membuat JWT tidak
+    dapat dipalsukan: mengubah satu huruf pun pada header atau payload membuat tanda tangan
+    tidak cocok lagi saat diverifikasi server.
+  </p>
+
+  <p>
+    Menulis bentuknya di papan sebagai tiga blok berurutan membantu: token hanyalah satu string
+    panjang dengan dua titik sebagai pemisah, bukan tiga berkas terpisah.
+  </p>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Bagian mana yang membuat token tidak bisa dipalsukan? (Jawaban: bagian ketiga, yaitu
+      signature — header dan payload sendiri hanya disandikan, bukan dirahasiakan.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s1-6">
+  <p class="label-subbab">
+    Subbab 13.3 <span class="sumber-slide">· deck: “JWT Bukan Enkripsi” &amp; “Kenapa JWT Membuat Server Tidak Menyimpan Apa pun” &amp; “Harga Stateless: Token yang Dicuri Hidup Sampai exp” · buku §13.3</span>
+  </p>
+  <h2>JWT Bukan Enkripsi, dan Server Tidak Menyimpan Apa pun</h2>
+
+  <p>
+    Satu kesalahpahaman yang penting diluruskan: <strong>JWT bukan enkripsi</strong>. Header dan
+    payload hanya di-<em>encode</em>, bukan dirahasiakan — siapa pun dapat mendekode dan
+    membacanya. Konsekuensinya tegas: jangan pernah menaruh kata sandi, nomor kartu, atau data
+    rahasia lain ke dalam payload. Yang dilindungi tanda tangan hanyalah <em>keutuhan</em> dan
+    <em>keaslian</em> token, bukan <em>kerahasiaan</em> isinya.
+  </p>
+
+  <p>
+    Fungsi kecil berikut memecah token menjadi tiga bagian, semata-mata supaya kamu dapat
+    mengamati bahwa header dan payload hanyalah teks yang terbaca.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">utils/pemeriksaJwt.js</span>
+      <span class="kode-sumber">buku §Contoh 13.1 · verbatim</span>
+    </figcaption>
+    <pre><code class="language-js">// Memecah JWT menjadi tiga bagian untuk keperluan pembelajaran
+export function periksaJwt(token) {
+  const bagian = token.split('.');
+  if (bagian.length !== 3) {
+    return { keterangan: 'Bukan JWT yang valid' };
+  }
+  return {
+    header: bagian[0],   // berisi algoritma
+    payload: bagian[1],  // berisi klaim pengguna
+    signature: bagian[2], // penanda keaslian
+  };
+}</code></pre>
+  </figure>
+
+  <p>
+    Mengapa JWT disebut membuat server stateless? Karena verifikasi hanya memerlukan secret key
+    dan aritmetika: server menghitung ulang tanda tangan dari header dan payload yang diterima,
+    lalu membandingkannya dengan tanda tangan yang dikirim. Tidak ada pencarian ke basis data
+    untuk memastikan “apakah token ini masih berlaku di sistem kami?” — yang ada hanyalah
+    pemeriksaan tanda tangan dan klaim <code>exp</code>. Server mana pun yang mengetahui secret
+    key dapat memverifikasi token yang sama, sehingga infrastruktur mudah digandakan.
+  </p>
+
+  <p>
+    Harga dari stateless adalah kesulitan pencabutan: server tidak punya daftar token yang sudah
+    dicabut, sehingga token yang dicuri tetap berlaku sampai <code>exp</code> tercapai. Pola umum
+    untuk mengurangi risikonya: terbitkan token akses berumur pendek — misalnya 15 menit sampai
+    1 jam — dan gunakan <strong>refresh token</strong> berumur panjang untuk menerbitkan token
+    akses baru tanpa meminta pengguna login lagi. Refresh token cukup dipahami sebagai gambaran
+    umum di bab ini; penerapannya ada di bagian Tantangan.
+  </p>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Inilah salah paham nomor satu di bab ini: menganggap JWT “terenkripsi” sehingga aman diisi
+      data apa saja. Ulangi kalimat penutupnya dua kali bila perlu — payload bisa dibaca siapa
+      pun yang memegang token.
+    </p>
+    <p>
+      Salah paham kedua menyusul: <em>stateless</em> bukan berarti server tidak memeriksa apa
+      pun. Server tetap memeriksa signature dan klaim <code>exp</code> pada setiap permintaan.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Jadi apa bedanya logout pada arsitektur token dengan logout pada session? (Jawaban: server
+      tidak punya catatan untuk dihapus; yang dihapus adalah token di sisi klien.)
+    </p>
+  </div>
+</section>

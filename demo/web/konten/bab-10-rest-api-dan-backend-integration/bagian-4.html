@@ -1,0 +1,416 @@
+<h1>Bagian 4 — Tiga State Antarmuka, Base URL, dan Struktur File</h1>
+
+<p class="ringkas">
+  Subbab 10.6–10.7. Permintaan jaringan tidak instan dan bisa gagal kapan saja; bagian ini
+  mengatur cara aplikasi menceritakannya kepada pengguna, lalu menata alamat server dan struktur
+  berkas agar kesalahan hanya perlu diperbaiki di satu tempat.
+</p>
+
+<section class="subbab" id="s4-1">
+  <p class="label-subbab">
+    Subbab 10.6 <span class="sumber-slide">· deck: “Tiga State Antarmuka Menjawab Dua Pertanyaan Pengguna” · buku §10.6</span>
+  </p>
+  <h2>Tiga State Antarmuka Menjawab Dua Pertanyaan Pengguna</h2>
+
+  <p>
+    Permintaan jaringan butuh waktu dan bisa gagal kapan saja. Aplikasi yang jujur menampilkan
+    tiga keadaan antarmuka: <strong>loading</strong> (sedang memuat), <strong>error</strong>
+    (gagal), dan <strong>empty</strong> (kosong). Ketiganya menjawab dua pertanyaan pengguna:
+    “sedang apa, dan apa yang bisa saya lakukan sekarang?”
+  </p>
+
+  <p>
+    <strong>Loading state</strong> ditampilkan selama permintaan belum selesai. Komponennya
+    <code>ActivityIndicator</code>, yang sudah kamu kenal sejak Bab 5, biasanya ditemani teks
+    “Memuat data mahasiswa…”. Polanya satu variabel state yang diatur benar sebelum permintaan
+    dan salah sesudahnya.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">screens/DaftarMahasiswa.js</span>
+      <span class="kode-sumber">buku §Praktikum · kutipan keadaan memuat</span>
+    </figcaption>
+    <pre><code class="language-js">  if (loading) {
+    return (
+      &lt;View style={styles.pusat}&gt;
+        &lt;ActivityIndicator size="large" color="#1f6feb" /&gt;
+        &lt;Text style={styles.teksStatus}&gt;Memuat data mahasiswa…&lt;/Text&gt;
+      &lt;/View&gt;
+    );
+  }</code></pre>
+  </figure>
+
+  <p>
+    Aplikasi yang tidak memberi umpan balik akan dianggap macet. Perhatikan bahwa pemeriksaan
+    keadaan ini diletakkan <em>sebelum</em> daftar digambar: satu layar hanya menampilkan satu
+    keadaan, sehingga pengguna tidak pernah melihat dua keadaan bercampur.
+  </p>
+</section>
+
+<section class="subbab" id="s4-2">
+  <p class="label-subbab">
+    Subbab 10.6 <span class="sumber-slide">· deck: “Blok finally Menyelamatkan Layar dari Berputar Selamanya” · buku §10.6</span>
+  </p>
+  <h2>Blok finally Menyelamatkan Layar dari Berputar Selamanya</h2>
+
+  <p>
+    Umpan balik yang jujur menuntut satu kebiasaan kecil: mematikan indikator pemuatan di blok
+    <code>finally</code>. Bila <code>setMemuat(false)</code> diletakkan di dalam blok
+    <code>try</code>, layar berputar selamanya setiap kali permintaan gagal — pengguna menunggu
+    data yang tidak akan pernah datang.
+  </p>
+
+  <div class="banding"
+       data-label-lama="setMemuat(false) di dalam try"
+       data-label-benar="setMemuat(false) di blok finally"
+       data-petunjuk="Blok finally selalu berjalan, sukses maupun gagal. Itulah satu-satunya tempat yang menjamin indikator pemuatan berhenti.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">pemuat.js</span>
+        <span class="kode-sumber">ilustrasi · buku §10.6</span>
+      </figcaption>
+      <pre><code class="language-js">try {
+  setData(await pemuat());
+  setGalat(null);
+  setMemuat(false);
+} catch (e) {
+  setGalat({ pesan: e.message });
+}</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">screens/DaftarMahasiswa.js</span>
+        <span class="kode-sumber">buku §Praktikum · kutipan fungsi muatData</span>
+      </figcaption>
+      <pre><code class="language-js">  const router = useRouter();
+  const [mahasiswa, setMahasiswa] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [memuatUlang, setMemuatUlang] = useState(false);
+
+  const muatData = useCallback(async () =&gt; {
+    try {
+      const data = await ambilSemuaMahasiswa();
+      setMahasiswa(data);
+      setError(null);
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setLoading(false);
+      setMemuatUlang(false);
+    }
+  }, []);</code></pre>
+    </figure>
+  </div>
+
+  <p>
+    Versi di berkas praktikum membungkus fungsi itu dengan <code>useCallback</code> (syarat
+    <code>useFocusEffect</code>, lihat subbab 7.7) dan juga menjalankan
+    <code>setMemuatUlang(false)</code> di blok yang sama. Yang penting bukan panjangnya,
+    melainkan letak baris terakhirnya.
+  </p>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Menampilkan <code>e.message</code> mentah kepada pengguna membuat mereka panik. Pesan untuk
+      pengguna ditulis dalam bahasa manusia (“Data tidak dapat dimuat.”), sedangkan detail teknis
+      tetap dicatat untuk developer. Dua audiens, dua pesan.
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s4-3">
+  <p class="label-subbab">
+    Subbab 10.6 <span class="sumber-slide">· deck: “Blok finally Menyelamatkan Layar dari Berputar Selamanya” · buku §10.6</span>
+  </p>
+  <h2>Error State: Pesan Ramah dan Jalan Keluar</h2>
+
+  <p>
+    <strong>Error state</strong> muncul saat permintaan gagal, baik karena jaringan maupun status
+    code non-2xx. Pola yang benar adalah <code>try/catch</code>: jalankan permintaan di blok
+    <code>try</code>, tangkap kegagalan di blok <code>catch</code>, lalu tampilkan pesan yang
+    dapat dimengerti pengguna.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">screens/DaftarMahasiswa.js</span>
+      <span class="kode-sumber">buku §Praktikum · kutipan keadaan galat</span>
+    </figcaption>
+    <pre><code class="language-js">  if (error) {
+    return (
+      &lt;View style={styles.pusat}&gt;
+        &lt;Text style={styles.teksError}&gt;Data tidak dapat dimuat.&lt;/Text&gt;
+        &lt;Text style={styles.teksStatus}&gt;{error}&lt;/Text&gt;
+        &lt;Pressable style={styles.tombol} onPress={cobaLagi}&gt;
+          &lt;Text style={styles.teksTombol}&gt;Coba Lagi&lt;/Text&gt;
+        &lt;/Pressable&gt;
+      &lt;/View&gt;
+    );
+  }</code></pre>
+  </figure>
+
+  <p>
+    Perhatikan tombol “Coba Lagi”: keadaan galat tanpa aksi adalah jalan buntu. Tombol itu
+    memanggil fungsi yang mengembalikan keadaan ke awal — indikator menyala, pesan galat
+    dibersihkan, permintaan diulang. Pengguna tidak perlu menutup aplikasi untuk mencoba lagi.
+  </p>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Mengapa keadaan galat perlu tombol, bukan hanya teks? (Jawaban: pesan menjelaskan apa yang
+      terjadi, tombol memberi tahu apa yang bisa dilakukan; tanpa tombol pengguna hanya bisa
+      menutup aplikasi.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s4-4">
+  <p class="label-subbab">
+    Subbab 10.6 <span class="sumber-slide">· deck: “Daftar Kosong Bukan Berarti Aplikasi Rusak” · buku §10.6</span>
+  </p>
+  <h2>Daftar Kosong Bukan Berarti Aplikasi Rusak</h2>
+
+  <p>
+    <strong>Empty state</strong> tampil ketika permintaan sukses tetapi datanya memang belum ada.
+    Dua keadaan ini sering tertukar: daftar kosong karena datanya belum ada, dan daftar kosong
+    karena permintaannya gagal. Keduanya butuh pesan berbeda, dan hanya yang pertama boleh
+    menampilkan ajakan menambah data.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">screens/DaftarMahasiswa.js</span>
+      <span class="kode-sumber">buku §Praktikum · kutipan keadaan kosong</span>
+    </figcaption>
+    <pre><code class="language-js">  if (mahasiswa.length === 0) {
+    return (
+      &lt;View style={styles.pusat}&gt;
+        &lt;Text style={styles.teksStatus}&gt;Belum ada data mahasiswa.&lt;/Text&gt;
+        &lt;Text style={styles.teksStatus}&gt;Gunakan tombol Tambah untuk mengisinya.&lt;/Text&gt;
+      &lt;/View&gt;
+    );
+  }</code></pre>
+  </figure>
+
+  <p>
+    Keluarga keadaan yang mirip adalah <strong>pull-to-refresh</strong>: pengguna menarik daftar ke
+    bawah untuk menjalankan permintaan baru. Komponennya <code>RefreshControl</code>, dan
+    kebiasaan ini sudah melekat pada pengguna aplikasi modern sehingga terasa wajar tanpa
+    diajarkan.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">screens/DaftarMahasiswa.js</span>
+      <span class="kode-sumber">buku §Praktikum · kutipan RefreshControl</span>
+    </figcaption>
+    <pre><code class="language-js">      refreshControl={
+        &lt;RefreshControl refreshing={memuatUlang} onRefresh={saatMenarik} /&gt;
+      }</code></pre>
+  </figure>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Sebutkan satu aplikasi favoritmu yang tetap enak dipakai saat datanya kosong, dan alasannya.
+      (Jawaban bervariasi; yang dinilai adalah alasannya — biasanya karena layar kosong tetap
+      memberi penjelasan dan jalan keluar.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s4-5">
+  <p class="label-subbab">
+    Subbab 10.7 <span class="sumber-slide">· deck: “Base URL: Alamat Server Dilihat dari Tempat Aplikasi Berdiri” · buku §10.7</span>
+  </p>
+  <h2>Base URL: Alamat Server Dilihat dari Tempat Aplikasi Berdiri</h2>
+
+  <p>
+    Bagian yang paling sering salah pada tahap ini bukan konsep, melainkan alamat. Jawabannya
+    berbeda di setiap tempat aplikasi dijalankan, karena pertanyaannya selalu sama: dari sudut
+    pandang mesin yang menjalankan aplikasi, alamat apa yang menunjuk server?
+  </p>
+
+  <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Base URL menurut tempat aplikasi berjalan · sumber: buku §10.7</caption>
+      <thead>
+        <tr><th scope="col">Aplikasi berjalan di</th><th scope="col">Base URL yang benar</th><th scope="col">Alasannya</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Emulator Android</td><td><code>http://10.0.2.2:3000</code></td><td>Alias khusus yang menunjuk komputer host</td></tr>
+        <tr><td>Device fisik (HP)</td><td><code>http://&lt;IP-LAN-komputer&gt;:3000</code></td><td>HP adalah mesin terpisah di Wi-Fi yang sama</td></tr>
+        <tr><td>iOS Simulator</td><td><code>http://localhost:3000</code></td><td>Simulator berbagi jaringan dengan Mac</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    Prinsipnya satu kalimat: base URL menunjuk mesin tempat server berjalan, dilihat dari sisi
+    mesin yang menjalankan aplikasi. Emulator dan simulator adalah “penyewa” di dalam komputer
+    host, sedangkan HP fisik adalah mesin tersendiri. Karena itu alamatnya disimpan pada satu
+    konstanta, dengan tiga pilihan ditulis sebagai komentar.
+  </p>
+
+  <div class="banding"
+       data-label-lama="URL ditulis ulang di setiap layar"
+       data-label-benar="Satu konstanta dengan tiga pilihan komentar"
+       data-petunjuk="Ketika pengujian pindah dari emulator ke HP, kiri menuntut perubahan di banyak tempat; kanan cukup satu baris.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">tiga-layar.js</span>
+        <span class="kode-sumber">ilustrasi · buku §10.6</span>
+      </figcaption>
+      <pre><code class="language-js">fetch('http://10.0.2.2:3000/api/mahasiswa')
+fetch('http://10.0.2.2:3000/api/mahasiswa', { method: 'POST', ... })
+fetch(`http://10.0.2.2:3000/api/mahasiswa/${id}`)</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">api/mahasiswa.js</span>
+        <span class="kode-sumber">buku §Praktikum · kutipan konstanta API_URL</span>
+      </figcaption>
+      <pre><code class="language-js">// api/mahasiswa.js — klien fetch untuk resource mahasiswa.
+// Ganti API_URL sesuai tempat aplikasi dijalankan:
+//   Emulator Android : http://10.0.2.2:3000/api/mahasiswa
+//   Device fisik     : http://&lt;IP-LAN-komputer&gt;:3000/api/mahasiswa
+//   iOS Simulator    : http://localhost:3000/api/mahasiswa
+const API_URL = 'http://10.0.2.2:3000/api/mahasiswa';
+</code></pre>
+    </figure>
+  </div>
+
+  <p>
+    Perhatikan pula bahwa <code>localhost</code> di dalam emulator menunjuk emulator itu sendiri,
+    bukan komputermu. Inilah penyebab error “Network request failed” yang paling umum, dan
+    alasan base URL diperiksa lebih dulu sebelum menuduh kodenya salah.
+  </p>
+</section>
+
+<section class="subbab" id="s4-6">
+  <p class="label-subbab">
+    Subbab 10.7 <span class="sumber-slide">· deck: “Satu File, Satu Tanggung Jawab” · buku §10.7</span>
+  </p>
+  <h2>Satu File, Satu Tanggung Jawab</h2>
+
+  <p>
+    Keputusan desain lain yang perlu dipahami adalah pemisahan berkas: <code>api/mahasiswa.js</code>
+    untuk semua urusan jaringan, <code>screens/</code> untuk komponen antarmuka, dan rute Expo
+    Router sebagai penyambung keduanya.
+  </p>
+
+  <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Tanggung jawab tiap lapisan · sumber: deck “Satu File, Satu Tanggung Jawab”</caption>
+      <thead>
+        <tr><th scope="col">Lapisan</th><th scope="col">Contoh berkas</th><th scope="col">Tanggung jawab</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>View</td><td><code>screens/DaftarMahasiswa.js</code></td><td>Menggambar daftar dan tiga keadaan</td></tr>
+        <tr><td>API client</td><td><code>api/mahasiswa.js</code></td><td>Urusan jaringan dan <code>fetch</code></td></tr>
+        <tr><td>Route</td><td><code>app/(app)/mahasiswa/index.js</code></td><td>Menyambungkan rute ke layar</td></tr>
+        <tr><td>Server</td><td><code>backend/</code> Express port 3000</td><td>Menyimpan dan mengelola data</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    Berkas rute memang nyaris kosong; tugasnya hanya meneruskan. Justru di situlah nilainya:
+    alamat rute dan isi layar bisa berubah sendiri-sendiri.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">app/(app)/mahasiswa/index.js</span>
+      <span class="kode-sumber">buku §Praktikum · rute daftar</span>
+    </figcaption>
+    <pre><code class="language-js">// Rute Daftar Mahasiswa — memuat komponen layar dari folder screens/.
+import DaftarMahasiswa from '../../screens/DaftarMahasiswa';
+export default DaftarMahasiswa;</code></pre>
+  </figure>
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">app/(app)/mahasiswa/tambah.js</span>
+      <span class="kode-sumber">buku §Praktikum · rute form</span>
+    </figcaption>
+    <pre><code class="language-js">// Rute Form Tambah/Edit — parameter `id` (opsional) menjadikannya mode edit.
+import FormMahasiswa from '../../screens/FormMahasiswa';
+export default FormMahasiswa;</code></pre>
+  </figure>
+
+  <p>
+    Pemisahan ini disebut <strong>separation of concerns</strong>. Tiga alasannya: komponen tetap
+    bersih dan fokus pada tampilan, logika permintaan dapat dipakai banyak layar, dan bila alamat
+    server berubah hanya satu berkas yang disentuh. Bila aplikasi tumbuh sampai dua puluh layar
+    dan <code>fetch</code> ditulis langsung di setiap layar, satu perubahan kecil harus
+    diperbaiki di dua puluh tempat.
+  </p>
+</section>
+
+<section class="subbab" id="s4-7">
+  <p class="label-subbab">
+    Subbab 10.7 <span class="sumber-slide">· deck: “Alur Integrasi: Formulir, Server, Lalu Daftar” · buku §10.7</span>
+  </p>
+  <h2>Alur Integrasi: Formulir, Server, Lalu Daftar</h2>
+
+  <p>
+    Seluruh potongan di atas bertemu pada satu alur yang bisa dibaca sebagai kisah satu transaksi:
+    isi formulir, simpan, kembali, lalu daftar menyegarkan dirinya sendiri. Tombol Simpan
+    dinonaktifkan selama proses berjalan, dan teksnya berubah menjadi “Menyimpan…”.
+  </p>
+
+  <ol>
+    <li>Formulir mengisi state, lalu tombol Simpan ditekan dan dinonaktifkan.</li>
+    <li><code>POST /api/mahasiswa</code> mengirim hasil <code>JSON.stringify(form)</code>.</li>
+    <li>Server menyimpannya dan menjawab <code>201 Created</code> beserta <code>id</code> baru.</li>
+    <li><code>router.back()</code> mengembalikan pengguna ke layar daftar.</li>
+    <li><code>useFocusEffect</code> memuat ulang daftar, lalu <code>FlatList</code> menampilkan data terbaru.</li>
+  </ol>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">screens/FormMahasiswa.js</span>
+      <span class="kode-sumber">buku §Praktikum · kutipan fungsi simpan</span>
+    </figcaption>
+    <pre><code class="language-js">  async function simpan() {
+    // Validasi minimum; validasi lengkap (format email, panjang NIM, dll.) ada di Bab 8.
+    if (Object.values(form).some((nilai) =&gt; String(nilai).trim() === '')) {
+      Alert.alert('Form Belum Lengkap', 'Semua field wajib diisi sebelum disimpan.');
+      return;
+    }
+    setMenyimpan(true);
+    try {
+      const payload = { ...form, angkatan: Number(form.angkatan), ipk: Number(form.ipk) };
+      if (modeEdit) {
+        await ubahMahasiswa(id, payload);
+      } else {
+        await tambahMahasiswa(payload);
+      }
+      router.back(); // kembali ke daftar; layar daftar memuat ulang otomatis
+    } catch (e) {
+      Alert.alert('Gagal Menyimpan', e.message);
+    } finally {
+      setMenyimpan(false);
+    }
+  }</code></pre>
+  </figure>
+
+  <p>
+    Kunci langkah terakhir bukan pemanggilan muat ulang manual, melainkan <code>useFocusEffect</code>
+    dari Expo Router (Bab 7): layar memuat ulang setiap kali kembali mendapat fokus. Pola ini
+    bertahan sampai Project Akhir, dan menjadi titik sambung ke Bab 11 saat salinan data terakhir
+    disimpan di perangkat.
+  </p>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Kenapa daftar perlu dimuat ulang saat kembali mendapat fokus? (Jawaban: supaya perubahan
+      dari layar lain langsung terlihat tanpa pengguna melakukan muat ulang manual.)
+    </p>
+  </div>
+</section>

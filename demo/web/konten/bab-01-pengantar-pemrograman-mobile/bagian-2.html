@@ -1,0 +1,273 @@
+<h1>Bagian 2 — Empat Pendekatan, Android &amp; iOS, Evolusi</h1>
+
+<p class="ringkas">
+  Subbab 1.2–1.4. Ketika sebuah organisasi memutuskan membangun aplikasi mobile, pertanyaan
+  pertamanya bukan “bahasa apa?”, melainkan “pendekatan apa?”. Bagian ini membedah empat
+  pendekatan, dua platform yang mendominasi, dan pola evolusi yang melahirkan keduanya.
+</p>
+
+<section class="subbab" id="s2-1">
+  <p class="label-subbab">
+    Subbab 1.2 <span class="sumber-slide">· deck: “Empat Pendekatan (1): Native &amp; Web Mobile” · buku §1.2</span>
+  </p>
+  <h2>Empat Pendekatan (1): Native dan Web Mobile</h2>
+
+  <p>
+    Secara garis besar ada tiga pendekatan klasik — native, web mobile, dan hybrid — kemudian
+    muncul pendekatan keempat yang menjadi fokus buku ini: <strong>cross-platform</strong>.
+    Memahami keempatnya penting karena setiap pilihan adalah pertukaran antara biaya,
+    performa, dan pengalaman pengguna; tidak ada yang menang mutlak di semua kondisi.
+  </p>
+
+  <p>
+    <strong>Aplikasi native</strong> dibangun dengan bahasa dan perangkat pengembangan resmi
+    milik satu platform: Android memakai Kotlin (atau Java), iOS memakai Swift (atau
+    Objective-C). Aplikasi native berkomunikasi langsung dengan sistem operasi, sehingga
+    performanya paling tinggi, aksesnya ke fitur perangkat paling lengkap, dan tampilannya
+    paling “terasa” sesuai platform. Kekurangannya jelas: satu basis kode per platform, dan
+    setiap perubahan fitur dikerjakan dua kali.
+  </p>
+
+  <p>
+    <strong>Aplikasi web mobile</strong> sebenarnya bukan aplikasi yang diinstal, melainkan
+    situs web yang dioptimalkan untuk layar kecil dan diakses melalui peramban. Keunggulannya
+    menarik: satu basis kode untuk web dan mobile, tidak perlu melewati toko aplikasi, dan
+    pembaruan langsung berlaku. Harganya: akses ke sensor dan notifikasi sangat terbatas,
+    performa di bawah native, dan pengguna harus “membuka peramban dulu” setiap kali ingin
+    mengakses — kebiasaan yang jauh lebih lemah daripada mengetuk ikon aplikasi di layar utama.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Menilai dari tampilan saja"
+       data-label-benar="Menilai dari cara kerja dan konsekuensinya"
+       data-petunjuk="Dua aplikasi bisa terlihat sama di layar ponsel, padahal biaya pemeliharaan dan kemampuannya sangat berbeda.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">penilaian-naif.md</span>
+        <span class="kode-sumber">ilustrasi · buku §1.2</span>
+      </figcaption>
+      <pre><code class="language-text">"Tampilannya bagus dan bisa dibuka
+di ponsel, jadi ini aplikasi mobile."
+
+✗ Tidak membedakan native dari web
+✗ Tidak bertanya soal notifikasi
+✗ Tidak bertanya siapa yang
+  memperbarui, dan berapa biayanya</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">penilaian-profesional.md</span>
+        <span class="kode-sumber">ilustrasi · buku §1.2</span>
+      </figcaption>
+      <pre><code class="language-text">1. Dipasang dari toko aplikasi
+   atau dibuka di peramban?
+2. Bisa memakai kamera, GPS, dan
+   notifikasi? Sejauh mana?
+3. Berapa basis kode yang harus
+   dipelihara tim?
+4. Seberapa sering perlu diperbarui,
+   dan lewat jalur apa?</code></pre>
+    </figure>
+  </div>
+</section>
+
+<section class="subbab" id="s2-2">
+  <p class="label-subbab">
+    Subbab 1.2 <span class="sumber-slide">· deck: “Empat Pendekatan (2): Hybrid &amp; Cross-platform” · buku §1.2</span>
+  </p>
+  <h2>Empat Pendekatan (2): Hybrid dan Cross-platform</h2>
+
+  <p>
+    <strong>Aplikasi hybrid</strong> menggabungkan keduanya: antarmuka ditulis dengan
+    teknologi web (HTML, CSS, JavaScript), lalu dibungkus dalam kontainer native yang
+    menampilkannya lewat komponen <strong>WebView</strong> (jendela peramban tertanam) dan
+    menyediakan jembatan ke sebagian fitur perangkat. Satu basis kode dapat dipublikasikan ke
+    Google Play dan App Store — daya tarik utamanya. Kelemahannya juga terkenal: antarmuka
+    tidak pernah “terasa native” karena dirender seperti halaman web, animasi berat tersendat,
+    dan pengalaman pengguna menjadi korban kompromi. Pendekatan hybrid klasik populer sekitar
+    2012–2015, lalu ditinggalkan ketika cross-platform modern hadir.
+  </p>
+
+  <p>
+    <strong>Cross-platform modern</strong> menjawab persoalan yang sama — satu basis kode untuk
+    banyak platform — tetapi dengan cara kerja berbeda: kode ditulis dalam satu bahasa (React
+    Native memakai JavaScript, Flutter memakai Dart) dan diterjemahkan menjadi antarmuka
+    dengan tampilan <em>native sungguhan</em>, bukan halaman web di dalam WebView. React
+    Native, Flutter, dan .NET MAUI termasuk kategori ini: pengalaman mendekati native dengan
+    biaya mendekati web.
+  </p>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Hybrid dan cross-platform sering dianggap sama karena keduanya “satu codebase”. Bedanya
+      di <em>apa yang dirender</em>: hybrid merender halaman web di dalam WebView, sedangkan
+      cross-platform modern merender komponen UI native milik sistem operasi. Persamaan
+      bahasa pemrogramannya menyesatkan; hasil akhirnya berbeda total.
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s2-3">
+  <p class="label-subbab">
+    Subbab 1.2 <span class="sumber-slide">· deck: “Tabel 1.1” · buku §1.2</span>
+  </p>
+  <h2>Tabel 1.1 — Perbandingan Empat Pendekatan</h2>
+
+  <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Perbandingan pendekatan pengembangan aplikasi mobile · sumber: buku §1.2, Tabel 1.1</caption>
+      <thead>
+        <tr><th scope="col">Aspek</th><th scope="col">Native</th><th scope="col">Web mobile</th><th scope="col">Hybrid</th><th scope="col">Cross-platform (React Native)</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Bahasa</td><td>Kotlin/Java (Android), Swift (iOS)</td><td>HTML, CSS, JavaScript</td><td>HTML, CSS, JavaScript</td><td>JavaScript/JSX</td></tr>
+        <tr><td>Basis kode</td><td>Dua (per platform)</td><td>Satu (web)</td><td>Satu</td><td>Satu</td></tr>
+        <tr><td>Distribusi</td><td>Toko aplikasi</td><td>Peramban web</td><td>Toko aplikasi</td><td>Toko aplikasi</td></tr>
+        <tr><td>Performa</td><td>Tertinggi</td><td>Rendah–sedang</td><td>Sedang</td><td>Tinggi (mendekati native)</td></tr>
+        <tr><td>Akses fitur perangkat</td><td>Penuh</td><td>Terbatas</td><td>Sebagian (via bridge)</td><td>Luas (via modul)</td></tr>
+        <tr><td>Tampilan</td><td>Asli platform</td><td>Tidak asli</td><td>Tidak asli</td><td>Mendekati asli</td></tr>
+        <tr><td>Biaya pengembangan</td><td>Paling tinggi</td><td>Rendah</td><td>Sedang</td><td>Sedang</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>Tidak ada rumus tunggal untuk memilih, tetapi ada kriteria pegangan:</p>
+
+  <ul>
+    <li><strong>Native</strong> — jika aplikasi bergantung pada performa dan fitur perangkat mutakhir, misalnya game berat.</li>
+    <li><strong>Web mobile</strong> — jika anggaran sangat terbatas, fitur perangkat tidak diperlukan, dan kecepatan rilis lebih penting daripada kehadiran di toko aplikasi.</li>
+    <li><strong>Hybrid</strong> — hanya jika tim sudah sangat kuat di teknologi web dan menerima kompromi pengalaman pengguna.</li>
+    <li><strong>Cross-platform</strong> — untuk sebagian besar kasus sistem informasi: aplikasi bisnis yang butuh kehadiran di dua platform, form, daftar data, dan integrasi server.</li>
+  </ul>
+
+  <p>
+    Buku ini memilih React Native + Expo atas dasar pertimbangan itu, yang diuraikan pada
+    subbab 1.5–1.7 di bagian 3.
+  </p>
+</section>
+
+<section class="subbab" id="s2-4">
+  <p class="label-subbab">
+    Subbab 1.2–1.3 <span class="sumber-slide">· deck: “Prioritas Pasar Menentukan Urutan Platform” &amp; “Latihan: Dua Mahasiswa Magang, Dua Platform” · buku §1.3</span>
+  </p>
+  <h2>Prioritas Pasar Menentukan Urutan Platform</h2>
+
+  <p>
+    Membangun native untuk dua platform berarti mempelajari dua bahasa, dua alat
+    pengembangan, dan dua proses review. Karena itu, urutan pengerjaan biasanya ditentukan
+    pasar, bukan selera: jika target utama adalah jangkauan luas dengan perangkat beragam
+    (khas Indonesia), Android adalah prioritas; jika target adalah pengguna premium yang
+    setia pada ekosistem Apple, iOS tidak boleh dilewatkan.
+  </p>
+
+  <p>
+    Latihan dari deck: bayangkan dua mahasiswa magang di dua perusahaan. Yang pertama
+    diminta membangun aplikasi internal untuk petugas lapangan yang memakai ponsel Android
+    kelas menengah; yang kedua diminta membangun aplikasi pelanggan untuk pengguna setia
+    ekosistem Apple. Keduanya mendapat tugas “aplikasi mobile”, tetapi urutan kerja, alat, dan
+    beban pengujiannya berbeda. Diskusikan: keputusan mana yang akan kamu ambil lebih dulu di
+    masing-masing kasus, dan mengapa.
+  </p>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Kalau kamu hanya punya waktu satu semester dan harus memilih satu platform untuk diuji, mana yang kamu pilih — dan apa yang kamu korbankan?</p>
+  </div>
+</section>
+
+<section class="subbab" id="s2-5">
+  <p class="label-subbab">
+    Subbab 1.3 <span class="sumber-slide">· deck: “Android dan iOS: Dua Model yang Berbeda” &amp; “Kebebasan Android Ditukar dengan Fragmentasi” · buku §1.3</span>
+  </p>
+  <h2>Android dan iOS: Dua Model yang Berbeda</h2>
+
+  <p>
+    Dua platform yang mendominasi dunia mobile adalah <strong>Android</strong> (Google, 2008)
+    dan <strong>iOS</strong> (Apple, 2007). Keduanya bersaing memperebutkan pengguna, tetapi
+    cara mereka memperlakukan pengembang sangat berbeda — dan perbedaan inilah yang membentuk
+    strategi pengembangan aplikasi.
+  </p>
+
+  <p>
+    Android adalah sistem operasi berbasis sumber terbuka yang digunakan ratusan merek.
+    Keterbukaannya membuat Android menguasai mayoritas pasar perangkat di dunia, termasuk
+    Indonesia, dengan rentang harga yang sangat lebar. Namun keterbukaan itu membawa
+    konsekuensi: <strong>fragmentasi</strong> — ribuan model perangkat dengan ukuran layar,
+    kinerja, dan versi sistem operasi berbeda. Sebuah perilaku yang mulus di satu ponsel bisa
+    berbeda di ponsel lain.
+  </p>
+
+  <p>
+    Sebaliknya, iOS hanya berjalan pada perangkat buatan Apple. Ekosistemnya tertutup dan
+    terkendali: satu perangkat keras, satu toko aplikasi, dan peninjauan yang ketat.
+    Konsistensi inilah kekuatannya — aplikasi diuji pada segelintir perangkat saja dan
+    perilakunya dapat diprediksi. Harga yang dibayar pengembang: biaya pendaftaran, perangkat
+    Apple yang mahal, aturan distribusi yang kaku, dan lingkungan <strong>Xcode</strong> yang
+    hanya berjalan di Mac.
+  </p>
+
+  <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Perbandingan Android dan iOS · sumber: buku §1.3, Tabel 1.2</caption>
+      <thead>
+        <tr><th scope="col">Aspek</th><th scope="col">Android</th><th scope="col">iOS</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Pengembang</td><td>Google</td><td>Apple</td></tr>
+        <tr><td>Model sumber</td><td>Terbuka (AOSP)</td><td>Tertutup</td></tr>
+        <tr><td>Perangkat</td><td>Ratusan merek</td><td>Hanya Apple</td></tr>
+        <tr><td>Bahasa native</td><td>Kotlin (Java)</td><td>Swift</td></tr>
+        <tr><td>Toko aplikasi</td><td>Google Play (+ lainnya)</td><td>App Store</td></tr>
+        <tr><td>Review aplikasi</td><td>Lebih longgar</td><td>Ketat</td></tr>
+        <tr><td>Alat pengembangan</td><td>Android Studio (Windows/macOS/Linux)</td><td>Xcode (khusus macOS)</td></tr>
+        <tr><td>Karakter pasar</td><td>Mayoritas global, beragam harga</td><td>Premium, konsisten</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    Reaksi wajar pengembang terhadap biaya ganda ini adalah membangun sekali untuk dua
+    platform — titik lahirnya React Native dan pendekatan cross-platform. Dalam buku ini,
+    seluruh praktikum dijalankan di Android (Expo Go atau emulator) karena tidak membutuhkan
+    komputer Mac, sementara kode yang sama tetap dapat dijalankan di iOS.
+  </p>
+</section>
+
+<section class="subbab" id="s2-6">
+  <p class="label-subbab">
+    Subbab 1.4 <span class="sumber-slide">· deck: “Setiap Era Lahir dari Keterbatasan Era Sebelumnya” · buku §1.4</span>
+  </p>
+  <h2>Evolusi Teknologi Mobile</h2>
+
+  <p>
+    Setiap generasi teknologi mobile lahir sebagai jawaban atas keterbatasan generasi
+    sebelumnya — pola yang akan terus kamu jumpai sepanjang karier pengembang. Kamu tidak
+    perlu menghafal tanggal; yang perlu dipahami adalah polanya.
+  </p>
+
+  <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Empat era teknologi mobile · sumber: buku §1.4</caption>
+      <thead>
+        <tr><th scope="col">Era</th><th scope="col">Ciri</th><th scope="col">Keterbatasan yang mendorong era berikutnya</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Ponsel fitur (akhir 1990-an–pertengahan 2000-an)</td><td>Layar kecil, tombol fisik, aplikasi terbatas, distribusi lewat operator dan kartu SIM</td><td>Akses distribusi tertutup; pengalaman terbatas</td></tr>
+        <tr><td>Layar sentuh &amp; toko aplikasi (2007–2008)</td><td>iPhone (2007), App Store dan Android 1.0 (2008); lahir ekonomi aplikasi dan pembaruan lewat udara</td><td>Dua platform berarti dua basis kode</td></tr>
+        <tr><td>Web responsif (sekitar 2010)</td><td>Desain responsif dan HTML5 memperkaya web di peramban</td><td>Akses fitur perangkat tetap kalah dari native</td></tr>
+        <tr><td>Cross-platform (pertengahan 2010-an)</td><td>React Native dibuka sebagai sumber terbuka oleh Meta pada 2015</td><td>Perkembangan berlanjut: super-app, kecerdasan buatan, ponsel lipat</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="kotak kotak-tiruan">
+    <p class="kotak-judul">Pola yang layak diingat</p>
+    <p>
+      React Native bukan teknologi yang muncul tiba-tiba; ia jawaban atas mahalnya dua
+      codebase native. Ketika kelak kamu mengevaluasi teknologi baru, pertanyaan yang paling
+      berguna bukan “apa fiturnya?”, melainkan “keterbatasan apa yang sedang ia jawab, dan
+      apa harganya?”.
+    </p>
+  </div>
+</section>

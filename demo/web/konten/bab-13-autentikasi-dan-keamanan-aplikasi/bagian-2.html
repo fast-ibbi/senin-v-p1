@@ -1,0 +1,518 @@
+<h1>Bagian 2 — Perlindungan, Penyimpanan &amp; Keamanan API</h1>
+
+<p class="ringkas">
+  Subbab 13.4–13.7. Bagian ini bagian yang paling praktis: menjaga halaman, menangani token
+  yang kedaluwarsa, memilih tempat menyimpan token, dan menutup empat lubang keamanan yang
+  paling sering dibiarkan terbuka. Semua kodenya dipakai lagi di praktikum.
+</p>
+
+<section class="subbab" id="s2-1">
+  <p class="label-subbab">
+    Subbab 13.4 <span class="sumber-slide">· deck: “Protected Route Mengatur Tampilan, Bukan Mengunci Data” &amp; “Klien Mengarahkan, Server Memutuskan” · buku §13.4</span>
+  </p>
+  <h2>Protected Route Mengatur Tampilan, Bukan Mengunci Data</h2>
+
+  <p>
+    <strong>Protected route</strong> adalah halaman yang hanya boleh diakses oleh pengguna yang
+    sudah login. Bab 7 telah memperkenalkan pola dasarnya dengan pemeriksaan kondisi statis;
+    pada bab ini pola tersebut dihidupkan dengan status autentikasi sungguhan dari penyimpanan
+    token.
+  </p>
+
+  <p>
+    Perlu dipahami dengan jujur: proteksi di sisi aplikasi hanyalah <em>lapis pengalaman
+    pengguna</em>. Fungsinya mengarahkan pengguna yang belum login ke halaman masuk, bukan
+    mengamankan data. Keamanan data yang sebenarnya berada di sisi server: rute API yang
+    sensitif harus menolak permintaan tanpa token yang sah, biasanya melalui
+    <strong>middleware</strong> — fungsi yang dipasang di antara permintaan dan penangan rute —
+    yang memeriksa header <code>Authorization</code>.
+  </p>
+
+  <p>
+    Nama dan cara mengaktifkan middleware itu mengikuti <code>backend/README.md</code>, dan
+    memang itulah tempatnya dibaca: jangan menuliskan nama header atau nama fungsi middleware
+    sendiri yang tidak ada di README. Keterangan ini <em>sensitif versi</em>, sama seperti bentuk
+    respons login di bagian 1.
+  </p>
+
+  <p>
+    Alur proteksi klien tetap memakai pola Bab 7: ada halaman pengarah
+    (<code>app/index.js</code>) yang memeriksa status; kelompok rute yang dilindungi dibungkus
+    dalam satu folder, dalam hal ini <code>app/(app)/</code>, dengan berkas
+    <code>_layout.js</code> yang memutuskan menampilkan isi rute atau mengarahkan ulang ke
+    <code>/login</code>; dan rute di luar kelompok itu, seperti <code>app/login.js</code>, bebas
+    diakses. Satu berkas layout melindungi Beranda, Daftar Mahasiswa, Detail, dan Formulir tanpa
+    menyentuh satu pun layarnya.
+  </p>
+
+  <p>
+    Selama status masih <code>memuat</code>, aplikasi menampilkan indikator pemuatan. Tanpa
+    indikator itu, aplikasi sempat “berkedip” ke login sebelum token selesai dibaca dari
+    SecureStore.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">app/(app)/_layout.js</span>
+      <span class="kode-sumber">deck Bab 13 · verbatim, versi ringkas dari Kode 8</span>
+    </figcaption>
+    <pre><code class="language-jsx">import { Redirect, Stack } from 'expo-router';
+import { ActivityIndicator } from 'react-native';
+import { useAuth } from '../../context/AuthContext';
+
+export default function LayoutTerproteksi() {
+  const { status } = useAuth();
+
+  if (status === 'memuat') return &lt;ActivityIndicator size="large" /&gt;;
+  if (status === 'keluar') return &lt;Redirect href="/login" /&gt;;
+  return &lt;Stack /&gt;;
+}</code></pre>
+  </figure>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Kalau proteksi di klien kamu matikan, apakah datanya masih aman? (Jawaban: masih aman bila
+      endpoint-nya dilindungi server — dan itulah inti pembagian peran: klien mengarahkan
+      pengguna, server yang memutuskan boleh atau tidaknya akses.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s2-2">
+  <p class="label-subbab">
+    Subbab 13.4 <span class="sumber-slide">· deck: “Token Kedaluwarsa: Tunggu Jawaban 401 dari Server” · buku §Contoh 13.3</span>
+  </p>
+  <h2>Token Kedaluwarsa: Tunggu Jawaban 401 dari Server</h2>
+
+  <p>
+    Ada satu cabang yang tidak tampak di alur bahagia: ketika token hilang atau kedaluwarsa,
+    permintaan berikutnya ditolak server dengan status <code>401</code>, dan aplikasi harus
+    mengarahkan pengguna kembali ke halaman login. Aplikasi tidak perlu menghitung sendiri umur
+    tokennya — server adalah pemegang wewenang yang memutuskan keabsahan token.
+  </p>
+
+  <p>
+    Fungsi berikut hampir sama dengan <code>signOut</code>; bedanya, tidak ada konfirmasi
+    pengguna, karena kondisinya bukan atas permintaan pengguna. Manfaatnya dari sisi pengalaman:
+    pengguna yang tokennya hangus tidak terjebak menatap pesan kesalahan berulang di layar yang
+    sama.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">context/AuthContext.js</span>
+      <span class="kode-sumber">buku §Contoh 13.3 · verbatim</span>
+    </figcaption>
+    <pre><code class="language-js">// Dipanggil ketika server menjawab 401 (token ditolak)
+async function keluarKarenaKedaluwarsa() {
+  await hapusToken();
+  setToken(null);
+  setUser(null);
+  setStatus('keluar'); // protected route akan Redirect ke /login
+}</code></pre>
+  </figure>
+
+  <p>
+    Cara pakainya: pada berkas pemanggil API, bila <code>response.status === 401</code>, panggil
+    fungsi ini. Karena seluruh pemanggilan <code>fetch</code> dipusatkan di satu berkas
+    <code>api/client.js</code>, penanganan 401 cukup ditulis sekali dan semua layar mendapat
+    perilaku yang sama.
+  </p>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Kenapa aplikasi perlu menunggu jawaban <code>401</code> dari server, bukan menghitung
+      sendiri umur tokennya? (Jawaban: karena server pemegang wewenang yang memutuskan keabsahan
+      token; jam perangkat bisa salah, dan kebijakan umur token bisa berubah di server.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s2-3">
+  <p class="label-subbab">
+    Subbab 13.5 <span class="sumber-slide">· deck: “Tabel 13.2 — AsyncStorage vs SecureStore” · buku §13.5</span>
+  </p>
+  <h2>AsyncStorage vs SecureStore</h2>
+
+  <p>
+    Token adalah “kunci” akses pengguna: siapa pun yang memegangnya dapat berpura-pura menjadi
+    pengguna tersebut sampai token kedaluwarsa. Karena itu, tempat token disimpan menentukan
+    tingkat keamanan aplikasi secara keseluruhan.
+  </p>
+
+  <p>
+    Bab 11 memperkenalkan <strong>AsyncStorage</strong> — penyimpanan pasangan kunci-nilai yang
+    sederhana dan sangat cocok untuk data non-sensitif seperti draft catatan atau cache. Namun
+    untuk token, AsyncStorage bukan pilihan yang tepat: nilainya disimpan tanpa enkripsi, mudah
+    dibaca pada perangkat yang di-<em>root</em> atau di-<em>jailbreak</em>, dan ikut tersalin ke
+    cadangan perangkat.
+  </p>
+
+  <p>
+    Solusi yang tepat adalah <strong>SecureStore</strong> dari Expo
+    (<code>expo-secure-store</code>): penyimpanan aman yang memanfaatkan mekanisme keamanan
+    bawaan perangkat. Di Android, nilai dienkripsi dengan kunci dari <strong>Android
+    Keystore</strong>; di iOS, nilai disimpan di <strong>Keychain</strong>. Dengan kata lain,
+    token disimpan terenkripsi dan hanya dapat dibaca oleh aplikasi itu sendiri.
+  </p>
+
+  <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Tabel 13.2 — AsyncStorage dan SecureStore · sumber: buku §13.5</caption>
+      <thead>
+        <tr><th scope="col">Aspek</th><th scope="col">AsyncStorage (Bab 11)</th><th scope="col">SecureStore (bab ini)</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Enkripsi</td><td>Tidak (teks polos)</td><td>Ya (Keystore / Keychain)</td></tr>
+        <tr><td>Ikut backup perangkat</td><td>Ya</td><td>Tidak disarankan</td></tr>
+        <tr><td>Ukuran nilai</td><td>Besar (bebas)</td><td>±2 KB per nilai (<em>cek docs</em>)</td></tr>
+        <tr><td>Cocok untuk</td><td>Data non-sensitif, cache</td><td>Token, PIN, rahasia kecil</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    Pembagian tugasnya menjadi jelas: data besar dan tidak sensitif tetap di AsyncStorage,
+    sedangkan token dan rahasia kecil masuk ke SecureStore. Analogi deck tetap yang paling
+    ringkas — token itu seperti uang tunai digital, dan tempat menyimpannya menentukan
+    keamanannya.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Token di AsyncStorage"
+       data-label-benar="Token di SecureStore"
+       data-petunjuk="Yang berubah bukan cara memanggil fungsinya — ketiganya hampir sama — melainkan siapa yang memegang kuncinya.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">token-di-asyncstorage.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §13.5</span>
+      </figcaption>
+      <pre><code class="language-text">AsyncStorage.setItem('token', token)
+✗ nilai tersimpan sebagai teks polos
+✗ terbaca pada perangkat yang di-root
+✗ ikut tersalin ke cadangan perangkat
+✓ hanya untuk cache dan draft (Bab 11)</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">token-di-securestorage.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §13.5</span>
+      </figcaption>
+      <pre><code class="language-text">SecureStore.setItemAsync(KUNCI, token)
+✓ dienkripsi dengan Android Keystore / iOS Keychain
+✓ kunci tidak pernah keluar dari area aman perangkat
+✓ hanya aplikasi itu yang dapat membacanya
+✗ hanya untuk nilai kecil (±2 KB)</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Peringatan sensitif versi</p>
+    <p>
+      Batas ukuran dan perilaku platform SecureStore dapat berubah antarversi SDK; periksa
+      docs.expo.dev sebelum memakainya di kode produksi. Angka “±2 KB per nilai” pada tabel di
+      atas adalah keterangan buku yang perlu dicocokkan ulang, bukan janji yang berlaku selamanya.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Kenapa cache daftar mahasiswa tidak perlu SecureStore? (Jawaban: isinya bukan rahasia dan
+      ukurannya bisa besar, sedangkan SecureStore hanya untuk nilai kecil.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s2-4">
+  <p class="label-subbab">
+    Subbab 13.5 <span class="sumber-slide">· deck: “SecureStore: Tiga Fungsi Sudah Cukup” · buku §13.5, Kode 1</span>
+  </p>
+  <h2>SecureStore: Tiga Fungsi Sudah Cukup</h2>
+
+  <p>
+    API SecureStore yang dipakai hanya tiga fungsi: <code>setItemAsync(kunci, nilai)</code> untuk
+    menyimpan, <code>getItemAsync(kunci)</code> untuk membaca — mengembalikan <code>null</code>
+    bila belum ada — dan <code>deleteItemAsync(kunci)</code> untuk menghapus. Karena
+    <code>getItemAsync</code> mengembalikan <code>null</code> ketika nilainya belum ada,
+    pemeriksaan “sudah login atau belum” cukup memeriksa nilai itu.
+  </p>
+
+  <p>
+    Pemasangannya memakai perintah khusus Expo agar versinya cocok dengan SDK. Perintah ini akan
+    kamu jalankan pada langkah persiapan praktikum.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">(terminal)</span>
+      <span class="kode-sumber">buku §13.5 · verbatim</span>
+    </figcaption>
+    <pre><code class="language-bash">npx expo install expo-secure-store</code></pre>
+  </figure>
+
+  <p>
+    Membungkus ketiga fungsi itu dalam satu berkas punya manfaat yang tidak langsung terlihat:
+    hanya berkas tersebut yang mengenal nama kuncinya, sehingga salah ketik nama kunci tidak
+    mungkin terjadi di layar lain. Bila kebijakan penyimpanan berubah kelak, cukup satu berkas
+    yang diubah.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">utils/tokenStorage.js</span>
+      <span class="kode-sumber">buku §Praktikum, Kode 1 · verbatim</span>
+    </figcaption>
+    <pre><code class="language-js">// utils/tokenStorage.js — bungkus penyimpanan token berbasis SecureStore
+import * as SecureStore from 'expo-secure-store';
+
+const KUNCI_TOKEN = 'token_mahasiswa_app';
+
+export async function simpanToken(token) {
+  await SecureStore.setItemAsync(KUNCI_TOKEN, token);
+}
+
+export async function bacaToken() {
+  return await SecureStore.getItemAsync(KUNCI_TOKEN);
+}
+
+export async function hapusToken() {
+  await SecureStore.deleteItemAsync(KUNCI_TOKEN);
+}</code></pre>
+  </figure>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Masalah praktikum yang paling sering muncul di sini adalah pesan “Cannot find native module
+      ExpoSecureStore”. Penyebabnya paket belum terpasang atau versinya tidak cocok. Solusinya
+      <code>npx expo install expo-secure-store</code> lalu <code>npx expo start -c</code> — bukan
+      <code>npm install</code> biasa, karena versi harus disesuaikan dengan SDK.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Fungsi mana yang menghapus token saat logout? (Jawaban: <code>deleteItemAsync</code>, dan
+      itulah satu-satunya dari tiga fungsi yang dipanggil tanpa membaca nilai apa pun.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s2-5">
+  <p class="label-subbab">
+    Subbab 13.6 <span class="sumber-slide">· deck: “Prinsip 1: Klien Tidak Bisa Dipercaya, Server Harus Memvalidasi” &amp; “Prinsip 2: Secret Key Tidak Pernah Ikut ke dalam APK” &amp; “Prinsip 3: Tanpa HTTPS, Password Dibaca dari Jaringan yang Sama” &amp; “Prinsip 4: Least Privilege Mempersempit Sasaran Serangan” · buku §13.6</span>
+  </p>
+  <h2>Empat Prinsip Keamanan API</h2>
+
+  <p>
+    Mengamankan aplikasi tidak berhenti pada login. Empat prinsip berikut adalah minimum yang
+    harus dipahami setiap pengembang, dan keempatnya bekerja pada lapisan yang berbeda.
+  </p>
+
+  <ol>
+    <li>
+      <strong>Validasi input di sisi server.</strong> Validasi yang ditulis di layar form
+      (Bab 8) bertujuan kenyamanan pengguna: memberi umpan balik cepat sebelum permintaan
+      dikirim. Akan tetapi pengirim permintaan tidak selalu aplikasimu — siapa pun dapat
+      memanggil endpoint langsung dengan curl atau aplikasi penguji API. Server karena itu wajib
+      memvalidasi ulang tipe data, panjang, format email, keberadaan field, dan nilai yang
+      diperbolehkan. Data dari klien juga tidak pernah dirangkai langsung menjadi perintah basis
+      data, karena rentan <strong>SQL injection</strong>; server memakai kueri terparameterisasi.
+    </li>
+    <li>
+      <strong>Jangan menyimpan secret key di aplikasi.</strong> Kode JavaScript akhirnya
+      dibundel menjadi berkas yang dikirim ke perangkat, dan berkas itu dapat dibongkar dari APK.
+      Kunci penandatangan JWT, kunci API pihak ketiga, dan kata sandi basis data tidak boleh ada
+      di kode klien: begitu satu pengguna membongkar aplikasi, seluruh pengguna terancam. Di sisi
+      klien, yang boleh disimpan hanyalah hasil proses autentikasi — itupun lewat SecureStore.
+    </li>
+    <li>
+      <strong>HTTPS wajib.</strong> Tanpa HTTPS, email, kata sandi, dan token dikirim sebagai
+      teks polos sehingga dapat dibaca siapa pun di jalur jaringan yang sama, misalnya Wi-Fi
+      publik kampus. Teknik penyadapan ini disebut <em>man-in-the-middle</em> (MITM), dan HTTPS
+      menutupnya dengan <strong>TLS</strong>. Android sejak versi 9 (API 28) memblokir lalu
+      lintas <em>cleartext</em> pada build produksi secara bawaan.
+    </li>
+    <li>
+      <strong>Least privilege.</strong> Beri setiap pengguna, fungsi, dan aplikasi hanya hak yang
+      benar-benar diperlukan. Penerapannya berlapis: izin perangkat diminta saat fiturnya dipakai
+      (Bab 12), klaim token dibuat sesedikit mungkin, dan akses API dibatasi per peran. Aplikasi
+      mahasiswa tidak menerima hak admin hanya karena login berhasil — itu bukan hak, melainkan
+      cacat.
+    </li>
+  </ol>
+
+  <p>
+    Prinsip pertama adalah yang paling sering dilanggar di laporan praktikum, dan yang paling
+    mudah diperbaiki: hapus keyakinan bahwa validasi klien sudah cukup. Demonstrasi murahnya
+    adalah mengirim satu permintaan lewat alat penguji API dengan field yang salah, lalu
+    menunjukkan server menolaknya — pesan penolakan itu bukti validasi server bekerja.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Validasi hanya di klien"
+       data-label-benar="Validasi di klien dan di server"
+       data-petunjuk="Validasi klien tidak dihapus, hanya perannya berubah: untuk kenyamanan pengguna, bukan untuk keamanan.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">validasi-klien-saja.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §13.6 &amp; §8</span>
+      </figcaption>
+      <pre><code class="language-text">klien: periksa email dan panjang kata sandi
+server: simpan apa pun yang datang
+✗ endpoint bisa dipanggil dengan curl
+✗ aturan klien bisa dilewati seluruhnya
+✗ kiriman klien dirangkai menjadi kueri → SQL injection</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">validasi-klien-dan-server.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §13.6</span>
+      </figcaption>
+      <pre><code class="language-text">klien: umpan balik cepat, sebelum request dikirim
+server: validasi ulang tipe, panjang, format, field wajib
+✓ input yang tidak lolos ditolak, bukan disimpan
+✓ kueri terparameterisasi, bukan rangkaian teks
+✓ klien adalah lingkungan yang tidak dapat dipercaya</code></pre>
+    </figure>
+  </div>
+
+  <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Sebelum rilis, jawab dulu empat pertanyaan ini · sumber: deck Bab 13</caption>
+      <thead>
+        <tr><th scope="col">Prinsip</th><th scope="col">Pertanyaan uji sebelum rilis</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Penyimpanan rahasia</td><td>Bagaimana jika perangkat ini dipegang orang jahat?</td></tr>
+        <tr><td>Perlindungan server</td><td>Endpoint mana yang membawa data pribadi dan belum dilindungi?</td></tr>
+        <tr><td>Saluran</td><td>Apakah server produksi masih menerima HTTP biasa?</td></tr>
+        <tr><td>Least privilege</td><td>Data dan klaim mana yang tidak benar-benar dibutuhkan?</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Peringatan sensitif versi</p>
+    <p>
+      Pada pengembangan lokal, Expo Go mengizinkan HTTP ke <code>localhost</code> agar praktikum
+      di kelas tetap berjalan tanpa server HTTPS. Itu pengecualian untuk pengembangan, bukan
+      untuk produksi, dan kebijakan <em>cleartext</em> Expo Go dapat berubah antarversi. Ringkasnya:
+      HTTP hanya untuk mesin pengembanganmu sendiri; HTTPS untuk segala hal lain.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Aplikasi hanya menampilkan nama dan peran, tetapi jawaban login memuat NIK dan alamat.
+      Prinsip apa yang dilanggar? (Jawaban: least privilege — permintaan data minimal; kirim
+      hanya field yang benar-benar ditampilkan.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s2-6">
+  <p class="label-subbab">
+    Subbab 13.7 <span class="sumber-slide">· deck: “Lima Langkah, Satu Token: dari Login sampai Logout” &amp; “Kode Inti: Token Disisipkan di Satu Tempat” &amp; “Diagram: Siapa Berbicara ke Siapa, dan di Mana Token Disimpan” · buku §13.7, Kode 2</span>
+  </p>
+  <h2>Lima Langkah, Satu Token</h2>
+
+  <p>
+    Seluruh materi bagian 1 dan bagian 2 menyatu dalam satu alur yang menjadi tulang punggung
+    praktikum: login → terima token → simpan aman → akses API → logout.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">alur-lima-langkah.txt</span>
+      <span class="kode-sumber">buku §13.7 · verbatim</span>
+    </figcaption>
+    <pre><code class="language-text">┌─────────┐  1. kirim email+password   ┌──────────┐
+│  Login  │ ──────────────────────────► │  Server  │
+│  (klien)│ ◄────────────────────────── │  (auth)  │
+└─────────┘  2. terima token (JWT)      └──────────┘
+      │
+      ▼
+┌──────────────┐  3. simpan token
+│ SecureStore  │  (terenkripsi, bukan AsyncStorage)
+└──────────────┘
+      │
+      ▼
+┌──────────────┐  4. tiap panggilan API: header
+│  API klien   │  Authorization: Bearer &lt;token&gt;
+└──────────────┘
+      │
+      ▼
+┌──────────────┐  5. logout: hapus token dari
+│  Logout      │  SecureStore → Redirect ke /login
+└──────────────┘</code></pre>
+  </figure>
+
+  <p>
+    Empat keputusan desain tersembunyi di dalam alur itu: token diterima hanya dari server yang
+    sah, disimpan terenkripsi, dikirim ulang pada setiap permintaan melalui header
+    <code>Authorization</code> dengan skema <code>Bearer &lt;token&gt;</code>, dan dihapus saat
+    logout. Yang terakhir punya alasan yang sering mengejutkan: logout pada arsitektur token
+    berarti <em>membuang kunci di sisi klien</em>, karena server tidak memiliki sesi untuk
+    ditutup.
+  </p>
+
+  <p>
+    Titik paling menentukan dalam kode adalah satu baris yang menyisipkan token ke header. Di
+    situlah token berpindah dari penyimpanan ke dalam permintaan. Karena seluruh pemanggilan
+    <code>fetch</code> dipusatkan di satu berkas, penanganan <code>401</code> dan pesan kesalahan
+    server cukup ditulis sekali.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">api/client.js</span>
+      <span class="kode-sumber">buku §Praktikum, Kode 2 · verbatim</span>
+    </figcaption>
+    <pre><code class="language-js">// api/client.js — pemanggil API buku dengan dukungan token
+export const BASE_URL = 'http://localhost:3000'; // emulator Android: http://10.0.2.2:3000
+
+async function kirim(method, path, { body, token } = {}) {
+  const headers = { 'Content-Type': 'application/json' };
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+  const response = await fetch(`${BASE_URL}${path}`, {
+    method,
+    headers,
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  const data = await response.json().catch(() =&gt; null);
+  if (!response.ok) {
+    throw new Error((data &amp;&amp; data.pesan) || `Permintaan gagal (status ${response.status})`);
+  }
+  return data;
+}
+
+export function loginApi(email, password) {
+  return kirim('POST', '/api/auth/login', { body: { email, password } });
+}
+
+export function registerApi(nama, email, password) {
+  return kirim('POST', '/api/auth/register', { body: { nama, email, password } });
+}
+
+export function ambilMahasiswa(token) {
+  return kirim('GET', '/api/mahasiswa', { token });
+}</code></pre>
+  </figure>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Pada diagram di atas, adakah panah yang keluar dari aplikasi setelah logout? (Jawaban:
+      tidak ada — karena di server tidak ada sesi untuk ditutup. Itulah seluruh biaya dan seluruh
+      manfaat stateless dalam satu baris.)
+    </p>
+  </div>
+</section>

@@ -1,0 +1,478 @@
+<h1>Bagian 1 — Dari State Lokal ke State Global</h1>
+
+<p class="ringkas">
+  Subbab 9.1 state lokal vs global · 9.2 lifting state up. Bagian ini konseptual dan menjadi
+  dasar seluruh bab: istilah “cakupan state” dipakai terus sampai Bab 13, dan lifting state up
+  adalah batu loncatan menuju Context API di bagian 2.
+</p>
+
+<section class="subbab" id="s1-1">
+  <p class="label-subbab">
+    Subbab 9.1 <span class="sumber-slide">· deck: “Cakupan State Menentukan di Mana Ia Disimpan” · buku §9.1</span>
+  </p>
+  <h2>Cakupan State Menentukan di Mana Ia Disimpan</h2>
+
+  <p>
+    <strong>State</strong> adalah data yang berubah karena interaksi pengguna dan memengaruhi
+    tampilan (Bab 4). Bab ini membedakan state berdasarkan <strong>cakupan pemakaiannya</strong>:
+    siapa saja yang perlu membaca dan mengubah data tersebut.
+  </p>
+
+  <p>
+    <strong>State lokal</strong> hidup di dalam satu komponen dan tidak dibutuhkan komponen
+    lain: teks yang sedang diketik di <code>TextInput</code> pencarian, status buka/tutup
+    panel, atau pilihan ukuran pada satu tombol.
+    <strong>State global</strong> harus dapat diakses banyak komponen di berbagai cabang pohon
+    komponen, biasanya lintas layar — contoh klasiknya isi keranjang belanja yang tampil di
+    badge layar produk, di daftar layar keranjang, dan nanti di layar pembayaran.
+  </p>
+
+  <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Dua cakupan state · sumber: deck &amp; buku §9.1</caption>
+      <thead>
+        <tr><th scope="col">Cakupan</th><th scope="col">Ciri pemakaian</th><th scope="col">Contoh</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Lokal</strong></td><td>Satu komponen dan anak-anaknya</td><td>Status panel, pilihan satu tombol</td></tr>
+        <tr><td><strong>Global</strong></td><td>Banyak komponen, biasanya lintas layar</td><td>Keranjang: badge, daftar, pembayaran</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    Kenapa perlu dua kategori? Karena ada <strong>trade-off</strong> antara kesederhanaan dan
+    jangkauan. State lokal sederhana dan mudah ditelusuri, tetapi tidak bisa dibagikan.
+    State global bisa dibagikan ke mana saja, tetapi membawa biaya: lebih sulit dilacak siapa
+    yang mengubahnya, dan perubahan nilainya me-render ulang semua pembaca.
+  </p>
+
+  <p>
+    Analogi dari buku: state lokal seperti catatan kecil di meja kerja sendiri, sedangkan
+    state global seperti papan pengumuman kantor — lebih banyak orang terbantu, tetapi isinya
+    harus dirawat dan siapa pun yang menulis di sana harus disiplin.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">state-lokal.js</span>
+      <span class="kode-sumber">buku §9.1</span>
+    </figcaption>
+    <pre><code class="language-js">// State lokal: ditulis persis seperti Bab 4, nilainya hanya dikenal
+// oleh komponen tempat ia dideklarasikan beserta anak-anaknya.
+const [teks, setTeks] = useState('');</code></pre>
+  </figure>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Global state bukan soal “datanya besar”, melainkan soal luas cakupan pemakainya.
+      Data kecil yang dibaca banyak layar adalah global; data besar yang hanya dipakai satu
+      komponen tetaplah lokal.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Kalau dua layar masing-masing menyimpan salinan keranjang, layar mana yang benar? (Jawaban: tidak ada yang bisa memastikan; di situlah bug dimulai.)</p>
+  </div>
+</section>
+
+<section class="subbab" id="s1-2">
+  <p class="label-subbab">
+    Subbab 9.1 <span class="sumber-slide">· deck: “Latihan: Lokal atau Global?” &amp; “Kuncinya” · buku §9.1</span>
+  </p>
+  <h2>Latihan: Lokal atau Global?</h2>
+
+  <p>
+    Tentukan tingkat state yang tepat untuk setiap kasus, lalu sebutkan alasannya.
+    Luangkan tiga menit berpasangan sebelum melihat kuncinya: latihan inilah yang paling
+    sering muncul lagi dalam bentuk soal ujian.
+  </p>
+
+  <ul>
+    <li><strong>A.</strong> Teks yang sedang diketik di kolom pencarian produk</li>
+    <li><strong>B.</strong> Isi keranjang yang dibaca layar produk dan layar keranjang</li>
+    <li><strong>C.</strong> Pilihan ukuran minuman yang dipakai dua komponen di satu layar</li>
+    <li><strong>D.</strong> Total harga keranjang</li>
+  </ul>
+
+  <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Kunci latihan · sumber: deck</caption>
+      <thead>
+        <tr><th scope="col">Kasus</th><th scope="col">Tingkat state</th><th scope="col">Alasan</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>A. Teks pencarian</td><td>Lokal (<code>useState</code>)</td><td>Satu komponen saja</td></tr>
+        <tr><td>B. Isi keranjang</td><td>Global (Context API)</td><td>Dibaca lintas layar; induk bersama layout akar</td></tr>
+        <tr><td>C. Pilihan ukuran</td><td>Diangkat ke induk</td><td>Dua komponen bersaudara di satu layar</td></tr>
+        <tr><td>D. Total harga</td><td>Nilai turunan</td><td>Dihitung dari <code>items</code>, tidak disimpan</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    Praktikum 9 memakai pola yang sama: keranjang menjadi global state (kasus B), pilihan
+    ukuran yang diangkat ke induk muncul di Contoh 1 (kasus C), dan total harga selalu dihitung,
+    bukan disimpan (kasus D).
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">kasus-a-d.js</span>
+      <span class="kode-sumber">potongan verbatim · buku §9.1 &amp; §Praktikum</span>
+    </figcaption>
+    <pre><code class="language-js">// Kasus A: lokal — satu komponen saja.
+const [teks, setTeks] = useState('');
+
+// Kasus D: nilai turunan — dihitung dari items, tidak disimpan.
+const totalHarga = items.reduce((total, i) =&gt; total + i.qty * i.harga, 0);</code></pre>
+  </figure>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Kesalahan paling sering: menjadikan total harga state terpisah, lalu lupa
+      memperbaruinya pada salah satu operasi. Satu operasi yang lupa sudah cukup
+      membuat tampilan tidak cocok dengan data.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Total harga perlu disimpan, atau bisa dihitung ulang kapan saja dari daftar item? (Jawaban: dihitung ulang — menyimpannya hanya membuka peluang tidak sinkron.)</p>
+  </div>
+</section>
+
+<section class="subbab" id="s1-3">
+  <p class="label-subbab">
+    Subbab 9.2 <span class="sumber-slide">· deck: “Lifting State Up: State Naik, Data Turun” · buku §9.2</span>
+  </p>
+  <h2>Lifting State Up: State Naik, Data Turun</h2>
+
+  <p>
+    <strong>Lifting state up</strong> (menaikkan state) adalah memindahkan state ke komponen
+    induk terdekat yang menjadi “nenek moyang bersama” semua komponen yang membutuhkannya.
+    Induk memegang state, menurunkannya lewat <strong>props</strong>, dan setiap perubahan
+    dikirim balik lewat fungsi <strong>callback</strong>.
+  </p>
+
+  <p>
+    Kenapa teknik ini ada? Karena aliran data React satu arah: dari induk ke anak.
+    Untuk membuat data “naik”, React memakai pola callback, dan lifting state up adalah
+    penerapan paling sederhananya — cukup untuk kebutuhan dua sampai tiga tingkat komponen.
+    Hasilnya disebut <strong>single source of truth</strong> (sumber kebenaran tunggal):
+    satu penyimpanan, banyak pembaca, sehingga data tidak mungkin tidak sinkron.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">alur-lifting-state.txt</span>
+      <span class="kode-sumber">buku §9.2</span>
+    </figcaption>
+    <pre><code class="language-text">LayarPesan (induk — state ukuran disimpan di sini)
+   │  props: ukuran + onPilihUkuran
+   ▼
+PilihUkuran ──panggil onPilihUkuran("L")──► LayarPesan (setUkuran)
+RingkasanPesanan ◄──props: ukuran──  harga dihitung dari props</code></pre>
+  </figure>
+
+  <div class="banding"
+       data-label-lama="State di dalam anak — saudaranya buta"
+       data-label-benar="State di induk — dua anak satu sumber"
+       data-petunjuk="Bila state ukuran tinggal di dalam PilihUkuran, RingkasanPesanan tidak akan pernah tahu pilihan pengguna.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">state-di-anak.jsx</span>
+        <span class="kode-sumber">ilustrasi · buku §9.2</span>
+      </figcaption>
+      <pre><code class="language-jsx">// State hidup di dalam PilihUkuran: hanya komponen ini yang membacanya.
+function PilihUkuran() {
+  const [ukuran, setUkuran] = useState('M');
+  // RingkasanPesanan tidak menerima apa pun — ia tidak bisa tahu pilihan.
+}</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">state-di-induk.jsx</span>
+        <span class="kode-sumber">ilustrasi · buku §9.2</span>
+      </figcaption>
+      <pre><code class="language-jsx">// State dinaikkan ke induk; nilai turun lewat props, perubahan naik lewat callback.
+export default function LayarPesan() {
+  const [ukuran, setUkuran] = useState('M');
+  return (
+    &lt;View&gt;
+      &lt;PilihUkuran ukuran={ukuran} onPilihUkuran={setUkuran} /&gt;
+      &lt;RingkasanPesanan ukuran={ukuran} /&gt;
+    &lt;/View&gt;
+  );
+}</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Mahasiswa sering menaruh state di komponen anak lalu “mengirim nilainya ke atas”
+      lewat props. Aliran seperti itu tidak ada di React: data selalu turun, dan perubahan
+      hanya bisa diminta lewat callback.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Kalau state ukuran tinggal di dalam <code>PilihUkuran</code>, bagaimana <code>RingkasanPesanan</code> tahu pilihan pengguna? (Jawaban: tidak akan pernah tahu; karena itulah state dinaikkan.)</p>
+  </div>
+</section>
+
+<section class="subbab" id="s1-4">
+  <p class="label-subbab">
+    Subbab 9.2 <span class="sumber-slide">· deck: “Lifting State Up Punya Batas: Prop Drilling” · buku §9.2</span>
+  </p>
+  <h2>Lifting State Up Punya Batas: Prop Drilling</h2>
+
+  <p>
+    <strong>Prop drilling</strong> adalah mengoper props berantai lewat komponen perantara
+    yang sama sekali tidak memakai data itu.
+    Terjadi saat data harus melewati banyak tingkat komponen.
+    Bayangkan menyampaikan pesan lewat lima orang, empat di antaranya tidak peduli.
+  </p>
+
+  <ul>
+    <li>Menambah satu data baru berarti mengubah seluruh deret perantara.</li>
+    <li>Kode menjadi berisik dan sulit dirawat.</li>
+  </ul>
+
+  <p>
+    Munculnya prop drilling adalah tanda untuk beralih ke mekanisme berikutnya:
+    Context API. Tapi jangan terburu-buru: lifting state up tetap cukup untuk dua sampai
+    tiga tingkat komponen.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Props dioper berantai — deret perantara ikut berubah"
+       data-label-benar="Context — jalur langsung tanpa perantara"
+       data-petunjuk="Nilai berangkat dari pemiliknya, melewati komponen yang tidak pernah membacanya, baru sampai ke pemakainya.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">prop-drilling.jsx</span>
+        <span class="kode-sumber">ilustrasi · buku §9.2</span>
+      </figcaption>
+      <pre><code class="language-jsx">// Keranjang melewati dua perantara yang tidak memakainya.
+&lt;LayoutApp keranjang={keranjang}&gt;
+  &lt;TabNavigasi keranjang={keranjang}&gt;
+    &lt;LayarProduk keranjang={keranjang} /&gt;
+  &lt;/TabNavigasi&gt;
+&lt;/LayoutApp&gt;
+
+// Tambah satu data baru → seluruh deret di atas ikut ditulis ulang.</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">lewat-context.jsx</span>
+        <span class="kode-sumber">ilustrasi · buku §9.2</span>
+      </figcaption>
+      <pre><code class="language-jsx">// Perantara tidak lagi menyentuh data; pemakai mengambilnya sendiri.
+&lt;CartProvider&gt;
+  &lt;LayoutApp&gt;
+    &lt;TabNavigasi&gt;
+      &lt;LayarProduk /&gt;  {/* memanggil useCart() sendiri */}
+    &lt;/TabNavigasi&gt;
+  &lt;/LayoutApp&gt;
+&lt;/CartProvider&gt;</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Jangan buru-buru menyimpulkan setiap prop adalah prop drilling.
+      Props eksplisit tetap yang paling mudah dibaca untuk dua atau tiga tingkat.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Gejala apa di kode yang menandakan kita sudah kena prop drilling? (Jawaban: props yang sama muncul di komponen yang tidak memakainya.)</p>
+  </div>
+</section>
+
+<section class="subbab" id="s1-5">
+  <p class="label-subbab">
+    Subbab 9.2 <span class="sumber-slide">· deck: “Contoh 1: Induk Menyimpan Ukuran, Dua Anak Membacanya” · buku Contoh 1</span>
+  </p>
+  <h2>Contoh 1: Induk Menyimpan Ukuran, Dua Anak Membacanya</h2>
+
+  <p>
+    Contoh lengkap lifting state up berupa tiga file: <code>PilihUkuran</code> (tombol S/M/L),
+    <code>RingkasanPesanan</code> (tabel harga), dan <code>LayarPesan</code> (pemilik state).
+    Versi deck memotong baris judul dan kunci gaya <code>judul</code>; versi utuhnya di buku,
+    dan tiga file itulah yang disalin di bawah.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">components/PilihUkuran.js</span>
+      <span class="kode-sumber">buku Contoh 1</span>
+    </figcaption>
+    <pre><code class="language-jsx">import { Pressable, StyleSheet, Text, View } from 'react-native';
+
+const DAFTAR_UKURAN = ['S', 'M', 'L'];
+
+export default function PilihUkuran({ ukuran, onPilihUkuran }) {
+  return (
+    &lt;View style={styles.baris}&gt;
+      {DAFTAR_UKURAN.map((u) =&gt; (
+        &lt;Pressable
+          key={u}
+          onPress={() =&gt; onPilihUkuran(u)}
+          style={[styles.tombol, ukuran === u &amp;&amp; styles.tombolAktif]}
+        &gt;
+          &lt;Text style={styles.teks}&gt;{u}&lt;/Text&gt;
+        &lt;/Pressable&gt;
+      ))}
+    &lt;/View&gt;
+  );
+}
+
+const styles = StyleSheet.create({
+  baris: { flexDirection: 'row', gap: 8 },
+  tombol: { paddingHorizontal: 18, paddingVertical: 10, borderRadius: 8, backgroundColor: '#dfe4ea' },
+  tombolAktif: { backgroundColor: '#3742fa' },
+  teks: { fontWeight: '600', color: '#2f3542' },
+});</code></pre>
+  </figure>
+
+  <p>
+    <code>PilihUkuran</code> menerima dua props — nilai saat ini dan callback.
+    Ketika tombol ditekan, komponen <em>tidak</em> mengubah state sendiri; ia hanya memanggil
+    <code>onPilihUkuran(u)</code> dan menyerahkan keputusan kepada induk.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">components/RingkasanPesanan.js</span>
+      <span class="kode-sumber">buku Contoh 1</span>
+    </figcaption>
+    <pre><code class="language-jsx">import { StyleSheet, Text, View } from 'react-native';
+
+const HARGA = { S: 8000, M: 10000, L: 12000 };
+
+export default function RingkasanPesanan({ ukuran }) {
+  return (
+    &lt;View style={styles.kartu}&gt;
+      &lt;Text style={styles.teks}&gt;Ukuran: {ukuran}&lt;/Text&gt;
+      &lt;Text style={styles.teks}&gt;Harga: Rp {HARGA[ukuran]}&lt;/Text&gt;
+    &lt;/View&gt;
+  );
+}
+
+const styles = StyleSheet.create({
+  kartu: { padding: 12, borderRadius: 8, backgroundColor: '#f1f2f6', marginTop: 12 },
+  teks: { fontSize: 15, color: '#2f3542' },
+});</code></pre>
+  </figure>
+
+  <p>
+    <code>RingkasanPesanan</code> hanya menerima <code>ukuran</code> dan menghitung harga dari
+    tabel <code>HARGA</code>. Karena pilihan disimpan di induk, komponen ini selalu
+    menampilkan nilai terbaru tanpa tahu bagaimana pilihan itu berubah.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">screens/LayarPesan.js</span>
+      <span class="kode-sumber">buku Contoh 1 · deck menampilkan versi tanpa baris judul</span>
+    </figcaption>
+    <pre><code class="language-jsx">import { useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import PilihUkuran from '../components/PilihUkuran';
+import RingkasanPesanan from '../components/RingkasanPesanan';
+
+export default function LayarPesan() {
+  const [ukuran, setUkuran] = useState('M');
+
+  return (
+    &lt;View style={styles.layar}&gt;
+      &lt;Text style={styles.judul}&gt;Pilih ukuran minuman&lt;/Text&gt;
+      &lt;PilihUkuran ukuran={ukuran} onPilihUkuran={setUkuran} /&gt;
+      &lt;RingkasanPesanan ukuran={ukuran} /&gt;
+    &lt;/View&gt;
+  );
+}
+
+const styles = StyleSheet.create({
+  layar: { flex: 1, padding: 16, backgroundColor: '#fff' },
+  judul: { fontSize: 17, fontWeight: '600', marginBottom: 12, color: '#2f3542' },
+});</code></pre>
+  </figure>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Kenapa <code>onPilihUkuran={setUkuran}</code> boleh ditulis begitu saja? (Jawaban: setter dari <code>useState</code> berbentuk <code>(nilaiBaru) =&gt; void</code>, sama dengan kontrak prop callback.)</p>
+  </div>
+</section>
+
+<section class="subbab" id="s1-6">
+  <p class="label-subbab">
+    Subbab 9.2 <span class="sumber-slide">· deck: “Studi Kasus: Satu Keranjang KRS yang Harus Sama di Dua Layar” · buku §9.7</span>
+  </p>
+  <h2>Studi Kasus: Satu Keranjang KRS yang Harus Sama di Dua Layar</h2>
+
+  <p>
+    Kasus fiktif dengan pola nyata, pada aplikasi Manajemen Data Mahasiswa
+    (<code>siakad-mobile</code>) yang kamu bangun sejak Bab 5.
+    Layar KRS memilih mata kuliah; layar ringkasan menjumlahkan SKS.
+    Keduanya bukan saudara — induk bersamanya adalah layout akar aplikasi.
+  </p>
+
+  <p>
+    Disimpan lokal di layar KRS, pilihan itu tidak pernah sampai ke layar ringkasan.
+    Diangkat ke layout akar lewat props, setiap layar harus meneruskan props yang sama —
+    itulah prop drilling.
+    Jawabannya Context API: satu sumber kebenaran, dua pembaca.
+    Pada project mata kuliah ini, keranjang belanja adalah pilihan KRS, sehingga context-nya
+    bernama <code>KrsContext</code> dan hook-nya <code>useKrs</code> — pola sama persis,
+    hanya nama domainnya yang berbeda.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Dua salinan lokal — isi bisa berbeda"
+       data-label-benar="Satu sumber bersama — kedua layar selalu sama"
+       data-petunjuk="Salinan adalah awal bug: layar mana yang isinya benar?">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">dua-salinan.jsx</span>
+        <span class="kode-sumber">ilustrasi · buku §9.7</span>
+      </figcaption>
+      <pre><code class="language-jsx">// Layar KRS dan layar ringkasan menyimpan keranjang masing-masing.
+function LayarKrs() {
+  const [pilihan, setPilihan] = useState([]);   // salinan 1
+}
+
+function LayarRingkasan() {
+  const [pilihan, setPilihan] = useState([]);   // salinan 2 — bisa berbeda
+}</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">satu-sumber.jsx</span>
+        <span class="kode-sumber">ilustrasi · buku §9.7</span>
+      </figcaption>
+      <pre><code class="language-jsx">// Satu context di layout akar; kedua layar membaca lewat satu hook.
+function LayarKrs() {
+  const { pilihan, tambahPilihan } = useKrs();  // pembaca 1
+}
+
+function LayarRingkasan() {
+  const { pilihan } = useKrs();                 // pembaca 2 — nilai sama
+}</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Kalau layout akar yang memegang state, bagaimana prop drilling bisa dihindari? (Jawaban: dengan Context API — komponen mengambil data langsung dari provider tanpa dioper lewat props.)</p>
+  </div>
+</section>

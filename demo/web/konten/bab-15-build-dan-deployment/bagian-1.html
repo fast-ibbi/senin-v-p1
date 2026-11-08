@@ -1,0 +1,508 @@
+<h1>Bagian 1 — Dari Kode ke Berkas yang Bisa Dipasang</h1>
+
+<p class="ringkas">
+  Subbab 15.1–15.4. Bagian ini menutup fase pertama: bagaimana kode JavaScript, aset, dan
+  konfigurasi native dirakit menjadi satu berkas yang bisa dipasang, siapa yang mengerjakan
+  perakitan itu, dan dalam format apa hasilnya keluar. Subbab 15.4 bersifat konseptual dan
+  tidak dipraktikkan.
+</p>
+
+<section class="subbab" id="s1-1">
+  <p class="label-subbab">
+    Subbab 15.1 <span class="sumber-slide">· deck: “Build Bukan npx expo start” &amp; “Build Development dan Production Bukan Dua Aplikasi Berbeda” · buku §15.1</span>
+  </p>
+  <h2>Build Bukan <code>npx expo start</code></h2>
+
+  <p>
+    <strong>Build</strong> adalah hasil akhir proses kompilasi: kode JavaScript, aset seperti
+    gambar dan font, serta konfigurasi native dirakit menjadi satu berkas yang dapat diinstal
+    pada perangkat. React Native tidak menjalankan kode kita langsung seperti di web — bundel
+    JavaScript dibuat oleh <strong>Metro</strong>, bundler yang sudah kita kenal sejak Bab 2,
+    lalu digabung dengan kerangka native Android atau iOS.
+  </p>
+
+  <p>
+    Selama masa pengembangan, <code>npx expo start</code> menjalankan Metro di komputer kita dan
+    aplikasi di Expo Go atau emulator memuat bundel dari server itu. Setiap perubahan langsung
+    terlihat lewat Fast Refresh. Mode inilah yang disebut <strong>development build</strong>:
+    cepat, menampilkan pesan error yang kaya, tersambung ke alat debugging Bab 14, tetapi tidak
+    dioptimalkan. Berkasnya besar, lambat, dan bergantung pada komputer pengembang sehingga
+    mustahil dibagikan ke pengguna akhir.
+  </p>
+
+  <p>
+    <strong>Production build</strong> adalah kebalikannya: JavaScript diminifikasi, aset
+    dioptimalkan, bundel disimpan di dalam aplikasi sehingga tidak lagi membutuhkan Metro, dan
+    berkasnya ditandatangani sebagai bukti keaslian. Hasilnya lebih kecil dan lebih cepat, dan
+    itulah yang diunggah ke toko aplikasi.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Development build: mengejar iterasi"
+       data-label-benar="Production build: mengejar ukuran dan keamanan"
+       data-petunjuk="Keduanya produk dari proses build yang sama, bukan dua aplikasi berbeda; yang berubah hanya tujuannya.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">ilustrasi-alur-development.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §15.1</span>
+      </figcaption>
+      <pre><code class="language-text">npx expo start
+→ Metro menyajikan bundel dari laptop
+→ aplikasi memuat bundel lewat jaringan
+→ Fast Refresh: perubahan langsung tampil
+✓ pesan error lengkap, tersambung DevTools
+✗ berkas besar, lambat, butuh laptop menyala</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">ilustrasi-alur-production.txt</span>
+        <span class="kode-sumber">ilustrasi · perintah verbatim dari buku §15.2</span>
+      </figcaption>
+      <pre><code class="language-text">eas build --platform android --profile production
+→ JavaScript diminifikasi, aset dioptimalkan
+→ bundel disimpan di dalam aplikasi
+→ berkas ditandatangani sebagai bukti keaslian
+✓ kecil, cepat, tidak butuh Metro
+✗ tanpa alat debugging (memang disengaja)</code></pre>
+    </figure>
+  </div>
+
+  <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Development build dan production build · sumber: deck Bab 15, buku §15.1</caption>
+      <thead>
+        <tr>
+          <th scope="col">Aspek</th>
+          <th scope="col">Development build</th>
+          <th scope="col">Production build</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Kecepatan iterasi</td>
+          <td>Cepat, perubahan langsung tampil lewat Fast Refresh</td>
+          <td>Dibuat hanya saat akan rilis atau diuji</td>
+        </tr>
+        <tr>
+          <td>Sumber bundel</td>
+          <td>Diambil dari Metro di komputer pengembang</td>
+          <td>Tersimpan di dalam aplikasi, tanpa Metro</td>
+        </tr>
+        <tr>
+          <td>Debugging</td>
+          <td>Pesan error lengkap, tersambung DevTools (Bab 14)</td>
+          <td>Diminifikasi, tanpa alat debugging</td>
+        </tr>
+        <tr>
+          <td>Ukuran dan kecepatan</td>
+          <td>Berkas besar dan lebih lambat</td>
+          <td>Lebih kecil dan lebih cepat, aset dioptimalkan</td>
+        </tr>
+        <tr>
+          <td>Kapan dipakai</td>
+          <td>Setiap hari oleh pengembang dan penguji</td>
+          <td>Saat rilis, pengujian, atau dibagikan terbatas</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    Trade-off-nya jelas dan disengaja: kemudahan debugging ditukar dengan ukuran, kecepatan, dan
+    keamanan. Pengorbanan itu wajar karena pengguna akhir tidak pernah perlu membaca pesan error
+    internal.
+  </p>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Salah paham paling umum di subbab ini: mengira Expo Go adalah hasil build proyek kita.
+      Expo Go adalah aplikasi milik Expo yang menjalankan bundel dari server pengembangan —
+      bukan berkas hasil build proyek kita. Salah paham kedua: mengira production build adalah
+      “versi lain” aplikasi. Keduanya produk proses build yang sama, hanya tujuannya berbeda.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Kalau Metro dimatikan, aplikasi hasil production build bagaimana? (Jawaban: tetap jalan,
+      karena bundelnya sudah tersimpan di dalam aplikasi.) Lalu mengapa production build tidak
+      menyertakan alat debugging? (Jawaban: pengguna akhir tidak membutuhkannya, dan
+      menyertakannya membuat berkas lebih besar serta startup lebih lambat.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s1-2">
+  <p class="label-subbab">
+    Subbab 15.2 <span class="sumber-slide">· deck: “EAS Build: Kerja Beratnya Dipindah ke Cloud” · buku §15.2</span>
+  </p>
+  <h2>EAS Build: Kerja Beratnya Dipindah ke Cloud</h2>
+
+  <p>
+    <strong>EAS (Expo Application Services)</strong> adalah kumpulan layanan cloud dari tim Expo
+    untuk membangun, menandatangani, dan mengirim aplikasi. Bagian yang membangun disebut
+    <strong>EAS Build</strong>. Alasannya praktis: membangun aplikasi Android yang sungguhan
+    memerlukan Android SDK, JDK, dan Gradle, sedangkan membangun iOS memerlukan macOS dan
+    Xcode. Tidak semua laptop di ruang praktikum sanggup memasang beban seberat itu, apalagi
+    macOS dan Xcode untuk iOS.
+  </p>
+
+  <p>
+    EAS memindahkan pekerjaan berat itu ke server Expo: kita cukup mengirim kode, server yang
+    mengompilasi, lalu mengembalikan hasilnya beserta tautan unduhan dan kode QR. Analogi yang
+    dipakai deck: EAS seperti jasa percetakan profesional — kamu mengirim desain, hasilnya
+    kembali berupa tautan unduhan, dan mesin cetaknya bukan milikmu.
+  </p>
+
+  <p>
+    Alatnya adalah <code>eas-cli</code>, program baris perintah untuk berinteraksi dengan
+    layanan EAS. Ada dua cara memasangnya, dan kita memilih satu cara lalu konsisten
+    menggunakannya sepanjang bab ini.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">(terminal)</span>
+      <span class="kode-sumber">buku §15.2 · Langkah 1 · verbatim</span>
+    </figcaption>
+    <pre><code class="language-bash"># Cara A: pasang sekali secara global, lalu pakai perintah `eas`
+npm install -g eas-cli
+
+# Cara B: tanpa memasang, panggil langsung dengan `npx`
+npx eas-cli --version</code></pre>
+  </figure>
+
+  <p>
+    Cara A memasang alat ini sekali di komputer; setelah itu perintah ditulis <code>eas
+    login</code>, <code>eas build</code>, dan seterusnya. Di Windows, terminal lama kadang tidak
+    mengenali <code>eas</code> setelah pemasangan global — buka terminal baru atau pakai cara B.
+    Cara B tidak memasang apa pun secara permanen, sehingga setiap perintah ditulis dengan
+    awalan <code>npx eas-cli</code>.
+  </p>
+
+  <p>
+    Keterangan ini <em>sensitif versi</em>: nama paket, cara pemasangan, dan perintahnya dapat
+    berubah antarvensi, jadi periksa docs.expo.dev saat memasang. Hal yang sama berlaku untuk
+    durasi build, antrean, dan kebijakan paket gratis atau berbayar EAS.
+  </p>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Karena seluruh proyek diunggah ke server, konfigurasi yang keliru ikut terkirim dan
+      hasilnya ikut keliru. Itu sebabnya di praktikum ada langkah pemeriksaan konfigurasi
+      sebelum kode dikirim ke cloud. EAS tidak memperbaiki kesalahan konfigurasi; ia hanya
+      memindahkan tempat kompilasinya.
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s1-3">
+  <p class="label-subbab">
+    Subbab 15.2 <span class="sumber-slide">· deck: “Tiga Profil Build, Tiga Hasil Berbeda” &amp; “eas.json: Pusat Kendali Build” · buku §Contoh 2</span>
+  </p>
+  <h2>Tiga Profil Build, Tiga Hasil Berbeda</h2>
+
+  <p>
+    Saat <code>eas build:configure</code> dijalankan, EAS memeriksa proyek dan membuat berkas
+    <strong>eas.json</strong> di folder akar. Berkas inilah pusat kendali build, dengan tiga
+    bagian utama: <code>cli</code> (pengaturan alat itu sendiri), <code>build</code> (kumpulan
+    profil build), dan <code>submit</code> (dipakai saat mengirim build ke toko aplikasi).
+  </p>
+
+  <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Tiga profil build standar · sumber: deck Bab 15, buku §15.2</caption>
+      <thead>
+        <tr>
+          <th scope="col">Profil</th>
+          <th scope="col">Kegunaan</th>
+          <th scope="col">Hasil di Android</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>development</code></td>
+          <td>Pengembangan harian dan modul native</td>
+          <td>development build dengan <code>expo-dev-client</code></td>
+        </tr>
+        <tr>
+          <td><code>preview</code></td>
+          <td>Uji calon rilis oleh penguji internal</td>
+          <td>APK (<code>distribution: internal</code>)</td>
+        </tr>
+        <tr>
+          <td><code>production</code></td>
+          <td>Rilis ke toko aplikasi</td>
+          <td>AAB bertanda tangan, <code>autoIncrement</code></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    Nama profilnya sama dengan nama jenis build di subbab 15.1: profil <code>development</code>
+    menghasilkan development build, profil <code>production</code> menghasilkan production
+    build. Ini istilah yang sama, bukan dua hal berbeda. Profil <code>development</code> dipakai
+    bersama <code>npx expo start --dev-client</code> untuk menguji modul native tambahan yang
+    tidak tersedia di Expo Go; profil <code>preview</code> adalah jalur mengirim “beta” ke teman
+    atau dosen tanpa melewati toko aplikasi.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">eas.json</span>
+      <span class="kode-sumber">buku §Contoh 2 · verbatim</span>
+    </figcaption>
+    <pre><code class="language-json">{
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal"
+    },
+    "preview": {
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      }
+    },
+    "production": {
+      "autoIncrement": true
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}</code></pre>
+  </figure>
+
+  <p>
+    Profil <code>development</code> menghasilkan development build bernama dev client untuk
+    debugging native yang tidak bisa dilakukan di Expo Go. Profil <code>preview</code>
+    menghasilkan APK rilis untuk pengujian internal: <code>distribution: "internal"</code>
+    menandakan build ini dibagikan langsung, bukan ke toko, dan <code>android.buildType:
+    "apk"</code> menegaskan formatnya. Profil <code>production</code> memakai
+    <code>autoIncrement: true</code> sehingga versi mesin dinaikkan otomatis tiap build, dan
+    format keluarannya AAB karena ditujukan ke toko.
+  </p>
+
+  <p>
+    Skema <code>eas.json</code> ditandai <em>sensitif versi</em>: kunci seperti
+    <code>cli.version</code> yang ditulis <code>build:configure</code> dapat berbeda antarvensi
+    eas-cli. Jangan hapus bagian <code>cli</code> yang ditambahkan <code>build:configure</code>
+    saat berkas ditimpa dengan versi kita sendiri, dan percayai keluaran
+    <code>build:configure</code> sebagai kebenaran untuk versi yang terpasang.
+  </p>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Profil mana yang kamu pakai untuk mengirim versi beta ke dosen? (Jawaban: preview, karena
+      hasilnya APK yang bisa dipasang langsung tanpa lewat toko aplikasi.) Dan apa yang terjadi
+      kalau <code>versionCode</code> tidak naik pada unggahan AAB kedua? (Jawaban: Google Play
+      menolaknya dengan pesan bahwa version code sudah dipakai.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s1-4">
+  <p class="label-subbab">
+    Subbab 15.2 <span class="sumber-slide">· deck: “Urutan Perintah Build Tidak Boleh Ditukar” · buku §Contoh 4</span>
+  </p>
+  <h2>Urutan Perintah Build Tidak Boleh Ditukar</h2>
+
+  <p>
+    Rangkaian perintah berikut adalah alur kerja standar sebelum build: cek lingkungan, cek
+    konfigurasi, autentikasi, siapkan profil, lalu bangun. Urutannya wajib.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">(terminal)</span>
+      <span class="kode-sumber">buku §Contoh 4 · verbatim</span>
+    </figcaption>
+    <pre><code class="language-bash"># 1. Pastikan Node.js siap
+node --version
+
+# 2. Pastikan project sehat: konfigurasi tercetak sesuai harapan
+npx expo config --type public
+
+# 3. Masuk akun Expo (dibuat gratis di expo.dev)
+npx eas-cli login
+npx eas-cli whoami
+
+# 4. Siapkan eas.json
+npx eas-cli build:configure
+
+# 5. Build APK preview untuk diuji di perangkat
+npx eas-cli build --platform android --profile preview</code></pre>
+  </figure>
+
+  <p>
+    <code>npx expo config --type public</code> adalah jendela mengintip terakhir sebelum kode
+    dikirim ke cloud — bila di sini nama atau application ID salah, hasil build pun salah.
+    <code>npx eas-cli whoami</code> adalah cara termurah memastikan sesi login aktif sebelum
+    menunggu build yang panjang; error pada langkah ini berarti langkah 3 belum berhasil.
+  </p>
+
+  <p>
+    Setelah langkah 5, terminal menampilkan tautan build; buka tautan itu untuk mengunduh APK
+    atau memindai kode QR dengan perangkat Android. Build berjalan di server, jadi proses unggah
+    tidak boleh diputus — setelah tahap unggah selesai, laptop boleh ditutup dan hasilnya
+    diperiksa lewat tautan yang sama.
+  </p>
+
+  <div class="kotak kotak-tiruan">
+    <p class="kotak-judul">Catatan peka versi</p>
+    <p>
+      Perintah dan perilakunya dapat berubah antarvensi. Buku menandai bagian ini
+      <em>sensitif versi</em> dan menyarankan menjadikan teks bantuan <code>npx eas-cli
+      --help</code> sebagai sumber kebenaran untuk versi yang sedang terpasang.
+    </p>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Mengira build bisa dijalankan sebelum memeriksa konfigurasi karena “nanti bisa diperbaiki”.
+      Build yang sudah selesai di server memakan waktu dan kuota; kesalahan nama atau
+      application ID di langkah 2 akan terbawa utuh ke hasil build, dan memperbaikinya berarti
+      membangun ulang dari awal.
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s1-5">
+  <p class="label-subbab">
+    Subbab 15.3 <span class="sumber-slide">· deck: “APK Bisa Dipasang, AAB Harus Lewat Play” &amp; “Kenapa AAB Ada: Satu File, Banyak APK” · buku §15.3</span>
+  </p>
+  <h2>APK Bisa Dipasang, AAB Harus Lewat Play</h2>
+
+  <p>
+    Android memiliki dua format berkas yang sering tertukar. <strong>APK (Android Package)</strong>
+    adalah berkas aplikasi klasik: satu arsip berisi kode terkompilasi, aset, manifest, dan
+    tanda tangan, yang dapat diinstal langsung pada perangkat — inilah berkas yang dibagikan
+    lewat grup chat atau dipasang dari situs mana pun (<em>sideload</em>).
+    <strong>AAB (Android App Bundle)</strong> adalah format pengemasan untuk toko: satu arsip
+    berisi semua konten aplikasi tanpa dioptimalkan per perangkat. AAB tidak dapat diinstal
+    langsung; ia diunggah ke Google Play, dan Google-lah yang menyusun <strong>split APK</strong>.
+  </p>
+
+  <div class="banding"
+       data-label-lama="APK: satu berkas untuk dipasang"
+       data-label-benar="AAB: satu berkas untuk diunggah"
+       data-petunjuk="Pembedanya sederhana dan itu yang diuji: APK adalah berkas yang dipasang, AAB adalah berkas yang diunggah.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">apk.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §15.3</span>
+      </figcaption>
+      <pre><code class="language-text">APK (Android Package)
+→ satu arsip: kode, aset, manifest, tanda tangan
+→ bisa diinstal langsung (sideload)
+→ kita sendiri yang merakit, sekali
+✓ cocok untuk uji internal dan bagi langsung
+✗ versi yang beredar tidak terkendali</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">aab.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §15.3</span>
+      </figcaption>
+      <pre><code class="language-text">AAB (Android App Bundle)
+→ satu arsip untuk diunggah ke Google Play
+→ Play merakit split APK per perangkat
+→ tidak bisa dipasang langsung
+✓ unduhan pengguna jauh lebih kecil
+✗ wajib lewat Play, tidak untuk bagi-bagi berkas</code></pre>
+    </figure>
+  </div>
+
+  <p>
+    Satu split APK hanya memuat kode untuk arsitektur prosesor perangkat itu, hanya grafis untuk
+    kerapatan layarnya, dan hanya terjemahan untuk bahasanya. Efeknya nyata: ukuran unduhan
+    pengguna turun drastis, dan pengguna tidak menerima bagian aplikasi yang tidak akan pernah
+    mereka pakai. Yang merakit split APK adalah Google, bukan pengembang — justru di situ
+    keuntungannya, karena infrastruktur Google lebih tahu kebutuhan tiap perangkat.
+  </p>
+
+  <p>
+    Di EAS, keterkaitannya dengan profil build: profil dengan <code>distribution:
+    "internal"</code> (development dan preview) menghasilkan APK karena tujuannya diinstal
+    langsung, sedangkan profil production menghasilkan AAB karena tujuannya toko aplikasi.
+    Sejak Agustus 2021 Google Play mewajibkan aplikasi baru diunggah dalam bentuk AAB; kebijakan
+    format unggahan ini <em>sensitif versi</em>, jadi cocokkan lagi dengan dokumentasi Play
+    Console saat mengunggah.
+  </p>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Kalau AAB tidak bisa dipasang, bagaimana penguji internal mendapat berkas instalasi?
+      (Jawaban: lewat profil preview yang menghasilkan APK.) Bagian apa yang dipangkas dari
+      unduhan pengguna? (Jawaban: kode untuk arsitektur prosesor lain, grafis untuk kerapatan
+      layar lain, dan terjemahan bahasa lain.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s1-6">
+  <p class="label-subbab">
+    Subbab 15.4 <span class="sumber-slide">· deck: “Build iOS Butuh Keanggotaan yang Tidak Bisa Dilewati” · buku §15.4 · konseptual</span>
+  </p>
+  <h2>Build iOS Butuh Keanggotaan yang Tidak Bisa Dilewati</h2>
+
+  <p>
+    Membangun aplikasi iOS secara tradisional mensyaratkan macOS dan Xcode. EAS Build
+    menyediakan server cloud berbasis macOS sehingga build iOS dapat dijalankan dari Windows
+    sekalipun — inilah salah satu nilai jual EAS. Namun ada dua syarat yang tidak bisa dilompati.
+  </p>
+
+  <p>
+    Pertama, <strong>keanggotaan Apple Developer Program</strong>, akun developer berbayar
+    tahunan Apple. Tanpa keanggotaan ini, sertifikat penandatanganan tidak dapat diterbitkan dan
+    build iOS tidak dapat dihasilkan, baik di cloud maupun lokal. Angka biaya pastinya
+    <em>sensitif versi</em> dan harus dicek di situs resmi Apple Developer. Kedua,
+    <strong>App Store Connect</strong>, portal tempat aplikasi didaftarkan sebelum dibangun.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">(terminal)</span>
+      <span class="kode-sumber">buku §15.2 · Langkah 4 · verbatim</span>
+    </figcaption>
+    <pre><code class="language-bash"># Build Android dengan profil preview (hasil: APK untuk pengujian internal)
+eas build --platform android --profile preview
+
+# Build Android dengan profil production (hasil: AAB untuk Google Play)
+eas build --platform android --profile production
+
+# Build untuk kedua platform sekaligus (butuh akun Apple untuk iOS)
+eas build --platform all</code></pre>
+  </figure>
+
+  <p>
+    EAS mengelola sertifikat dan <strong>provisioning profile</strong> — dokumen yang memetakan
+    aplikasi, perangkat yang diizinkan, dan identitas pengembang — secara otomatis, tugas yang
+    sangat membingungkan bila dikerjakan manual di Xcode. Hasil build dapat diuji di TestFlight,
+    saluran uji Apple, sebelum dikirim ke peninjauan.
+  </p>
+
+  <p>
+    Perbedaan terbesar dengan Android: tidak ada jalur “instal langsung” yang bebas. iOS hanya
+    mengizinkan distribusi melalui App Store, TestFlight, atau build development ke perangkat
+    terdaftar. Bagi kita yang belum memiliki akun berbayar, memahami alurnya sudah cukup;
+    praktikum bab ini memakai jalur Android.
+  </p>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Mengira build iOS mustahil tanpa laptop Mac. Server macOS EAS menghapus syarat perangkat
+      itu, tetapi tidak menghapus syarat keanggotaan Apple Developer Program. Yang tidak bisa
+      dilewati bukan komputernya, melainkan akun berbayarnya.
+    </p>
+  </div>
+</section>

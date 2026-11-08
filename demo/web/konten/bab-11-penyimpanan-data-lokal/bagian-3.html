@@ -1,0 +1,501 @@
+<h1>Bagian 3 — Proyek Aplikasi Catatan</h1>
+
+<p class="ringkas">
+  Subbab 11.6. Bagian ini merakit seluruh konsep bab menjadi satu aplikasi: catatan yang bisa
+  ditambah, diedit, dihapus, dan dicari — dan yang paling penting, tetap ada setelah aplikasi
+  ditutup. Ujiannya satu: tutup aplikasi sepenuhnya, buka lagi, catatan masih ada.
+</p>
+
+<section class="subbab" id="s3-1">
+  <p class="label-subbab">
+    Subbab 11.6 <span class="sumber-slide">· deck: “Struktur Proyek: Satu File, Satu Tanggung Jawab” · buku §11.6</span>
+  </p>
+  <h2>Struktur Proyek: Satu File, Satu Tanggung Jawab</h2>
+
+  <p>
+    Ciri aplikasi profesional yang dilatih bab ini adalah <strong>memisahkan logika penyimpanan
+    dari antarmuka</strong>. Seluruh urusan AsyncStorage dan JSON dikurung di dalam satu modul
+    <code>storage/notesStorage.js</code> yang berperan sebagai API kecil. Layar cukup memanggil
+    <code>muatCatatan()</code>, <code>simpanCatatan(list)</code>, atau <code>hapusCatatan(id)</code>
+    tanpa perlu tahu detail penyimpanan.
+  </p>
+
+  <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Struktur proyek Aplikasi Catatan · sumber: deck “Struktur Proyek: Satu File, Satu Tanggung Jawab”</caption>
+      <thead>
+        <tr><th scope="col">File atau folder</th><th scope="col">Tanggung jawab</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>app/_layout.js</code></td><td>Stack navigator tiga layar (Bab 7)</td></tr>
+        <tr><td><code>app/index.js</code></td><td>Rute <code>/</code>: daftar catatan</td></tr>
+        <tr><td><code>app/catatan/buat.js</code></td><td>Formulir catatan baru</td></tr>
+        <tr><td><code>app/catatan/[id].js</code></td><td>Formulir edit catatan</td></tr>
+        <tr><td><code>storage/notesStorage.js</code></td><td>API kecil penyimpanan</td></tr>
+        <tr><td><code>screens/DaftarCatatan.js</code></td><td>Layar daftar dan pencarian</td></tr>
+        <tr><td><code>screens/FormCatatan.js</code></td><td>Layar formulir tambah dan edit</td></tr>
+        <tr><td><code>utils/formatTanggal.js</code></td><td>Pemformat timestamp ISO</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    Navigasi memakai Expo Router yang sudah dipelajari di Bab 7, dan bab ini tidak mengulang
+    konsepnya. Yang perlu diingat hanya satu: nama di <code>Stack.Screen</code> harus sama
+    dengan nama berkas rute, termasuk tanda kurung siku pada <code>[id]</code>.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">app/_layout.js</span>
+      <span class="kode-sumber">buku §11.6 · Kode</span>
+    </figcaption>
+    <pre><code class="language-jsx">import { Stack } from 'expo-router';
+
+export default function LayoutAplikasi() {
+  return (
+    &lt;Stack&gt;
+      &lt;Stack.Screen name="index" options={{ title: 'Catatan Saya' }} /&gt;
+      &lt;Stack.Screen name="catatan/buat" options={{ title: 'Catatan Baru' }} /&gt;
+      &lt;Stack.Screen name="catatan/[id]" options={{ title: 'Edit Catatan' }} /&gt;
+    &lt;/Stack&gt;
+  );
+}</code></pre>
+  </figure>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Mengapa logika penyimpanan diletakkan di folder <code>storage/</code>, bukan di dalam
+      layar? (Jawaban: satu perubahan format data cukup di satu file, layar tetap fokus pada
+      tampilan, dan logika penyimpanan bisa diuji tanpa antarmuka seperti dibahas di Bab 14.)
+    </p>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Berkas rute di dalam <code>app/</code> bukan tempat untuk logika. Bila navigasi,
+      penyimpanan, dan tampilan bercampur di satu berkas, setiap perubahan kecil menyentuh
+      banyak tempat sekaligus — dan itu sumber kesalahan yang mahal.
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s3-2">
+  <p class="label-subbab">
+    Subbab 11.6 <span class="sumber-slide">· deck: “Alur Data: Layar, API Kecil, Lalu Penyimpanan” · buku §11.6</span>
+  </p>
+  <h2>Alur Data: Layar, API Kecil, Lalu Penyimpanan</h2>
+
+  <p>
+    Istilah <strong>API kecil</strong> berarti kumpulan fungsi dengan satu tanggung jawab yang
+    dipakai layar tanpa perlu tahu detail penyimpanan. Pola datanya selalu sama: setiap
+    perubahan mengubah penyimpanan lebih dulu, lalu memperbarui state supaya tampilannya ikut
+    berubah — <em>simpan dahulu, tampilkan kemudian</em>. Bila urutannya dibalik, tampilan bisa
+    menunjukkan data yang sebenarnya gagal disimpan.
+  </p>
+
+  <div class="banding"
+       data-label-lama="setItem langsung di dalam layar"
+       data-label-benar="Lewat modul lapisan data"
+       data-petunjuk="Menaruh AsyncStorage.setItem langsung di layar adalah kebiasaan yang harus dibongkar sejak pertemuan ini: serialisasi, nama kunci, dan penanganan error jadi tersebar di banyak file.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">screens/DaftarCatatan.js — cara yang harus ditinggalkan</span>
+        <span class="kode-sumber">ilustrasi · buku §11.6</span>
+      </figcaption>
+      <pre><code class="language-text">// di dalam komponen layar
+await AsyncStorage.setItem('catatan:v1',
+  JSON.stringify(daftar));      // kunci diulang di tiap layar
+setDaftar(daftar);              // tanpa try/catch
+
+✗ nama kunci tersebar, mudah salah ketik
+✗ serialisasi diulang di setiap layar
+✗ error penyimpanan tidak tercatat</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">storage/notesStorage.js — satu pintu</span>
+        <span class="kode-sumber">deck “API Kecil: Menyimpan dan Menghapus” · buku §11.6</span>
+      </figcaption>
+      <pre><code class="language-js">const KUNCI_CATATAN = 'catatan:v1';
+export async function simpanCatatan(daftarCatatan) {
+  try {
+    await AsyncStorage.setItem(KUNCI_CATATAN, JSON.stringify(daftarCatatan));
+  } catch (error) {
+    console.warn('Gagal menyimpan catatan:', error);
+  }
+}</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-tiruan">
+    <p class="kotak-judul">Keuntungan pemisahan</p>
+    <p>
+      Tiga keuntungan yang disebut buku: bila format data berubah, hanya satu file yang diubah;
+      logika penyimpanan bisa diuji terpisah tanpa antarmuka; dan layar tetap fokus pada
+      tampilan serta interaksi. Pola ini analog dengan pemisahan lapisan data dari lapisan UI
+      pada proyek berskala lebih besar.
+    </p>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Pemisahan ke modul bukan sekadar merapikan berkas. Fungsinya adalah memaksa agar hanya
+      ada satu pintu masuk ke penyimpanan — sehingga nama kunci, serialisasi, dan penanganan
+      error tidak mungkin berbeda antar layar.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Kalau urutannya dibalik — state diperbarui dulu, penyimpanan belakangan — apa risikonya?
+      (Jawaban: layar menampilkan data yang sebenarnya gagal disimpan, dan pengguna tidak punya
+      cara mengetahui bahwa datanya hilang sampai aplikasi dibuka ulang.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s3-3">
+  <p class="label-subbab">
+    Subbab 11.6 <span class="sumber-slide">· deck: “API Kecil: Menyimpan dan Menghapus” · buku §11.6</span>
+  </p>
+  <h2>API Kecil: Menyimpan dan Menghapus</h2>
+
+  <p>
+    Tiga fungsi dengan tanggung jawab tunggal sudah cukup untuk seluruh aplikasi:
+    <code>muatCatatan</code> membaca, <code>simpanCatatan</code> menulis ulang seluruh daftar,
+    dan <code>hapusCatatan</code> menyaring lalu menyimpan. Semuanya asinkron, semuanya aman
+    dari kegagalan, dan tidak ada satu pun yang berurusan dengan tampilan.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">storage/notesStorage.js</span>
+      <span class="kode-sumber">deck “API Kecil: Menyimpan dan Menghapus” · buku §11.6</span>
+    </figcaption>
+    <pre><code class="language-js">const KUNCI_CATATAN = 'catatan:v1';
+export async function simpanCatatan(daftarCatatan) {
+  try {
+    await AsyncStorage.setItem(KUNCI_CATATAN, JSON.stringify(daftarCatatan));
+  } catch (error) {
+    console.warn('Gagal menyimpan catatan:', error);
+  }
+}
+export async function hapusCatatan(id) {
+  const daftar = await muatCatatan();
+  const tersaring = daftar.filter((catatan) => catatan.id !== id);
+  await simpanCatatan(tersaring);
+  return tersaring;
+}</code></pre>
+  </figure>
+
+  <p>
+    Strategi yang dipakai bernama <strong>tulis-ulang seluruh daftar</strong>
+    (<em>write-through</em>): setiap perubahan membaca seluruh daftar dari penyimpanan,
+    mengubahnya di memori, lalu menyimpan kembali seluruhnya. Untuk data sekecil daftar
+    catatan, strategi ini paling sederhana dan paling mudah dipahami pemula. Nilai kembalian
+    <code>hapusCatatan</code> sengaja berupa daftar terbaru supaya layar bisa memperbarui state
+    tanpa membaca ulang.
+  </p>
+
+  <div class="kotak kotak-tiruan">
+    <p class="kotak-judul">Batas strategi tulis-ulang</p>
+    <p>
+      Pada data ribuan baris, menulis ulang seluruh daftar tidak lagi efisien dan perlu diganti
+      penyimpanan per-baris atau basis data seperti SQLite. Identifier catatan dibuat dari
+      <code>Date.now().toString()</code> — cukup untuk praktikum; pada produksi, UUID lebih baik
+      agar tidak bertabrakan bila dua catatan dibuat dalam milidetik yang sama.
+    </p>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Strategi tulis-ulang bukan resep untuk semua ukuran data. Pada ribuan baris, menulis
+      ulang seluruh daftar membuang waktu dan tenaga perangkat; di titik itu penyimpanan
+      per-baris atau basis data seperti SQLite menjadi pilihan yang benar.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Mengapa <code>hapusCatatan</code> mengembalikan daftar terbaru, padahal bisa saja
+      mengembalikan nilai kosong? (Jawaban: agar layar bisa memperbarui state seketika dari
+      nilai kembaliannya, tanpa membaca ulang penyimpanan — satu operasi lebih hemat.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s3-4">
+  <p class="label-subbab">
+    Subbab 11.6 <span class="sumber-slide">· deck: “Daftar Catatan: Pencarian dan Pemuatan Ulang” · buku §11.6</span>
+  </p>
+  <h2>Daftar Catatan: Pencarian dan Pemuatan Ulang</h2>
+
+  <p>
+    Layar daftar memegang dua state: daftar catatan dan kata kunci pencarian. Pencarian bekerja
+    dengan memfilter daftar memakai <code>includes</code>, setelah kedua sisi disamakan huruf
+    kecilnya dan spasi tepi kata kunci dibuang. Mengetuk kartu membuka formulir edit, sedangkan
+    tombol Hapus ditempatkan terpisah supaya dua aksi itu tidak bertumpuk.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">screens/DaftarCatatan.js</span>
+      <span class="kode-sumber">deck “Daftar Catatan: Pencarian dan Pemuatan Ulang” · buku §11.6</span>
+    </figcaption>
+    <pre><code class="language-jsx">const [daftar, setDaftar] = useState([]);
+const [kataKunci, setKataKunci] = useState('');
+
+// Muat ulang setiap kali layar kembali mendapat fokus
+useFocusEffect(useCallback(() => { muatCatatan().then(setDaftar); }, []));
+
+const daftarTersaring = daftar.filter((catatan) => {
+  const kunci = kataKunci.trim().toLowerCase();
+  if (kunci === '') return true;
+  return catatan.judul.toLowerCase().includes(kunci) ||
+         catatan.isi.toLowerCase().includes(kunci);
+});</code></pre>
+  </figure>
+
+  <p>
+    Penghapusan selalu melalui <code>Alert.alert</code>, karena penyimpanan lokal sederhana
+    tidak punya riwayat dan penghapusan yang keliru tidak bisa dibatalkan. Tombol berbahaya
+    diberi <code>style: 'destructive'</code> agar isyarat visualnya jelas.
+  </p>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Pencarian yang “tidak menemukan” catatan yang jelas-jelas ada biasanya bukan masalah
+      penyimpanan, melainkan perbandingan yang peka huruf besar-kecil: “belanja” tidak sama
+      dengan “Belanja mingguan”. Normalisasi kedua sisi dengan <code>toLowerCase()</code> dan
+      buang spasi tepi dengan <code>trim()</code> sebelum membandingkan.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Mengapa tombol Hapus diletakkan terpisah dari area tekan kartu? (Jawaban: agar dua aksi
+      tidak bertumpuk — mengetuk kartu untuk mengedit, menekan tombol untuk menghapus. Area
+      sentuh yang bertumpuk adalah sumber penghapusan tidak sengaja.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s3-5">
+  <p class="label-subbab">
+    Subbab 11.6 <span class="sumber-slide">· deck: “Formulir Catatan: Satu Komponen, Dua Mode” · buku §11.6</span>
+  </p>
+  <h2>Formulir Catatan: Satu Komponen, Dua Mode</h2>
+
+  <p>
+    Dua rute berbeda memakai komponen <code>FormCatatan</code> yang sama. Perbedaannya hanya
+    satu: pada rute <code>/catatan/buat</code> tidak ada parameter sehingga
+    <code>idCatatan</code> bernilai <code>null</code> (mode tambah), sedangkan pada
+    <code>/catatan/[id]</code> parameter <code>id</code> ada (mode edit). Satu komponen berarti
+    perbaikan validasi cukup di satu tempat.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">screens/FormCatatan.js</span>
+      <span class="kode-sumber">deck “Formulir Catatan: Satu Komponen, Dua Mode” · buku §11.6</span>
+    </figcaption>
+    <pre><code class="language-jsx">const idCatatan = typeof params.id === 'string' ? params.id : null; // null = tambah
+
+const simpan = async () => {
+  const daftar = await muatCatatan();
+  const daftarBaru = idCatatan === null
+    ? [...daftar, catatanBaru]                                  // mode tambah
+    : daftar.map((item) => (item.id === idCatatan               // mode edit
+        ? { ...item, judul: judulBersih, isi: isi.trim() } : item));
+  await simpanCatatan(daftarBaru);
+  router.back();
+};</code></pre>
+  </figure>
+
+  <p>
+    Validasi judul terjadi sebelum data disimpan: judul kosong ditolak lewat
+    <code>Alert.alert</code>. <code>ScrollView</code> dengan
+    <code>keyboardShouldPersistTaps="handled"</code> menjaga tombol Simpan tetap aktif saat
+    papan ketik terbuka — perilaku formulir yang sudah dilatih di Bab 8 dan tidak diulang di
+    sini.
+  </p>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      <code>useLocalSearchParams</code> bisa mengembalikan array, bukan hanya string. Karena
+      itu tipenya diperiksa dengan <code>typeof params.id === 'string'</code> — jangan langsung
+      dipercaya, apalagi dipakai sebagai kunci penyimpanan.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Mengapa tidak dibuat dua berkas layar yang terpisah untuk tambah dan edit? (Jawaban:
+      karena sebagian besar kode formulirnya sama; satu komponen berarti perbaikan validasi
+      cukup di satu tempat.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s3-6">
+  <p class="label-subbab">
+    Subbab 11.6 <span class="sumber-slide">· deck: “Kapan Data Harus Dimuat Ulang?” · buku §11.6</span>
+  </p>
+  <h2>Kapan Data Harus Dimuat Ulang?</h2>
+
+  <p>
+    Inilah bug klasik bab ini, dan bentuknya cerita: catatannya tersimpan, tetapi layar tidak
+    tahu karena sudah lama tidak dimuat ulang. Layar daftar tetap terpasang selama formulir
+    menutupinya — navigasi Stack menimpa, bukan mengganti — sehingga
+    <code>useEffect</code> dengan dependensi kosong tidak pernah berjalan lagi.
+  </p>
+
+  <p>
+    <code>useFocusEffect</code> memicu ulang setiap kali layar kembali mendapat fokus, dan itu
+    persis yang dibutuhkan. <code>useCallback</code> dipakai supaya efek tidak dibuat ulang di
+    setiap render. Perhatikan bahwa masalahnya bukan penyimpanan, melainkan kapan datanya
+    dibaca.
+  </p>
+
+  <div class="banding"
+       data-label-lama="useEffect hanya saat mount"
+       data-label-benar="useFocusEffect setiap layar mendapat fokus"
+       data-petunjuk="Analogi buku: pintu kamar tetap terbuka, tetapi kita tidak lagi melihat ke dalam; fokus layar adalah saatnya menengok.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">hanya-sekali.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §11.6</span>
+      </figcaption>
+      <pre><code class="language-text">useEffect(() => {
+  muatCatatan().then(setDaftar);
+}, []);                        // ← hanya saat mount
+
+buka daftar    → dimuat
+buka form      → daftar tetap ter-mount
+simpan, kembali → effect tidak jalan
+✗ catatan baru tidak muncul</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">screens/DaftarCatatan.js — kutipan</span>
+        <span class="kode-sumber">buku §11.6 · Kode</span>
+      </figcaption>
+      <pre><code class="language-jsx">  useFocusEffect(
+    useCallback(() => {
+      muatCatatan().then(setDaftar);
+    }, [])
+  );</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Gejala “catatan baru tidak muncul” sering dituduhkan pada AsyncStorage, padahal
+      penyimpanannya bekerja. Jangan menambal gejalanya dengan memaksa render ulang; temukan
+      dulu di mana data sebenarnya dibaca sebelum mengubah kode.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Bagaimana kamu membedakan “data tidak tersimpan” dari “data tersimpan tetapi tidak
+      dibaca ulang”? (Jawaban: tutup aplikasi lalu buka lagi. Bila catatan masih ada, berarti
+      penyimpanannya bekerja dan masalahnya ada pada waktu pemuatan.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s3-7">
+  <p class="label-subbab">
+    Subbab 11.6 <span class="sumber-slide">· deck: “Studi Kasus: Tetap Bekerja Tanpa Sinyal” · buku §Studi Kasus</span>
+  </p>
+  <h2>Studi Kasus: Tetap Bekerja Tanpa Sinyal</h2>
+
+  <p>
+    Sebuah perusahaan distribusi menugaskan tenaga penjualnya mendatangi toko di daerah
+    pegunungan yang jaringannya sering hilang. Aplikasi berbasis web lama menuntut koneksi
+    terus-menerus, sehingga katalog tidak terbaca dan pesanan tidak bisa dicatat. Perusahaan
+    membangun ulang aplikasinya dengan pendekatan <em>offline-first</em>: berfungsi penuh tanpa
+    koneksi, lalu menyinkronkan data saat jaringan pulih.
+  </p>
+
+  <p>
+    Materi bab ini menjawab hampir seluruh kebutuhan teknisnya: katalog di-cache dengan pola
+    snapshot dan timestamp, pesanan baru disimpan sebagai JSON dalam antrean yang belum
+    terkirim, dan token penjualan disimpan di secure storage — bukan di AsyncStorage. Tiga
+    trade-off yang harus dikelola desainernya adalah ketersediaan melawan konsistensi,
+    kesegaran melawan keandalan, dan kenyamanan melawan keamanan.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">alur-offline-first.txt</span>
+      <span class="kode-sumber">ilustrasi · buku §Studi Kasus</span>
+    </figcaption>
+    <pre><code class="language-text">katalog     → cache:produk (snapshot + timestamp + TTL)
+              tetap tampil saat offline, berlabel "data tersimpan"
+pesanan     → catatan lokal: antrean JSON
+              status "menunggu sinkronisasi" per pesanan
+koneksi     → antrean dikirim dengan fetch (Bab 10)
+pulih         konflik diselesaikan: last-write-wins atau
+              minta konfirmasi pengguna
+token       → secure storage (Bab 13), bukan AsyncStorage
+risiko      → uninstall atau perangkat rusak menghapus
+              seluruh antrean: rancang cadangan sejak awal</code></pre>
+  </figure>
+
+  <p>
+    Kasus ini menegaskan bahwa keputusan penyimpanan adalah keputusan desain produk, bukan
+    sekadar pemilihan pustaka. Pola yang sama akan dipakai lagi pada Project Akhir buku ini,
+    agar daftar mata kuliah dan jadwal mahasiswa tetap terbaca sekalipun jaringan kampus sedang
+    tidak stabil.
+  </p>
+
+  <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Pola bab ini muncul di lima kebutuhan aplikasi · sumber: deck “Pola Bab Ini Muncul di Lima Kebutuhan Aplikasi”</caption>
+      <thead>
+        <tr><th scope="col">Kebutuhan aplikasi</th><th scope="col">Pola dari bab ini</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Preferensi dan pengaturan</td><td><code>setItem</code>/<code>getItem</code> dengan kunci <code>preferensi:*</code></td></tr>
+        <tr><td>Draf formulir yang tidak boleh hilang</td><td>Serialisasi JSON dan penyimpanan tulis-ulang</td></tr>
+        <tr><td>Jadwal dan katalog tetap terbaca</td><td>Cache snapshot + timestamp + TTL</td></tr>
+        <tr><td>Antrean transaksi tanpa sinyal</td><td>Daftar JSON lokal, disinkronkan saat online</td></tr>
+        <tr><td>Sesi pengguna</td><td>Secure storage (Bab 13), bukan AsyncStorage</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Baris mana dari tabel di atas yang paling sering diabaikan aplikasi kampus, dan apa
+      akibatnya bagi mahasiswa? (Jawaban: baris draf formulir — isian KRS atau pendaftaran
+      hilang ketika sesinya terputus, dan mahasiswa harus mengulang dari awal.)
+    </p>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Penyimpanan lokal tidak menggantikan server, melainkan melengkapinya. Yang perlu disadari
+      adalah batasnya: data lokal bisa hilang saat aplikasi di-uninstall atau perangkat rusak,
+      sehingga cadangan dan sinkronisasi harus dirancang sejak awal — bukan ditambahkan setelah
+      kejadian.
+    </p>
+  </div>
+</section>

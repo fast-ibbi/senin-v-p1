@@ -1,0 +1,203 @@
+<h1>Bagian 1 — Karakteristik Aplikasi Mobile</h1>
+
+<p class="ringkas">
+  Subbab 1.1. Sebelum memilih teknologi, kita harus tahu dulu apa yang membuat aplikasi
+  mobile <em>berbeda</em> dari website. Tujuh karakteristik di bagian ini bukan teori:
+  setiap butirnya kembali muncul sebagai keputusan desain dan baris kode di bab-bab
+  berikutnya.
+</p>
+
+<div class="pengantar-pertanyaan">
+  <p><strong>Pertanyaan pembuka bagian ini:</strong> “Kalau data akademik sudah ada di website kampus, kenapa kampus masih butuh aplikasi mobile?”</p>
+  <p>Tampung jawaban tanpa dikoreksi dulu; tujuh karakteristik di bawah adalah bahan jawabannya.</p>
+</div>
+
+<section class="subbab" id="s1-1">
+  <p class="label-subbab">
+    Subbab 1.1 <span class="sumber-slide">· deck: “Aplikasi Mobile Bukan Website yang Diperkecil” · buku §1.1</span>
+  </p>
+  <h2>Aplikasi Mobile Bukan Website yang Diperkecil</h2>
+
+  <p>
+    <strong>Aplikasi mobile</strong> (aplikasi seluler) adalah perangkat lunak yang dirancang
+    khusus untuk dijalankan pada perangkat bergerak, terutama <strong>smartphone</strong> dan
+    tablet. Istilah <em>mobile</em> menunjuk mobilitas: aplikasi ini menyertai penggunanya
+    berpindah tempat, dan dari mobilitas itulah nilai utamanya lahir.
+  </p>
+
+  <p>
+    Berbeda dengan aplikasi web yang dibuka melalui peramban atau aplikasi desktop yang
+    berjalan di komputer meja, aplikasi mobile <em>diinstal</em> pada perangkat, hidup dalam
+    ekosistem toko aplikasi, dan memanfaatkan kemampuan fisik perangkat tempat ia dipasang.
+    Karena itu, memperkecil tampilan website lalu membungkusnya menjadi aplikasi bukan
+    strategi yang berhasil — yang hilang justru hal-hal yang membuat mobile bernilai.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Website yang diperkecil"
+       data-label-benar="Aplikasi mobile yang sadar konteks"
+       data-petunjuk="Perhatikan siapa yang menentukan pengalaman: aplikasi yang hanya mengecilkan tampilan, atau aplikasi yang memakai kemampuan perangkat.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">pola-pikir-lama.md</span>
+        <span class="kode-sumber">ilustrasi · buku §1.1</span>
+      </figcaption>
+      <pre><code class="language-text">Asumsi: "mobile = layar lebih kecil"
+Tindakan: perkecil font, sembunyikan menu,
+          buang tabel lebar
+Hasil: tampilan muat, tetapi pengalaman
+       tetap terasa seperti membuka web
+Hilang: notifikasi, kamera, GPS,
+        penyimpanan lokal, kehadiran
+        di layar utama</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">pola-pikir-benar.md</span>
+        <span class="kode-sumber">ilustrasi · buku §1.1</span>
+      </figcaption>
+      <pre><code class="language-text">Asumsi: "pengguna bergerak, sesinya pendek,
+         perangkatnya punya sensor"
+Tindakan: rancang alur sekali sentuh,
+          pakai kamera untuk pindai QR,
+          kirim notifikasi jadwal,
+          simpan data agar tetap jalan
+          saat jaringan putus
+Hasil: aplikasi terasa pantas ada
+       di ponsel pengguna</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Aplikasi apa yang kamu pakai minggu ini yang jelas bukan “website diperkecil”? Sebutkan satu hal yang mustahil ditiru situs web.</p>
+  </div>
+</section>
+
+<section class="subbab" id="s1-2">
+  <p class="label-subbab">
+    Subbab 1.1 <span class="sumber-slide">· deck: “Tujuh Hal yang Membuat Aplikasi Mobile Berbeda (1–4)” · buku §1.1</span>
+  </p>
+  <h2>Tujuh Karakteristik (1–4): Konteks, Sentuhan, Sensor, Jaringan</h2>
+
+  <p>
+    Untuk merancang aplikasi mobile yang baik, kita harus memahami karakteristik yang
+    membedakannya dari jenis perangkat lunak lain. Empat yang pertama berkaitan dengan
+    <em>situasi pemakaian</em>.
+  </p>
+
+  <ol>
+    <li>
+      <strong>Mobilitas dan konteks pengguna.</strong> Pengguna menjalankan aplikasi sambil
+      beraktivitas: di kampus, di kendaraan, di antrean. Sesi penggunaan cenderung pendek dan
+      sering terinterupsi. Aplikasi yang baik harus bisa “berhenti sekejap lalu lanjut lagi”
+      tanpa kehilangan data — inilah salah satu alasan penyimpanan lokal dan manajemen state
+      menjadi tema penting di Bab 9 dan Bab 11.
+    </li>
+    <li>
+      <strong>Antarmuka berbasis sentuhan.</strong> Layar sentuh menggantikan tetikus dan
+      papan ketik. Desain harus memperhitungkan ukuran jari, gerakan seperti geser dan cubit,
+      serta keterbatasan lebar layar. Ini memengaruhi hampir semua keputusan desain di Bab 5
+      dan Bab 6.
+    </li>
+    <li>
+      <strong>Akses ke sensor dan fitur perangkat.</strong> Smartphone membawa kamera,
+      mikrofon, penerima GPS, akselerometer, hingga sistem notifikasi yang selalu aktif.
+      Aplikasi mobile memanfaatkannya untuk pengalaman yang tidak mungkin direplikasi web:
+      ojek daring mengetahui posisi kita, kamera memindai kode QR untuk pembayaran, notifikasi
+      mengingatkan jadwal kuliah yang berubah. Praktiknya di Bab 12 lewat Expo.
+    </li>
+    <li>
+      <strong>Konektivitas yang berubah-ubah.</strong> Jaringan berganti antara Wi-Fi dan data
+      seluler, kadang hilang sama sekali. Aplikasi yang matang tidak boleh “mati” begitu
+      jaringan terputus; ia menyimpan data sementara dan menyinkronkan saat jaringan kembali.
+      Prinsip ini dikenal sebagai <strong>offline-first</strong> dan menjadi bahan diskusi di
+      Bab 11.
+    </li>
+  </ol>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Mobilitas sering dianggap sekadar “dipakai sambil jalan”. Yang lebih menentukan adalah
+      <em>interupsi</em>: telepon masuk, baterai menipis, pengguna berpindah aplikasi. Aplikasi
+      yang tidak menyimpan keadaannya akan “lupa” posisi terakhir pengguna.
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s1-3">
+  <p class="label-subbab">
+    Subbab 1.1 <span class="sumber-slide">· deck: “Tujuh Hal yang Membuat Aplikasi Mobile Berbeda (5–7)” · buku §1.1</span>
+  </p>
+  <h2>Tujuh Karakteristik (5–7): Distribusi, Sumber Daya, Siklus Hidup</h2>
+
+  <p>Tiga karakteristik terakhir berkaitan dengan <em>aturan main platform</em>.</p>
+
+  <ol start="5">
+    <li>
+      <strong>Distribusi melalui toko aplikasi.</strong> Aplikasi dipasang melalui
+      <strong>toko aplikasi</strong> seperti Google Play dan App Store. Distribusi terkurasi
+      ini menjamin keamanan dasar pengguna, tetapi menambah proses peninjauan (review) sebelum
+      rilis — konsekuensi yang akan kamu rasakan saat belajar menerbitkan aplikasi di Bab 15.
+    </li>
+    <li>
+      <strong>Sumber daya perangkat yang terbatas.</strong> Baterai, memori, dan daya proses
+      terbatas dibanding komputer desktop. Kode yang boros membuat baterai cepat habis dan
+      aplikasi lemot. Kesadaran ini membentuk kebiasaan menulis kode yang hemat — misalnya
+      menghindari pemrosesan berulang yang tidak perlu.
+    </li>
+    <li>
+      <strong>Siklus hidup yang diatur sistem.</strong> Berbeda dengan program desktop,
+      aplikasi mobile tidak menentukan sendiri kapan ia berjalan atau berhenti. Sistem operasi
+      dapat memindahkannya ke latar belakang, membekukannya, atau menutupnya demi menghemat
+      daya, lalu mengembalikannya saat pengguna membuka lagi. Aplikasi yang baik harus
+      menyimpan keadaannya.
+    </li>
+  </ol>
+
+  <div class="kotak kotak-tiruan">
+    <p class="kotak-judul">Mengapa mahasiswa Sistem Informasi perlu tahu ini</p>
+    <p>
+      Hampir setiap sistem informasi modern sekarang punya “wajah mobile”: e-learning,
+      presensi, layanan akademik, hingga sistem antrean rumah sakit. Tujuh karakteristik di
+      atas bukan teori, melainkan daftar keputusan yang akan kamu ambil berulang kali.
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s1-4">
+  <p class="label-subbab">
+    Subbab 1.1 <span class="sumber-slide">· deck: “Setiap Karakteristik Menjadi Keputusan Desain” · buku §1.1</span>
+  </p>
+  <h2>Setiap Karakteristik Menjadi Keputusan Desain</h2>
+
+  <p>
+    Tabel berikut menerjemahkan tiap karakteristik menjadi keputusan nyata, dan menyebut bab
+    tempat keputusan itu dilatih. Gunakan tabel ini sebagai peta: kapan pun kamu bingung
+    “untuk apa materi ini”, kembali ke sini.
+  </p>
+
+  <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Tujuh karakteristik dan konsekuensinya · sumber: buku §1.1</caption>
+      <thead>
+        <tr><th scope="col">Karakteristik</th><th scope="col">Keputusan desain</th><th scope="col">Dilatih di</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Mobilitas &amp; konteks</td><td>Sesi pendek, bisa dilanjutkan; simpan keadaan</td><td>Bab 9, Bab 11</td></tr>
+        <tr><td>Sentuhan</td><td>Target sentuh besar, gestur, layout sempit</td><td>Bab 5, Bab 6</td></tr>
+        <tr><td>Sensor &amp; fitur perangkat</td><td>Kamera, GPS, notifikasi sebagai nilai utama</td><td>Bab 12</td></tr>
+        <tr><td>Konektivitas berubah</td><td>Pola offline-first dan sinkronisasi</td><td>Bab 10, Bab 11</td></tr>
+        <tr><td>Toko aplikasi</td><td>Proses review, versi, penerbitan</td><td>Bab 15</td></tr>
+        <tr><td>Sumber daya terbatas</td><td>Kode hemat, hindari pemrosesan berulang</td><td>Bab 4, Bab 9, Bab 14</td></tr>
+        <tr><td>Siklus hidup diatur sistem</td><td>Effect dan cleanup, penyimpanan keadaan</td><td>Bab 4, Bab 9</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Kalau aplikasi kampus harus tetap bisa dibuka di lift tanpa sinyal, karakteristik mana yang sedang diuji, dan bab mana yang menyelesaikannya?</p>
+  </div>
+</section>

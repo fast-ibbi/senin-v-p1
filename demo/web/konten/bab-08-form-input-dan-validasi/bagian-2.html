@@ -1,0 +1,268 @@
+<h1>Bagian 2 — Controlled Component dan Form State</h1>
+
+<p class="ringkas">
+  Subbab 8.2 dan 8.3. Ini inti konseptual bab. Kalau kamu hanya boleh memahami satu hal dari
+  pertemuan ini, biarlah bagian ini: seluruh pola formulir di bab-bab berikutnya berdiri di
+  atasnya.
+</p>
+
+<section class="subbab" id="s2-1">
+  <p class="label-subbab">
+    Subbab 8.2 <span class="sumber-slide">· deck: “Satu Sumber Kebenaran, Tanpa Salinan Kedua” · buku §8.2</span>
+  </p>
+  <h2>Satu Sumber Kebenaran, Tanpa Salinan Kedua</h2>
+
+  <p>
+    <strong>Controlled component</strong> adalah pola di mana nilai sebuah input sepenuhnya
+    ditentukan oleh state React: <code>value</code> selalu berisi isi state, dan setiap
+    ketikan hanya dapat mengubah state melalui <code>onChangeText</code>. Teks yang tampil dan
+    state aplikasi selalu identik — tidak ada salinan kedua nilai di dalam komponen. State
+    disebut <strong>sumber kebenaran tunggal</strong>.
+  </p>
+
+  <p>
+    Analogi yang dipakai di kelas: nilai input itu seperti saldo rekening — tidak ada buku
+    catatan kedua yang boleh berbeda; apa yang tampil harus berasal dari satu sumber.
+  </p>
+
+  <p>
+    Mengapa React dan React Native memilih pola terkendali alih-alih membiarkan input mengelola
+    nilainya sendiri? Sebab nilai input yang hidup di state dapat <strong>dibaca, divalidasi,
+    diubah, dan direset</strong> oleh kode kapan saja — empat hal yang tidak mungkin dilakukan
+    bila nilai hanya diketahui oleh <code>TextInput</code> internal.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Pola tak terkendali (defaultValue)"
+       data-label-benar="Pola terkendali (value dari state)"
+       data-petunjuk="Pola kiri masih sah untuk kasus yang sangat sederhana; formulir yang divalidasi hampir selalu memakai pola kanan.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">pola-tak-terkendali.jsx</span>
+        <span class="kode-sumber">ilustrasi · buku §8.2</span>
+      </figcaption>
+      <pre><code class="language-jsx">// ✗ nilai asli hidup di dalam TextInput;
+//   kode tidak dapat membacanya untuk divalidasi.
+&lt;TextInput
+  defaultValue="nama.kecil@students.univ.ac.id"
+  onChangeText={setEmail}
+/&gt;</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">screens/FormLogin.js</span>
+        <span class="kode-sumber">buku §8.2</span>
+      </figcaption>
+      <pre><code class="language-jsx">// (cuplikan: controlled component dengan TextInput polos)
+&lt;TextInput
+  value={form.email}
+  onChangeText={(teks) =&gt; setForm((sebelumnya) =&gt; ({ ...sebelumnya, email: teks }))}
+  placeholder="nama.kecil@students.univ.ac.id"
+/&gt;</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Apa yang membuat mode edit mungkin pada sebuah formulir? (Jawaban: nilai formulir hidup
+      di state, sehingga ia bisa diisi ulang secara programatik dari data lama.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s2-2">
+  <p class="label-subbab">
+    Subbab 8.3 <span class="sumber-slide">· deck: “Satu Objek State, Satu handleChange untuk Tujuh Field” · buku §8.3</span>
+  </p>
+  <h2>Satu Objek State, Satu handleChange untuk Tujuh Field</h2>
+
+  <p>
+    Formulir dengan banyak field menghadapi pertanyaan desain: menyimpan nilai setiap field
+    dalam state terpisah, atau dalam satu objek state. Bab ini memilih objek tunggal. Seluruh
+    nilai formulir hidup dalam satu objek <code>form</code> yang kunci-kuncinya persis menyamai
+    nama field dan struktur data mahasiswa: <code>{ nim, nama, prodi, angkatan, ipk, email,
+    telepon }</code>.
+  </p>
+
+  <p>
+    <code>handleChange</code> memakai nama kunci terhitung dari Bab 3 sehingga satu fungsi
+    melayani semua field: <code>handleChange('nim', '2201001')</code> memperbarui
+    <code>form.nim</code>, <code>handleChange('nama', 'Budi')</code> memperbarui
+    <code>form.nama</code>. Lebih sedikit kode diulang, dan aturan validasi cukup ditulis sekali
+    per field.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">screens/FormMahasiswa.js</span>
+      <span class="kode-sumber">buku §8.3</span>
+    </figcaption>
+    <pre><code class="language-jsx">// (cuplikan: form state objek tunggal + handleChange generik)
+const [form, setForm] = useState({
+  nim: '',
+  nama: '',
+  prodi: '',
+  angkatan: '',
+  ipk: '',
+  email: '',
+  telepon: '',
+});
+
+function handleChange(namaField, nilai) {
+  setForm((sebelumnya) =&gt; ({
+    ...sebelumnya,
+    [namaField]: nilai,
+  }));
+}</code></pre>
+  </figure>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      <code>...sebelumnya</code> wajib ada. Tanpa penyebaran objek lama, semua field lain
+      terhapus. Kesalahan ini tidak memunculkan pesan kesalahan di layar — nilainya hilang
+      diam-diam, sehingga sulit dilacak saat menelusuri masalah.
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s2-3">
+  <p class="label-subbab">
+    Subbab 8.3 <span class="sumber-slide">· deck: “Satu Objek Cepat Direset, tetapi Rapuh Kalau Lupa Menyebar” · buku §8.3</span>
+  </p>
+  <h2>Satu Objek Cepat Direset, tetapi Rapuh Kalau Lupa Menyebar</h2>
+
+  <p>
+    Pilihan objek tunggal bukan tanpa pertukaran, dan keputusan ini bukan benar-salah.
+    Kelebihannya: reset formulir tinggal mengisi objek kembali; pengiriman ke server tinggal
+    mengirim <code>form</code> sekaligus, dan itu dipakai di Bab 10; validasi berjalan terhadap
+    satu objek utuh.
+  </p>
+
+  <p>
+    Kekurangannya: setiap ketikan harus menyebar objek lama, dan lupa menyebar berarti field
+    lain ikut tertimpa. Untuk formulir berskala kecil sampai menengah, keterbacaan dan
+    kemudahan reset mengalahkan kerumitan baris — keputusan yang mencerminkan praktik aplikasi
+    produksi.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Menimpa seluruh objek"
+       data-label-benar="Menyebar objek lama lebih dulu"
+       data-petunjuk="Perhatikan satu baris yang berbeda: penyebaran objek lama. Tanpa baris itu, enam field lain terhapus setiap kali pengguna mengetik.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">handleChange-rapuh.jsx</span>
+        <span class="kode-sumber">ilustrasi · buku §8.3</span>
+      </figcaption>
+      <pre><code class="language-jsx">// ✗ objek lama tidak disebar:
+//   hanya field yang diketik yang tersisa.
+setForm({ [namaField]: nilai });</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">screens/FormLogin.js</span>
+        <span class="kode-sumber">buku §8.7 · fungsi handleChange</span>
+      </figcaption>
+      <pre><code class="language-jsx">  function handleChange(namaField, nilai) {
+    setForm((sebelumnya) =&gt; ({ ...sebelumnya, [namaField]: nilai }));
+    // Setelah percobaan submit pertama, error divalidasi ulang
+    // secara real-time setiap kali pengguna mengetik.
+    if (sudahDikirim) {
+      setErrors((sebelumnya) =&gt; ({
+        ...sebelumnya,
+        [namaField]: validasiSatuField(namaField, nilai),
+      }));
+    }
+  }</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Kalau field hanya dua, apakah satu objek state tetap lebih baik? (Jawaban: untuk
+      konsistensi pola, ya; batas pola ini baru terasa ketika formulir menjadi sangat besar.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s2-4">
+  <p class="label-subbab">
+    Subbab 8.2–8.3 <span class="sumber-slide">· deck: “Apa yang Terjadi Jika…?” · buku §8.2 &amp; §8.3</span>
+  </p>
+  <h2>Apa yang Terjadi Jika…?</h2>
+
+  <p>
+    Tiga pertanyaan berikut biasanya memunculkan diskusi paling hidup di kelas. Coba jawab
+    sendiri dulu sebelum membaca keterangan di bawah, lalu hubungkan dengan validasi di
+    bagian 3.
+  </p>
+
+  <ul>
+    <li><code>handleChange</code> menulis <code>setForm({ [namaField]: nilai })</code> tanpa menyebar objek lama?</li>
+    <li><code>value</code> diberi teks tetap, bukan dari state?</li>
+    <li>Pengguna menekan simpan sebelum menyentuh satu field pun?</li>
+  </ul>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">(potongan deck)</span>
+      <span class="kode-sumber">deck “Apa yang Terjadi Jika…?”</span>
+    </figcaption>
+    <pre><code class="language-jsx">setForm({ [namaField]: nilai })
+value="budi.santoso@students.univ.ac.id"</code></pre>
+  </figure>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Jawaban yang diharapkan: (1) enam field lain terhapus, hanya field yang diketik yang
+      tersisa; (2) field menjadi hanya-baca — ketikan tidak muncul karena state tidak pernah
+      berubah; (3) semua field melaporkan “Field ini wajib diisi” sekaligus karena validasi
+      penuh berjalan saat submit.
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s2-5">
+  <p class="label-subbab">
+    Subbab 8.2 <span class="sumber-slide">· deck: “Satu Sumber Kebenaran, Tanpa Salinan Kedua” · buku §8.2 &amp; §Praktikum</span>
+  </p>
+  <h2>State yang Bisa Diisi Ulang: Jalan Menuju Mode Edit</h2>
+
+  <p>
+    Keuntungan sumber kebenaran tunggal paling terasa pada satu kasus nyata: formulir mode
+    edit harus bisa diisi ulang secara programatik dari data lama. Pada pola tak terkendali,
+    isi field hanya diketahui <code>TextInput</code> sendiri, sehingga pengisian ulang harus
+    memaksa komponen menggambar ulang dari awal.
+  </p>
+
+  <p>
+    Karena nilai formulir hidup di state, pengisian ulang cukup dilakukan sekali pada nilai
+    awal: gabungkan objek kosong dengan <code>dataAwal</code> milik pemanggil. Validasi, reset,
+    dan pengiriman tetap bekerja tanpa perubahan.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">screens/FormMahasiswa.js</span>
+      <span class="kode-sumber">buku §Praktikum · prop dataAwal untuk mode edit</span>
+    </figcaption>
+    <pre><code class="language-jsx">// dataAwal dipakai untuk mode edit: field diisi nilai yang sudah ada.
+export default function FormMahasiswa({ dataAwal = {}, onSubmit = () =&gt; {} }) {
+  const [form, setForm] = useState(() =&gt; ({ ...FORM_KOSONG, ...dataAwal }));
+  const [errors, setErrors] = useState({});
+  const [sudahDikirim, setSudahDikirim] = useState(false);</code></pre>
+  </figure>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Mode edit bukan alasan meninggalkan pola terkendali, melainkan akibat langsung dari
+      pola itu. Formulir yang harus diisi ulang secara programatik justru tidak mungkin
+      memakai pola tak terkendali.
+    </p>
+  </div>
+</section>

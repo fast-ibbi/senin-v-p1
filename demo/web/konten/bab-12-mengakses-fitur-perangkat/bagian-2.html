@@ -1,0 +1,438 @@
+<h1>Bagian 2 — Kamera &amp; Lokasi</h1>
+
+<p class="ringkas">
+  Subbab 12.2–12.3. Dua paket kamera untuk dua kebutuhan berbeda, satu foto yang diambil lewat
+  antarmuka sistem, dua sumber posisi, dan satu angka yang paling sering dilupakan orang:
+  nilai ketelitian. Semua kode di bagian ini dipakai lagi pada praktikum.
+</p>
+
+<section class="subbab" id="s2-1">
+  <p class="label-subbab">
+    Subbab 12.2 <span class="sumber-slide">· deck: “Dua Paket Kamera untuk Dua Kebutuhan Berbeda” &amp; “Paket Mana untuk Tiga Kebutuhan Ini?” · buku §12.2</span>
+  </p>
+  <h2>Dua Paket Kamera untuk Dua Kebutuhan Berbeda</h2>
+
+  <p>
+    Fitur kamera adalah permintaan paling umum dalam aplikasi kampus, dan Expo menyediakan dua
+    paket dengan tingkat kendali yang berbeda. <code>expo-camera</code> memberi pratinjau
+    langsung (live preview): komponen <code>&lt;CameraView&gt;</code> menampilkan bidikan kamera
+    secara real-time di layar aplikasi, lengkap dengan API untuk mengambil gambar, membalik
+    kamera depan dan belakang, hingga memindai kode QR.
+    <code>expo-image-picker</code> menawarkan jalan lebih pendek: satu panggilan membuka
+    antarmuka kamera bawaan sistem, dan aplikasi langsung menerima berkas gambarnya.
+  </p>
+
+  <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Dua paket kamera untuk dua kebutuhan · sumber: deck Bab 12 &amp; buku §12.2</caption>
+      <thead>
+        <tr><th scope="col">Aspek</th><th scope="col"><code>expo-camera</code></th><th scope="col"><code>expo-image-picker</code></th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Tampilan</td><td>Pratinjau langsung lewat <code>&lt;CameraView&gt;</code></td><td>Antarmuka kamera sistem</td></tr>
+        <tr><td>Alur</td><td>Izin dan tombol rana kamu kelola</td><td><code>launchCameraAsync()</code></td></tr>
+        <tr><td>Hasil</td><td>Kendali penuh atas bidikan</td><td>Satu berkas gambar (<code>uri</code>)</td></tr>
+        <tr><td>Cocok</td><td>Pemindai kode QR, filter</td><td>Foto profil, bukti pembayaran, lampiran</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    Untuk kebutuhan “ambil satu foto lalu tampilkan”, <code>expo-camera</code> justru
+    berlebihan: kamu harus mengelola izin, pratinjau, dan alur pengambilan sendiri. Sebaliknya,
+    kamu kehilangan kendali atas tampilan kamera dan tidak bisa menambahkan lapisan di atas
+    bidikan. Ringkasnya: pilih <code>expo-image-picker</code> bila hasil akhirnya cukup satu
+    berkas gambar; pilih <code>expo-camera</code> bila aplikasi harus menampilkan atau mengolah
+    bidikan langsung. Ini pertukaran antara kendali dan kesederhanaan — pola pikir yang sama
+    dengan analisis pertukaran di Bab 1.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">tiga-kebutuhan.txt</span>
+      <span class="kode-sumber">ilustrasi · deck: “Paket Mana untuk Tiga Kebutuhan Ini?” &amp; buku §12.2</span>
+    </figcaption>
+    <pre><code class="language-text">kebutuhan                              paket
+────────────────────────────────────   ────────────────────
+foto profil mahasiswa aplikasi kampus  expo-image-picker
+pemindai kode QR pada kartu ujian      expo-camera
+filter kamera yang harus terlihat      expo-camera</code></pre>
+  </figure>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Memilih <code>expo-camera</code> “karena lebih canggih dan lengkap”. Kelengkapan bukan
+      alasan memilih paket; kebutuhannya yang menentukan. Untuk foto profil, paket yang lebih
+      sederhana justru menyelesaikan pekerjaan dengan lebih sedikit kode yang bisa salah.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Paket mana yang kamu pilih kalau layarnya hanya perlu satu foto profil? (Jawaban:
+      image-picker, karena antarmuka kameranya diserahkan ke sistem dan hasil akhirnya memang
+      hanya satu berkas gambar.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s2-2">
+  <p class="label-subbab">
+    Subbab 12.2 <span class="sumber-slide">· deck: “<code>expo-camera</code> Menampilkan Pratinjau Langsung” · buku §12.2</span>
+  </p>
+  <h2><code>expo-camera</code> Menampilkan Pratinjau Langsung</h2>
+
+  <p>
+    Hook <code>useCameraPermissions()</code> mengelola izin kamera sekaligus menyediakan
+    fungsinya: ia mengembalikan pasangan status dan fungsi permintaan. Layar di bawah
+    menampilkan pratinjau kamera hanya bila izin diberikan; bila belum, muncul tombol “Berikan
+    Izin”. Perhatikan bahwa izin diminta saat layar dibuka, bukan saat aplikasi mulai — inilah
+    penerapan “minta izin saat dibutuhkan” dari subbab 12.1.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">screens/LayarKamera.js</span>
+      <span class="kode-sumber">buku §12.2 · verbatim</span>
+    </figcaption>
+    <pre><code class="language-js">import { CameraView, useCameraPermissions } from 'expo-camera';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+
+export default function LayarKamera() {
+  const [izin, mintaIzin] = useCameraPermissions();
+
+  if (!izin) {
+    return &lt;View style={styles.halaman} /&gt;;
+  }
+  if (!izin.granted) {
+    return (
+      &lt;View style={styles.halaman}&gt;
+        &lt;Text style={styles.teks}&gt;Izin kamera belum diberikan.&lt;/Text&gt;
+        &lt;Pressable style={styles.tombol} onPress={mintaIzin}&gt;
+          &lt;Text style={styles.teksTombol}&gt;Berikan Izin&lt;/Text&gt;
+        &lt;/Pressable&gt;
+      &lt;/View&gt;
+    );
+  }
+  return &lt;CameraView style={styles.halaman} facing="back" /&gt;;
+}
+
+const styles = StyleSheet.create({
+  halaman: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  teks: { fontSize: 16, marginBottom: 12 },
+  tombol: { backgroundColor: '#1a56db', paddingVertical: 10, paddingHorizontal: 20, borderRadius: 8 },
+  teksTombol: { color: '#ffffff', fontSize: 15, fontWeight: '600' },
+});</code></pre>
+  </figure>
+
+  <p>
+    Tiga hal yang perlu ditunjuk. Pertama, cabang <code>if (!izin)</code> menangani keadaan awal
+    ketika status belum terbaca — layar tidak boleh mengakses <code>izin.granted</code> sebelum
+    objeknya ada. Kedua, cabang <code>if (!izin.granted)</code> adalah cabang penolakan, dan
+    ia digambar sebagai layar yang berguna, bukan layar kosong. Ketiga,
+    <code>&lt;CameraView style={styles.halaman} facing="back"&gt;</code> baru dirender setelah
+    izin ada — komponen kamera tidak dipasang sia-sia.
+  </p>
+
+  <div class="kotak kotak-tiruan">
+    <p class="kotak-judul">Catatan peka versi</p>
+    <p>
+      Buku menandai bagian ini <em>sensitif versi</em> (bahasa sumber:
+      <em>version-sensitive</em>): komponen <code>CameraView</code> menggantikan komponen
+      <code>Camera</code> lama yang sudah tidak disarankan sejak SDK menengah. Nama properti dan
+      metode dapat berubah, sehingga harus dicocokkan dengan dokumentasi resmi
+      <code>expo-camera</code> versi terbaru.
+    </p>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Menyalin potongan kode dari slide tanpa membaca bahwa slide itu disederhanakan. Deck-nya
+      sendiri mengingatkan bahwa beberapa baris dipotong untuk slide: <code>Text</code>,
+      <code>View</code>, <code>Pressable</code>, dan <code>styles</code> tidak ikut ditampilkan.
+      Salin versi lengkap dari buku, bukan dari potongan slide.
+    </p>
+  </div>
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Kapan layar kamera meminta izin — saat aplikasi dibuka atau saat layarnya dibuka?
+      (Jawaban: saat layarnya dibuka, karena hook <code>useCameraPermissions</code> berjalan
+      ketika komponen itu dirender.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s2-3">
+  <p class="label-subbab">
+    Subbab 12.2 <span class="sumber-slide">· deck: “<code>expo-image-picker</code>: Satu Panggilan, Satu File” · buku §12.2</span>
+  </p>
+  <h2><code>expo-image-picker</code>: Satu Panggilan, Satu File</h2>
+
+  <p>
+    Fungsi berikut meminta izin kamera dengan penjelasan, membuka antarmuka kamera sistem, lalu
+    menyimpan alamat berkas hasilnya ke state layar. Perhatikan panjangnya: tidak ada kode
+    pratinjau, tidak ada tombol rana, tidak ada pengaturan rotasi — semuanya ditangani sistem.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">screens/ProfilMahasiswa.js (potongan)</span>
+      <span class="kode-sumber">deck Bab 12 · verbatim, satu string izin disesuaikan kontrak bahasa (“kamu”)</span>
+    </figcaption>
+    <pre><code class="language-js">async function ambilFotoDariKamera() {
+  const izin = await ImagePicker.requestCameraPermissionsAsync();
+  if (!izin.granted) {
+    Alert.alert('Izin Ditolak', 'Aplikasi tidak dapat menggunakan kamera tanpa izin kamu.');
+    return;
+  }
+  const hasil = await ImagePicker.launchCameraAsync({
+    mediaTypes: ['images'], allowsEditing: true, aspect: [1, 1], quality: 0.6,
+  });
+  if (!hasil.canceled) setFotoUri(hasil.assets[0].uri);
+}</code></pre>
+  </figure>
+
+  <p>
+    Hasil panggilan berbentuk objek dengan properti <code>canceled</code> dan
+    <code>assets</code>. Pengguna dapat menekan tombol batal, dan dalam keadaan itu
+    <code>assets</code> kosong — karena itu pengujian <code>!hasil.canceled</code> wajib
+    dilakukan sebelum mengakses <code>hasil.assets[0].uri</code>. Opsi
+    <code>allowsEditing: true</code> dengan <code>aspect: [1, 1]</code> mengaktifkan pemotongan
+    persegi yang cocok untuk foto profil, sedangkan <code>quality: 0.6</code> mengompresi berkas
+    agar ringan.
+  </p>
+
+  <p>
+    Satu hal yang mudah terlewat: <code>uri</code> itu menunjuk berkas sementara di area cache
+    sistem, bukan berkas permanen. Sistem operasi dapat membersihkannya kapan saja, sehingga
+    foto yang “hilang sendiri” beberapa hari kemudian bukan keganjilan. Untuk penyimpanan
+    permanen, berkas harus disalin ke direktori dokumen aplikasi (subbab 12.5).
+  </p>
+
+  <div class="kotak kotak-tiruan">
+    <p class="kotak-judul">Catatan peka versi</p>
+    <p>
+      Sejak SDK yang lebih baru, opsi <code>mediaTypes</code> ditulis sebagai array string,
+      misalnya <code>['images']</code>, menggantikan konstanta <code>MediaTypeOptions</code> yang
+      lama. Buku menandai perubahan ini <em>sensitif versi</em> (bahasa sumber:
+      <em>version-sensitive</em>).
+    </p>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Mengakses <code>hasil.assets[0].uri</code> tanpa memeriksa <code>canceled</code>. Ketika
+      pengguna membatalkan, <code>assets</code> kosong dan akses itu memunculkan galat — bukan
+      karena kameranya rusak, melainkan karena cabang batal tidak pernah ditulis.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Masih bolehkah <code>uri</code> ini disimpan ke AsyncStorage sebagai satu-satunya rujukan
+      foto? (Jawaban: tidak — berkas di cache bisa dibersihkan sistem; salin dulu ke folder
+      dokumen, lalu simpan alamat hasil salinannya.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s2-4">
+  <p class="label-subbab">
+    Subbab 12.3 <span class="sumber-slide">· deck: “Lokasi Datang dari Dua Sumber yang Berbeda” &amp; “Koordinat Tidak Pernah Datang Tanpa Ketelitian” · buku §12.3</span>
+  </p>
+  <h2>Koordinat Tidak Pernah Datang Tanpa Ketelitian</h2>
+
+  <p>
+    Penentu posisi bekerja berlapis. <strong>GPS</strong> menghitung posisi dari sinyal satelit
+    dan paling akurat di ruang terbuka; di dalam gedung ia sering meleset ratusan meter. Posisi
+    berbasis jaringan — Wi-Fi dan menara seluler — lebih cepat tetapi kurang presisi. Paket
+    <code>expo-location</code> menyatukan kedua sumber itu sehingga aplikasi cukup memilih
+    tingkat ketelitian dan menerima koordinat.
+  </p>
+
+  <p>
+    Urutan pemakaiannya sama dengan pola subbab 12.1: minta izin lebih dulu, baru baca posisi.
+    Nama <code>requestForegroundPermissionsAsync()</code> menegaskan bahwa lokasi dibaca hanya
+    selama aplikasi terbuka di layar; ada pula izin lokasi latar belakang yang lebih ketat dan
+    tidak dibahas di buku ini. Bila izin ditolak, fungsi mengembalikan <code>null</code> dan
+    lapisan tampilan yang memutuskan pesannya.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Logika lokasi ditulis langsung di layar"
+       data-label-benar="Logika lokasi dibungkus di utils/"
+       data-petunjuk="Isi kodenya sama; yang berbeda tempatnya. Pembungkus di kanan bisa dipakai dua layar sekaligus dan diuji tanpa merender antarmuka.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">screens/ProfilMahasiswa.js (potongan)</span>
+        <span class="kode-sumber">buku §Praktikum · verbatim</span>
+      </figcaption>
+      <pre><code class="language-js">  async function ambilLokasi() {
+    const izin = await Location.requestForegroundPermissionsAsync();
+    if (!izin.granted) {
+      Alert.alert('Izin Ditolak', 'Aplikasi tidak dapat membaca lokasi tanpa izin kamu.');
+      return;
+    }
+    const posisi = await Location.getCurrentPositionAsync({
+      accuracy: Location.Accuracy.Balanced,
+    });
+    setLokasi({
+      latitude: posisi.coords.latitude,
+      longitude: posisi.coords.longitude,
+      akurasi: posisi.coords.accuracy,
+    });
+  }</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">utils/ambilLokasi.js</span>
+        <span class="kode-sumber">buku §12.3 · verbatim</span>
+      </figcaption>
+      <pre><code class="language-js">import * as Location from 'expo-location';
+
+export async function ambilKoordinat() {
+  const izin = await Location.requestForegroundPermissionsAsync();
+  if (!izin.granted) {
+    return null;
+  }
+  const posisi = await Location.getCurrentPositionAsync({
+    accuracy: Location.Accuracy.Balanced,
+  });
+  return {
+    latitude: posisi.coords.latitude,
+    longitude: posisi.coords.longitude,
+    akurasi: posisi.coords.accuracy,
+    waktu: new Date(posisi.timestamp).toLocaleString('id-ID'),
+  };
+}</code></pre>
+    </figure>
+  </div>
+
+  <p>
+    <code>posisi.coords</code> berisi <code>latitude</code> dan <code>longitude</code> dalam
+    derajat desimal, ditambah <code>accuracy</code> — perkiraan radius ketidakpastian dalam
+    meter — serta <code>timestamp</code> waktu pengukuran. Nilai akurasi 35 berarti posisi
+    sebenarnya berada di suatu tempat di dalam lingkaran selebar 70 meter, bukan tepat di titik
+    itu. Angka koordinat tanpa akurasi bisa menyesatkan, terutama di dalam gedung.
+  </p>
+
+  <p>
+    Data lokasi termasuk data pribadi yang sensitif: pola pergerakan seseorang dapat disimpulkan
+    dari riwayat koordinatnya. Karena itu izin lokasi selalu diminta terpisah dari izin lain,
+    dan praktik yang baik adalah meminta ketelitian serendah mungkin yang masih memenuhi
+    kebutuhan (subbab 12.6). Untuk mengubah koordinat menjadi nama tempat, tersedia
+    <code>reverseGeocodeAsync()</code> yang mengembalikan alamat — jalan, kota, dan wilayah —
+    dan itulah salah satu latihan di akhir bab.
+  </p>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Memperlakukan koordinat sebagai titik pasti. Inilah salah paham terbesar di aplikasi
+      presensi: <code>accuracy</code> adalah pusat lingkaran ketidakpastian, bukan angka
+      kerapian tampilan. Menampilkan lima angka desimal tanpa nilai ketelitian memberi kesan
+      presisi yang tidak dimiliki datanya.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Mengapa fungsi pembungkus mengembalikan <code>null</code>, bukan langsung menampilkan
+      pesan galat? (Jawaban: agar lapisan tampilan yang menentukan pesannya — pemisahan tanggung
+      jawab antara logika perangkat dan antarmuka.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s2-5">
+  <p class="label-subbab">
+    Subbab 12.3 <span class="sumber-slide">· deck: “Pilih Ketelitian Terendah yang Masih Memenuhi Kebutuhan” · buku §12.3, §Contoh 2</span>
+  </p>
+  <h2>Pilih Ketelitian Terendah yang Masih Memenuhi Kebutuhan</h2>
+
+  <p>
+    Opsi <code>accuracy</code> memilih keseimbangan antara kecepatan, ketepatan, dan konsumsi
+    baterai. Ketelitian tinggi menguras baterai, jadi aturannya sederhana: pilih yang paling
+    rendah yang masih memenuhi kebutuhan.
+  </p>
+
+  <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Tingkat ketelitian lokasi · sumber: deck Bab 12 &amp; buku §12.3</caption>
+      <thead>
+        <tr><th scope="col">Nilai</th><th scope="col">Ketelitian perkiraan</th><th scope="col">Cocok untuk</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>Lowest</code></td><td>Paling kasar, hemat baterai</td><td>Sekadar tahu wilayahnya</td></tr>
+        <tr><td><code>Balanced</code></td><td>Sekitar 100 meter</td><td>Menampilkan koordinat profil</td></tr>
+        <tr><td><code>High</code></td><td>Sekitar 10 meter</td><td>Presensi yang butuh ketepatan</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    Di dalam ruangan atau saat sinyal GPS buruk, <code>getCurrentPositionAsync</code> dapat
+    gagal atau menunggu lama. Contoh berikut menambahkan jaring pengaman: bila pembacaan terkini
+    gagal, aplikasi mencoba posisi terakhir yang pernah diukur.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">utils/posisiTerakhir.js</span>
+      <span class="kode-sumber">buku §Contoh 2 · verbatim</span>
+    </figcaption>
+    <pre><code class="language-js">import * as Location from 'expo-location';
+
+export async function posisiTerbaik() {
+  const izin = await Location.requestForegroundPermissionsAsync();
+  if (!izin.granted) {
+    return null;
+  }
+  try {
+    return await Location.getCurrentPositionAsync({
+      accuracy: Location.Accuracy.Balanced,
+    });
+  } catch (galat) {
+    const posisiLama = await Location.getLastKnownPositionAsync();
+    if (posisiLama) {
+      console.warn('Posisi terkini gagal, memakai posisi terakhir.', galat);
+      return posisiLama;
+    }
+    return null;
+  }
+}</code></pre>
+  </figure>
+
+  <p>
+    Pola fallback begini membuat aplikasi tetap berfungsi pada kondisi nyata, bukan hanya pada
+    demo di ruang terbuka. Perlu diingat bahwa <code>getLastKnownPositionAsync</code> bisa
+    mengembalikan posisi yang sudah usang — karena itu hasilnya diberi catatan lewat
+    <code>console.warn</code> agar tidak diam-diam dipakai. Uji fitur lokasi di perangkat fisik:
+    emulator hanya memberi koordinat tiruan yang tidak membuktikan apa pun.
+  </p>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Mengira <code>accuracy</code> menyatakan kecepatan perangkat atau jumlah satelit. Nilai
+      itu adalah perkiraan radius ketidakpastian posisi dalam meter — satu-satunya cara jujur
+      membacanya adalah sebagai lingkaran, bukan sebagai titik.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Kenapa aplikasi presensi tidak boleh memakai ketelitian <code>Balanced</code>? (Jawaban:
+      radius ketidakpastiannya sekitar 100 meter, terlalu besar untuk memastikan mahasiswa
+      benar-benar berada di dalam kelas.)
+    </p>
+  </div>
+</section>

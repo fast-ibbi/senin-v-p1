@@ -1,0 +1,81 @@
+<h1>Bab 8 — Form, Input, dan Validasi</h1>
+
+<p class="ringkas">
+  Dari ketikan pengguna menjadi data yang layak disimpan: props <code>TextInput</code>, pola
+  <em>controlled component</em>, form state satu objek, validasi sebagai fungsi murni, pesan
+  galat per field, komponen <code>FormField</code>, lalu tiga formulir utuh. Pertemuan 9 ·
+  Sub-CPMK 4.3.
+</p>
+
+<div class="pengantar-pertanyaan">
+  <p><strong>Pertanyaan pembuka deck:</strong> “Siapa yang pernah menekan tombol simpan lalu tidak terjadi apa-apa?”</p>
+  <p>
+    Tampung jawaban kelas sebentar, lalu simpan pertanyaan itu. Jawabannya baru muncul di
+    bagian 3, ketika kita membandingkan tombol nonaktif dengan validasi saat kirim.
+  </p>
+</div>
+
+<h2>Tujuan pembelajaran</h2>
+
+<p>Setelah bab ini, kamu bisa:</p>
+
+<ul>
+  <li>Menjelaskan props utama <code>TextInput</code> dan strategi penanganan papan ketik mobile</li>
+  <li>Menganalisis <em>controlled component</em> dan state sebagai sumber kebenaran tunggal</li>
+  <li>Merancang form state satu objek dengan <code>handleChange</code> yang bisa dipakai ulang</li>
+  <li>Mengimplementasikan validasi fungsi murni dan pesan galat per field</li>
+  <li>Mengevaluasi trade-off tombol submit nonaktif dan merancang <code>FormField</code></li>
+</ul>
+
+<p>
+  Butir keempat dan kelima adalah inti pertemuan ini. Butir kelima sengaja memakai kata
+  <em>mengevaluasi</em>: kamu harus bisa menjelaskan alasan sebuah pilihan, bukan sekadar
+  menyalin kode.
+</p>
+
+<h2>Peta halaman</h2>
+
+<ul>
+  <li><strong>Bagian 1 — TextInput dan Papan Ketik</strong> (subbab 8.1): biaya data yang salah masuk, nilai yang tidak disimpan <code>TextInput</code>, Tabel 8.1, dan papan ketik yang menutupi setengah layar.</li>
+  <li><strong>Bagian 2 — Controlled Component dan Form State</strong> (subbab 8.2–8.3): sumber kebenaran tunggal, satu objek state untuk tujuh field, kelebihan dan kerapuhannya, serta jalan menuju mode edit.</li>
+  <li><strong>Bagian 3 — Validasi, Pesan Galat, dan UX Formulir</strong> (subbab 8.4–8.6): fungsi murni di <code>utils/validators.js</code>, <code>jalankanAturan</code>, Tabel 8.2, kapan validasi berjalan, prinsip pesan galat, dan komponen <code>FormField</code>.</li>
+  <li><strong>Bagian 4 — Implementasi dan Studi Kasus</strong> (subbab 8.7): empat lapisan, pola internal tiga formulir, validasi lintas field di FormRegistrasi, chip program studi, rute tipis pemilik data, dan studi kasus kualitas data portal akademik.</li>
+  <li><strong>Praktikum</strong>: <code>utils/validators.js</code>, <code>components/FormField.js</code>, <code>screens/FormMahasiswa.js</code>, dan rute <code>app/(app)/mahasiswa/tambah.js</code>.</li>
+</ul>
+
+<div class="kotak kotak-tiruan">
+  <p class="kotak-judul">Yang perlu diketahui sebelum membaca</p>
+  <p>
+    Bab ini melanjutkan rute yang sudah kamu buat di Bab 7. Tiga formulir di sini menempati
+    rute <code>app/login.js</code>, <code>app/registrasi.js</code>, dan
+    <code>app/(app)/mahasiswa/tambah.js</code> pada <strong>Aplikasi Manajemen Data
+    Mahasiswa</strong>.
+  </p>
+  <p>
+    Tidak ada dependency baru. Seluruh materi memakai komponen inti React Native;
+    menambahkan pustaka validasi justru menyembunyikan pola yang sedang kita pelajari.
+  </p>
+  <p>
+    Sebagian perilaku bersifat sensitif versi: nilai <code>keyboardType</code> dan perilaku
+    <code>behavior</code> pada <code>KeyboardAvoidingView</code> dapat berbeda tipis
+    antarponsel dan antarversi SDK. Periksa dokumentasi resmi reactnative.dev untuk versi
+    yang kamu pakai.
+  </p>
+  <p class="kotak-jawab">
+    Setiap kode di halaman-halaman berikut disalin verbatim dari
+    <code>buku/bab-08-form-input-dan-validasi.md</code> atau deck
+    <code>slides/bab-08-form-input-dan-validasi.md</code>; label
+    <code>kode-sumber</code> menyebut asalnya, dan blok yang bukan salinan langsung diberi
+    label <em>ilustrasi</em>. Perbandingan <strong>sebelum/sesudah</strong> menampilkan pola
+    keliru di samping pola yang benar; tombol di kepala panel untuk berpindah.
+  </p>
+</div>
+
+<div class="kotak kotak-tanya">
+  <p class="kotak-judul">Pertanyaan penuntun</p>
+  <p>
+    Kalau <code>TextInput</code> tidak menyimpan nilainya sendiri, siapa yang menyimpan?
+    Jawaban satu kata itu — state — adalah fondasi seluruh bab ini, dan jawaban panjangnya
+    ada di bagian 2.
+  </p>
+</div>

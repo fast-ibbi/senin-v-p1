@@ -1,0 +1,314 @@
+<h1>Bagian 1 — Debugging: Console dan DevTools</h1>
+
+<p class="ringkas">
+  Menelusuri masalah pada kode yang sudah ada, bukan menulis fitur baru. Bagian ini membedakan
+  debugging, testing, dan QA; menunjukkan tiga jenis pesan console yang berguna; memasang log
+  berlabel pada titik perubahan state; lalu membuka React Native DevTools dan React DevTools.
+</p>
+
+<section class="subbab" id="s1-1">
+  <p class="label-subbab">
+    Subbab 14.1 <span class="sumber-slide">· deck: “Tiga Kegiatan, Satu Tujuan: Kode yang Bisa Dipercaya” &amp; “Bug yang Sampai ke Pengguna Lebih Mahal daripada yang Tertangkap Lebih Awal” · buku §Materi</span>
+  </p>
+  <h2>Tiga kegiatan yang sering tertukar</h2>
+  <p>
+    Sebuah aplikasi yang “hanya berjalan” belum tentu aplikasi yang benar. <strong>Debugging</strong>
+    adalah proses menemukan dan memperbaiki kesalahan (bug) pada kode.
+    <strong>Testing</strong> adalah kegiatan memeriksa perilaku perangkat lunak secara
+    terencana untuk menemukan kesalahan. <strong>Quality assurance</strong> (QA, jaminan
+    kualitas) adalah proses sistematis yang memastikan produk memenuhi kebutuhan pengguna; QA
+    tidak hanya mencari bug, tetapi mencegahnya sejak awal melalui standar, checklist, dan
+    prosedur.
+  </p>
+  <p>
+    Mengapa ketiganya perlu? Semakin banyak fitur yang kamu tumpuk — navigasi di Bab 7,
+    formulir di Bab 8, API di Bab 10, autentikasi di Bab 13 — semakin besar kemungkinan satu
+    perubahan kecil merusak bagian lain yang tampaknya tidak berhubungan. Kondisi itu bernama
+    <strong>regression</strong> (kemunduran kualitas). Tanpa cara menelusuri kesalahan dan
+    menguji perilaku, tim pengembang menghabiskan waktunya menebak-nebak, dan aplikasi yang
+    rusak di tangan pengguna jauh lebih mahal daripada bug yang tertangkap sebelum rilis.
+  </p>
+  <p>
+    Ada satu pertanyaan yang memisahkan ketiganya dengan rapi: siapa yang bekerja paling awal?
+    Debugging paling akhir, testing di tengah, QA paling awal. Itulah sebabnya QA disebut
+    <em>jaminan</em>, bukan reparasi.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Menambah fitur tanpa memeriksa ulang"
+       data-label-benar="Menelusuri dan menguji dengan rencana"
+       data-petunjuk="Panel kanan bukan daftar alat, melainkan urutan kerja: mencegah di depan, memeriksa di tengah, memperbaiki di belakang."
+    >
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">kebiasaan-tanpa-qa.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §Materi</span>
+      </figcaption>
+      <pre><code class="language-text">✗ kode dianggap selesai saat "jalan" di emulator sendiri
+✗ hanya alur berhasil yang dicoba
+✗ bug ditemukan setelah pengguna melapor
+✗ setiap fitur baru menambah peluang satu
+  perubahan merusak bagian lain
+✗ tim menghabiskan waktunya menebak-nebak</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">tiga-kegiatan.txt</span>
+        <span class="kode-sumber">buku §Materi · deck “Tiga Kegiatan, Satu Tujuan”</span>
+      </figcaption>
+      <pre><code class="language-text">✓ quality assurance — mencegah bug sejak awal
+  lewat standar, checklist, dan prosedur
+✓ testing — memeriksa perilaku dengan rencana;
+  kasus uji disiapkan lebih dulu
+✓ debugging — bereaksi pada bug yang sudah
+  muncul, dengan alat yang tepat
+✓ regression diberi nama dan ditangkap
+  sebelum rilis</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      QA bukan “tim lain”. Di proyek kecil — termasuk proyek kelompokmu — QA adalah sikap
+      pengembangnya sendiri. Menunggu ada orang lain yang menguji berarti menyerahkan
+      kegagalanmu kepada pengguna.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Menyusun checklist sebelum menulis kode termasuk kegiatan apa? (Jawaban: QA, karena ia mencegah dan bukan memperbaiki.)</p>
+  </div>
+</section>
+
+<section class="subbab" id="s1-2">
+  <p class="label-subbab">
+    Subbab 14.1 <span class="sumber-slide">· deck: “Console: Tiga Jenis Pesan, Tiga Kegunaan” &amp; “Empat Pemanggilan Console di Satu File Membaca Satu Layar Data” · buku §14.1</span>
+  </p>
+  <h2>Console: tiga jenis pesan, tiga kegunaan</h2>
+  <p>
+    Cara paling sederhana — dan sering kali paling efektif — untuk menelusuri kesalahan adalah
+    mencetak nilai ke <strong>console</strong>. Di React Native, panggilan <code>console.log</code>
+    dari kode aplikasi tampil pada terminal tempat <code>npx expo start</code> berjalan, dan
+    juga pada React Native DevTools. Kebiasaan yang baik: beri label pada setiap baris log agar
+    mudah ditemukan saat banyak pesan bercampur, dan gunakan jenis pesan yang sesuai dengan
+    tingkat kepentingannya.
+  </p>
+
+  <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Tiga jenis pesan console · sumber: deck “Console: Tiga Jenis Pesan, Tiga Kegunaan” &amp; buku §14.1</caption>
+      <thead>
+        <tr><th scope="col">Pemanggilan</th><th scope="col">Untuk apa</th><th scope="col">Contoh di bab ini</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>console.log</code></td><td>Melihat nilai variabel atau alur eksekusi</td><td>Mencetak jumlah data mahasiswa</td></tr>
+        <tr><td><code>console.warn</code></td><td>Nilai di luar dugaan; aplikasi tetap jalan</td><td>Mahasiswa dengan IPK di bawah 3.0</td></tr>
+        <tr><td><code>console.table</code></td><td>Array objek sebagai tabel berkolom</td><td>Daftar mahasiswa: NIM, nama, prodi, IPK</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">console-demo.js</span>
+      <span class="kode-sumber">buku §14.1</span>
+    </figcaption>
+    <pre><code class="language-js">// Demo penggunaan console untuk debugging data mahasiswa.
+// Menjalankan: node console-demo.js
+
+const mahasiswa = [
+  { nim: '2201001', nama: 'Budi Santoso', prodi: 'Sistem Informasi', ipk: 3.45 },
+  { nim: '2201002', nama: 'Siti Aminah', prodi: 'Teknik Informatika', ipk: 3.82 },
+  { nim: '2201003', nama: 'Agus Wijaya', prodi: 'Informatika', ipk: 3.2 },
+  { nim: '2201004', nama: 'Dewi Lestari', prodi: 'Rekayasa Perangkat Lunak', ipk: 3.61 },
+  { nim: '2201005', nama: 'Rizky Pratama', prodi: 'Sistem Informasi', ipk: 2.95 },
+];
+
+console.log('Jumlah data mahasiswa:', mahasiswa.length);
+
+console.log('IPK tertinggi:', Math.max(...mahasiswa.map((m) =&gt; m.ipk)));
+
+console.warn('Mahasiswa dengan IPK di bawah 3.0:', mahasiswa
+  .filter((m) =&gt; m.ipk &lt; 3.0)
+  .map((m) =&gt; m.nama));
+
+console.table(mahasiswa.map((m) =&gt; ({
+  NIM: m.nim, Nama: m.nama, Prodi: m.prodi, IPK: m.ipk,
+})));</code></pre>
+  </figure>
+
+  <p>
+    <code>console.log</code> pertama memberi tahu berapa banyak data yang dimuat — inilah
+    penggunaan paling dasar: memastikan data sampai di tempat yang kamu duga.
+    <code>console.log</code> kedua memakai operator spread <code>...</code> (Bab 3) untuk
+    meneruskan semua IPK ke <code>Math.max</code>. Perhatikan <code>console.warn</code>: pesan
+    peringatan tidak menghentikan program, tetapi tampil mencolok di terminal sehingga kamu
+    sadar ada kondisi yang perlu diperhatikan. Terakhir, <code>console.table</code> menyusun
+    ulang data menjadi tabel berkolom NIM, Nama, Prodi, dan IPK — jauh lebih mudah dibaca
+    daripada lima baris objek polos.
+  </p>
+  <p>
+    Kebiasaan menambahkan label teks pada setiap log (“Jumlah data mahasiswa:”) adalah
+    perbedaan utama antara log yang berguna dan log yang membingungkan. Berkas ini bisa
+    dijalankan langsung dengan Node, tanpa emulator.
+  </p>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Apa gunanya mencetak jumlah data lebih dulu? (Jawaban: memastikan datanya benar-benar datang sebelum mencurigai bagian lain.)</p>
+  </div>
+</section>
+
+<section class="subbab" id="s1-3">
+  <p class="label-subbab">
+    Subbab 14.1 <span class="sumber-slide">· deck: “Dua Lapisan untuk Melihat State, Dua Pertanyaan Berbeda” &amp; “Log Berlabel Menunjukkan Kapan State Berubah” · buku §Contoh 1</span>
+  </p>
+  <h2>Log berlabel menunjukkan kapan state berubah</h2>
+  <p>
+    Strategi men-debug state diringkas menjadi dua lapis. Lapis pertama: cetak log pada titik
+    perubahan state — misalnya di dalam <code>useEffect</code> (Bab 4) yang berjalan setiap
+    state berubah. Lapis kedua: bila log tidak cukup, misalnya karena state berbentuk objek
+    besar, periksa pohon komponen dengan React DevTools. Keduanya saling melengkapi: log
+    menjawab “kapan dan dalam urutan apa”, React DevTools menjawab “apa isinya sekarang”.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">app/TampilkanIPK.js</span>
+      <span class="kode-sumber">buku §Contoh 1</span>
+    </figcaption>
+    <pre><code class="language-jsx">import { useEffect, useState } from 'react';
+import { Text, View } from 'react-native';
+
+export default function TampilkanIPK() {
+  const [ipk, setIpk] = useState(null);
+
+  useEffect(() =&gt; {
+    console.log('useEffect berjalan, ipk saat ini:', ipk);
+    // Simulasi pemuatan data; ganti dengan fetch dari Bab 10.
+    const idTimeout = setTimeout(() =&gt; setIpk(3.45), 1000);
+    return () =&gt; clearTimeout(idTimeout);
+  }, [ipk]);
+
+  return (
+    &lt;View&gt;
+      &lt;Text&gt;IPK: {ipk === null ? 'memuat...' : ipk}&lt;/Text&gt;
+    &lt;/View&gt;
+  );
+}</code></pre>
+  </figure>
+
+  <p>
+    State <code>ipk</code> diawali <code>null</code> — inilah penyebab paling umum error
+    “undefined is not an object” bila kita lupa menyediakan kondisi “belum ada data”.
+    <code>useEffect</code> mencetak nilai <code>ipk</code> setiap kali berubah, sehingga
+    terminal menunjukkan urutan: <code>null</code>, lalu <code>3.45</code>. Cleanup
+    <code>clearTimeout</code> mencegah pembaruan state setelah komponen dilepas.
+  </p>
+
+  <div class="banding"
+       data-label-lama="console.log berserak tanpa penanda"
+       data-label-benar="Pesan terstruktur di titik perubahan"
+       data-petunjuk="Nilai tambahnya bukan jumlah log, melainkan penanda: nama komponen, nama variabel, dan titik tempat ia dicetak."
+    >
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">log-berserak.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §14.1</span>
+      </figcaption>
+      <pre><code class="language-text">✗ console.log(nilai)
+✗ console.log("masuk sini")
+✗ console.log(data)
+✗ puluhan baris serupa tanpa nama variabel
+✗ urutan kejadian tidak terbaca saat
+  banyak komponen aktif sekaligus
+✗ tidak ada penanda kondisi tidak normal</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">log-berlabel.txt</span>
+        <span class="kode-sumber">buku §14.1 · §Contoh 1</span>
+      </figcaption>
+      <pre><code class="language-text">✓ console.log('useEffect berjalan, ipk saat ini:', ipk)
+✓ console.log('Jumlah data mahasiswa:', mahasiswa.length)
+✓ console.warn('Mahasiswa dengan IPK di bawah 3.0:', ...)
+✓ console.table(mahasiswa.map(...))
+✓ label menyebut komponen dan variabel yang diamati
+✓ urutan tercetak: null, lalu 3.45</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Mengapa log di dalam <code>useEffect</code> lebih berguna daripada log di luar komponen? (Jawaban: karena ia berjalan setiap state berubah, sehingga urutan kejadiannya terlihat, bukan hanya nilai terakhir.)</p>
+  </div>
+</section>
+
+<section class="subbab" id="s1-4">
+  <p class="label-subbab">
+    Subbab 14.1 <span class="sumber-slide">· deck: “Tiga Tombol Terminal yang Mempercepat Setiap Percobaan” · buku §14.1</span>
+  </p>
+  <h2>React Native DevTools dan tiga tombol terminal</h2>
+  <p>
+    Selain console, React Native menyediakan <strong>React Native DevTools</strong> — antarmuka
+    penganalisis berbasis DevTools Chrome yang terhubung ke aplikasi yang berjalan. Untuk
+    membukanya: pastikan aplikasi berjalan, tekan <code>m</code> pada terminal Expo untuk
+    membuka menu developer di aplikasi, lalu pilih opsi debugger sesuai versi SDK 57. Di
+    dalamnya ada tab berisi sumber kode, <strong>breakpoint</strong> (titik henti: baris tempat
+    eksekusi dijeda agar kamu dapat memeriksa nilai variabel), dan tab Network untuk memantau
+    permintaan jaringan.
+  </p>
+  <p>
+    <strong>React DevTools</strong> adalah alat terpisah — khusus ekosistem React, bukan bagian
+    dari DevTools Chrome. Ia menampilkan pohon komponen dan nilai <strong>state</strong> tiap
+    komponen secara langsung, dan dapat dijalankan sendiri.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">(terminal)</span>
+      <span class="kode-sumber">buku §14.1</span>
+    </figcaption>
+    <pre><code class="language-bash">npm install --save-dev react-devtools
+npx react-devtools</code></pre>
+  </figure>
+
+  <p>
+    Perintah pertama menambahkan <code>react-devtools</code> sebagai dependency pengembangan
+    (devDependency) — alat yang hanya dibutuhkan saat menulis kode, bukan saat aplikasi
+    dirilis. Perintah kedua meluncurkan jendela React DevTools yang menampilkan pohon komponen
+    aplikasimu secara real-time.
+  </p>
+
+  <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Tiga tombol terminal saat <code>npx expo start</code> · sumber: deck “Tiga Tombol Terminal” &amp; buku §14.1</caption>
+      <thead>
+        <tr><th scope="col">Tombol</th><th scope="col">Fungsi</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>m</code></td><td>Membuka atau menutup menu developer di aplikasi</td></tr>
+        <tr><td><code>r</code></td><td>Memuat ulang aplikasi dengan kode terbaru</td></tr>
+        <tr><td><code>j</code></td><td>Membuka debugger JavaScript</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Kombinasi tombol bersifat sensitif versi, jadi jangan menghafalnya dari buku. Menu dan
+      kombinasi tombol dapat berubah antarversi Expo; daftar yang dicetak terminal
+      <code>npx expo start</code> adalah sumber kebenaran untuk versi yang kamu pakai. Bila
+      <code>m</code> tidak merespons, fokuskan jendela terminal Expo lebih dulu, atau goyangkan
+      emulator Android.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Apa analogi yang tepat untuk kedua lapisan itu? (Jawaban: log seperti rekaman kamera lalu lintas — ia menunjukkan urutan kejadian; React DevTools seperti foto kondisi sekarang — ia menunjukkan isi state saat ini.)</p>
+  </div>
+</section>

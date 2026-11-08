@@ -1,0 +1,802 @@
+<h1>Praktikum Bab 6 — Layar Statis Aplikasi Manajemen Data Mahasiswa</h1>
+
+<p class="ringkas">
+  Praktikum ini membangun tahap pertama Aplikasi Manajemen Data Mahasiswa dari wireframe
+  subbab 6.7: satu halaman Daftar berisi lima kartu dan satu halaman Detail berisi identitas
+  serta pasangan label–nilai. Lima berkas ditulis berurutan dari komponen terkecil sampai
+  <code>App.js</code>, tanpa navigasi dan tanpa server.
+</p>
+
+<div class="kotak kotak-tiruan">
+  <p class="kotak-judul">Tujuan praktikum</p>
+  <p>Setelah menyelesaikan praktikum ini, kamu mampu:</p>
+  <ol>
+    <li>membangun halaman Daftar Mahasiswa berisi header dan daftar lima kartu mahasiswa;</li>
+    <li>membangun halaman Detail Mahasiswa berisi avatar inisial, pasangan label–nilai, dan baris aksi;</li>
+    <li>menulis komponen Tombol dengan empat variasi dan tiga status — normal, ditekan, dan nonaktif;</li>
+    <li>menerapkan kartu yang konsisten pada sistem jarak 8pt beserta warna semantik untuk IPK;</li>
+    <li>membuat daftar adaptif satu atau dua kolom memakai <code>useWindowDimensions</code>;</li>
+    <li>menyertakan atribut aksesibilitas dasar sehingga setiap kartu terbaca oleh pembaca layar.</li>
+  </ol>
+</div>
+
+<h2>Kebutuhan</h2>
+
+<ul>
+  <li>Project Expo dari Bab 5 (disarankan) atau project baru: <code>npx create-expo-app aplikasi-mahasiswa --template blank</code> dengan template JavaScript, seperti pada Bab 2.</li>
+  <li>Expo SDK 57 dan React Native 0.86, dengan Node.js LTS yang sudah dipasang pada Bab 2.</li>
+  <li>Expo Go pada perangkat atau emulator, dipakai sejak Bab 2.</li>
+  <li>Paket <code>react-native-safe-area-context</code>, yang dipasang pada Persiapan di bawah.</li>
+</ul>
+
+<h2>Persiapan</h2>
+
+<ol>
+  <li>Pastikan project siap dijalankan dengan <code>npx expo start</code>, seperti pada Bab 2 dan Bab 5.</li>
+  <li>
+    Instal paket area aman layar. Paket ini menyediakan <code>SafeAreaView</code> modern;
+    komponen <code>SafeAreaView</code> bawaan React Native telah ditandai usang
+    (<em>deprecated</em>) pada versi mutakhir, sehingga buku ini memakai pengganti resminya.
+    Jalankan perintah berikut di folder project.
+  </li>
+  <li>
+    Buat dua folder: <code>components/</code> untuk elemen kecil yang dipakai ulang dan
+    <code>screens/</code> untuk layar utuh. Struktur akhir project tampak seperti blok di bawah.
+  </li>
+  <li>Buka <code>App.js</code> bawaan template, lalu hapus isinya — berkas itu ditulis ulang pada Langkah Kerja 5.</li>
+</ol>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">(terminal)</span>
+    <span class="kode-sumber">buku §Praktikum · Persiapan langkah 2</span>
+  </figcaption>
+  <pre><code class="language-bash">npx expo install react-native-safe-area-context</code></pre>
+</figure>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">struktur-project.txt</span>
+    <span class="kode-sumber">buku §Praktikum · Persiapan langkah 3</span>
+  </figcaption>
+  <pre><code class="language-text">aplikasi-mahasiswa/
+├── App.js
+├── components/
+│   ├── CardMahasiswa.js
+│   └── Tombol.js
+└── screens/
+    ├── DaftarMahasiswa.js
+    └── DetailMahasiswa.js</code></pre>
+</figure>
+
+<h2>Langkah kerja</h2>
+
+<ol>
+  <li><strong>Tulis komponen <code>components/Tombol.js</code></strong> — tombol dengan empat variasi (<code>primary</code>, <code>secondary</code>, <code>outline</code>, <code>danger</code>), status ditekan dan nonaktif, serta atribut aksesibilitas.</li>
+  <li><strong>Tulis komponen <code>components/CardMahasiswa.js</code></strong> — kartu satu mahasiswa: nama, lencana program studi, NIM, angkatan, dan IPK berwarna semantik.</li>
+  <li><strong>Tulis layar <code>screens/DaftarMahasiswa.js</code></strong> — header berisi judul, subjudul, dan aksi “Tambah”, lalu <code>FlatList</code> kartu yang adaptif satu atau dua kolom.</li>
+  <li><strong>Tulis layar <code>screens/DetailMahasiswa.js</code></strong> — header dengan tombol Kembali, profil avatar inisial, kartu pasangan label–nilai, dan baris aksi Edit/Hapus.</li>
+  <li><strong>Tulis <code>App.js</code></strong> — memuat lima data mahasiswa baku, lalu menampilkan Daftar atau Detail berdasarkan state sederhana. Ini belum navigasi; perpindahan layar sungguhan dibangun di Bab 7.</li>
+  <li><strong>Jalankan <code>npx expo start</code></strong> lalu buka aplikasi di Expo Go. Uji empat hal: gulir daftar, tekan kartu, tekan Kembali, dan putar perangkat atau ubah ukuran untuk melihat mode dua kolom.</li>
+</ol>
+
+<p>
+  Urutkan penulisan dari komponen terkecil (Tombol, lalu Card), lanjut ke layar, dan akhiri
+  di <code>App.js</code>. Pola ini mencegah kita menulis layar yang bergantung pada komponen
+  yang belum ada.
+</p>
+
+<h2>Kode: components/Tombol.js</h2>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">components/Tombol.js</span>
+      <span class="kode-sumber">buku §Praktikum · Kode</span>
+    </figcaption>
+    <pre><code class="language-jsx">import { Pressable, Text, StyleSheet } from 'react-native';
+
+// Peta warna per variasi tombol: latar, warna teks, dan warna garis tepi.
+const LATAR_VARIASI = {
+  primary: '#2563EB',
+  secondary: '#E5E7EB',
+  outline: 'transparent',
+  danger: '#DC2626',
+};
+
+const TEKS_VARIASI = {
+  primary: '#FFFFFF',
+  secondary: '#1F2937',
+  outline: '#2563EB',
+  danger: '#FFFFFF',
+};
+
+const GARIS_VARIASI = {
+  primary: 'transparent',
+  secondary: 'transparent',
+  outline: '#2563EB',
+  danger: 'transparent',
+};
+
+export default function Tombol({
+  label,
+  variasi = 'primary',
+  onTekan,
+  modeNonaktif = false,
+  gaya = {},
+}) {
+  return (
+    &lt;Pressable
+      onPress={onTekan}
+      disabled={modeNonaktif}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      accessibilityState={{ disabled: modeNonaktif }}
+      style={({ pressed }) =&gt; [
+        styles.dasar,
+        {
+          backgroundColor: modeNonaktif ? '#E5E7EB' : LATAR_VARIASI[variasi],
+          borderColor: GARIS_VARIASI[variasi],
+          opacity: pressed &amp;&amp; !modeNonaktif ? 0.75 : 1,
+        },
+        gaya,
+      ]}
+    &gt;
+      &lt;Text
+        style={[
+          styles.teks,
+          { color: modeNonaktif ? '#9CA3AF' : TEKS_VARIASI[variasi] },
+        ]}
+      &gt;
+        {label}
+      &lt;/Text&gt;
+    &lt;/Pressable&gt;
+  );
+}
+
+const styles = StyleSheet.create({
+  dasar: {
+    minHeight: 48,
+    minWidth: 44,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  teks: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
+});</code></pre>
+  </figure>
+
+<h2>Kode: components/CardMahasiswa.js</h2>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">components/CardMahasiswa.js</span>
+      <span class="kode-sumber">buku §Praktikum · Kode</span>
+    </figcaption>
+    <pre><code class="language-jsx">import { Pressable, Text, View, StyleSheet } from 'react-native';
+
+// Warna lencana program studi: latar lembut + teks gelap agar kontras cukup.
+const WARNA_LENCANA = {
+  'Sistem Informasi': '#EFF6FF',
+  'Teknik Informatika': '#F0FDF4',
+  'Informatika': '#FFF7ED',
+  'Rekayasa Perangkat Lunak': '#FEF2F2',
+};
+
+const WARNA_TEKS_LENCANA = {
+  'Sistem Informasi': '#1D4ED8',
+  'Teknik Informatika': '#15803D',
+  'Informatika': '#C2410C',
+  'Rekayasa Perangkat Lunak': '#B91C1C',
+};
+
+// Warna IPK berdasarkan ambang nilai: hijau ≥ 3,5; abu 3,0–3,49; merah &lt; 3,0.
+function warnaIpk(ipk) {
+  if (ipk &gt;= 3.5) return '#15803D';
+  if (ipk &gt;= 3.0) return '#374151';
+  return '#B91C1C';
+}
+
+export default function CardMahasiswa({ mahasiswa, onTekan }) {
+  return (
+    &lt;Pressable
+      onPress={onTekan}
+      accessibilityRole="button"
+      accessibilityLabel={`Buka detail ${mahasiswa.nama}, NIM ${mahasiswa.nim}`}
+      style={({ pressed }) =&gt; [styles.kartu, pressed &amp;&amp; styles.kartuDitekan]}
+    &gt;
+      &lt;View style={styles.barisJudul}&gt;
+        &lt;Text style={styles.nama}&gt;{mahasiswa.nama}&lt;/Text&gt;
+        &lt;View
+          style={[
+            styles.lencana,
+            { backgroundColor: WARNA_LENCANA[mahasiswa.prodi] },
+          ]}
+        &gt;
+          &lt;Text
+            style={[
+              styles.teksLencana,
+              { color: WARNA_TEKS_LENCANA[mahasiswa.prodi] },
+            ]}
+          &gt;
+            {mahasiswa.prodi}
+          &lt;/Text&gt;
+        &lt;/View&gt;
+      &lt;/View&gt;
+      &lt;Text style={styles.nim}&gt;
+        NIM {mahasiswa.nim} · Angkatan {mahasiswa.angkatan}
+      &lt;/Text&gt;
+      &lt;Text style={[styles.ipk, { color: warnaIpk(mahasiswa.ipk) }]}&gt;
+        IPK {mahasiswa.ipk.toFixed(2)}
+      &lt;/Text&gt;
+    &lt;/Pressable&gt;
+  );
+}
+
+const styles = StyleSheet.create({
+  kartu: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    padding: 16,
+    marginHorizontal: 4,
+    marginBottom: 8,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+  },
+  kartuDitekan: {
+    opacity: 0.75,
+  },
+  barisJudul: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  nama: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#1F2937',
+    flexShrink: 1,
+    marginRight: 8,
+  },
+  lencana: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 999,
+  },
+  teksLencana: {
+    fontSize: 12,
+    fontWeight: '500',
+  },
+  nim: {
+    fontSize: 14,
+    color: '#6B7280',
+    marginBottom: 4,
+  },
+  ipk: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
+});</code></pre>
+  </figure>
+
+<h2>Kode: screens/DaftarMahasiswa.js</h2>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">screens/DaftarMahasiswa.js</span>
+      <span class="kode-sumber">buku §Praktikum · Kode</span>
+    </figcaption>
+    <pre><code class="language-jsx">import { FlatList, Text, View, StyleSheet } from 'react-native';
+import { useWindowDimensions } from 'react-native';
+
+import CardMahasiswa from '../components/CardMahasiswa';
+import Tombol from '../components/Tombol';
+
+export default function DaftarMahasiswa({ data, onPilihMahasiswa }) {
+  const { width } = useWindowDimensions();
+  const jumlahKolom = width &gt;= 700 ? 2 : 1;
+
+  return (
+    &lt;View style={styles.layar}&gt;
+      &lt;View style={styles.header}&gt;
+        &lt;View style={styles.barisJudul}&gt;
+          &lt;Text style={styles.judul}&gt;Manajemen Mahasiswa&lt;/Text&gt;
+          &lt;Tombol label="Tambah" variasi="secondary" /&gt;
+        &lt;/View&gt;
+        &lt;Text style={styles.subjudul}&gt;Kelola data mahasiswa aktif&lt;/Text&gt;
+      &lt;/View&gt;
+
+      &lt;FlatList
+        data={data}
+        keyExtractor={(mhs) =&gt; mhs.id}
+        renderItem={({ item }) =&gt; (
+          &lt;CardMahasiswa
+            mahasiswa={item}
+            onTekan={() =&gt; onPilihMahasiswa(item)}
+          /&gt;
+        )}
+        contentContainerStyle={styles.daftar}
+        numColumns={jumlahKolom}
+      /&gt;
+    &lt;/View&gt;
+  );
+}
+
+const styles = StyleSheet.create({
+  layar: {
+    flex: 1,
+  },
+  header: {
+    paddingHorizontal: 16,
+    paddingTop: 16,
+    paddingBottom: 12,
+    backgroundColor: '#FFFFFF',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E7EB',
+  },
+  barisJudul: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 4,
+  },
+  judul: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#1F2937',
+  },
+  subjudul: {
+    fontSize: 14,
+    color: '#6B7280',
+  },
+  daftar: {
+    padding: 16,
+  },
+});</code></pre>
+  </figure>
+
+<h2>Kode: screens/DetailMahasiswa.js</h2>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">screens/DetailMahasiswa.js</span>
+      <span class="kode-sumber">buku §Praktikum · Kode</span>
+    </figcaption>
+    <pre><code class="language-jsx">import { ScrollView, Text, View, StyleSheet } from 'react-native';
+
+import Tombol from '../components/Tombol';
+
+// Baris informasi yang ditampilkan sebagai pasangan label–nilai.
+const BARIS_INFORMASI = [
+  { label: 'NIM', kunci: 'nim' },
+  { label: 'Program Studi', kunci: 'prodi' },
+  { label: 'Angkatan', kunci: 'angkatan' },
+  { label: 'IPK', kunci: 'ipk' },
+  { label: 'Email', kunci: 'email' },
+  { label: 'Telepon', kunci: 'telepon' },
+];
+
+// Inisial nama untuk avatar, misalnya "Budi Santoso" menjadi "BS".
+function inisial(nama) {
+  return nama
+    .split(' ')
+    .map((kata) =&gt; kata[0])
+    .slice(0, 2)
+    .join('')
+    .toUpperCase();
+}
+
+function nilaiBaris(mahasiswa, kunci) {
+  const nilai = mahasiswa[kunci];
+  return kunci === 'ipk' ? nilai.toFixed(2) : String(nilai);
+}
+
+export default function DetailMahasiswa({ mahasiswa, onKembali }) {
+  return (
+    &lt;ScrollView style={styles.layar} contentContainerStyle={styles.isi}&gt;
+      &lt;View style={styles.header}&gt;
+        &lt;Tombol label="Kembali" variasi="outline" onTekan={onKembali} /&gt;
+        &lt;Text style={styles.judul}&gt;Detail Mahasiswa&lt;/Text&gt;
+      &lt;/View&gt;
+
+      &lt;View style={styles.profil}&gt;
+        &lt;View style={styles.avatar}&gt;
+          &lt;Text style={styles.teksAvatar}&gt;{inisial(mahasiswa.nama)}&lt;/Text&gt;
+        &lt;/View&gt;
+        &lt;Text style={styles.nama}&gt;{mahasiswa.nama}&lt;/Text&gt;
+        &lt;Text style={styles.prodi}&gt;{mahasiswa.prodi}&lt;/Text&gt;
+      &lt;/View&gt;
+
+      &lt;View style={styles.kartuInformasi}&gt;
+        {BARIS_INFORMASI.map((baris) =&gt; (
+          &lt;View key={baris.kunci} style={styles.barisInfo}&gt;
+            &lt;Text style={styles.labelInfo}&gt;{baris.label}&lt;/Text&gt;
+            &lt;Text style={styles.nilaiInfo}&gt;
+              {nilaiBaris(mahasiswa, baris.kunci)}
+            &lt;/Text&gt;
+          &lt;/View&gt;
+        ))}
+      &lt;/View&gt;
+
+      &lt;View style={styles.barisAksi}&gt;
+        &lt;Tombol label="Edit" variasi="secondary" gaya={styles.tombolAksi} /&gt;
+        &lt;Tombol label="Hapus" variasi="danger" gaya={styles.tombolAksi} /&gt;
+      &lt;/View&gt;
+    &lt;/ScrollView&gt;
+  );
+}
+
+const styles = StyleSheet.create({
+  layar: {
+    flex: 1,
+  },
+  isi: {
+    padding: 16,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  judul: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#1F2937',
+    marginLeft: 12,
+  },
+  profil: {
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  avatar: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: '#2563EB',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 8,
+  },
+  teksAvatar: {
+    color: '#FFFFFF',
+    fontSize: 24,
+    fontWeight: '700',
+  },
+  nama: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#1F2937',
+  },
+  prodi: {
+    fontSize: 14,
+    color: '#6B7280',
+    marginTop: 2,
+  },
+  kartuInformasi: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    marginBottom: 16,
+  },
+  barisInfo: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E7EB',
+  },
+  labelInfo: {
+    fontSize: 14,
+    color: '#6B7280',
+  },
+  nilaiInfo: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#1F2937',
+  },
+  barisAksi: {
+    flexDirection: 'row',
+  },
+  tombolAksi: {
+    flex: 1,
+    marginHorizontal: 4,
+  },
+});</code></pre>
+  </figure>
+
+<h2>Kode: App.js</h2>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">App.js</span>
+      <span class="kode-sumber">buku §Praktikum · Kode</span>
+    </figcaption>
+    <pre><code class="language-jsx">import { useState } from 'react';
+import { StyleSheet } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+
+import DaftarMahasiswa from './screens/DaftarMahasiswa';
+import DetailMahasiswa from './screens/DetailMahasiswa';
+
+// Lima data mahasiswa baku yang dipakai konsisten di seluruh buku (Bab 4–8, 10).
+const DATA_MAHASISWA = [
+  {
+    id: '1',
+    nim: '2201001',
+    nama: 'Budi Santoso',
+    prodi: 'Sistem Informasi',
+    angkatan: 2022,
+    ipk: 3.45,
+    email: 'budi.santoso@students.univ.ac.id',
+    telepon: '081234567890',
+  },
+  {
+    id: '2',
+    nim: '2201002',
+    nama: 'Siti Aminah',
+    prodi: 'Teknik Informatika',
+    angkatan: 2022,
+    ipk: 3.82,
+    email: 'siti.aminah@students.univ.ac.id',
+    telepon: '081298765432',
+  },
+  {
+    id: '3',
+    nim: '2201003',
+    nama: 'Agus Wijaya',
+    prodi: 'Informatika',
+    angkatan: 2023,
+    ipk: 3.20,
+    email: 'agus.wijaya@students.univ.ac.id',
+    telepon: '081345678901',
+  },
+  {
+    id: '4',
+    nim: '2201004',
+    nama: 'Dewi Lestari',
+    prodi: 'Rekayasa Perangkat Lunak',
+    angkatan: 2023,
+    ipk: 3.61,
+    email: 'dewi.lestari@students.univ.ac.id',
+    telepon: '081356789012',
+  },
+  {
+    id: '5',
+    nim: '2201005',
+    nama: 'Rizky Pratama',
+    prodi: 'Sistem Informasi',
+    angkatan: 2024,
+    ipk: 2.95,
+    email: 'rizky.pratama@students.univ.ac.id',
+    telepon: '081367890123',
+  },
+];
+
+export default function App() {
+  // State sederhana untuk memilih layar; navigasi sungguhan ada di Bab 7.
+  const [mahasiswaDipilih, setMahasiswaDipilih] = useState(null);
+
+  return (
+    &lt;SafeAreaProvider&gt;
+      &lt;SafeAreaView style={styles.bingkai} edges={['top', 'left', 'right']}&gt;
+        &lt;StatusBar style="dark" /&gt;
+        {mahasiswaDipilih ? (
+          &lt;DetailMahasiswa
+            mahasiswa={mahasiswaDipilih}
+            onKembali={() =&gt; setMahasiswaDipilih(null)}
+          /&gt;
+        ) : (
+          &lt;DaftarMahasiswa
+            data={DATA_MAHASISWA}
+            onPilihMahasiswa={setMahasiswaDipilih}
+          /&gt;
+        )}
+      &lt;/SafeAreaView&gt;
+    &lt;/SafeAreaProvider&gt;
+  );
+}
+
+const styles = StyleSheet.create({
+  bingkai: {
+    flex: 1,
+    backgroundColor: '#F9FAFB',
+  },
+});</code></pre>
+  </figure>
+
+<h2>Penjelasan kode</h2>
+
+<p>
+  <strong><code>components/Tombol.js</code></strong> menyimpan tiga peta warna —
+  <code>LATAR_VARIASI</code>, <code>TEKS_VARIASI</code>, dan <code>GARIS_VARIASI</code> —
+  sehingga empat variasi tombol lahir dari satu komponen, bukan dari empat salinan. Prop
+  <code>variasi</code> memilih warna, sedangkan fungsi gaya <code>Pressable</code> menerima
+  <code>{'{ pressed }'}</code> untuk menurunkan <code>opacity</code> menjadi 0,75 saat ditekan.
+  Urutan kondisinya penting: <code>pressed &amp;&amp; !modeNonaktif</code> memastikan tombol
+  nonaktif tidak ikut meredup, karena ia memang tidak merespons sentuhan. Ukuran
+  <code>minHeight: 48</code> dan <code>minWidth: 44</code> memenuhi target sentuh minimum,
+  sedangkan <code>accessibilityRole</code>, <code>accessibilityLabel</code>, dan
+  <code>accessibilityState</code> membuat tombol terbaca pembaca layar beserta statusnya.
+</p>
+
+<p>
+  <strong><code>components/CardMahasiswa.js</code></strong> membungkus satu entitas — satu
+  kartu membawa satu mahasiswa. Fungsi murni <code>warnaIpk</code> menerjemahkan angka menjadi
+  warna: hijau untuk IPK 3,5 ke atas, abu untuk 3,0–3,49, merah untuk di bawah 3,0. Warna
+  dipakai untuk mempercepat pemindaian, tetapi nilainya tetap tercetak sebagai teks melalui
+  <code>toFixed(2)</code>, jadi makna tidak bergantung pada warna. Dua peta warna lencana
+  memberi latar lembut dan teks gelap agar kontrasnya cukup. Seluruh jarak mengikuti sistem
+  8pt — <code>padding: 16</code>, <code>marginBottom: 8</code>, <code>borderRadius: 12</code> —
+  dan <code>flexShrink: 1</code> pada teks nama menjaga nama panjang tidak meluber saat kolom
+  menyempit.
+</p>
+
+<p>
+  <strong><code>screens/DaftarMahasiswa.js</code></strong> memisahkan header (judul, subjudul,
+  aksi “Tambah”) dari konten list — struktur yang sama dipakai ulang di layar lain demi
+  konsistensi. <code>useWindowDimensions</code> memberi mode satu atau dua kolom, dan
+  <code>numColumns</code> pada <code>FlatList</code> mengatur jumlah kolom; saat dua kolom,
+  kartu membagi lebar baris berkat <code>flex: 1</code> pada <code>CardMahasiswa</code>. Tombol
+  “Tambah” sengaja belum berfungsi: dalam pendekatan UI-first, tombol tampil lebih dulu dan
+  dihubungkan ke formulir pada Bab 8. Latar layar <code>#F9FAFB</code> yang berbeda tipis dari
+  header putih menjaga kartu putih tetap menonjol.
+</p>
+
+<p>
+  <strong><code>screens/DetailMahasiswa.js</code></strong> menerima satu objek mahasiswa dan
+  fungsi <code>onKembali</code>; komponen ini tidak tahu dari mana datanya berasal, sehingga
+  kelak ia dapat menerima data dari server tanpa perubahan tampilan. Enam baris informasi
+  dirender dari array <code>BARIS_INFORMASI</code> dengan <code>map</code> — satu pola untuk
+  enam baris, konsistensi lewat data, bukan salin-tempel. Fungsi <code>inisial</code> memotong
+  nama menjadi dua huruf untuk avatar. Dua tombol aksi membagi lebar dengan
+  <code>flex: 1</code>: Edit memakai variasi <code>secondary</code>, Hapus memakai
+  <code>danger</code>, dan keduanya baru dihubungkan ke fungsi pada Bab 8 dan Bab 10.
+</p>
+
+<p>
+  <strong><code>App.js</code></strong> adalah pengarah sementara. Data baku lima mahasiswa
+  disimpan di sini, dan satu state <code>mahasiswaDipilih</code> menentukan layar mana yang
+  tampil: Detail ketika ada mahasiswa terpilih, Daftar ketika tidak. Pola ini bukan navigasi;
+  ia hanya memperlihatkan alur Daftar ke Detail dengan alat yang sudah kita kuasai. Saat kartu
+  memanggil <code>setMahasiswaDipilih</code>, React merender ulang dan menampilkan detail;
+  <code>onKembali</code> mengosongkan state dan mengembalikan daftar.
+  <code>SafeAreaProvider</code> membungkus seluruh aplikasi dan
+  <code>SafeAreaView</code> dengan <code>edges={['top', 'left', 'right']}</code> menjaga
+  konten tidak menabrak area status bar dan poni perangkat. Pada Bab 7 berkas ini akan
+  digantikan struktur rute Expo Router, dan datanya pindah ke server pada Bab 10.
+</p>
+
+<p>
+  Perhatikan konsistensi nilai di seluruh berkas: jarak tepi layar 16, jarak dalam kartu 16,
+  jarak antar kartu 8, sudut membulat 8–12, dan ukuran huruf 12/14/16/18/20 — semuanya
+  kelipatan sistem 8pt. Bila suatu saat sebuah layar terasa janggal, langkah pertama
+  pemeriksaan visual adalah mencari nilai yang menyimpang dari irama itu.
+</p>
+
+<h2>Hasil yang diharapkan</h2>
+
+<ol>
+  <li><strong>Halaman Daftar Mahasiswa</strong> menampilkan judul “Manajemen Mahasiswa”, subjudul “Kelola data mahasiswa aktif”, dan tombol “Tambah” di kanan header.</li>
+  <li><strong>Lima kartu tampil berurutan:</strong> Budi Santoso (lencana biru Sistem Informasi, IPK 3,45 abu), Siti Aminah (lencana hijau Teknik Informatika, IPK 3,82 hijau), Agus Wijaya (lencana oranye Informatika, IPK 3,20 abu), Dewi Lestari (lencana merah Rekayasa Perangkat Lunak, IPK 3,61 hijau), dan Rizky Pratama (lencana biru Sistem Informasi, IPK 2,95 merah).</li>
+  <li><strong>Menekan sebuah kartu</strong> membuka layar Detail berisi avatar inisial (misalnya “BS” untuk Budi Santoso), nama, program studi, enam baris label–nilai, dan dua tombol Edit/Hapus. Menekan “Kembali” mengembalikan kita ke daftar.</li>
+  <li><strong>Menekan tombol mana pun</strong> membuatnya meredup (<code>opacity</code> 0,75) selama ditekan. Tombol nonaktif tidak muncul pada alur ini, tetapi variasi <code>outline</code> (Kembali) dan <code>danger</code> (Hapus) terlihat jelas berbeda.</li>
+  <li><strong>Pada lebar 700 ke atas</strong> — tablet atau mode lanskap — daftar berubah menjadi dua kolom dan kartu menyusut proporsional.</li>
+  <li><strong>Layar tidak menabrak</strong> area status bar atau poni di semua perangkat, karena dibungkus <code>SafeAreaView</code>.</li>
+  <li><strong>Dengan pembaca layar aktif</strong> (TalkBack atau VoiceOver), tiap kartu terbaca “Buka detail [nama], NIM [nim], tombol”, dan tombol nonaktif diumumkan statusnya. Susuri layar tanpa melihat untuk merasakan hasilnya.</li>
+</ol>
+
+<h2>Troubleshooting</h2>
+
+<div class="tabel-gulir">
+  <table class="tabel">
+    <caption>Ketika layar tidak sesuai harapan · sumber: buku §Praktikum · Troubleshooting</caption>
+    <thead>
+      <tr><th scope="col">Gejala</th><th scope="col">Penyebab</th><th scope="col">Solusi</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Layar putih, atau muncul pesan “Unable to resolve module ./components/Tombol” sesaat setelah aplikasi dimuat</td>
+        <td>Path import tidak cocok dengan lokasi berkas — nama berkas atau folder salah ketik, atau berkas diletakkan di folder berbeda dari yang diimpor; sebagian sistem peka huruf besar dan kecil</td>
+        <td>Periksa nama folder (<code>components/</code>, <code>screens/</code>) dan nama berkas, lalu samakan persis dengan setiap baris <code>import</code>. Bila masih gagal, tekan <code>r</code> di terminal Metro atau jalankan <code>npx expo start -c</code></td>
+      </tr>
+      <tr>
+        <td>Setelah pemasangan <code>react-native-safe-area-context</code>, muncul error bahwa <code>SafeAreaProvider</code> atau <code>SafeAreaView</code> tidak ditemukan</td>
+        <td>Paket belum terpasang dengan benar atau versinya tidak cocok dengan SDK, biasanya karena dipasang dengan <code>npm install</code> biasa</td>
+        <td>Jalankan <code>npx expo install react-native-safe-area-context</code> agar versi yang diambil sesuai SDK, lalu bersihkan cache dengan <code>npx expo start -c</code></td>
+      </tr>
+      <tr>
+        <td>Judul header tertutup area status bar atau poni perangkat, padahal kode tampak benar</td>
+        <td>Header hanya diberi padding biasa tanpa memperhitungkan area aman; <code>SafeAreaView</code> tidak dipakai, atau dipasang di dalam layar yang bukan akar aplikasi</td>
+        <td>Pastikan <code>App.js</code> membungkus seluruh aplikasi dengan <code>SafeAreaProvider</code>, lalu pakai satu <code>SafeAreaView</code> dengan <code>edges={['top', 'left', 'right']}</code> sebagai bingkai. Jangan membuat <code>SafeAreaView</code> terpisah di tiap layar</td>
+      </tr>
+      <tr>
+        <td>Menekan kartu tidak memberi umpan balik dan layar Detail tidak pernah muncul, tanpa pesan error di terminal</td>
+        <td>Rantai props putus: <code>onPilihMahasiswa</code> tidak diteruskan dari <code>App.js</code> ke layar Daftar, atau <code>onTekan</code> tidak terpasang pada <code>Pressable</code> kartu sehingga state tidak pernah berubah</td>
+        <td>Telusuri rantai props di tiga tempat: <code>&lt;DaftarMahasiswa data={...} onPilihMahasiswa={setMahasiswaDipilih} /&gt;</code>, penerusan ke <code>CardMahasiswa</code> sebagai <code>onTekan={() =&gt; onPilihMahasiswa(item)}</code>, dan nama props pada definisi komponen. Sementara memeriksa, tambahkan <code>console.log</code> di dalam <code>onPilihMahasiswa</code></td>
+      </tr>
+      <tr>
+        <td>Pada perangkat lebar atau mode lanskap, kartu tetap satu kolom penuh sehingga daftar terlihat menggantung di tengah layar</td>
+        <td><code>numColumns</code> pada <code>FlatList</code> tidak diubah mengikuti lebar layar, atau <code>useWindowDimensions</code> dipanggil di tempat yang tidak ikut dirender ulang saat orientasi berubah</td>
+        <td>Panggil <code>const {'{'} width {'}'} = useWindowDimensions();</code> di dalam komponen layar, lalu pasang <code>numColumns={width &gt;= 700 ? 2 : 1}</code>. Bila nama panjang terpotong di mode dua kolom, tambahkan <code>flexShrink: 1</code> pada teks nama dan <code>numberOfLines={1}</code> pada teks lencana</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="kotak kotak-salah">
+  <p class="kotak-judul">Salah paham</p>
+  <p>
+    Menganggap layar sudah selesai karena aplikasi berjalan tanpa pesan error. Sebagian besar
+    kesalahan bab ini tidak pernah memunculkan error sama sekali: satu nilai jarak yang keluar
+    dari ritme 8pt, dua entitas dalam satu kartu, atau tombol nonaktif yang ikut meredup. Yang
+    membuat layar terasa janggal justru nilai yang menyimpang diam-diam, dan pemeriksaan
+    pertama adalah membandingkan setiap angka dengan sistem 8pt serta setiap keputusan dengan
+    empat prinsip subbab 6.1.
+  </p>
+</div>
+
+<h2>Yang harus teramati</h2>
+
+<ul>
+  <li><strong>Header daftar</strong> — judul, subjudul, dan tombol “Tambah” di kanan.</li>
+  <li><strong>Lima kartu</strong> — Budi 3.45 · Siti 3.82 · Agus 3.20 · Dewi 3.61 · Rizky 2.95.</li>
+  <li><strong>Ketuk satu kartu</strong> — layar Detail menampilkan avatar “BS”, enam baris label–nilai, serta tombol Edit dan Hapus.</li>
+  <li><strong>Tekan satu tombol</strong> — tombol meredup (<code>opacity</code> 0,75) selama ditekan.</li>
+  <li><strong>Lebar 700 ke atas dan area aman</strong> — daftar menjadi dua kolom, dan isi layar tidak menabrak area status.</li>
+  <li><strong>Pembaca layar aktif</strong> — kartu terbaca “Buka detail [nama], NIM [nim], tombol”.</li>
+</ul>
+
+<blockquote>
+  Keputusan desain yang tidak bisa dilacak ke prinsip mana pun belum dirancang, baru disusun.
+</blockquote>
+
+<h2>Kuis kilat</h2>
+
+<ol>
+  <li>Prinsip apa yang menuntut elemen serupa tampil dan berperilaku serupa?</li>
+  <li>Berapa rasio kontras WCAG level AA untuk teks normal?</li>
+  <li>Berapa ukuran target sentuh minimum menurut industri?</li>
+  <li>Apa yang dilakukan <code>useWindowDimensions</code> di layar Daftar Mahasiswa?</li>
+</ol>
+
+<div class="kotak kotak-jawab">
+  <details>
+    <summary>Kunci kuis kilat</summary>
+    <ol>
+      <li>Konsistensi — elemen serupa tampil dan berperilaku serupa.</li>
+      <li>4,5:1 untuk teks normal; 3:1 untuk teks besar atau elemen antarmuka.</li>
+      <li>44×44 point menurut Apple; Material Design memakai 48×48 dp. Keduanya minimum, bukan angka yang boleh diturunkan.</li>
+      <li>Mengembalikan lebar dan tinggi layar, lalu memperbarui tampilan saat ukurannya berubah.</li>
+    </ol>
+  </details>
+</div>
+
+<h2>Ringkasan bab</h2>
+
+<ol>
+  <li>Empat prinsip: konsistensi, hierarki visual, umpan balik, dan ramah ibu jari (subbab 6.1).</li>
+  <li>Jarak 8pt, skala tipografi, dan palet berlapis dengan kontras minimal 4,5:1 (subbab 6.2 dan 6.4).</li>
+  <li>Card, Button dengan empat variasi, Form tampilan saja, dan List yang konsisten (subbab 6.2).</li>
+  <li>Header dan navigasi bawah: orientasi, aksi, dan jangkauan ibu jari (subbab 6.3).</li>
+  <li>Responsif, aksesibel, dan dibangun dengan pendekatan UI-first berbekal lima data statis (subbab 6.5–6.7).</li>
+</ol>
+
+<div class="kotak kotak-tanya">
+  <p class="kotak-judul">Pertanyaan penuntun</p>
+  <p>
+    Sebelum menutup, pilih satu nomor ringkasan di atas dan jelaskan dengan kata-katamu
+    sendiri. Kalau dua tombol di satu layar sama-sama <code>primary</code>, prinsip mana yang
+    dilanggar, dan apa yang hilang dari mata pengguna? Bab 7 sudah menunggu: layar Daftar dan
+    Detail yang baru kita susun akan dihubungkan menjadi navigasi sungguhan, dan keputusan
+    desain di praktikum ini tetap dipakai apa adanya.
+  </p>
+</div>

@@ -1,0 +1,61 @@
+<h1>Bab 11 — Penyimpanan Data Lokal</h1>
+
+<p class="ringkas">
+  AsyncStorage, JSON, dan catatan yang bertahan · Pertemuan 12 · Sub-CPMK 6.1. Bab 10
+  membuat aplikasi kita bisa memanggil server; bab ini membuat aplikasi itu berhenti
+  kehilangan data begitu ditutup.
+</p>
+
+<div class="pengantar-pertanyaan">
+  <p><strong>Pertanyaan pembuka (catatan penyaji deck):</strong> “Kapan terakhir kali aplikasi di HP-mu kehilangan data yang sedang kamu isi?”</p>
+  <p>Tampung jawaban tanpa dikoreksi dulu — jawaban yang umum berupa draf yang hilang setelah proses aplikasi dimatikan sistem. Subbab 11.1 yang menjelaskan kenapa hal itu terjadi.</p>
+</div>
+
+<h2>Tujuan pembelajaran</h2>
+
+<ul>
+  <li>Menjelaskan kebutuhan penyimpanan lokal dibandingkan state di memori</li>
+  <li>Mengidentifikasi karakteristik AsyncStorage</li>
+  <li>Menerapkan penyimpanan, pembacaan, dan penghapusan data dengan JSON</li>
+  <li>Menganalisis pola cache: snapshot, timestamp, dan TTL</li>
+  <li>Mengevaluasi risiko menyimpan token di AsyncStorage</li>
+  <li>Merancang aplikasi catatan yang datanya tetap ada setelah ditutup</li>
+</ul>
+
+<h2>Peta halaman</h2>
+
+<ul>
+  <li><strong>Bagian 1 — Kebutuhan &amp; AsyncStorage</strong> (subbab 11.1–11.2): kenapa state tidak cukup, lima jenis data yang harus bertahan, tiga pilihan penyimpanan di Expo, lalu API AsyncStorage lengkap dengan lima prinsipnya.</li>
+  <li><strong>Bagian 2 — JSON, Cache &amp; Token</strong> (subbab 11.3–11.5): serialisasi JSON, tiga lapis pengaman saat membaca, cache snapshot + timestamp + TTL, dan kenapa token tidak boleh tinggal di AsyncStorage.</li>
+  <li><strong>Bagian 3 — Proyek Aplikasi Catatan</strong> (subbab 11.6): struktur proyek, alur data lewat API kecil, strategi tulis-ulang, <code>useFocusEffect</code>, dan studi kasus offline-first.</li>
+  <li><strong>Praktikum</strong>: aplikasi catatan lengkap (tambah, edit, hapus, cari), troubleshooting, yang harus teramati, dan kuis kilat.</li>
+</ul>
+
+<div class="kotak kotak-tiruan">
+  <p class="kotak-judul">Yang perlu diketahui sebelum membaca</p>
+  <p>
+    Bab 3 sudah menyediakan <code>async/await</code>, <code>try/catch</code>, dan JSON.
+    Bab 4 menyediakan state dan <code>useEffect</code>; Bab 7 menyediakan Expo Router;
+    Bab 10 menyediakan <code>fetch</code>. Bab ini mempertemukan semuanya: penyimpanan yang
+    dipelajari di sini dipakai lagi di Bab 12 (profil mahasiswa yang tersimpan) dan Bab 13
+    (token di secure storage).
+  </p>
+  <p class="kotak-jawab">
+    Setiap kode di halaman-halaman berikut disalin verbatim dari
+    <code>buku/bab-11-penyimpanan-data-lokal.md</code> atau deck
+    <code>slides/bab-11-penyimpanan-data-lokal.md</code>; kode ilustratif diberi label
+    <em>ilustrasi</em> pada sumbernya. Perbandingan <strong>sebelum/sesudah</strong>
+    menampilkan cara lama yang salah atau naif di samping cara yang benar; tombol di kepala
+    panel untuk berpindah.
+  </p>
+</div>
+
+<div class="kotak kotak-tanya">
+  <p class="kotak-judul">Pertanyaan penuntun</p>
+  <p>
+    Materi bab ini yang paling sering keluar di ujian ada di bagian 2: serialisasi, tiga
+    lapis pengaman saat membaca, komponen cache, dan larangan menyimpan token. Jangan lewati
+    bagian itu sebelum praktikum — butir 3 sampai 6 tujuan pembelajaran dinilai lewat
+    Praktikum 11.
+  </p>
+</div>

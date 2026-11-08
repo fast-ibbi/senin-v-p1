@@ -1,0 +1,437 @@
+<h1>Bagian 1 — API Perangkat &amp; Izin</h1>
+
+<p class="ringkas">
+  Subbab 12.1. Satu pertanyaan memandu seluruh bagian ini: mengapa aplikasi tidak boleh
+  menyalakan kamera begitu saja? Jawabannya berlapis — sandbox, deklarasi izin saat build, dan
+  dialog izin saat aplikasi berjalan — dan ketiganya bertemu pada satu pola yang dipakai ulang
+  di bagian 2 sampai bagian 4.
+</p>
+
+<section class="subbab" id="s1-1">
+  <p class="label-subbab">
+    Subbab 12.1 <span class="sumber-slide">· deck: “API Perangkat: JavaScript yang Menyuruh Perangkat Keras” · buku §12.1</span>
+  </p>
+  <h2>API Perangkat: JavaScript yang Menyuruh Perangkat Keras</h2>
+
+  <p>
+    <strong>API perangkat</strong> (device API) adalah antarmuka yang disediakan sistem operasi
+    agar program dapat memerintah perangkat keras atau layanan sistem. Kamera, GPS, mikrofon,
+    lampu kilat, dan notifikasi hanya bisa dipakai lewat pintu itu. Di React Native, pintu
+    tersebut dibungkus menjadi paket-paket Expo sehingga kamu cukup menulis JavaScript,
+    sementara bagian native-nya dikerjakan oleh paket tersebut.
+  </p>
+
+  <p>
+    Pembagian tugasnya mudah diikuti. JavaScript memutuskan apa yang ingin dilakukan; paket
+    Expo menerjemahkannya menjadi panggilan ke API sistem operasi; sistem operasi memerintah
+    perangkat keras; lalu hasilnya kembali ke JavaScript — berupa alamat berkas gambar,
+    sepasang koordinat, atau status izin. Semua keputusan tampilan dan penyimpanan tetap berada
+    di kodemu, bukan di lapisan native.
+  </p>
+
+  <p>
+    Analogi yang dipakai deck: paket Expo seperti resepsionis yang mengurus perizinan. Kamu
+    cukup mengisi formulir, tanpa perlu berbicara langsung dengan petugas keamanan.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">rantai-panggilan.txt</span>
+      <span class="kode-sumber">ilustrasi · deck: “API Perangkat: JavaScript yang Menyuruh Perangkat Keras” &amp; buku §12.1</span>
+    </figcaption>
+    <pre><code class="language-text">kode JavaScript kamu
+→ paket Expo: expo-camera, expo-location, expo-notifications, ...
+→ API perangkat milik sistem operasi
+→ perangkat keras: kamera, GPS, mikrofon, laci notifikasi
+→ hasil kembali ke JavaScript
+   uri berkas gambar · latitude &amp; longitude · status izin</code></pre>
+  </figure>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Mengira lapisan native di sini adalah antarmuka pengguna. Di Bab 1, “native” berarti
+      komponen tampilan yang digambar sistem operasi; di bab ini, yang dibungkus paket Expo
+      adalah kemampuan perangkat kerasnya. Keduanya native, tetapi pekerjanya berbeda.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Mengapa hasil panggilan harus kembali ke JavaScript? (Jawaban: karena seluruh keputusan
+      tampilan dan penyimpanan ada di kode JavaScript kita — lapisan native hanya mengerjakan
+      perintah dan melaporkan hasilnya.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s1-2">
+  <p class="label-subbab">
+    Subbab 12.1 <span class="sumber-slide">· deck: “Sandbox: Kenapa Izin Harus Ada” · buku §12.1</span>
+  </p>
+  <h2>Sandbox: Kenapa Izin Harus Ada</h2>
+
+  <p>
+    Sistem operasi mobile tidak membiarkan aplikasi menyentuh perangkat keras menurut
+    kemauannya sendiri. Android dan iOS menerapkan <strong>sandbox</strong>: setiap aplikasi
+    berjalan di ruang terpisah, dan akses ke fitur sensitif harus melewati gerbang bernama
+    izin. Tanpa mekanisme itu, aplikasi mana pun dapat menyalakan kamera tanpa sepengetahuan
+    pemilik ponsel.
+  </p>
+
+  <p>
+    Di Android, izin muncul sebagai dialog sistem sejak versi 6 (Marshmallow). iOS memakai
+    model yang sama untuk hampir semua data sensitif. Bedanya, iOS menuntut
+    <strong>deskripsi penggunaan</strong> (usage description) di berkas <code>Info.plist</code>
+    untuk setiap fitur sensitif yang dipakai. Bila teks itu tidak ada, aplikasi iOS langsung
+    berhenti saat fitur dipanggil — bukan sekadar menolak fiturnya.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">dua-panel.txt</span>
+      <span class="kode-sumber">ilustrasi · deck: “Sandbox: Kenapa Izin Harus Ada” &amp; buku §12.1</span>
+    </figcaption>
+    <pre><code class="language-text">tanpa mekanisme                    dua mekanisme yang menjawabnya
+────────────────────────────       ────────────────────────────────
+aplikasi mana pun bisa             sandbox: tiap aplikasi dikurung
+menyalakan kamera tanpa            di ruangnya sendiri
+sepengetahuan pemilik       →      izin runtime: dialog diminta saat
+ponsel                             aplikasi sedang berjalan</code></pre>
+  </figure>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Menyimpulkan “izin ditolak” padahal aplikasinya berhenti. Di iOS, aplikasi yang berhenti
+      karena penggunaan fitur tidak dideklarasikan sering dibaca sebagai penolakan izin.
+      Padahal dialognya belum pernah muncul — yang kurang adalah deklarasi di berkas
+      konfigurasi.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Siapa yang bisa menyalakan kamera ponselmu tanpa kamu ketahui? (Jawaban: seharusnya tidak
+      ada, karena sandbox dan izin — dan bila ada, itulah tanda mekanisme itu sedang dilanggar.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s1-3">
+  <p class="label-subbab">
+    Subbab 12.1 <span class="sumber-slide">· deck: “Izin Dideklarasikan Saat Build, Diminta Saat Dipakai” &amp; “Config Plugin: Izin Ditulis Sebelum Aplikasi Dibangun” · buku §12.1</span>
+  </p>
+  <h2>Izin Dideklarasikan Saat Build, Diminta Saat Dipakai</h2>
+
+  <p>
+    Izin dikelola dua lapis, dan keduanya berbeda pekerjaan. Lapis pertama berurusan dengan
+    berkas konfigurasi: daftar <code>plugins</code> di <code>app.json</code> yang menghasilkan
+    kunci <code>Info.plist</code> di iOS dan entri <code>AndroidManifest.xml</code> di Android
+    saat build. Lapis kedua berurusan dengan pengguna: pemeriksaan dan permintaan izin saat
+    aplikasi berjalan.
+  </p>
+
+  <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Dua lapis penanganan izin · sumber: deck Bab 12 &amp; buku §12.1</caption>
+      <thead>
+        <tr><th scope="col">Lapis</th><th scope="col">Kapan</th><th scope="col">Siapa yang mengerjakan</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Config plugin</td><td>Saat build</td><td>Daftar <code>plugins</code> di <code>app.json</code></td></tr>
+        <tr><td>Deklarasi iOS</td><td>Saat build</td><td>Kunci <code>NS…UsageDescription</code> di <code>Info.plist</code></td></tr>
+        <tr><td>Deklarasi Android</td><td>Saat build</td><td>Entri di <code>AndroidManifest.xml</code></td></tr>
+        <tr><td>Periksa</td><td>Sebelum dipakai</td><td><code>getPermissionsAsync()</code></td></tr>
+        <tr><td>Minta</td><td>Saat aplikasi berjalan</td><td><code>requestPermissionsAsync()</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    Konsekuensi praktisnya penting: uji cepat di Expo Go tidak akan membongkar kesalahan config
+    plugin, karena Expo Go sudah mendeklarasikan sebagian besar izin untuk dirinya sendiri.
+    Kesalahan itu baru muncul saat kamu membuat build mandiri (Bab 15) — karena itu menuliskan
+    daftar <code>plugins</code> sejak awal adalah kebiasaan yang dianjurkan.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">app.json</span>
+      <span class="kode-sumber">buku §12.1 · verbatim, satu string izin disesuaikan kontrak bahasa (“kamu”)</span>
+    </figcaption>
+    <pre><code class="language-json">{
+  "expo": {
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Aplikasi membutuhkan akses galeri untuk memilih foto profil.",
+          "cameraPermission": "Aplikasi membutuhkan akses kamera untuk mengambil foto profil."
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Aplikasi membutuhkan lokasi kamu untuk mengisi data profil."
+        }
+      ]
+    ]
+  }
+}</code></pre>
+  </figure>
+
+  <p>
+    Perhatikan bentuknya, bukan hurufnya: dua entri pertama berupa array karena membawa opsi
+    teks izin, sedangkan <code>"expo-notifications"</code> cukup berupa string karena tidak
+    membutuhkan opsi khusus. Saat <code>npx expo prebuild</code> atau EAS Build dijalankan,
+    Expo menyuntikkan nilai <code>photosPermission</code> menjadi kunci
+    <code>NSPhotoLibraryUsageDescription</code> di <code>Info.plist</code> dan menambahkan
+    izinnya ke <code>AndroidManifest.xml</code>. Teks izin itu bukan formalitas: itulah kalimat
+    yang dibaca pengguna tepat sebelum ia menekan Izinkan atau Tolak.
+  </p>
+
+  <div class="kotak kotak-tiruan">
+    <p class="kotak-judul">Catatan peka versi</p>
+    <p>
+      Buku menandai bagian ini <em>sensitif versi</em> (bahasa sumber:
+      <em>version-sensitive</em>): mekanisme config plugin dan nama kunci
+      <code>Info.plist</code> dapat berubah antarvensi SDK. Nama opsi seperti
+      <code>photosPermission</code>, <code>cameraPermission</code>, dan
+      <code>locationWhenInUsePermission</code> mengikuti konvensi tiap paket, sehingga harus
+      dicocokkan dengan dokumentasi resmi di docs.expo.dev sebelum menjalankan build.
+    </p>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Menunda penulisan daftar <code>plugins</code> sampai build pertama, dengan alasan “di Expo
+      Go sudah jalan”. Justru karena Expo Go menyembunyikan kesalahan itu, penundaannya baru
+      terasa saat build mandiri — ketika memperbaikinya berarti membangun ulang.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Kalau izinnya sudah dideklarasikan, apakah pengguna otomatis memberikannya? (Jawaban:
+      tidak — deklarasi hanya menyiapkan pintunya; izin tetap diminta saat aplikasi berjalan,
+      dan pengguna tetap boleh menolak.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s1-4">
+  <p class="label-subbab">
+    Subbab 12.1 <span class="sumber-slide">· deck: “Alur Permintaan Izin Punya Tiga Pintu Keluar” &amp; “Tiga Nilai yang Menentukan Keputusan di Layar” · buku §12.1, §Contoh 1</span>
+  </p>
+  <h2>Alur Permintaan Izin Punya Tiga Pintu Keluar</h2>
+
+  <p>
+    Alur permintaan izin bukan bercabang dua, melainkan tiga: diberikan, ditolak sementara, dan
+    ditolak permanen. Pintu ketiga yang paling sering dilupakan, padahal justru dialah yang
+    menuntut rancangan layar berbeda. Pola “periksa dulu, minta kalau perlu” ini dipakai
+    berulang di sepanjang bab.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">alur-izin.txt</span>
+      <span class="kode-sumber">ilustrasi · deck: “Alur Permintaan Izin Punya Tiga Pintu Keluar” &amp; buku §12.1</span>
+    </figcaption>
+    <pre><code class="language-text">tombol ditekan
+  → getPermissionsAsync()
+      ├─ granted ................ pakai fiturnya, tanpa dialog
+      └─ belum diberikan
+           → requestPermissionsAsync()
+               ├─ granted ......... pakai fiturnya
+               ├─ ditolak, canAskAgain true ... jelaskan, minta lagi saat perlu
+               └─ canAskAgain false ........... antar ke Pengaturan</code></pre>
+  </figure>
+
+  <p>
+    Keduanya mengembalikan objek <code>PermissionResponse</code> dengan tiga properti yang
+    menentukan keputusan di layar. <code>granted</code> hanya menjawab “boleh atau tidak”;
+    <code>status</code> memberi tiga keadaan; <code>canAskAgain</code> memberi tahu apakah
+    dialog masih mungkin muncul. Membaca satu properti saja adalah sumber salah paham yang
+    paling sering muncul di praktikum.
+  </p>
+
+  <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Tiga nilai yang menentukan keputusan di layar · sumber: deck Bab 12 &amp; buku §12.1</caption>
+      <thead>
+        <tr><th scope="col">Properti</th><th scope="col">Artinya</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>granted</code></td><td>Apakah izin diberikan atau tidak (boolean)</td></tr>
+        <tr><td><code>status</code></td><td><code>granted</code>, <code>denied</code>, atau <code>undetermined</code></td></tr>
+        <tr><td><code>canAskAgain</code></td><td>Masih bisa diminta, atau pengguna sudah memilih “jangan tanyakan lagi”</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">utils/izinKamera.js</span>
+      <span class="kode-sumber">buku §Contoh 1 · verbatim</span>
+    </figcaption>
+    <pre><code class="language-js">import * as ImagePicker from 'expo-image-picker';
+
+export async function mintaIzinKamera() {
+  const status = await ImagePicker.getPermissionsAsync();
+  if (status.granted) {
+    return { disetujui: true };
+  }
+  if (status.canAskAgain === false) {
+    return { disetujui: false, permanen: true };
+  }
+  const hasil = await ImagePicker.requestPermissionsAsync();
+  return { disetujui: hasil.granted, permanen: false };
+}</code></pre>
+  </figure>
+
+  <p>
+    Fungsi di atas mengembalikan objek yang membedakan tiga keadaan. Keadaan terakhir,
+    <code>permanen: true</code>, penting: aplikasi tidak bisa memunculkan dialog lagi, sehingga
+    layar harus menampilkan petunjuk “buka Pengaturan” dan memanggil
+    <code>Linking.openSettings()</code>. Pola tiga keadaan ini berlaku untuk semua paket yang
+    menyediakan <code>getPermissionsAsync</code> dan <code>requestPermissionsAsync</code>.
+  </p>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Mengira <code>getPermissionsAsync()</code> akan memunculkan dialog. Ia hanya membaca
+      status — tidak ada dialog yang tampil. Hanya <code>requestPermissionsAsync()</code> yang
+      boleh memunculkan dialog, dan hanya bila pengguna masih boleh ditanya.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Apa yang terjadi kalau <code>canAskAgain</code> bernilai <code>false</code> dan kita tetap
+      memanggil <code>requestPermissionsAsync()</code>? (Jawaban: dialog tidak muncul lagi;
+      fungsi langsung mengembalikan status ditolak.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s1-5">
+  <p class="label-subbab">
+    Subbab 12.1 <span class="sumber-slide">· deck: “Periksa Dulu, Minta Kalau Perlu” &amp; “Penolakan Adalah Keadaan Normal, Bukan Jalan Buntu” · buku §12.1</span>
+  </p>
+  <h2>Periksa Dulu, Minta Kalau Perlu</h2>
+
+  <p>
+    Pola dasar bab ini sederhana dan berlaku untuk semua paket: periksa status yang sudah ada,
+    minta hanya bila perlu, lalu kembalikan hasilnya sebagai nilai sederhana. Dengan begitu
+    layar pemanggil tidak perlu tahu isi objek <code>PermissionResponse</code>, dan pengguna
+    tidak diganggu dialog berulang setiap kali fitur dipakai.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">utils/polaIzin.js</span>
+      <span class="kode-sumber">buku §12.1 · verbatim</span>
+    </figcaption>
+    <pre><code class="language-js">import * as ImagePicker from 'expo-image-picker';
+
+export async function pastikanIzinGaleri() {
+  const statusSekarang = await ImagePicker.getPermissionsAsync();
+  if (statusSekarang.granted) {
+    return true;
+  }
+  const hasilPermintaan = await ImagePicker.requestPermissionsAsync();
+  return hasilPermintaan.granted;
+}</code></pre>
+  </figure>
+
+  <p>
+    Dua kebiasaan menentukan kualitas permintaan izin. Pertama, minta izin
+    <strong>saat dibutuhkan</strong> — di tengah alur, misalnya ketika tombol “Ambil Foto”
+    ditekan — bukan serentak saat aplikasi dibuka; pengguna lebih mudah memahami alasan
+    permintaan bila konteksnya jelas. Kedua, jangan pernah menganggap izin bersifat permanen:
+    pengguna dapat mencabutnya kapan saja dari Pengaturan, sehingga aplikasi yang baik selalu
+    memeriksa ulang sebelum memakai fitur sensitif.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Diminta serentak saat aplikasi dibuka"
+       data-label-benar="Diminta saat fiturnya benar-benar dipakai"
+       data-petunjuk="Slide “Apa yang Terjadi Jika…?” meminta kelas memikirkan akibatnya: pengguna bingung karena tidak tahu konteksnya, tingkat penolakan naik termasuk penolakan permanen, dan aplikasi harus menyediakan jalan ke Pengaturan.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">permintaan-serentak.txt</span>
+        <span class="kode-sumber">ilustrasi · deck: “Apa yang Terjadi Jika…?” · buku §12.1</span>
+      </figcaption>
+      <pre><code class="language-text">saat aplikasi dibuka
+  minta kamera, galeri, lokasi,
+  notifikasi, dan kontak sekaligus
+→ lima dialog berturut-turut
+→ pengguna tidak tahu untuk apa
+→ “jangan tanyakan lagi” ditekan
+→ fitur mati permanen</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">permintaan-saat-dibutuhkan.txt</span>
+        <span class="kode-sumber">ilustrasi · deck: “Penolakan Adalah Keadaan Normal, Bukan Jalan Buntu” &amp; buku §12.1</span>
+      </figcaption>
+      <pre><code class="language-text">saat tombol “Ambil Foto” ditekan
+  jelaskan konteksnya dulu
+  → requestCameraPermissionsAsync()
+→ satu dialog, alasannya jelas
+→ bila ditolak: cabang penolakan
+→ bila permanen: tombol
+   “Buka Pengaturan”</code></pre>
+    </figure>
+  </div>
+
+  <p>
+    Setelah pola itu dipahami, penolakan bukan kegagalan, melainkan salah satu keadaan yang
+    harus dirancang. Tabel deck merangkum tiga keadaan beserta tindakan aplikasinya.
+  </p>
+
+  <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Penolakan sebagai keadaan normal · sumber: deck Bab 12 &amp; buku §12.1</caption>
+      <thead>
+        <tr><th scope="col">Keadaan</th><th scope="col">Yang muncul</th><th scope="col">Tindakan aplikasi</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Sudah diberikan</td><td>Tanpa dialog</td><td>Pakai fiturnya langsung</td></tr>
+        <tr><td>Ditolak sementara</td><td>Dialog sistem sekali</td><td>Jelaskan alasannya, minta lagi saat perlu</td></tr>
+        <tr><td>Ditolak permanen</td><td>Dialog tidak muncul lagi</td><td>Tampilkan penjelasan dan tombol “Buka Pengaturan”</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <ul>
+    <li>Izin tidak permanen — pengguna bisa mencabutnya kapan saja.</li>
+    <li>Minta izin saat dibutuhkan, bukan sekaligus saat aplikasi dibuka.</li>
+    <li>Periksa ulang izin sebelum memakai fitur yang sensitif.</li>
+  </ul>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Menampilkan pesan “izin ditolak” tanpa jalan keluar. Pesan seperti itu sama saja
+      membiarkan aplikasi buntu: pengguna sudah tahu masalahnya, tetapi tidak tahu apa yang
+      harus dilakukan — padahal satu tombol “Buka Pengaturan” menyelesaikannya.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Bagaimana kamu membuktikan bahwa penolakan izin ditangani dengan benar? (Jawaban: cabut
+      izin lewat Pengaturan, buka layarnya, lalu tunjukkan penjelasan dan tombol Buka
+      Pengaturan — bukan layar kosong dan bukan aplikasi yang berhenti.)
+    </p>
+  </div>
+</section>

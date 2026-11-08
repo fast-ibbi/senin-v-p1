@@ -1,0 +1,598 @@
+<h1>Praktikum Bab 10 — Menghubungkan Aplikasi ke Server</h1>
+
+<p class="ringkas">
+  Satu pekerjaan besar: memindahkan sumber data Aplikasi Manajemen Data Mahasiswa dari konstanta
+  di dalam kode ke server di folder <code>backend/</code>. Empat berkas baru, dua berkas rute yang
+  isinya menyusut jadi satu baris, dan tiga keadaan antarmuka yang harus benar-benar terlihat.
+</p>
+
+<div class="kotak kotak-tiruan">
+  <p class="kotak-judul">Tujuan praktikum</p>
+  <p>Setelah menyelesaikan praktikum ini, kamu mampu:</p>
+  <ol>
+    <li>menjalankan server buku di port 3000 dan memverifikasi endpoint dengan peramban;</li>
+    <li>membuat klien <code>fetch</code> di <code>api/mahasiswa.js</code> untuk lima operasi data;</li>
+    <li>menampilkan daftar dari API lengkap dengan loading, error, dan empty state;</li>
+    <li>menghubungkan form tambah/edit ke <code>POST</code> dan <code>PUT</code>;</li>
+    <li>menghapus data dengan konfirmasi dan memperbarui daftar tanpa muat ulang manual.</li>
+  </ol>
+</div>
+
+<h2>Kebutuhan</h2>
+
+<ul>
+  <li>Project Expo SDK 57 hasil Bab 2 (template <code>blank</code>, JavaScript) yang sudah memiliki rute Expo Router dari Bab 7 — khususnya <code>app/(app)/mahasiswa/index.js</code> dan <code>app/(app)/mahasiswa/tambah.js</code>.</li>
+  <li>Node.js LTS (minimal 22) untuk menjalankan server.</li>
+  <li>Server backend buku di folder <code>backend/</code> yang disediakan repo buku.</li>
+  <li>Tempat menjalankan aplikasi: emulator Android, device fisik, atau iOS Simulator — base URL menyesuaikan subbab 10.7.</li>
+  <li>Tidak ada dependency tambahan: <code>fetch</code>, <code>ActivityIndicator</code>, <code>FlatList</code>, <code>RefreshControl</code>, dan <code>Alert</code> semuanya bagian dari React Native.</li>
+</ul>
+
+<h2>Persiapan</h2>
+
+<ol>
+  <li>Buka terminal di folder <code>backend/</code>, jalankan perintah pemasangan dan server pada blok berikut, lalu tunggu keterangan bahwa server berjalan di port 3000.</li>
+  <li>Uji server lewat peramban: buka <code>http://localhost:3000/api/mahasiswa</code>. Kamu akan melihat lima mahasiswa baku buku dalam format JSON — bukan pesan “Cannot GET”.</li>
+  <li>Tentukan target penjalanan aplikasi (emulator, device, atau simulator) dan catat base URL yang sesuai.</li>
+  <li>Buka project aplikasi dari Bab 7 di editor. Pastikan <code>npx expo start</code> tidak sedang berjalan agar bebas dari konflik.</li>
+</ol>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">(terminal)</span>
+    <span class="kode-sumber">buku §10.7 · menjalankan server buku</span>
+  </figcaption>
+  <pre><code class="language-bash">cd backend &amp;&amp; npm install &amp;&amp; npm start</code></pre>
+</figure>
+
+<div class="kotak kotak-tiruan">
+  <p class="kotak-judul">Catatan versi</p>
+  <p>
+    Path endpoint (<code>/api/mahasiswa</code>) dan bentuk respons di bab ini mengikuti desain REST
+    baku. Bila <code>backend/README.md</code> yang tiba di repo menentukan hal lain, sesuaikan
+    konstanta <code>API_URL</code> dan normalisasi respons di <code>api/mahasiswa.js</code> — hanya
+    dua titik yang perlu diubah.
+  </p>
+</div>
+
+<h2>Langkah kerja</h2>
+
+<ol>
+  <li>Buat folder <code>api/</code> di root project, lalu buat berkas <code>api/mahasiswa.js</code> berisi klien <code>fetch</code> lengkap seperti blok di bawah. Sesuaikan <code>API_URL</code> dengan targetmu.</li>
+  <li>Buat folder <code>screens/</code>, lalu buat <code>screens/DaftarMahasiswa.js</code> berisi layar daftar yang membaca data dari API.</li>
+  <li>Buka <code>app/(app)/mahasiswa/index.js</code> dari Bab 7 dan ganti isinya dengan versi perute yang memuat komponen <code>DaftarMahasiswa</code>.</li>
+  <li>Jalankan <code>npx expo start</code>, buka aplikasi, dan amati daftar mahasiswa yang muncul dari server. Uji pull-to-refresh dengan menarik daftar ke bawah.</li>
+  <li>Buat <code>screens/FormMahasiswa.js</code> yang mendukung dua mode: tambah (tanpa parameter <code>id</code>) dan edit (dengan parameter <code>id</code>, data diambil dari server lalu mengisi form).</li>
+  <li>Buka <code>app/(app)/mahasiswa/tambah.js</code> dan ganti isinya agar memuat <code>FormMahasiswa</code>.</li>
+  <li>Uji alur lengkap: tambah satu mahasiswa, kembali ke daftar, ketuk Edit, ubah nama, Simpan, lalu Hapus dengan konfirmasi.</li>
+  <li>Uji keadaan galat: matikan server, muat ulang daftar, amati pesan ramah dan tombol “Coba Lagi”. Nyalakan server kembali, ketuk tombol itu, dan pastikan daftar pulih.</li>
+</ol>
+
+<h2>Kode: api/mahasiswa.js</h2>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">api/mahasiswa.js</span>
+    <span class="kode-sumber">buku §Praktikum · Kode</span>
+  </figcaption>
+  <pre><code class="language-js">// api/mahasiswa.js — klien fetch untuk resource mahasiswa.
+// Ganti API_URL sesuai tempat aplikasi dijalankan:
+//   Emulator Android : http://10.0.2.2:3000/api/mahasiswa
+//   Device fisik     : http://&lt;IP-LAN-komputer&gt;:3000/api/mahasiswa
+//   iOS Simulator    : http://localhost:3000/api/mahasiswa
+const API_URL = 'http://10.0.2.2:3000/api/mahasiswa';
+
+async function ambilSemuaMahasiswa() {
+  const response = await fetch(API_URL);
+  if (!response.ok) {
+    throw new Error(`Gagal memuat data mahasiswa (HTTP ${response.status})`);
+  }
+  const json = await response.json();
+  // Beberapa server membungkus daftar pada properti `data`; kode ini menyesuaikan.
+  return Array.isArray(json) ? json : json.data;
+}
+
+async function ambilMahasiswaById(id) {
+  const response = await fetch(`${API_URL}/${id}`);
+  if (!response.ok) {
+    throw new Error(`Mahasiswa tidak ditemukan (HTTP ${response.status})`);
+  }
+  return response.json();
+}
+
+async function tambahMahasiswa(dataMahasiswa) {
+  const response = await fetch(API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(dataMahasiswa),
+  });
+  if (!response.ok) {
+    throw new Error(`Gagal menyimpan mahasiswa (HTTP ${response.status})`);
+  }
+  return response.json();
+}
+
+async function ubahMahasiswa(id, dataMahasiswa) {
+  const response = await fetch(`${API_URL}/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(dataMahasiswa),
+  });
+  if (!response.ok) {
+    throw new Error(`Gagal memperbarui mahasiswa (HTTP ${response.status})`);
+  }
+  // 204 No Content: server sukses tanpa mengirim isi respons.
+  if (response.status === 204) return dataMahasiswa;
+  return response.json();
+}
+
+async function hapusMahasiswa(id) {
+  const response = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+  if (!response.ok) {
+    throw new Error(`Gagal menghapus mahasiswa (HTTP ${response.status})`);
+  }
+  return true;
+}
+
+export { ambilSemuaMahasiswa, ambilMahasiswaById, tambahMahasiswa, ubahMahasiswa, hapusMahasiswa };</code></pre>
+</figure>
+
+<h2>Kode: screens/DaftarMahasiswa.js</h2>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">screens/DaftarMahasiswa.js</span>
+    <span class="kode-sumber">buku §Praktikum · Kode</span>
+  </figcaption>
+  <pre><code class="language-js">// screens/DaftarMahasiswa.js — layar daftar mahasiswa dari API.
+import { useFocusEffect, useRouter } from 'expo-router';
+import { useCallback, useState } from 'react';
+import {
+  ActivityIndicator, Alert, FlatList, Pressable, RefreshControl,
+  StyleSheet, Text, View,
+} from 'react-native';
+import { ambilSemuaMahasiswa, hapusMahasiswa } from '../api/mahasiswa';
+
+export default function DaftarMahasiswa() {
+  const router = useRouter();
+  const [mahasiswa, setMahasiswa] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [memuatUlang, setMemuatUlang] = useState(false);
+
+  const muatData = useCallback(async () =&gt; {
+    try {
+      const data = await ambilSemuaMahasiswa();
+      setMahasiswa(data);
+      setError(null);
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setLoading(false);
+      setMemuatUlang(false);
+    }
+  }, []);
+
+  // Muat ulang setiap kali layar kembali menjadi fokus (mis. selesai tambah data).
+  useFocusEffect(muatData);
+
+  function saatMenarik() {
+    setMemuatUlang(true);
+    muatData();
+  }
+
+  function cobaLagi() {
+    setLoading(true);
+    setError(null);
+    muatData();
+  }
+
+  function kirimKeFormEdit(item) {
+    router.push({ pathname: '/mahasiswa/tambah', params: { id: item.id } });
+  }
+
+  function konfirmasiHapus(item) {
+    Alert.alert('Hapus Data', `Yakin ingin menghapus ${item.nama}?`, [
+      { text: 'Batal', style: 'cancel' },
+      { text: 'Hapus', style: 'destructive', onPress: () =&gt; hapusData(item) },
+    ]);
+  }
+
+  async function hapusData(item) {
+    try {
+      await hapusMahasiswa(item.id);
+      setMahasiswa((sebelum) =&gt; sebelum.filter((m) =&gt; m.id !== item.id));
+    } catch (e) {
+      Alert.alert('Gagal Menghapus', e.message);
+    }
+  }
+
+  if (loading) {
+    return (
+      &lt;View style={styles.pusat}&gt;
+        &lt;ActivityIndicator size="large" color="#1f6feb" /&gt;
+        &lt;Text style={styles.teksStatus}&gt;Memuat data mahasiswa…&lt;/Text&gt;
+      &lt;/View&gt;
+    );
+  }
+
+  if (error) {
+    return (
+      &lt;View style={styles.pusat}&gt;
+        &lt;Text style={styles.teksError}&gt;Data tidak dapat dimuat.&lt;/Text&gt;
+        &lt;Text style={styles.teksStatus}&gt;{error}&lt;/Text&gt;
+        &lt;Pressable style={styles.tombol} onPress={cobaLagi}&gt;
+          &lt;Text style={styles.teksTombol}&gt;Coba Lagi&lt;/Text&gt;
+        &lt;/Pressable&gt;
+      &lt;/View&gt;
+    );
+  }
+
+  if (mahasiswa.length === 0) {
+    return (
+      &lt;View style={styles.pusat}&gt;
+        &lt;Text style={styles.teksStatus}&gt;Belum ada data mahasiswa.&lt;/Text&gt;
+        &lt;Text style={styles.teksStatus}&gt;Gunakan tombol Tambah untuk mengisinya.&lt;/Text&gt;
+      &lt;/View&gt;
+    );
+  }
+
+  return (
+    &lt;FlatList
+      style={styles.daftar}
+      data={mahasiswa}
+      keyExtractor={(item) =&gt; String(item.id)}
+      renderItem={({ item }) =&gt; (
+        &lt;View style={styles.kartu}&gt;
+          &lt;View style={styles.barisKartu}&gt;
+            &lt;Text style={styles.nama}&gt;{item.nama}&lt;/Text&gt;
+            &lt;Text style={styles.nim}&gt;{item.nim}&lt;/Text&gt;
+          &lt;/View&gt;
+          &lt;Text style={styles.detail}&gt;{item.prodi} · {item.angkatan} · IPK {item.ipk}&lt;/Text&gt;
+          &lt;View style={styles.barisTombol}&gt;
+            &lt;Pressable style={styles.tombolEdit} onPress={() =&gt; kirimKeFormEdit(item)}&gt;
+              &lt;Text style={styles.teksTombol}&gt;Edit&lt;/Text&gt;
+            &lt;/Pressable&gt;
+            &lt;Pressable style={styles.tombolHapus} onPress={() =&gt; konfirmasiHapus(item)}&gt;
+              &lt;Text style={styles.teksTombol}&gt;Hapus&lt;/Text&gt;
+            &lt;/Pressable&gt;
+          &lt;/View&gt;
+        &lt;/View&gt;
+      )}
+      refreshControl={
+        &lt;RefreshControl refreshing={memuatUlang} onRefresh={saatMenarik} /&gt;
+      }
+    /&gt;
+  );
+}
+
+const styles = StyleSheet.create({
+  pusat: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24 },
+  daftar: { flex: 1, padding: 16 },
+  kartu: {
+    backgroundColor: '#ffffff', borderRadius: 12, padding: 16, marginBottom: 12,
+    elevation: 2, shadowColor: '#000', shadowOpacity: 0.08, shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+  },
+  barisKartu: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  nama: { fontSize: 16, fontWeight: 'bold', color: '#1c1c1e' },
+  nim: { fontSize: 13, color: '#6b7280' },
+  detail: { fontSize: 13, color: '#374151', marginTop: 4 },
+  barisTombol: { flexDirection: 'row', marginTop: 12, gap: 8 },
+  tombolEdit: { backgroundColor: '#1f6feb', borderRadius: 8, paddingVertical: 8, paddingHorizontal: 16 },
+  tombolHapus: { backgroundColor: '#d93838', borderRadius: 8, paddingVertical: 8, paddingHorizontal: 16 },
+  tombol: { backgroundColor: '#1f6feb', borderRadius: 8, paddingVertical: 10, paddingHorizontal: 24, marginTop: 16 },
+  teksTombol: { color: '#ffffff', fontWeight: '600' },
+  teksError: { fontSize: 16, fontWeight: '600', color: '#d93838', marginBottom: 8 },
+  teksStatus: { fontSize: 14, color: '#6b7280', marginTop: 8, textAlign: 'center' },
+});</code></pre>
+</figure>
+
+<h2>Kode: screens/FormMahasiswa.js</h2>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">screens/FormMahasiswa.js</span>
+    <span class="kode-sumber">buku §Praktikum · Kode</span>
+  </figcaption>
+  <pre><code class="language-js">// screens/FormMahasiswa.js — form tambah/edit mahasiswa terhubung API.
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useEffect, useState } from 'react';
+import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ambilMahasiswaById, tambahMahasiswa, ubahMahasiswa } from '../api/mahasiswa';
+
+const FORM_AWAL = {
+  nim: '', nama: '', prodi: '', angkatan: '', ipk: '', email: '', telepon: '',
+};
+
+export default function FormMahasiswa() {
+  const router = useRouter();
+  const { id } = useLocalSearchParams();
+  const modeEdit = id !== undefined;
+  const [form, setForm] = useState(FORM_AWAL);
+  const [menyimpan, setMenyimpan] = useState(false);
+
+  // Mode edit: ambil data mahasiswa dari server untuk mengisi form.
+  useEffect(() =&gt; {
+    if (!modeEdit) return;
+    (async () =&gt; {
+      try {
+        const data = await ambilMahasiswaById(id);
+        setForm({ ...data, angkatan: String(data.angkatan), ipk: String(data.ipk) });
+      } catch (e) {
+        Alert.alert('Gagal Memuat Data', e.message);
+        router.back();
+      }
+    })();
+  }, [modeEdit, id]);
+
+  function ubahField(kunci, nilai) {
+    setForm((sebelum) =&gt; ({ ...sebelum, [kunci]: nilai }));
+  }
+
+  async function simpan() {
+    // Validasi minimum; validasi lengkap (format email, panjang NIM, dll.) ada di Bab 8.
+    if (Object.values(form).some((nilai) =&gt; String(nilai).trim() === '')) {
+      Alert.alert('Form Belum Lengkap', 'Semua field wajib diisi sebelum disimpan.');
+      return;
+    }
+    setMenyimpan(true);
+    try {
+      const payload = { ...form, angkatan: Number(form.angkatan), ipk: Number(form.ipk) };
+      if (modeEdit) {
+        await ubahMahasiswa(id, payload);
+      } else {
+        await tambahMahasiswa(payload);
+      }
+      router.back(); // kembali ke daftar; layar daftar memuat ulang otomatis
+    } catch (e) {
+      Alert.alert('Gagal Menyimpan', e.message);
+    } finally {
+      setMenyimpan(false);
+    }
+  }
+
+  const fieldForm = [
+    { kunci: 'nim', label: 'NIM', placeholder: '2201001', keyboard: 'number-pad' },
+    { kunci: 'nama', label: 'Nama Lengkap', placeholder: 'Budi Santoso' },
+    { kunci: 'prodi', label: 'Program Studi', placeholder: 'Sistem Informasi' },
+    { kunci: 'angkatan', label: 'Angkatan', placeholder: '2022', keyboard: 'number-pad' },
+    { kunci: 'ipk', label: 'IPK', placeholder: '3.45', keyboard: 'decimal-pad' },
+    { kunci: 'email', label: 'Email', placeholder: 'nama@students.univ.ac.id', keyboard: 'email-address' },
+    { kunci: 'telepon', label: 'Telepon', placeholder: '08xxxxxxxxxx', keyboard: 'phone-pad' },
+  ];
+
+  return (
+    &lt;ScrollView style={styles.layar} contentContainerStyle={styles.konten}&gt;
+      &lt;Text style={styles.judul}&gt;{modeEdit ? 'Edit Mahasiswa' : 'Tambah Mahasiswa'}&lt;/Text&gt;
+      {fieldForm.map((field) =&gt; (
+        &lt;View key={field.kunci} style={styles.grupField}&gt;
+          &lt;Text style={styles.label}&gt;{field.label}&lt;/Text&gt;
+          &lt;TextInput
+            style={styles.input}
+            value={form[field.kunci]}
+            onChangeText={(nilai) =&gt; ubahField(field.kunci, nilai)}
+            placeholder={field.placeholder}
+            placeholderTextColor="#9ca3af"
+            keyboardType={field.keyboard}
+          /&gt;
+        &lt;/View&gt;
+      ))}
+      &lt;Pressable
+        style={[styles.tombolSimpan, menyimpan &amp;&amp; styles.tombolNonaktif]}
+        onPress={simpan}
+        disabled={menyimpan}
+      &gt;
+        &lt;Text style={styles.teksTombol}&gt;{menyimpan ? 'Menyimpan…' : 'Simpan'}&lt;/Text&gt;
+      &lt;/Pressable&gt;
+    &lt;/ScrollView&gt;
+  );
+}
+
+const styles = StyleSheet.create({
+  layar: { flex: 1, backgroundColor: '#f5f5f7' },
+  konten: { padding: 16, paddingBottom: 40 },
+  judul: { fontSize: 20, fontWeight: 'bold', color: '#1c1c1e', marginBottom: 16 },
+  grupField: { marginBottom: 12 },
+  label: { fontSize: 14, fontWeight: '600', color: '#374151', marginBottom: 6 },
+  input: {
+    backgroundColor: '#ffffff', borderRadius: 8, borderWidth: 1, borderColor: '#d1d5db',
+    paddingHorizontal: 12, paddingVertical: 10, fontSize: 15,
+  },
+  tombolSimpan: {
+    backgroundColor: '#1f6feb', borderRadius: 8, paddingVertical: 14,
+    alignItems: 'center', marginTop: 16,
+  },
+  tombolNonaktif: { opacity: 0.6 },
+  teksTombol: { color: '#ffffff', fontWeight: '700', fontSize: 16 },
+});</code></pre>
+</figure>
+
+<h2>Kode: dua berkas rute</h2>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">app/(app)/mahasiswa/index.js</span>
+    <span class="kode-sumber">buku §Praktikum · Perute</span>
+  </figcaption>
+  <pre><code class="language-js">// Rute Daftar Mahasiswa — memuat komponen layar dari folder screens/.
+import DaftarMahasiswa from '../../screens/DaftarMahasiswa';
+export default DaftarMahasiswa;</code></pre>
+</figure>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">app/(app)/mahasiswa/tambah.js</span>
+    <span class="kode-sumber">buku §Praktikum · Perute</span>
+  </figcaption>
+  <pre><code class="language-js">// Rute Form Tambah/Edit — parameter `id` (opsional) menjadikannya mode edit.
+import FormMahasiswa from '../../screens/FormMahasiswa';
+export default FormMahasiswa;</code></pre>
+</figure>
+
+<h2>Penjelasan kode</h2>
+
+<p>
+  <strong><code>api/mahasiswa.js</code></strong> adalah satu-satunya tempat aplikasi berbicara
+  dengan server. Setiap fungsi mengikuti pola yang sama: kirim permintaan, periksa
+  <code>response.ok</code>, lempar <code>Error</code> bila gagal, lalu kembalikan data. Kedua
+  fungsi yang mengirim isi menyertakan header <code>Content-Type: application/json</code> dan body
+  hasil <code>JSON.stringify</code>; tanpa keduanya server tidak akan menerima data dan menjawab
+  400 Bad Request.
+</p>
+
+<p>
+  Perhatikan dua kehati-hatian kecil yang mudah terlewat. <code>hapusMahasiswa</code> sengaja tidak
+  membaca body dan mengembalikan <code>true</code>, karena server umumnya menjawab
+  <code>204 No Content</code>. <code>ubahMahasiswa</code> menangani kemungkinan yang sama lewat
+  pengecekan <code>response.status === 204</code>. Ditambah normalisasi
+  <code>Array.isArray(json) ? json : json.data</code> pada <code>ambilSemuaMahasiswa</code>, klien
+  ini tahan terhadap tiga perbedaan kecil antar server.
+</p>
+
+<p>
+  <strong><code>screens/DaftarMahasiswa.js</code></strong> mempraktikkan tiga keadaan antarmuka
+  dari subbab 10.6. Keadaan memuat ditangani variabel <code>loading</code> dengan
+  <code>ActivityIndicator</code>; keadaan galat ditangani variabel <code>error</code> berisi pesan
+  ramah plus tombol “Coba Lagi” yang mengulang permintaan; keadaan kosong diperiksa lewat
+  <code>mahasiswa.length === 0</code>. <code>useFocusEffect</code> memuat ulang data setiap kali
+  layar kembali menjadi fokus — inilah yang membuat daftar otomatis segar setelah form menyimpan
+  data. Operasi hapus memakai <code>Alert.alert</code> dengan tombol <code>destructive</code>
+  sebagai konfirmasi, lalu memperbarui state secara lokal dengan <code>filter</code> tanpa memuat
+  ulang seluruh daftar.
+</p>
+
+<p>
+  <strong><code>screens/FormMahasiswa.js</code></strong> memakai parameter rute:
+  <code>useLocalSearchParams</code> membaca <code>id</code>; bila ada, komponen masuk mode edit,
+  mengambil data dari server, lalu mengisi form. Angkatan dan IPK dikonversi dengan
+  <code>String()</code> saat mengisi form (karena input bertipe teks) dan <code>Number()</code>
+  saat menyimpan (karena server menyimpannya sebagai angka). Tombol Simpan dinonaktifkan dan
+  teksnya berubah selama proses berjalan — kebiasaan yang mencegah duplikasi data karena POST
+  tidak idempoten. Validasi sengaja dijaga minimal karena validasi lengkap sudah dibangun di Bab 8.
+</p>
+
+<h2>Hasil yang diharapkan</h2>
+
+<ol>
+  <li>Saat aplikasi dibuka pada halaman Daftar Mahasiswa, tampil lima kartu mahasiswa baku — Budi Santoso, Siti Aminah, Agus Wijaya, Dewi Lestari, Rizky Pratama — lengkap dengan NIM, prodi, angkatan, dan IPK. Data berasal dari server, bukan dari kode aplikasi.</li>
+  <li>Terminal server mencatat setiap permintaan masuk: <code>GET /api/mahasiswa</code> saat daftar dibuka, <code>POST /api/mahasiswa</code> setelah form tambah disimpan, <code>PUT /api/mahasiswa/&lt;id&gt;</code> saat edit disimpan, dan <code>DELETE /api/mahasiswa/&lt;id&gt;</code> saat hapus dikonfirmasi.</li>
+  <li>Setelah menambah mahasiswa baru, layar daftar menampilkan data itu tanpa kamu menekan apa pun. Setelah edit, nama atau IPK berubah di daftar. Setelah hapus, kartu yang bersangkutan hilang.</li>
+  <li>Saat server dimatikan lalu daftar dimuat ulang, muncul teks “Data tidak dapat dimuat.” beserta keterangan dan tombol “Coba Lagi”. Setelah server dinyalakan kembali dan tombol ditekan, daftar tampil seperti semula.</li>
+  <li>Pull-to-refresh menampilkan indikator pemuatan ulang dan menyegarkan data dari server.</li>
+</ol>
+
+<h2>Troubleshooting</h2>
+
+<div class="tabel-gulir">
+  <table class="tabel">
+    <caption>Masalah yang paling sering muncul saat praktikum · sumber: buku §Troubleshooting</caption>
+    <thead>
+      <tr><th scope="col">Gejala</th><th scope="col">Penyebab</th><th scope="col">Solusi</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Aplikasi di emulator Android menampilkan <code>Network request failed</code> saat membuka daftar</td>
+        <td>Base URL masih memakai <code>http://localhost:3000</code>; di dalam emulator, <code>localhost</code> menunjuk emulator itu sendiri</td>
+        <td>Ganti <code>API_URL</code> menjadi <code>http://10.0.2.2:3000/api/mahasiswa</code>, lalu muat ulang aplikasi</td>
+      </tr>
+      <tr>
+        <td>Aplikasi di device fisik tidak dapat mengakses server, padahal emulator bisa</td>
+        <td>Device fisik adalah mesin terpisah: <code>10.0.2.2</code> tidak berlaku, IP salah, atau HP dan komputer tidak satu jaringan (atau firewall memblokir port 3000)</td>
+        <td>Pakai <code>http://&lt;IP-LAN-komputer&gt;:3000</code>, pastikan satu Wi-Fi, dan uji alamat itu lebih dulu di peramban HP</td>
+      </tr>
+      <tr>
+        <td>Server tidak mau berjalan: port 3000 sudah dipakai</td>
+        <td>Ada proses lain — aplikasi atau server lama — yang menempati port tersebut</td>
+        <td>Hentikan proses pemakai port itu, atau jalankan server pada port lain sesuai dokumentasi backend; bila port diubah, sesuaikan <code>API_URL</code></td>
+      </tr>
+      <tr>
+        <td>Respons 404 saat memuat daftar mahasiswa</td>
+        <td>Path endpoint tidak cocok, misalnya <code>http://10.0.2.2:3000/mahasiswa</code> tanpa segmen <code>/api</code></td>
+        <td>Bandingkan path pada <code>API_URL</code> dengan <code>backend/README.md</code>; uji path itu di peramban — harus tampil JSON, bukan “Cannot GET”</td>
+      </tr>
+      <tr>
+        <td>Permintaan sukses (200) tetapi daftar di aplikasi tetap kosong</td>
+        <td>Bentuk respons berbeda dari dugaan: server mengirim array langsung, sementara aplikasi mengharapkan properti <code>data</code></td>
+        <td>Tambahkan sementara <code>console.log(json)</code> pada <code>ambilSemuaMahasiswa</code> untuk melihat bentuk aslinya; normalisasi <code>Array.isArray(json) ? json : json.data</code> sudah mengakomodasi keduanya</td>
+      </tr>
+      <tr>
+        <td>Saat diuji lewat <code>npx expo start --web</code>, permintaan diblokir dengan pesan CORS</td>
+        <td>Peramban membatasi permintaan lintas asal; aplikasi mobile asli tidak menerapkan pembatasan ini</td>
+        <td>Aktifkan middleware CORS pada server sesuai <code>backend/README.md</code>, atau lakukan pengujian utama di emulator atau device</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="kotak kotak-salah">
+  <p class="kotak-judul">Salah paham</p>
+  <p>
+    “Server sudah berjalan di komputermu, berarti aplikasi pasti menemukannya.” Belum tentu.
+    Emulator Android hidup di jaringan virtual sendiri, sehingga <code>localhost</code> menunjuk
+    emulator itu sendiri, bukan komputermu; <code>10.0.2.2</code> disediakan justru untuk menembus
+    batas itu. Periksa base URL lebih dulu sebelum menuduh kode <code>fetch</code>-nya salah.
+  </p>
+</div>
+
+<h2>Yang harus teramati</h2>
+
+<ul>
+  <li>Server berjalan di port 3000 dan terminal mencatat setiap permintaan.</li>
+  <li>Lima kartu mahasiswa muncul dari <code>GET /api/mahasiswa</code>, bukan dari konstanta di dalam kode.</li>
+  <li>State loading terlihat sebentar sebelum data datang.</li>
+  <li>Server dimatikan: muncul state error dengan tombol aksi, bukan layar kosong.</li>
+  <li>Satu data ditambahkan: <code>POST</code> tercatat dan <code>id</code> baru muncul di daftar.</li>
+</ul>
+
+<blockquote>
+  Laporan yang baik menyebut status code yang kamu lihat, bukan hanya tulisan “berhasil”. Butir
+  keempat paling sering hilang — mematikan server adalah cara termurah membuktikan bahwa state
+  error benar-benar ada.
+</blockquote>
+
+<h2>Kuis kilat</h2>
+
+<ol>
+  <li>Metode HTTP apa yang tepat untuk operasi “Create” pada CRUD?</li>
+  <li>Status code apa yang menandakan resource baru berhasil dibuat?</li>
+  <li>Kenapa tombol Simpan perlu dinonaktifkan selama permintaan berjalan?</li>
+  <li>Base URL apa yang dipakai emulator Android untuk menjangkau komputer host?</li>
+</ol>
+
+<div class="kotak kotak-jawab">
+  <details>
+    <summary>Kunci kuis kilat</summary>
+    <ol>
+      <li><code>POST</code> — membuat resource baru di alamat koleksi.</li>
+      <li><code>201 Created</code> — data tersimpan dan respons membawa <code>id</code> baru.</li>
+      <li>Karena POST tidak idempoten: dua permintaan berarti dua data.</li>
+      <li><code>http://10.0.2.2:3000</code> — <code>localhost</code> menunjuk emulator itu sendiri.</li>
+    </ol>
+  </details>
+</div>
+
+<h2>Ringkasan bab</h2>
+
+<ol>
+  <li>Arsitektur client–server memisahkan aplikasi dari data demi satu sumber kebenaran, keamanan, dan kontrol; harganya adalah ketergantungan pada jaringan dan latensi.</li>
+  <li>REST memandang data sebagai resource dengan endpoint unik dan bersifat stateless.</li>
+  <li>Metode HTTP memetakan CRUD: GET membaca, POST mencipta, PUT/PATCH mengubah, DELETE menghapus.</li>
+  <li>GET aman dan idempoten; POST tidak, sehingga tombol Simpan perlu dinonaktifkan saat proses berjalan.</li>
+  <li>Status code adalah bahasa bersama: 2xx sukses, 4xx kesalahan client, 5xx kesalahan server.</li>
+  <li>JSON adalah format tukar utama; objek diserialisasi dengan <code>JSON.stringify</code> dan diurai kembali dengan <code>response.json()</code>.</li>
+  <li><code>fetch</code> hanya melempar error saat jaringan gagal, sehingga pola <code>if (!response.ok) throw</code> wajib dipakai.</li>
+  <li>Tiga keadaan antarmuka — loading, error dengan aksi, dan empty — menjaga pengalaman pengguna saat komunikasi jaringan berlangsung.</li>
+  <li>Base URL mengikuti tempat aplikasi berjalan: <code>10.0.2.2</code> untuk emulator Android, IP LAN untuk device fisik, <code>localhost</code> untuk iOS Simulator.</li>
+  <li>API produksi melindungi diri dengan token pada header <code>Authorization: Bearer &lt;token&gt;</code>; detailnya dibahas di Bab 13.</li>
+</ol>
+
+<div class="kotak kotak-tanya">
+  <p class="kotak-judul">Pertanyaan penuntun</p>
+  <p>
+    Bukti apa yang paling sulit dipalsukan di praktikum ini? (Jawaban: log permintaan di terminal
+    server — ia mencatat metode, alamat, dan status code apa adanya.) Simpan tangkapan layar
+    terminal itu bersama laporanmu; bab berikutnya memberi aplikasimu ingatan, dengan menyimpan
+    salinan data terakhir agar aplikasi tetap berguna saat jaringan hilang.
+  </p>
+</div>

@@ -1,0 +1,573 @@
+<h1>Bagian 3 — Layar, Parameter &amp; Perlindungan</h1>
+
+<p class="ringkas">
+  Subbab 7.5–7.8. Bagian terpadat: parameter antar layar, navigasi bersarang, siklus hidup layar,
+  dan layar terlindungi. Kalau waktu tinggal sedikit, prioritaskan subbab 7.5 dan 7.8; subbab 7.7
+  dapat dilanjutkan sebagai tugas bacaan.
+  Kesalahan konfigurasi dari bagian 2 akan muncul di sini sebagai layar kosong — periksa
+  <code>package.json</code> lebih dahulu sebelum menduga ada kesalahan pada kode.
+</p>
+
+<!-- ============================================================ SUBBAB 7.2 · 7.6 -->
+
+<section class="subbab" id="s3-1">
+  <p class="label-subbab">
+    Subbab 7.2 · 7.6 <span class="sumber-slide">· deck: “Satu Stack di Layout Akar Menampung Semua Layar” · buku §Contoh 7.1</span>
+  </p>
+  <h2>Satu <code>&lt;Stack /&gt;</code> di Layout Akar Menampung Semua Layar</h2>
+
+  <p>
+    Berkas <code>app/_layout.js</code> adalah <strong>panggung</strong> seluruh aplikasi: ia
+    membungkus semua rute di folder yang sama, dan setiap layar muncul di atasnya.
+    Satu <code>&lt;Stack /&gt;</code> di sini sudah menampung seluruh layar aplikasi praktikum,
+    termasuk grup <code>(app)</code> yang di dalamnya masih ada tab dan stack lain.
+  </p>
+
+  <p>
+    Dua hal yang perlu diperhatikan.
+    <code>screenOptions</code> memberi gaya seragam untuk seluruh stack — latar, warna teks, dan
+    posisi judul — sehingga tidak diulang di tiap layar.
+    Sementara itu, layar grup <code>(app)</code> didaftarkan dengan
+    <code>headerShown: false</code> karena grup itu menampilkan tab yang memiliki header sendiri.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">app/_layout.js</span>
+      <span class="kode-sumber">deck, slide “Satu &lt;Stack /&gt; di Layout Akar Menampung Semua Layar” · versi lengkap ada di praktikum</span>
+    </figcaption>
+    <pre><code class="language-js">import { Stack } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
+export default function LayoutRoot() {
+  return (
+    &lt;&gt;
+      &lt;StatusBar style="light" /&gt;
+      &lt;Stack screenOptions={{ headerTitleAlign: 'center' }}&gt;
+        &lt;Stack.Screen name="(app)" options={{ headerShown: false }} /&gt;
+        &lt;Stack.Screen name="login" options={{ title: 'Masuk' }} /&gt;
+      &lt;/Stack&gt;
+    &lt;/&gt;
+  );
+}</code></pre>
+  </figure>
+
+  <p>
+    Daftar <code>&lt;Stack.Screen&gt;</code> bersifat opsional.
+    Gunanya mengatur judul atau menyembunyikan header per layar; layar yang tidak disebutkan
+    tetap menjadi bagian stack dengan pengaturan bawaan.
+    Kamu tidak wajib mendaftarkan semuanya, cukup yang butuh penyesuaian.
+  </p>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Tidak mendaftarkan sebuah layar bukan berarti layar itu tidak bisa dibuka.
+      Setiap berkas di folder <code>app/</code> tetap menjadi rute; daftar
+      <code>&lt;Stack.Screen&gt;</code> hanya mengatur tampilan header-nya.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Mengapa layar grup <code>(app)</code> perlu <code>headerShown: false</code>? (Karena tab di dalamnya sudah menampilkan header sendiri; tanpa itu muncul dua bilah judul bertumpuk.)</p>
+  </div>
+</section>
+
+<!-- ============================================================ SUBBAB 7.5 -->
+
+<section class="subbab" id="s3-2">
+  <p class="label-subbab">
+    Subbab 7.5 <span class="sumber-slide">· deck: “Deklaratif untuk Link, Imperatif untuk Logika (1/2) &amp; (2/2)” · buku §Contoh 7.2</span>
+  </p>
+  <h2>Deklaratif untuk <code>Link</code>, Imperatif untuk Logika</h2>
+
+  <p>
+    Untuk membuka layar sambil membawa parameter, ada dua gaya yang hasilnya setara tetapi
+    perannya berbeda.
+    Gaya <strong>deklaratif</strong> memakai <code>&lt;Link&gt;</code>: antarmuka diberi tahu
+    bahwa sesuatu <em>adalah</em> tautan, sehingga aksesibilitas, klik tengah pada web, dan
+    pratinjau tautan tetap berfungsi.
+    Gaya <strong>imperatif</strong> memakai <code>router</code> yang dipanggil dari dalam kode.
+  </p>
+
+  <p>
+    Aturan praktisnya sederhana: <code>&lt;Link&gt;</code> untuk tautan yang dilihat dan ditekan
+    pengguna; <code>router</code> untuk perpindahan yang lahir dari proses, misalnya
+    <code>replace</code> setelah login berhasil atau <code>back</code> setelah data tersimpan.
+    Pada gaya deklaratif, <code>asChild</code> memindahkan perilaku tautan ke komponen anak
+    (<code>Pressable</code>) sehingga gaya sentuh tetap milik komponen anak.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Deklaratif — tautan yang dilihat pengguna"
+       data-label-benar="Imperatif — perpindahan yang dipicu logika"
+       data-petunjuk="Hasil keduanya sama: layar Detail terbuka dengan parameter yang diminta. Yang berbeda adalah siapa yang mengetahui perpindahan itu — antarmuka atau kode. Keduanya boleh hidup dalam satu layar; Beranda praktikum memakai keduanya.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">app/index.js — bagian deklaratif</span>
+        <span class="kode-sumber">deck, slide “Deklaratif untuk Link, Imperatif untuk Logika (1/2)” · buku §Contoh 7.2</span>
+      </figcaption>
+      <pre><code class="language-js">import { Link } from 'expo-router';
+
+&lt;Link href={{ pathname: '/profil', params: { id: '2201001' } }} asChild&gt;
+  &lt;Pressable&gt;&lt;Text&gt;Buka profil (deklaratif)&lt;/Text&gt;&lt;/Pressable&gt;
+&lt;/Link&gt;</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">app/index.js — bagian imperatif</span>
+        <span class="kode-sumber">deck, slide “Deklaratif untuk Link, Imperatif untuk Logika (2/2)” · buku §Contoh 7.2</span>
+      </figcaption>
+      <pre><code class="language-js">import { router } from 'expo-router';
+
+&lt;Pressable
+  onPress={() =&gt; router.push({ pathname: '/profil', params: { id: '2201002' } })}
+&gt;
+  &lt;Text&gt;Buka profil (imperatif)&lt;/Text&gt;
+&lt;/Pressable&gt;</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      <code>asChild</code> wajib dipakai ketika <code>Link</code> membungkus elemen yang sudah
+      bisa disentuh.
+      Tanpa itu, <code>Link</code> dan <code>Pressable</code> berebut gestur — kartunya terasa
+      mati saat ditekan — atau tautan digambar sebagai teks tanpa gaya sentuh sama sekali.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Kapan memakai <code>router</code> dan bukan <code>&lt;Link&gt;</code>? (Ketika perpindahan lahir dari logika program, bukan dari ketukan pengguna — misalnya <code>replace</code> setelah login dan <code>back</code> setelah menyimpan.)</p>
+  </div>
+</section>
+
+<!-- ============================================================ SUBBAB 7.5 -->
+
+<section class="subbab" id="s3-3">
+  <p class="label-subbab">
+    Subbab 7.5 <span class="sumber-slide">· deck: “Nilai dari Alamat Selalu Berupa String” · buku §7.5</span>
+  </p>
+  <h2>Nilai dari Alamat Selalu Berupa String</h2>
+
+  <p>
+    Layar Detail harus tahu mahasiswa mana yang ditampilkan.
+    Data "siapa yang dibuka" dikirim sebagai <strong>parameter</strong>: nilai yang menempel pada
+    alamat rute, persis seperti query string di web.
+    Ada dua bentuk: <strong>dynamic route</strong> yang ditandai kurung siku pada nama berkas
+    (<code>app/mahasiswa/[id].js</code>), dan <strong>query parameter</strong> untuk nilai
+    opsional (<code>/mahasiswa/tambah?edit=2201001</code>).
+  </p>
+
+  <p>
+    Keduanya dibaca dengan hook yang sama, <code>useLocalSearchParams()</code>.
+    Konsekuensi teknis yang sering mengejutkan pemula: <strong>semua nilai dari alamat bertipe
+    string</strong>, sehingga <code>angkatan</code> atau <code>ipk</code> perlu dikonversi sebelum
+    dihitung.
+    <code>String(id)</code> juga mengamankan kasus parameter tiba sebagai array, yaitu saat
+    segmen yang sama dipakai dua kali dalam satu alamat.
+    Parameter yang tidak ada bernilai <code>undefined</code>, jadi periksa dulu sebelum dipakai.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">app/(app)/mahasiswa/[id].js</span>
+      <span class="kode-sumber">deck, slide “Nilai dari Alamat Selalu Berupa String” · buku §7.5</span>
+    </figcaption>
+    <pre><code class="language-js">import { Text } from 'react-native';
+import { useLocalSearchParams } from 'expo-router';
+
+export default function LayarDetail() {
+  const { id } = useLocalSearchParams();
+  return &lt;Text&gt;Detail mahasiswa dengan id: {String(id)}&lt;/Text&gt;;
+}</code></pre>
+  </figure>
+
+  <p>
+    Menyusun tautan pun lebih aman dengan bentuk objek: <code>pathname</code> menulis pola rute
+    literal dengan kurung siku, dan <code>params</code> menyediakan nilainya.
+    Bentuk ini lebih ketat daripada menyusun string sendiri seperti
+    <code>/mahasiswa/${id}</code>, karena pola rutenya diperiksa.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Parameter lewat state global"
+       data-label-benar="Parameter menempel pada alamat rute"
+       data-petunjuk="Nilai di panel kiri hanya hidup selama aplikasi berjalan dan hilang saat layar dibuka langsung dari tautan. Nilai di panel kanan ikut pada alamat, sehingga layar Detail dapat dibuka dari mana saja asalkan alamatnya diketahui.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">state-global.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §7.5</span>
+      </figcaption>
+      <pre><code class="language-text">// Nilai "siapa yang dibuka" disimpan di state bersama.
+const [idDipilih, setIdDipilih] = useState(null);
+
+function bukaDetail(id) {
+  setIdDipilih(id);          // layar Detail membaca state ini
+}
+
+// Layar Detail tidak bisa dibuka langsung dari tautan:
+// alamatnya tidak memuat id, jadi tidak ada yang bisa dibaca.</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">app/(app)/mahasiswa/index.js</span>
+        <span class="kode-sumber">buku §7.5 — pola tautan dengan parameter</span>
+      </figcaption>
+      <pre><code class="language-js">import { Link } from 'expo-router';
+
+&lt;Link href={{ pathname: '/mahasiswa/[id]', params: { id: '2201001' } }}&gt;
+  Lihat detail Budi Santoso
+&lt;/Link&gt;</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Nilai dari alamat selalu string. Membandingkannya langsung dengan angka — misalnya
+      <code>m.id === id</code> saat <code>id</code> berisi <code>'2201001'</code> dan
+      <code>m.id</code> berupa angka — menghasilkan "data tidak ditemukan" padahal datanya ada.
+      Normalkan dengan <code>String(id)</code> sebelum mencari.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Mengapa <code>String(id)</code> diperlukan kalau <code>id</code> hanya satu? (Karena parameter yang sama dapat datang sebagai array, misalnya <code>/mahasiswa/[id]?id=1&amp;id=2</code>; <code>String()</code> menjaga nilai itu tetap bisa dibandingkan.)</p>
+  </div>
+</section>
+
+<!-- ============================================================ SUBBAB 7.6 -->
+
+<section class="subbab" id="s3-4">
+  <p class="label-subbab">
+    Subbab 7.6 <span class="sumber-slide">· deck: “Tab yang Berisi Stack Punya Riwayat Sendiri” · buku §7.6</span>
+  </p>
+  <h2>Tab yang Berisi Stack Punya Riwayat Sendiri</h2>
+
+  <p>
+    Aplikasi sungguhan hampir selalu membutuhkan <strong>nested navigation</strong>: navigator di
+    dalam navigator.
+    Pola paling lazim adalah tab di tingkat atas, dan di dalam setiap tab terdapat stack untuk
+    alur detail.
+    Di Expo Router, bersarang berarti bersarang pada folder: stack "Mahasiswa" hidup di
+    <code>app/(app)/mahasiswa/</code> yang punya <code>_layout.js</code> berisi
+    <code>&lt;Stack /&gt;</code> sendiri, sedangkan lapisan atasnya — <code>app/(app)/_layout.js</code>
+    — berisi <code>&lt;Tabs /&gt;</code>.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">struktur navigasi bersarang</span>
+      <span class="kode-sumber">buku §7.6</span>
+    </figcaption>
+    <pre><code class="language-text">Tabs (kerangka aplikasi)
+├── tab Beranda      (satu layar)
+└── tab Mahasiswa ── Stack (nested)
+    ├── Daftar Mahasiswa
+    ├── Detail Mahasiswa
+    └── Form Tambah/Edit</code></pre>
+  </figure>
+
+  <p>
+    Karena susunan itu, setiap tab memiliki riwayatnya sendiri: berpindah dari tab Mahasiswa ke
+    tab Beranda tidak menghapus posisi pengguna di dalam stack Mahasiswa.
+    Inilah perilaku yang diharapkan pengguna aplikasi profesional, dan alasan struktural mengapa
+    folder dibentuk berlapis.
+    Satu hal yang perlu diwaspadai saat menggabungkan Tabs dan Stack: <strong>header ganda</strong>,
+    karena keduanya sama-sama dapat menampilkan batang judul.
+    Aturannya: satu navigator saja yang menampilkan header — umumnya stack terdalam yang memuat
+    judul "Daftar Mahasiswa", "Detail Mahasiswa", dan "Tambah Mahasiswa".
+  </p>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Header ganda bukan masalah kosmetik yang bisa diabaikan: pengguna melihat dua bilah judul
+      bertumpuk dan kehilangan petunjuk posisi.
+      Tentukan "pemilik header" sejak merancang struktur, lalu catat keputusan itu pada
+      dokumentasi folder project.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Mengapa tombol kembali di layar Detail membuka Daftar, bukan Beranda? (Detail berada di stack milik tab Mahasiswa; riwayat kembali mengikuti stack tab itu, bukan riwayat tab lain.)</p>
+  </div>
+</section>
+
+<!-- ============================================================ SUBBAB 7.7 -->
+
+<section class="subbab" id="s3-5">
+  <p class="label-subbab">
+    Subbab 7.7 <span class="sumber-slide">· deck: “Kenapa Daftar Masih Basi Setelah Kembali?” · buku §7.7</span>
+  </p>
+  <h2>Kenapa Daftar Masih Basi Setelah Kembali?</h2>
+
+  <p>
+    Layar tab tidak dilepas dari memori saat berpindah — layar tetap terpasang, hanya kehilangan
+    fokus.
+    Konsekuensinya, <code>useEffect</code> biasa (Bab 4) yang berjalan saat komponen terpasang
+    <strong>tidak otomatis berjalan ulang</strong> ketika layar mendapat fokus kembali.
+    Padahal banyak proses justru harus dipicu fokus: memuat ulang daftar setelah form menyimpan,
+    memperbarui waktu terakhir dilihat, atau menjeda pemutar media.
+  </p>
+
+  <p>
+    Gejala yang muncul tidak menimbulkan galat apa pun.
+    Daftar tetap menampilkan data lama, layar terlihat normal, dan konsol bersih — sehingga
+    mahasiswa sering menyimpulkan datanya yang salah, padahal proses pengambilannya yang tidak
+    dijalankan ulang.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Efek sekali jalan — tidak terpicu fokus"
+       data-label-benar="Efek yang dipantau fokus — berjalan setiap layar terlihat"
+       data-petunjuk="Bedanya bukan baru atau lama, melainkan berjalan sekali atau berjalan setiap kali terlihat. Layar tab tidak pernah dipasang ulang, jadi hanya pemicu fokus yang bekerja.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">useEffect.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §7.7</span>
+      </figcaption>
+      <pre><code class="language-text">// Efek hanya berjalan saat komponen terpasang (mount).
+useEffect(() => { muatUlangDaftar(); }, []);
+
+// Kembali ke tab  →  tidak ada proses  →  daftar tetap basi.
+// Tidak ada galat, tidak ada peringatan: layar tampak normal.</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">useFocusEffect.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §7.7</span>
+      </figcaption>
+      <pre><code class="language-text">// Efek dipantau saat layar mendapat fokus.
+useFocusEffect(useCallback(() => { muatUlangDaftar(); }, []));
+
+// Kembali ke tab  →  proses berjalan lagi  →  daftar segar.
+// Pemantauan fokus harus dibungkus useCallback (subbab 7.7 berikutnya).</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Menambah dependensi pada <code>useEffect</code> tidak menolong di sini.
+      Layar tab tidak pernah dipasang ulang, sehingga tidak ada render awal yang bisa dipakai
+      sebagai pemicu.
+      Yang perlu diganti adalah <em>jenis pemicunya</em>, yaitu fokus layar.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Lalu kapan daftar mengambil data baru? (Saat layar mendapat fokus — itulah sebabnya <code>useFocusEffect</code> ada.)</p>
+  </div>
+</section>
+
+<!-- ============================================================ SUBBAB 7.7 -->
+
+<section class="subbab" id="s3-6">
+  <p class="label-subbab">
+    Subbab 7.7 <span class="sumber-slide">· deck: “useFocusEffect Butuh useCallback” &amp; “useEffect atau useFocusEffect?” · buku §7.7, §Contoh 7.3</span>
+  </p>
+  <h2><code>useFocusEffect</code> Butuh <code>useCallback</code></h2>
+
+  <p>
+    Untuk kebutuhan fokus tadi, Expo Router menyediakan <strong>useFocusEffect</strong>: hook yang
+    menjalankan efek setiap kali layar mendapat fokus, dan membersihkannya setiap kali layar
+    kehilangan fokus.
+    Polanya punya dua bagian yang berpasangan: fungsi efek dan fungsi pembersihan — seperti masuk
+    ruangan dan mematikan lampu saat keluar.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">app/(app)/index.js</span>
+      <span class="kode-sumber">deck, slide “useFocusEffect Butuh useCallback” · buku §7.7</span>
+    </figcaption>
+    <pre><code class="language-js">import { useCallback } from 'react';
+import { useFocusEffect } from 'expo-router';
+
+useFocusEffect(
+  useCallback(() =&gt; {
+    // berjalan setiap layar mendapat fokus
+    return () =&gt; {
+      // pembersihan setiap layar kehilangan fokus
+    };
+  }, [])
+);</code></pre>
+  </figure>
+
+  <p>
+    Ada dua detil sintaks.
+    <strong>Pertama</strong>, argumen <code>useFocusEffect</code> wajib dibungkus
+    <code>useCallback</code>; tanpa itu efek terpicu ulang terus-menerus karena fungsi baru
+    dibuat pada setiap render.
+    <strong>Kedua</strong>, daftar dependensi <code>useCallback</code> menentukan kapan efek
+    dianggap berubah: efek yang bergantung pada parameter harus memuat parameter itu pada
+    daftarnya, misalnya <code>[id]</code>.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">app/(app)/index.js — penghitung fokus</span>
+      <span class="kode-sumber">buku §Contoh 7.3</span>
+    </figcaption>
+    <pre><code class="language-js">import { useCallback, useState } from 'react';
+import { Text } from 'react-native';
+import { useFocusEffect } from 'expo-router';
+
+export default function BerandaDemo() {
+  const [jumlahFokus, setJumlahFokus] = useState(0);
+
+  useFocusEffect(
+    useCallback(() =&gt; {
+      setJumlahFokus((n) =&gt; n + 1);
+    }, [])
+  );
+
+  return &lt;Text&gt;Layar ini difokuskan {jumlahFokus} kali.&lt;/Text&gt;;
+}</code></pre>
+  </figure>
+
+  <div class="tabel-gulir">
+  <table class="tabel">
+    <caption>Memilih hook · sumber: deck, slide “useEffect atau useFocusEffect?” · buku §7.7</caption>
+    <thead>
+      <tr><th scope="col">Kebutuhan</th><th scope="col">Hook</th><th scope="col">Alasan</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Mengambil data sekali saat komponen terpasang</td><td><code>useEffect</code></td><td>Berjalan sekali; tidak bergantung fokus</td></tr>
+      <tr><td>Menyegarkan daftar setiap layar terlihat lagi</td><td><code>useFocusEffect</code></td><td>Layar tab tetap terpasang, jadi fokus harus dipantau</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p>
+    Praktikum bab ini memakai <code>useFocusEffect</code> di Beranda untuk menyimulasikan
+    penyegaran data.
+    Pola yang sama dipakai di Bab 10, saat datanya benar-benar datang dari API.
+  </p>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      <code>useFocusEffect</code> tanpa <code>useCallback</code> tidak menampilkan galat di layar;
+      gejalanya muncul sebagai peringatan di konsol dan efek yang berjalan berulang tanpa henti.
+      Karena tidak terlihat, kesalahan ini paling lama tidak ditemukan — biasakan membaca konsol
+      setiap kali menyentuh kode siklus hidup.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Kapan fungsi pembersihan dijalankan? (Saat layar kehilangan fokus, dan sekali lagi sebelum efek dijalankan ulang.)</p>
+  </div>
+</section>
+
+<!-- ============================================================ SUBBAB 7.8 -->
+
+<section class="subbab" id="s3-7">
+  <p class="label-subbab">
+    Subbab 7.8 <span class="sumber-slide">· deck: “Perlindungan di Satu Titik Berlaku untuk Semua Layar” &amp; “Salah Menempatkan login.js Menghasilkan Redirect Loop” · buku §7.8</span>
+  </p>
+  <h2>Perlindungan di Satu Titik Berlaku untuk Semua Layar</h2>
+
+  <p>
+    Tidak semua layar boleh diakses siapa saja: daftar dan detail data mahasiswa hanya terbuka
+    setelah pengguna masuk.
+    Pola untuk ini disebut <strong>protected screen</strong> (layar terlindungi): sebelum
+    merender isi navigator, layout memeriksa status autentikasi; jika belum masuk, layout
+    mengalihkan pengguna dengan komponen <code>&lt;Redirect /&gt;</code>.
+  </p>
+
+  <p>
+    Kekuatan pola ini ada pada penempatannya.
+    Perlindungan diletakkan di <strong>satu titik</strong> — layout grup <code>(app)</code> — dan
+    berlaku otomatis untuk <strong>semua</strong> layar di dalamnya, termasuk layar yang
+    ditambahkan kemudian.
+    Inilah prinsip <em>single point of control</em>: tidak ada pemeriksaan yang bisa terlewat,
+    karena tidak ada pemeriksaan yang disalin.
+    <code>&lt;Redirect /&gt;</code> juga lebih disukai daripada navigasi manual karena deklaratif
+    dan aman dalam kondisi render apa pun.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Pemeriksaan disalin ke setiap layar"
+       data-label-benar="Satu pemeriksaan di layout grup"
+       data-petunjuk="Semakin banyak layar, semakin besar peluang satu salinan terlewat. Panel kanan menutup seluruh grup sekaligus, termasuk layar yang belum ditulis hari ini.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">periksa-per-layar.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §7.8</span>
+      </figcaption>
+      <pre><code class="language-text">// Pemeriksaan disalin ke setiap layar: satu salinan terlewat = satu celah.
+function LayarDaftar() {
+  if (!isLoggedIn()) return &lt;Redirect href="/login" /&gt;;
+  // ...
+}
+function LayarDetail() {
+  if (!isLoggedIn()) return &lt;Redirect href="/login" /&gt;;   // salinan kedua
+  // ...
+}
+// Layar Laporan yang lupa diperiksa tetap dapat dibuka.</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">app/(app)/_layout.js</span>
+        <span class="kode-sumber">deck, slide “Salah Menempatkan login.js Menghasilkan Redirect Loop” · buku §7.8</span>
+      </figcaption>
+      <pre><code class="language-js">import { Redirect, Tabs } from 'expo-router';
+import { isLoggedIn } from '../../lib/session';
+
+export default function LayoutAplikasi() {
+  if (!isLoggedIn()) {
+    return &lt;Redirect href="/login" /&gt;;
+  }
+  return &lt;Tabs&gt;...&lt;/Tabs&gt;;
+}</code></pre>
+    </figure>
+  </div>
+
+  <p>
+    Ada dua catatan penting.
+    <strong>Pertama</strong>, status masuk di memori (<code>lib/session.js</code>) cukup untuk
+    memahami pola, tetapi hilang saat aplikasi ditutup; implementasi sungguhan — token,
+    penyimpanan aman, masa berlaku sesi — dibahas di Bab 11 dan Bab 13.
+    <strong>Kedua</strong>, waspadai <strong>redirect loop</strong>: layar login tidak boleh berada
+    di dalam grup yang dilindungi, karena pengguna yang belum masuk akan dilempar ke login yang
+    justru memeriksa autentikasi lagi.
+  </p>
+
+  <div class="tabel-gulir">
+  <table class="tabel">
+    <caption>tiga skenario, tiga sebab, tiga gejala · sumber: deck, slide “Tiga Skenario, Tiga Sebab, Tiga Gejala”</caption>
+    <thead>
+      <tr><th scope="col">Skenario</th><th scope="col">Penyebab</th><th scope="col">Gejala yang terlihat</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>useFocusEffect</code> tanpa <code>useCallback</code></td><td>Fungsi baru dibuat pada setiap render</td><td>Efek terus berjalan; ada peringatan di konsol</td></tr>
+      <tr><td><code>login.js</code> di dalam grup <code>(app)</code></td><td>Layar login ikut diperiksa autentikasi</td><td>Pengguna terlempar ke login berulang kali</td></tr>
+      <tr><td>Tabs tidak menyembunyikan header</td><td>Tabs dan Stack sama-sama menampilkan header</td><td>Dua bilah judul bertumpuk di layar Detail</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Redirect loop tidak ditambal dengan <code>setTimeout</code> atau penanda "sudah dicek".
+      Tambalan itu menyembunyikan gejala sebentar, lalu menambah satu keadaan yang harus dirawat
+      selamanya.
+      Perbaiki penempatan berkasnya: layar login berada di luar grup yang dilindungi.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Kalau besok ditambah layar Laporan, apakah status loginnya perlu diperiksa lagi? (Tidak, selama layar itu berada di dalam grup <code>(app)</code> — pemeriksaan di layout grup sudah mencakupnya.)</p>
+  </div>
+</section>

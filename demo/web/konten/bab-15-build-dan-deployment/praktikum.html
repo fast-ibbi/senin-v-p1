@@ -1,0 +1,338 @@
+<h1>Praktikum Bab 15 — Build APK dan Laporan Build</h1>
+
+<p class="ringkas">
+  Empat pekerjaan: melengkapi identitas aplikasi di <code>app.json</code>, memeriksanya sebelum
+  dikirim ke cloud, membuat <code>eas.json</code> dengan tiga profil, dan memisahkan alamat
+  backend ke <code>.env</code>. Hasil akhirnya satu APK hasil build dan satu berkas
+  <code>LAPORAN-BUILD.md</code>. Tanpa akun EAS, jalur alternatifnya tetap melatih konsep yang
+  sama.
+</p>
+
+<div class="kotak kotak-tiruan">
+  <p class="kotak-judul">Tujuan praktikum</p>
+  <p>Setelah menyelesaikan praktikum ini, kamu mampu:</p>
+  <ol>
+    <li>mengonfigurasi <code>app.json</code> proyek sendiri: identitas aplikasi, versi, ikon, dan splash;</li>
+    <li>memverifikasi konfigurasi dengan <code>npx expo config --type public</code> sebelum build;</li>
+    <li>membuat <code>eas.json</code> dengan tiga profil build: development, preview, dan production;</li>
+    <li>menjalankan build Android lewat EAS, atau jalur alternatif ekspor bundel bila akun EAS belum dimiliki;</li>
+    <li>menyusun laporan build yang memuat hasil, versi, dan catatan pengujian.</li>
+  </ol>
+</div>
+
+<h2>Kebutuhan</h2>
+
+<ul>
+  <li>Node.js LTS 22 atau lebih baru (<code>node --version</code>).</li>
+  <li>Proyek hasil Bab 6–8, yaitu Aplikasi Manajemen Data Mahasiswa, atau proyek Expo lain yang sudah berjalan.</li>
+  <li>Folder <code>assets/</code> berisi <code>icon.png</code>, <code>adaptive-icon.png</code>, dan <code>splash-icon.png</code> — biasanya sudah tersedia dari template; nama berkas bawaan template dapat berbeda antarsdk.</li>
+  <li>Koneksi internet stabil untuk build cloud dan unduhan hasil build.</li>
+  <li>Akun Expo gratis dan aplikasi Expo di ponsel — hanya untuk jalur build cloud.</li>
+  <li>Perangkat Android fisik untuk memasang APK hasil build.</li>
+</ul>
+
+<h2>Persiapan</h2>
+
+<ol>
+  <li>Duplikat proyek ke folder <code>praktikum15</code>; jangan bekerja pada proyek utama, karena build cloud mengunggah seluruh folder.</li>
+  <li>Periksa <code>node --version</code> dan pastikan Node LTS 22 atau lebih baru.</li>
+  <li>Siapkan ikon: PNG persegi 1024×1024 berisi gambar polos berwarna dan teks singkat sudah cukup. Simpan ke <code>assets/icon.png</code>, <code>assets/adaptive-icon.png</code> (dengan ruang kosong aman di tengah), dan <code>assets/splash-icon.png</code>.</li>
+  <li>Baca <code>app.json</code> proyek dan catat nilai <code>name</code>, <code>slug</code>, dan <code>version</code> yang ada sekarang.</li>
+</ol>
+
+<h2>Langkah kerja</h2>
+
+<ol>
+  <li>Buka <code>app.json</code> dan lengkapi tujuh hal: <code>name</code>, <code>slug</code> tanpa spasi dan huruf besar, <code>version</code> mulai dari <code>1.0.0</code>, <code>android.package</code>, <code>ios.bundleIdentifier</code> dengan application ID kebalikan domain, <code>android.versionCode: 1</code>, dan <code>ios.buildNumber: "1"</code>. Bila proyek memakai Expo Router, pastikan <code>plugins</code> memuat <code>"expo-router"</code> dan <code>scheme</code> terisi.</li>
+  <li>Periksa konfigurasi dengan <code>npx expo config --type public</code>, lalu periksa baris <code>name</code>, <code>version</code>, <code>android.package</code>, dan <code>ios.bundleIdentifier</code> pada hasilnya.</li>
+  <li>Buat berkas <code>eas.json</code> di akar proyek dengan isi seperti blok Kode di bawah, lalu pastikan tiga profil ada.</li>
+  <li>Siapkan environment variable: buat <code>.env</code>, lalu ubah layar yang memanggil API agar memakai <code>process.env.EXPO_PUBLIC_API_URL</code> dengan nilai cadangan yang sama. Mulai ulang <code>npx expo start</code> dan pastikan aplikasi tetap berjalan di emulator.</li>
+  <li>Pasang alat EAS dengan <code>npm install -g eas-cli</code>, atau putuskan memakai <code>npx eas-cli</code> tanpa pemasangan. Pilih satu cara dan konsisten. Verifikasi dengan <code>npx eas-cli --version</code>.</li>
+  <li>Jalur build cloud: <code>npx eas-cli login</code>, lalu <code>npx eas-cli whoami</code> untuk memastikan sesi aktif. Jalankan <code>npx eas-cli build:configure</code> dan periksa <code>eas.json</code> yang dihasilkan; biarkan bagian <code>cli</code> yang ditambahkannya tetap ada. Terakhir jalankan <code>npx eas-cli build --platform android --profile preview</code> dan tunggu sampai terminal menampilkan tautan serta kode QR.</li>
+  <li>Jalur alternatif tanpa akun EAS: jalankan <code>npx expo export --platform android</code>. Perintah ini membuat bundel produksi dan asetnya di folder <code>dist/</code> tanpa layanan cloud. Bundel ini bukan APK yang bisa diinstal; ia adalah latihan memahami apa yang dikemas EAS.</li>
+  <li>Bila build cloud berhasil: unduh APK dari tautan, kirim ke perangkat Android, izinkan pemasangan dari sumber tidak dikenal bila diminta, lalu instal. Periksa nama aplikasi di bawah ikon, versi di pengaturan Android, dan fitur yang terhubung backend Bab 10.</li>
+  <li>Tutup praktikum dengan <code>LAPORAN-BUILD.md</code>: tabel berisi tanggal, profil, platform, hasil, tautan atau ukuran berkas, dan catatan.</li>
+</ol>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">(terminal)</span>
+    <span class="kode-sumber">buku §Praktikum · Langkah Kerja 2, 5, dan 7 · verbatim</span>
+  </figcaption>
+  <pre><code class="language-bash">node --version
+npx expo config --type public
+npx eas-cli --version
+npx eas-cli build --platform android --profile preview
+npx expo export --platform android</code></pre>
+</figure>
+
+<h2>Kode: app.json</h2>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">praktikum15/app.json</span>
+    <span class="kode-sumber">buku §Praktikum · Kode · verbatim</span>
+  </figcaption>
+  <pre><code class="language-json">{
+  "expo": {
+    "name": "Aplikasi Mahasiswa",
+    "slug": "aplikasi-mahasiswa",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "scheme": "aplikasi-mahasiswa",
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#1D4ED8"
+        }
+      ]
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "ac.id.univ.mahasiswa",
+      "buildNumber": "1"
+    },
+    "android": {
+      "package": "ac.id.univ.mahasiswa",
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#1D4ED8"
+      }
+    }
+  }
+}</code></pre>
+</figure>
+
+<h2>Kode: eas.json</h2>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">praktikum15/eas.json</span>
+    <span class="kode-sumber">buku §Praktikum · Kode · verbatim</span>
+  </figcaption>
+  <pre><code class="language-json">{
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal"
+    },
+    "preview": {
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      }
+    },
+    "production": {
+      "autoIncrement": true
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}</code></pre>
+</figure>
+
+<h2>Kode: .env dan config/api.js</h2>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">praktikum15/.env</span>
+    <span class="kode-sumber">buku §Contoh 3 · verbatim</span>
+  </figcaption>
+  <pre><code class="language-text"># File: .env (jangan di-commit ke repository publik)
+# Nilai default untuk pengembangan di emulator Android (Bab 10).
+EXPO_PUBLIC_API_URL=http://10.0.2.2:3000</code></pre>
+</figure>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">praktikum15/config/api.js</span>
+    <span class="kode-sumber">buku §Contoh 3 · verbatim</span>
+  </figcaption>
+  <pre><code class="language-js">// Alamat server API. Nilai EXPO_PUBLIC_API_URL disisipkan saat bundel dibuat;
+// bila tidak ada, fallback ke alamat emulator Android (pola Bab 10).
+const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://10.0.2.2:3000';
+
+export async function ambilDaftarMahasiswa() {
+  const respons = await fetch(`${API_URL}/api/mahasiswa`);
+  if (!respons.ok) {
+    throw new Error(`Gagal memuat data: HTTP ${respons.status}`);
+  }
+  const data = await respons.json();
+  return data.data;
+}
+
+export default API_URL;</code></pre>
+</figure>
+
+<h2>Penjelasan kode</h2>
+
+<p>
+  <strong><code>app.json</code></strong> adalah identitas aplikasi. Kunci yang paling menentukan
+  hasil build adalah <code>slug</code> (identitas proyek di ekosistem Expo — jangan diubah
+  sembarangan setelah proyek pernah terdaftar), <code>version</code> (versi semantik yang dibaca
+  manusia), serta <code>android.package</code> dan <code>ios.bundleIdentifier</code>
+  (application ID — sekali dipublikasikan tidak boleh berubah). Praktikum ini memakai
+  konfigurasi yang sama dengan contoh bab, hanya nilai identitasnya yang kamu sesuaikan.
+</p>
+
+<p>
+  Config plugin <code>expo-splash-screen</code> mengatur splash: <code>imageWidth: 200</code>
+  membuat gambar tidak memenuhi layar, <code>resizeMode: "contain"</code> menjamin gambar utuh,
+  dan <code>backgroundColor: "#1D4ED8"</code> menyamakan warna latar splash dengan warna utama
+  aplikasi sehingga transisi pembukaan terasa mulus. Jika proyek tidak memakai Expo Router, hapus
+  <code>"expo-router"</code> dari <code>plugins</code> dan <code>scheme</code> dari
+  <code>app.json</code>; router yang terpasang tetapi tidak dikonfigurasi akan membuat build
+  gagal.
+</p>
+
+<p>
+  <strong><code>eas.json</code></strong> menentukan bagaimana tiap build dibuat. Profil
+  <code>development</code> menghasilkan dev client yang dipasang di perangkat pengembang dan
+  dipakai bersama <code>npx expo start --dev-client</code>. Profil <code>preview</code>
+  menghasilkan APK rilis untuk pengujian: penguji memakainya seperti aplikasi sungguhan, lengkap
+  dengan splash dan performa produksi, tanpa melewati toko aplikasi. Profil
+  <code>production</code> menghasilkan AAB untuk toko dan menaikkan nomor versi mesin secara
+  otomatis.
+</p>
+
+<p>
+  <strong><code>.env</code> dan <code>config/api.js</code></strong> memisahkan konfigurasi dari
+  kode. Hanya variabel berawalan <code>EXPO_PUBLIC_</code> yang disisipkan ke bundel; operator
+  <code>||</code> memberi nilai cadangan bila berkas <code>.env</code> belum dibuat, dan
+  <code>API_URL</code> diekspor agar layar lain mengimpor satu sumber alamat yang sama. Karena
+  nilainya disisipkan saat bundel dibuat, hentikan lalu jalankan ulang <code>npx expo
+  start</code> setiap kali <code>.env</code> berubah.
+</p>
+
+<h2>Hasil yang diharapkan</h2>
+
+<ol>
+  <li><strong>Langkah 2:</strong> <code>npx expo config --type public</code> mencetak konfigurasi dengan <code>name: "Aplikasi Mahasiswa"</code> atau nama kamu, <code>version: "1.0.0"</code>, serta <code>android.package</code> dan <code>ios.bundleIdentifier</code> sesuai yang kamu tulis. Bila nilainya berbeda dari harapan, konfigurasi belum tersimpan benar.</li>
+  <li><strong>Langkah 4:</strong> aplikasi tetap berjalan normal di emulator sesudah memakai environment variable; data mahasiswa dari backend tetap tampil, membuktikan <code>EXPO_PUBLIC_API_URL</code> tersisip dengan benar.</li>
+  <li><strong>Langkah 6 (jalur cloud):</strong> EAS menyelesaikan build dengan status <em>finished</em>, terminal menampilkan tautan, APK hasil unduhan terpasang di perangkat, nama aplikasi di peluncur sesuai <code>name</code>, dan splash biru muncul sesaat saat aplikasi dibuka.</li>
+  <li><strong>Langkah 7 (jalur alternatif):</strong> folder <code>dist/</code> terisi bundel JavaScript produksi beserta asetnya, dan ukuran total bundel tercatat. Bandingkan dengan kesan “ringan” aplikasi saat dibuka, karena bundel produksi tidak lagi memuat alat debugging.</li>
+  <li><strong>Langkah 9:</strong> <code>LAPORAN-BUILD.md</code> terisi minimal satu baris per jalur yang dijalankan, dengan kolom tanggal, profil, platform, hasil, dan catatan.</li>
+</ol>
+
+<h2>Troubleshooting</h2>
+
+<div class="tabel-gulir">
+  <table class="tabel">
+    <caption>Ketika build belum berhasil · sumber: buku §Troubleshooting</caption>
+    <thead>
+      <tr>
+        <th scope="col">Gejala</th>
+        <th scope="col">Penyebab</th>
+        <th scope="col">Solusi</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Setelah <code>npm install -g eas-cli</code>, perintah <code>eas</code> ditolak dengan “not recognized” atau “command not found”</td>
+        <td>Folder pemasangan paket global belum terdaftar di PATH sesi terminal yang sedang berjalan</td>
+        <td>Buka terminal baru; bila tetap gagal, pakai <code>npx eas-cli ...</code> untuk semua perintah</td>
+      </tr>
+      <tr>
+        <td><code>npx eas-cli login</code> gagal dengan pesan jaringan, atau unggahan build berhenti</td>
+        <td>Koneksi tidak stabil, jaringan kampus memblokir sebagian lalu lintas, atau sesi login kedaluwarsa</td>
+        <td>Ulangi login, cek <code>npx eas-cli whoami</code>, coba jaringan lain; untuk unggahan yang gagal, jalankan ulang perintah build</td>
+      </tr>
+      <tr>
+        <td>Build cloud gagal dengan “Asset ./assets/icon.png does not exist”</td>
+        <td>Path di <code>app.json</code> tidak cocok dengan berkas sungguhan — nama berbeda, folder tidak ada, atau beda huruf kapital karena server EAS peka huruf</td>
+        <td>Samakan persis isi folder <code>assets/</code> dengan path di <code>app.json</code>, lalu periksa dengan <code>npx expo config --type public</code></td>
+      </tr>
+      <tr>
+        <td>Google Play menolak AAB dengan “Version code 1 has already been used”</td>
+        <td><code>android.versionCode</code> pada unggahan kedua sama dengan yang pertama, padahal Play mewajibkan nomor selalu naik</td>
+        <td>Naikkan <code>android.versionCode</code>, atau aktifkan <code>autoIncrement: true</code> pada profil production</td>
+      </tr>
+      <tr>
+        <td><code>process.env.EXPO_PUBLIC_API_URL</code> bernilai <code>undefined</code>, atau aplikasi memakai nilai lama setelah <code>.env</code> diubah</td>
+        <td>Nama variabel tanpa awalan <code>EXPO_PUBLIC_</code>, berkas <code>.env</code> salah nama atau salah letak, atau server pengembangan belum dimuat ulang</td>
+        <td>Periksa ejaan awalan, pastikan berkas bernama <code>.env</code> di akar proyek, lalu hentikan dan jalankan lagi <code>npx expo start</code> — bila perlu dengan <code>-c</code> untuk membersihkan cache</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="kotak kotak-salah">
+  <p class="kotak-judul">Salah paham</p>
+  <p>
+    Kegagalan build bukan kegagalan logika aplikasi. Aplikasi yang sama berjalan sempurna di
+    emulator, lalu gagal di server hanya karena satu huruf kapital pada path aset. Bacalah pesan
+    errornya lebih dulu, periksa konfigurasi dengan <code>npx expo config --type public</code>,
+    dan jangan membangun ulang berkali-kali tanpa memperbaiki penyebabnya.
+  </p>
+</div>
+
+<h2>Yang harus teramati</h2>
+
+<p>Untuk tiap baris laporan build, catat tiga hal:</p>
+
+<ul>
+  <li><strong>Sumber build</strong> — profil mana yang dipakai, dan hasilnya APK atau AAB.</li>
+  <li><strong>Identitas</strong> — <code>version</code> yang dipakai dan <code>versionCode</code> yang naik dibanding unggahan sebelumnya.</li>
+  <li><strong>Bukti</strong> — tautan unduhan atau tangkapan layar dasbor, bukan nama profil saja.</li>
+</ul>
+
+<blockquote>
+  Laporan yang baik menyebut bukti yang bisa diperiksa: “APK preview 1.0.0 (versionCode 1)
+  terpasang di HP Redmi”, bukan “build sudah jalan”.
+</blockquote>
+
+<h2>Kuis kilat</h2>
+
+<ol>
+  <li>Apa beda utama production build dan development build?</li>
+  <li>Kenapa Google Play mewajibkan AAB untuk aplikasi baru?</li>
+  <li>Variabel <code>EXPO_PUBLIC_API_URL</code> di dalam kode aplikasi sebenarnya bagaimana?</li>
+  <li>Track Play tanpa peninjauan dan paling banyak 100 penguji adalah...</li>
+</ol>
+
+<div class="kotak kotak-jawab">
+  <details>
+    <summary>Kunci kuis kilat</summary>
+    <ol>
+      <li>Production build diminifikasi, dioptimalkan, bertanda tangan, dan tanpa alat debugging; development build memudahkan iterasi dan debugging.</li>
+      <li>Play merakit split APK per perangkat dari AAB, sehingga unduhan pengguna lebih kecil.</li>
+      <li>Nilainya disisipkan ke bundel saat build, jadi tidak layak dipakai untuk secret.</li>
+      <li>Internal testing: sampai 100 penguji, rilis cepat tanpa peninjauan.</li>
+    </ol>
+  </details>
+</div>
+
+<h2>Ringkasan bab</h2>
+
+<ol>
+  <li>Development build mengejar kecepatan iterasi; production build mengejar ukuran, kecepatan, dan keamanan — keduanya produk proses build yang sama dengan tujuan berbeda.</li>
+  <li>EAS Build adalah build cloud Expo: <code>eas login</code> untuk autentikasi, <code>eas build:configure</code> untuk membuat <code>eas.json</code>, lalu <code>eas build --platform android --profile &lt;nama&gt;</code> untuk membangun.</li>
+  <li>Tiga profil build: development untuk dev client, preview untuk APK pengujian internal, production untuk AAB toko dengan versi mesin yang naik otomatis.</li>
+  <li>APK dapat diinstal langsung; AAB adalah format induk untuk Play yang disusun Google menjadi APK per perangkat — wajib untuk aplikasi baru sejak 2021.</li>
+  <li><code>app.json</code> memuat identitas aplikasi: name, slug, versi semantik, application ID kebalikan domain yang permanen, ikon 1024×1024 dengan adaptive icon, dan splash lewat plugin expo-splash-screen.</li>
+  <li>Environment variable berawalan <code>EXPO_PUBLIC_</code> disisipkan ke bundel saat build — praktis untuk alamat server, tetapi tidak pernah untuk secret.</li>
+  <li>Signing membuktikan keaslian dan menjamin aplikasi hanya bisa diperbarui oleh pemilik kunci; keystore yang hilang berarti aplikasi tidak dapat diperbarui.</li>
+  <li>Google Play mendistribusikan lewat empat track, dan Play App Signing memisahkan upload key dari kunci produksi.</li>
+  <li>App Store melalui App Store Connect, TestFlight, dan App Review memerlukan keanggotaan Apple Developer berbayar tahunan.</li>
+  <li>Tiga lingkungan memakai kode yang sama dengan konfigurasi berbeda — prinsip yang mencegah “berjalan di mesin saya”.</li>
+</ol>
+
+<div class="kotak kotak-tanya">
+  <p class="kotak-judul">Pertanyaan penuntun</p>
+  <p>
+    Tutup dengan pertanyaan diskusi deck: kanal apa yang selama ini kamu pakai untuk membagikan
+    aplikasi ke teman, dan apa risiko tersembunyi mengirim APK lewat grup chat? Lalu satu
+    kalimat yang menyatukan Bab 14 dan Bab 15: “Bab 14 memeriksa isi aplikasi; bab ini memastikan
+    aplikasi sampai ke pengguna dengan aman dan terkendali.” Kumpulkan laporan QA dan laporan
+    build sebagai Tugas 3 sebelum ujian akhir.
+  </p>
+</div>

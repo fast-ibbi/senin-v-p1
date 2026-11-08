@@ -1,0 +1,329 @@
+<h1>Bagian 3 — Alat Uji: Emulator, adb &amp; iOS Simulator</h1>
+
+<p class="ringkas">
+  Subbab 2.5–2.6, ditutup subbab 2.9. Aplikasi sudah bisa dijalankan, tetapi di layar mana?
+  Bagian ini membandingkan tiga jalur pengujian beserta harganya, lalu menutup celah yang
+  paling sering menggagalkan praktikum: ponsel dan komputer yang tidak satu jaringan.
+</p>
+
+<section class="subbab" id="s3-1">
+  <p class="label-subbab">
+    Subbab 2.5 <span class="sumber-slide">· deck: “Emulator Android: Satu Komputer, Banyak Versi Android” · buku §2.5</span>
+  </p>
+  <h2>Emulator Android: Satu Komputer, Banyak Versi Android</h2>
+
+  <p>
+    <strong>Emulator</strong> adalah program yang menyimulasikan perilaku ponsel Android —
+    layar, prosesor, memori, hingga versi sistem — di dalam komputermu. Alat yang dipakai
+    mengelolanya adalah <strong>Android Studio</strong>, IDE resmi Android. Dari sana kita
+    membuka <strong>AVD Manager</strong> (<em>Android Virtual Device</em>) untuk membuat
+    perangkat virtual dengan memilih jenis ponsel dan versi Android.
+  </p>
+
+  <p>
+    Mengapa emulator ada? Karena pengembang tidak mungkin membeli puluhan ponsel hanya untuk
+    menguji aplikasi pada berbagai versi Android. Analoginya seperti simulator penerbangan:
+    cukup realistis untuk latihan dasar, tetapi tidak menggantikan penerbangan sungguhan.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Membeli banyak ponsel"
+       data-label-benar="Satu emulator, banyak versi"
+       data-petunjuk="Keunggulan emulator bukan pada kesetiaan perilaku, melainkan pada biaya: variasi versi Android didapat tanpa membeli perangkat."
+    >
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">cara-mahal.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §2.5</span>
+      </figcaption>
+      <pre><code class="language-text">✗ satu ponsel per versi Android
+✗ biaya perangkat bertambah
+✗ perangkat fisik sulit dikembalikan
+  ke versi sistem yang lebih lama
+✗ pengujian lintas versi terbatas
+  pada apa yang ada di lemari</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">cara-emulator.txt</span>
+        <span class="kode-sumber">buku §2.5</span>
+      </figcaption>
+      <pre><code class="language-text">✓ Android Studio → AVD Manager
+✓ pilih model ponsel + versi Android
+✓ beberapa AVD berdampingan
+✓ biaya pengujian lintas versi
+  hampir nol
+✗ lebih lambat, boros memori,
+  sebagian sensor tidak didukung</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      AVD yang belum pernah dibuat membuat tombol <strong>a</strong> di terminal Expo tidak
+      melakukan apa pun — dan itu bukan kesalahan kodemu. Nyalakan emulator lebih dulu, baru
+      tekan a; laptop dengan RAM 8 GB ke atas disarankan karena emulator memakan memori cukup
+      besar.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Kenapa pengembang tidak membeli banyak ponsel untuk menguji lintas versi? (Jawaban:
+      emulator memungkinkan pengujian berbagai versi Android tanpa biaya perangkat.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s3-2">
+  <p class="label-subbab">
+    Subbab 2.5 <span class="sumber-slide">· deck: “adb Menghubungkan Komputer ke Perangkat Android” · buku §2.5</span>
+  </p>
+  <h2>adb Menghubungkan Komputer ke Perangkat Android</h2>
+
+  <p>
+    <strong>adb</strong> (<em>Android Debug Bridge</em> — jembatan debug Android) adalah program
+    baris perintah yang menghubungkan komputer dengan perangkat Android, baik virtual maupun
+    fisik. Perintah <code>adb devices</code> menampilkan daftar perangkat yang dikenali —
+    berguna untuk memastikan emulator atau ponselmu benar-benar terlihat sebelum menjalankan
+    aplikasi.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">(terminal)</span>
+      <span class="kode-sumber">buku §2.5</span>
+    </figcaption>
+    <pre><code class="language-bash">adb devices</code></pre>
+  </figure>
+
+  <p>
+    Untuk memakai perangkat fisik, aktifkan fitur pengembang dengan membuka menu
+    <em>About phone</em> lalu mengetuk <em>Build number</em> tujuh kali; setelah itu aktifkan
+    <em>USB debugging</em> pada menu Developer options. Saat ponsel dihubungkan dengan kabel
+    USB, ponsel akan menanyakan apakah kamu mempercayai komputer ini (autentikasi RSA) —
+    pilih izinkan. Urutannya sering terbalik: opsi pengembang dulu, lalu USB debugging, baru
+    menyambungkan kabel.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Status unauthorized"
+       data-label-benar="Status device"
+       data-petunjuk="Daftar kosong dan status unauthorized adalah dua masalah berbeda: yang pertama soal pengenalan, yang kedua soal kepercayaan."
+    >
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">adb-kosong.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §Troubleshooting</span>
+      </figcaption>
+      <pre><code class="language-text">$ adb devices
+List of devices attached
+
+(kosong, atau:)
+List of devices attached
+R58M12ABCDE   unauthorized</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">adb-terhubung.txt</span>
+        <span class="kode-sumber">buku §Praktikum · Hasil yang Diharapkan</span>
+      </figcaption>
+      <pre><code class="language-text">$ adb devices
+List of devices attached
+emulator-5554   device</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Dua penyebab tersembunyi yang paling sering: kabel yang hanya mengisi daya tanpa jalur
+      data, dan ponsel yang belum menyetujui autentikasi komputer. Status
+      <code>unauthorized</code> berarti ponsel sudah terlihat tetapi belum mempercayai
+      komputermu; cabut lalu pasang ulang kabel dan setujui dialog yang muncul.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Kapan adb benar-benar diperlukan? (Jawaban: saat memastikan emulator atau ponsel dikenali
+      komputer sebelum menjalankan aplikasi, misalnya ketika tombol a tidak membuka apa pun.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s3-3">
+  <p class="label-subbab">
+    Subbab 2.6 <span class="sumber-slide">· deck: “iOS Simulator Hanya Hidup di macOS” · buku §2.6</span>
+  </p>
+  <h2>iOS Simulator Hanya Hidup di macOS</h2>
+
+  <p>
+    <strong>iOS Simulator</strong> adalah program yang meniru iPhone atau iPad di dalam
+    komputer. Bedanya dengan emulator Android: ia hanya dapat berjalan di komputer
+    <strong>macOS</strong> dan membutuhkan <strong>Xcode</strong>, IDE resmi Apple yang
+    ukurannya sangat besar. Konsekuensinya tegas — bila komputermu berbasis Windows atau Linux,
+    iOS Simulator tidak dapat dijalankan sama sekali.
+  </p>
+
+  <p>
+    Pesan pentingnya bukan soal alat, melainkan pola pikir: pengembangan lintas platform tidak
+    berarti setiap orang harus memiliki semua perangkat, melainkan memahami jalur mana yang
+    tersedia pada kondisi masing-masing.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Mac: Simulator penuh"
+       data-label-benar="Windows/Linux: jalur alternatif"
+       data-petunjuk="Perhatikan bahwa yang berbeda bukan kemampuan menulis kode iOS, melainkan cara melihat hasilnya."
+    >
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">di-macos.txt</span>
+        <span class="kode-sumber">buku §2.6</span>
+      </figcaption>
+      <pre><code class="language-text">✓ macOS + Xcode terpasang
+✓ npx expo start
+→ tekan i di terminal Expo
+→ iOS Simulator terbuka</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">di-windows-linux.txt</span>
+        <span class="kode-sumber">buku §2.6</span>
+      </figcaption>
+      <pre><code class="language-text">✗ iOS Simulator tidak bisa jalan
+✓ jalur 1: iPhone fisik + Expo Go,
+  satu jaringan Wi-Fi dengan laptop
+✓ jalur 2: build iOS di layanan awan,
+  misalnya EAS Build (Bab 15)</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Jangan berharap pengujian iOS lengkap bisa dilakukan di kelas yang tidak memiliki Mac,
+      dan jangan memaksakan jalan pintas yang tidak ada. Yang jujur diajarkan di kelas seperti
+      itu adalah dua jalur alternatif di atas, beserta harga masing-masing.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Bagaimana mahasiswa pengguna Windows menguji tampilan di iOS? (Jawaban: meminjam iPhone
+      dan memasang Expo Go di jaringan yang sama, atau menyerahkan proses build ke layanan
+      awan di Bab 15.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s3-4">
+  <p class="label-subbab">
+    Subbab 2.9 <span class="sumber-slide">· deck: “Tiga Jalur Menguji Aplikasi, Tiga Trade-off” · buku §2.9</span>
+  </p>
+  <h2>Tiga Jalur Menguji Aplikasi, Tiga Trade-off</h2>
+
+  <p>
+    Ada tiga jalur untuk melihat aplikasimu berjalan, dan memilih di antaranya adalah latihan
+    pertama berpikir analitis di bab ini. Kolom terakhir tabel di bawah adalah alasan
+    memilihnya; kolom persiapan hanya ongkos yang harus dibayar lebih dulu.
+  </p>
+
+  <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Tiga jalur pengujian aplikasi · sumber: deck “Tiga Jalur…”, buku §2.9</caption>
+      <thead>
+        <tr><th scope="col">Jalur</th><th scope="col">Persiapan</th><th scope="col">Kecepatan dan kesetiaan</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Expo Go</strong> (Wi-Fi)</td><td>Satu Wi-Fi dengan komputer</td><td>Paling cepat; ponsel sungguhan</td></tr>
+        <tr><td><strong>Emulator</strong></td><td>Perangkat virtual dibuat dulu</td><td>Lebih lambat; sensor terbatas</td></tr>
+        <tr><td><strong>Perangkat fisik</strong></td><td>USB debugging diaktifkan</td><td>Paling meyakinkan; sensor nyata</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    Untuk pengembangan harian, jalur Wi-Fi dengan Expo Go lebih praktis karena tidak
+    bergantung pada kabel. Perangkat fisik tetap diperlukan begitu aplikasi menyentuh kamera,
+    lokasi, atau notifikasi — dan emulator tidak mewakili sensor sungguhan.
+  </p>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Kelompokmu akan menguji fitur kamera di Bab 12; jalur mana yang kamu pilih? (Jawaban:
+      perangkat fisik, karena emulator tidak mewakili sensor sungguhan.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s3-5">
+  <p class="label-subbab">
+    Subbab 2.9 <span class="sumber-slide">· deck: “Apa yang Terjadi Jika…?” &amp; “Jawabannya: yang Gagal Jaringannya, Bukan Kodenya” · buku §2.9</span>
+  </p>
+  <h2>Kalau Kode QR Tidak Tersambung: yang Gagal Jaringannya</h2>
+
+  <p>
+    Kasus yang paling sering terjadi di kelas: ponsel dan komputer berada di jaringan berbeda,
+    misalnya ponsel memakai hotspot atau Wi-Fi kampus memblokir komunikasi antarperangkat.
+    Kode QR tampil, tetapi tidak pernah tersambung. Yang gagal bukan kodenya — Metro dan
+    ponsel tidak bisa saling menjangkau.
+  </p>
+
+  <p>
+    Solusinya tidak mengubah pengaturan jaringan: hentikan server dengan <strong>Ctrl+C</strong>,
+    lalu nyalakan ulang dengan opsi <code>--tunnel</code>. Opsi ini membuat Metro menjembatani
+    koneksi melalui server publik, sehingga ponsel dapat menjangkau komputermu meskipun tidak
+    satu jaringan.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Jaringan lokal"
+       data-label-benar="Tunnel"
+       data-petunjuk="Tunnel bukan kebiasaan harian, melainkan jalan cadangan: yang dibeli adalah jangkauan, yang dibayar adalah kecepatan."
+    >
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">(terminal)</span>
+        <span class="kode-sumber">buku §2.9</span>
+      </figcaption>
+      <pre><code class="language-bash">npx expo start</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">(terminal)</span>
+        <span class="kode-sumber">buku §2.9</span>
+      </figcaption>
+      <pre><code class="language-bash">npx expo start --tunnel</code></pre>
+    </figure>
+  </div>
+
+  <p>
+    Harganya harus disebut jujur: transfer lewat tunnel lebih lambat dan menuntut koneksi
+    internet yang stabil. Untuk kerja harian, jaringan Wi-Fi yang sama tetap lebih cepat;
+    simpan <code>--tunnel</code> sebagai cadangan untuk jaringan yang ketat.
+  </p>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Kode QR yang tidak tersambung sering dianggap bug aplikasi, sehingga mahasiswa mulai
+      mengubah kode, memasang ulang dependensi, atau bahkan mengganti templat. Tidak satu pun
+      menyentuh penyebabnya. Periksa jaringannya lebih dulu.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Kapan kamu memilih tunnel alih-alih Wi-Fi kelas? (Jawaban: saat jaringan memblokir
+      komunikasi antarperangkat, misalnya saat memakai hotspot ponsel.)
+    </p>
+  </div>
+</section>

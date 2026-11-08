@@ -1,0 +1,649 @@
+<h1>Bagian 2 — Context API &amp; Custom Hook</h1>
+
+<p class="ringkas">
+  Subbab 9.3 Context API · 9.4 custom hook · 9.5 kapan data layak global · 9.6 pustaka modern.
+  Bagian 1 sudah menaikkan state ke induk bersama; bagian ini menjawab pertanyaan yang
+  ditinggalkannya: bagaimana nilai itu sampai ke layar tanpa dioper berantai lewat props?
+</p>
+
+<section class="subbab" id="s2-1">
+  <p class="label-subbab">
+    Subbab 9.3 <span class="sumber-slide">· deck: “Context API Bekerja Lewat Tiga Bagian” · buku §9.3</span>
+  </p>
+  <h2>Context API Bekerja Lewat Tiga Bagian</h2>
+
+  <p>
+    <strong>Context API</strong> adalah mekanisme bawaan React untuk membagikan data ke
+    seluruh cabang pohon komponen tanpa menurunkannya satu per satu lewat props.
+    Ia menjawab masalah prop drilling pada subbab 9.2 dengan jalur langsung: nilai berangkat
+    dari penyedianya, lalu dibaca oleh komponen yang membutuhkannya.
+  </p>
+
+  <p>
+    Tiga bagian bekerja berurutan, masing-masing dengan satu tugas.
+    <code>createContext</code> membuat wadah beserta nilai awalnya.
+    <code>Provider</code> memasok nilai ke seluruh subtree lewat prop <code>value</code>.
+    <code>useContext</code> membaca nilai itu dari dalam subtree.
+  </p>
+
+  <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Tiga bagian Context API · sumber: deck &amp; buku §9.3</caption>
+      <thead>
+        <tr><th scope="col">Bagian</th><th scope="col">Perannya</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>createContext</code></td><td>Membuat objek context beserta nilai awalnya</td></tr>
+        <tr><td><code>Provider</code></td><td>Memasok nilai ke seluruh subtree lewat prop <code>value</code></td></tr>
+        <tr><td><code>useContext</code></td><td>Hook untuk membaca nilai dari dalam subtree</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    Isi nilai awal dengan <code>null</code>. Nilai awal bukan hiasan: ia adalah petunjuk yang
+    membuat komponen di luar penyedia mudah dideteksi.
+    Pemeriksaan itulah yang nanti dipakai <code>useCart</code> di subbab 9.4.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">context/BahasaContext.js</span>
+      <span class="kode-sumber">potongan verbatim · buku §9.3</span>
+    </figcaption>
+    <pre><code class="language-js">import { createContext, useContext, useState } from 'react';
+
+export const BahasaContext = createContext(null);</code></pre>
+  </figure>
+
+  <div class="banding"
+       data-label-lama="Nilai awal objek — provider hilang tanpa jejak"
+       data-label-benar="Nilai awal null — provider hilang terdeteksi"
+       data-petunjuk="Nilai awal yang tampak wajar membuat pemakaian di luar provider berjalan diam-diam; null membuat kesalahan itu kelihatan.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">nilai-awal-objek.js</span>
+        <span class="kode-sumber">ilustrasi · buku §9.3</span>
+      </figcaption>
+      <pre><code class="language-js">// Nilai awal berisi data palsu: pemakaian di luar provider tetap
+// mengembalikan angka 0, jadi keranjang tampak kosong — bukan salah.
+export const CartContext = createContext({ items: [], jumlahItem: 0 });</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">context/CartContext.js</span>
+        <span class="kode-sumber">buku §Praktikum</span>
+      </figcaption>
+      <pre><code class="language-js">// Nilai awal null: pemakaian di luar provider dapat dideteksi
+// dan dilaporkan sebagai kesalahan pemasangan, bukan data kosong.
+export const CartContext = createContext(null);</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Context bukan pengganti props secara umum, melainkan jalur langsung untuk data yang
+      benar-benar lintas wilayah.
+      Menyembunyikan semua nilai ke context membuat komponen sulit dipakai ulang, karena
+      kebutuhannya tidak lagi terbaca dari daftar props.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Kalau context mengubah cara data didistribusikan, apakah cara state disimpan ikut berubah? (Jawaban: tidak; state tetap dideklarasikan dengan <code>useState</code>, context hanya mengubah distribusinya.)</p>
+  </div>
+</section>
+
+<section class="subbab" id="s2-2">
+  <p class="label-subbab">
+    Subbab 9.3 <span class="sumber-slide">· deck: “Polanya Cuma Tiga Baris: Wadah, Provider, Nilai Awal” · buku §9.3</span>
+  </p>
+  <h2>Polanya Cuma Tiga Baris: Wadah, Provider, Nilai Awal</h2>
+
+  <p>
+    Berkas context biasanya pendek: satu wadah, satu komponen provider, dan satu state di
+    dalamnya. <code>BahasaProvider</code> memegang state <code>bahasa</code> dengan
+    <code>useState</code>, lalu memasoknya ke semua anak lewat
+    <code>value={{ bahasa, setBahasa }}</code>.
+  </p>
+
+  <p>
+    Perhatikan bahwa <code>value</code> membagikan nilai <strong>dan</strong> fungsi
+    pengubahnya dalam satu objek. Tanpa fungsi pengubah, pembaca hanya bisa menampilkan nilai
+    dan tidak bisa mengubahnya — tombol ganti bahasa tidak akan berbuat apa pun.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">context/BahasaContext.js</span>
+      <span class="kode-sumber">buku §9.3 · sama dengan deck</span>
+    </figcaption>
+    <pre><code class="language-jsx">import { createContext, useContext, useState } from 'react';
+
+export const BahasaContext = createContext(null);
+
+export function BahasaProvider({ children }) {
+  const [bahasa, setBahasa] = useState('id');
+  return (
+    &lt;BahasaContext.Provider value={{ bahasa, setBahasa }}&gt;
+      {children}
+    &lt;/BahasaContext.Provider&gt;
+  );
+}</code></pre>
+  </figure>
+
+  <p>
+    Analogi dari buku: provider seperti papan pengumuman yang dipasang di satu lantai.
+    Setiap ruangan di lantai itu — <code>children</code>, sedalam apa pun — bisa membacanya
+    tanpa perlu dioperi kertas.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Hanya nilai — pembaca tidak bisa mengubah"
+       data-label-benar="Nilai + pengubah — satu objek"
+       data-petunjuk="Bentuk isi value menentukan apa yang boleh dilakukan pembaca: menampilkan saja, atau menampilkan sekaligus mengubah.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">value-tanpa-pengubah.jsx</span>
+        <span class="kode-sumber">ilustrasi · buku §9.3</span>
+      </figcaption>
+      <pre><code class="language-jsx">// Hanya nilai yang dibagikan: komponen pembaca bisa menampilkan
+// bahasa aktif, tetapi tidak punya cara menggantinya.
+&lt;BahasaContext.Provider value={bahasa}&gt;
+  {children}
+&lt;/BahasaContext.Provider&gt;</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">context/BahasaContext.js</span>
+        <span class="kode-sumber">buku §9.3</span>
+      </figcaption>
+      <pre><code class="language-jsx">// Nilai dan pengubahnya berbagi satu objek: pembaca dapat membaca
+// sekaligus meminta perubahan lewat setBahasa.
+&lt;BahasaContext.Provider value={{ bahasa, setBahasa }}&gt;
+  {children}
+&lt;/BahasaContext.Provider&gt;</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Meletakkan state di luar komponen provider — misalnya di tingkat modul berkas — membuat
+      nilainya tidak pernah berubah dan tidak memicu render ulang.
+      Context mengubah cara mendistribusikan data, bukan tempat menyimpannya.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Pemakaian nyata context di aplikasi sehari-hari apa saja? (Jawaban: tema terang/gelap, bahasa antarmuka, profil pengguna yang sudah masuk, dan keranjang belanja.)</p>
+  </div>
+</section>
+
+<section class="subbab" id="s2-3">
+  <p class="label-subbab">
+    Subbab 9.3 <span class="sumber-slide">· deck: “Kapan Context Dipakai, Kapan Justru Dihindari” · buku §9.3</span>
+  </p>
+  <h2>Kapan Context Dipakai, Kapan Justru Dihindari</h2>
+
+  <p>
+    Context dipakai ketika data dibaca banyak komponen yang berjauhan, ketika data berubah
+    lintas layar, dan ketika prop drilling sudah terasa menyakitkan.
+    Context dihindari ketika data hanya dipakai satu atau dua komponen bertetangga: nilai yang
+    tersembunyi di lingkungan membuat komponen sulit dipakai ulang.
+  </p>
+
+  <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Dua arah keputusan · sumber: deck &amp; buku §9.3</caption>
+      <thead>
+        <tr><th scope="col">Pakai Context kalau</th><th scope="col">Hindari Context kalau</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Data dipakai banyak komponen yang berjauhan (tema, bahasa, keranjang)</td><td>Komponen sulit dipakai ulang karena nilainya tersembunyi</td></tr>
+        <tr><td>Data berubah lintas layar</td><td>Nilai bisa dibaca jelas dari props yang eksplisit</td></tr>
+        <tr><td>Data ditulis oleh banyak pihak yang sama</td><td>Data dipakai hanya satu atau dua komponen bertetangga</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    Satu catatan perilaku yang harus diingat: saat nilai context berubah,
+    <strong>setiap</strong> komponen yang memanggil <code>useContext</code> pada context itu
+    ikut di-render ulang, tanpa pandang bulu.
+    Untuk data yang jarang berubah — tema atau bahasa — ini tidak masalah.
+    Untuk data yang sering berubah dengan pembaca sangat banyak, aplikasi besar memecah
+    provider menjadi beberapa context kecil.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">context/TemaContext.js</span>
+      <span class="kode-sumber">buku Contoh 2 · subbab 9.3</span>
+    </figcaption>
+    <pre><code class="language-js">import { createContext, useContext, useState } from 'react';
+
+export const TemaContext = createContext(null);
+
+export function TemaProvider({ children }) {
+  const [mode, setMode] = useState('terang');
+
+  const palet =
+    mode === 'gelap'
+      ? { latar: '#1e272e', teks: '#f5f6fa' }
+      : { latar: '#ffffff', teks: '#2f3542' };
+
+  return (
+    &lt;TemaContext.Provider value={{ mode, setMode, palet }}&gt;
+      {children}
+    &lt;/TemaContext.Provider&gt;
+  );
+}</code></pre>
+  </figure>
+
+  <p>
+    <code>palet</code> adalah nilai turunan dari <code>mode</code>, dan ia dihitung di dalam
+    provider — bukan di setiap komponen.
+    Dengan begitu aturan warna hidup di satu tempat: menambah mode baru cukup mengubah satu
+    berkas.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Satu provider raksasa — semua pembaca ikut berubah"
+       data-label-benar="Provider terpisah per wilayah — render ulang terbatas"
+       data-petunjuk="Semakin banyak nilai yang digabung dalam satu provider, semakin sering pembaca yang tidak berkepentingan ikut di-render ulang.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">provider-raksasa.jsx</span>
+        <span class="kode-sumber">ilustrasi · buku §9.3</span>
+      </figcaption>
+      <pre><code class="language-jsx">// Tema, bahasa, dan keranjang dalam satu nilai. Mengetuk "Tambah"
+// pada keranjang ikut me-render ulang pembaca tema dan bahasa.
+&lt;AplikasiProvider value={{ mode, setMode, bahasa, setBahasa, items, tambahItem }}&gt;
+  &lt;Stack /&gt;
+&lt;/AplikasiProvider&gt;</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">provider-terpisah.jsx</span>
+        <span class="kode-sumber">ilustrasi · buku §9.3</span>
+      </figcaption>
+      <pre><code class="language-jsx">// Tiap wilayah punya wadahnya sendiri; pembaca tema tidak ikut
+// di-render ulang ketika isi keranjang berubah.
+&lt;TemaProvider&gt;
+  &lt;BahasaProvider&gt;
+    &lt;CartProvider&gt;
+      &lt;Stack /&gt;
+    &lt;/CartProvider&gt;
+  &lt;/BahasaProvider&gt;
+&lt;/TemaProvider&gt;</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Render ulang seluruh cabang bukan cacat. Untuk data yang jarang berubah — tema, bahasa —
+      biayanya tidak terasa.
+      Yang berat adalah data yang sering berubah dengan pembaca sangat banyak, seperti keranjang
+      yang terus bertambah saat pengguna berbelanja.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Kalau seluruh aplikasi dibungkus satu provider raksasa, apa risikonya? (Jawaban: setiap perubahan memicu render ulang semua pembacanya, termasuk yang tidak berkepentingan.)</p>
+  </div>
+</section>
+
+<section class="subbab" id="s2-4">
+  <p class="label-subbab">
+    Subbab 9.4 <span class="sumber-slide">· deck: “Custom Hook Membungkus State agar Bisa Dipakai Ulang” · buku §9.4</span>
+  </p>
+  <h2>Custom Hook Membungkus State agar Bisa Dipakai Ulang</h2>
+
+  <p>
+    <strong>Custom hook</strong> adalah fungsi JavaScript biasa yang namanya diawali kata
+    <code>use</code>, memanggil satu atau lebih hook bawaan di dalamnya, dan mengembalikan data
+    serta fungsi yang dibutuhkan pemakainya.
+    Ia bukan fitur baru React, melainkan pola organisasi kode.
+  </p>
+
+  <p>
+    Tiga aturan yang sama dengan Bab 4 tetap berlaku: nama fungsi wajib diawali
+    <code>use</code>; hook bawaan hanya dipanggil di tingkat atas fungsi; dan pemanggilannya
+    tidak boleh berada di dalam percabangan atau perulangan.
+    React melacak urutan pemanggilan hook, sehingga urutan itu tidak boleh berubah antar-render.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">hooks/useTampilSembunyi.js</span>
+      <span class="kode-sumber">buku §9.4 · sama dengan deck</span>
+    </figcaption>
+    <pre><code class="language-js">import { useState } from 'react';
+
+export function useTampilSembunyi(awal = false) {
+  const [tampil, setTampil] = useState(awal);
+  const ubah = () => setTampil((n) =&gt; !n);
+  return { tampil, ubah };
+}</code></pre>
+  </figure>
+
+  <p>
+    Manfaatnya tiga kali lipat: komponen menjadi lebih pendek dan fokus pada tampilan,
+    logika dapat dipakai ulang tanpa menyalin kode, dan logika yang terisolasi lebih mudah
+    diuji — prinsip yang dipakai lagi di Bab 14.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Logika toggle disalin di setiap komponen"
+       data-label-benar="Logika toggle hidup di satu hook"
+       data-petunjuk="Perhatikan apa yang berubah ketika aturan toggle perlu diperbaiki: satu salinan, atau semua salinan.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">toggle-disalin.jsx</span>
+        <span class="kode-sumber">ilustrasi · buku §9.4</span>
+      </figcaption>
+      <pre><code class="language-jsx">// Salinan pertama
+function PanelBantuan() {
+  const [tampil, setTampil] = useState(false);
+  const ubah = () =&gt; setTampil((n) =&gt; !n);
+}
+
+// Salinan kedua — aturan yang sama ditulis ulang untuk panel lain.
+function PanelFilter() {
+  const [tampil, setTampil] = useState(false);
+  const ubah = () =&gt; setTampil((n) =&gt; !n);
+}</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">pakai-useTampilSembunyi.jsx</span>
+        <span class="kode-sumber">buku §9.4</span>
+      </figcaption>
+      <pre><code class="language-jsx">// Kedua panel memakai hook yang sama; isi hook ditulis satu kali.
+function PanelBantuan() {
+  const { tampil, ubah } = useTampilSembunyi();
+}
+
+function PanelFilter() {
+  const { tampil, ubah } = useTampilSembunyi();
+}</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Custom hook tidak boleh dipanggil di dalam <code>if</code> atau perulangan, meskipun
+      isinya terlihat seperti fungsi biasa.
+      Pelanggaran aturan ini membuat urutan hook berubah antar-render, dan React kehilangan
+      pasangan state milik komponennya.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Apakah custom hook menyimpan state-nya sendiri? (Jawaban: tidak; state itu milik komponen yang memanggilnya, sehingga setiap pemanggil mendapat salinan sendiri.)</p>
+  </div>
+</section>
+
+<section class="subbab" id="s2-5">
+  <p class="label-subbab">
+    Subbab 9.4 <span class="sumber-slide">· deck: “useCart: Satu Pintu ke Context, Layar Tak Perlu Tahu Namanya” · buku §9.4</span>
+  </p>
+  <h2>useCart: Satu Pintu ke Context, Layar Tak Perlu Tahu Namanya</h2>
+
+  <p>
+    Alih-alih setiap layar memanggil <code>useContext(CartContext)</code> sendiri, kita
+    menyediakan satu hook <code>useCart()</code> yang membungkus akses itu sekaligus memberikan
+    pesan kesalahan yang jelas bila dipakai di luar provider.
+  </p>
+
+  <p>
+    Pemeriksaan <code>ctx === null</code> bekerja karena nilai awal context memang
+    <code>null</code>. Pesan <code>useCart harus dipakai di dalam &lt;CartProvider&gt;.</code>
+    jauh lebih mudah ditelusuri daripada “null tidak bisa dibaca” yang samar.
+    Dengan pola ini, komponen tidak pernah menyentuh <code>CartContext</code> secara langsung,
+    sehingga nama dan struktur context bebas diubah tanpa menyentuh layar.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">hooks/useCart.js</span>
+      <span class="kode-sumber">buku §9.4 · sama dengan deck</span>
+    </figcaption>
+    <pre><code class="language-js">import { useContext } from 'react';
+import { CartContext } from '../context/CartContext';
+
+export function useCart() {
+  const ctx = useContext(CartContext);
+  if (ctx === null) {
+    throw new Error('useCart harus dipakai di dalam &lt;CartProvider&gt;.');
+  }
+  return ctx;
+}</code></pre>
+  </figure>
+
+  <div class="banding"
+       data-label-lama="useContext diulang di setiap layar"
+       data-label-benar="useCart — satu pintu, pesan error seragam"
+       data-petunjuk="Keduanya sah; hook dipilih ketika pemakaiannya berulang dan pesan kesalahan perlu seragam.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">useContext-langsung.jsx</span>
+        <span class="kode-sumber">ilustrasi · buku §9.4 (lihat juga Contoh 2)</span>
+      </figcaption>
+      <pre><code class="language-jsx">// Setiap layar tahu nama context dan memeriksa sendiri.
+import { useContext } from 'react';
+import { CartContext } from '../context/CartContext';
+
+export default function Keranjang() {
+  const ctx = useContext(CartContext);
+  if (ctx === null) throw new Error('CartContext tidak tersedia.');
+  const { items, totalHarga } = ctx;
+}</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">pakai-useCart.jsx</span>
+        <span class="kode-sumber">buku §Praktikum</span>
+      </figcaption>
+      <pre><code class="language-jsx">// Layar tidak perlu tahu nama context; satu pemeriksaan berlaku
+// untuk semua layar.
+import { useCart } from '../hooks/useCart';
+
+export default function Keranjang() {
+  const { items, totalHarga, jumlahItem } = useCart();
+}</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Hook ini hanya bekerja di dalam subtree <code>CartProvider</code>, bukan di sampingnya.
+      Menaruh provider di satu layar membuat layar lain tetap melempar error, meskipun
+      provider sudah “ada” di aplikasi.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Kalau provider dipasang di tempat yang salah, apa yang kamu lihat di layar? (Jawaban: error <code>useCart harus dipakai di dalam &lt;CartProvider&gt;.</code> — error itu pertolongan, bukan gangguan.)</p>
+  </div>
+</section>
+
+<section class="subbab" id="s2-6">
+  <p class="label-subbab">
+    Subbab 9.5 <span class="sumber-slide">· deck: “Tiga Pertanyaan Menyaring Data yang Layak Global” &amp; “Tangga Keputusan: Berhenti di Tingkat Paling Sederhana” · buku §9.5</span>
+  </p>
+  <h2>Tiga Pertanyaan Menyaring Data yang Layak Global</h2>
+
+  <p>
+    Setelah semua teknik dikuasai, pertanyaan yang paling praktis justru yang paling awal:
+    kapan sebuah data layak menjadi global state?
+    Tiga pengujian berikut dipakai berurutan, bukan sebagai daftar hafalan.
+  </p>
+
+  <ol>
+    <li><strong>Berapa pemakainya?</strong> Satu komponen berarti state lokal sudah cukup.</li>
+    <li><strong>Dipakai lintas layar?</strong> Ditulis di satu layar dan dibaca di layar lain — data itu layak global.</li>
+    <li><strong>Banyak pihak menulis data yang sama?</strong> Satu tempat mencegah salinan yang saling bertabrakan.</li>
+  </ol>
+
+  <p>
+    Kebalikannya sama penting untuk dikenali. Ada tiga tanda data <strong>tidak</strong> perlu
+    global: data yang dapat dihitung ulang dari data lain, data milik server, dan data sementara
+    yang hanya hidup selama satu layar terbuka.
+    Data server sebaiknya diambil dan di-cache oleh satu lapisan khusus (Bab 10 dan 11), bukan
+    disalin mentah ke global state; isi formulir sebelum disimpan cukup menjadi state lokal.
+  </p>
+
+  <p>
+    Dari situlah lahir tangga keputusan bab ini:
+    <strong>state lokal → lifting state up → Context API → pustaka state management</strong>,
+    dengan berhenti di tingkat paling sederhana yang masih memenuhi kebutuhan.
+    Naik satu tingkat hanya ketika ada pemakai baru yang benar-benar membutuhkannya.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">nilai-turunan.js</span>
+      <span class="kode-sumber">potongan verbatim · buku §Praktikum</span>
+    </figcaption>
+    <pre><code class="language-js">// Dihitung dari items pada setiap render — tidak disimpan sebagai state,
+// sehingga tidak mungkin tertinggal dari isi keranjang.
+const jumlahItem = items.reduce((total, i) =&gt; total + i.qty, 0);
+const totalHarga = items.reduce((total, i) =&gt; total + i.qty * i.harga, 0);</code></pre>
+  </figure>
+
+  <div class="banding"
+       data-label-lama="Total disimpan — wajib diingat di setiap operasi"
+       data-label-benar="Total dihitung — selalu berasal dari items"
+       data-petunjuk="Nilai turunan yang disimpan menambah satu kewajiban pada setiap operasi; satu kelalaian sudah cukup membuat tampilan berbeda dari data.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">total-sebagai-state.jsx</span>
+        <span class="kode-sumber">ilustrasi · buku §9.5</span>
+      </figcaption>
+      <pre><code class="language-jsx">// Dua state yang harus dijaga tetap cocok. Operasi yang lupa
+// memperbarui totalHarga langsung memunculkan selisih di layar.
+const [items, setItems] = useState([]);
+const [totalHarga, setTotalHarga] = useState(0);</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">nilai-turunan.js</span>
+        <span class="kode-sumber">buku §Praktikum</span>
+      </figcaption>
+      <pre><code class="language-jsx">// Satu sumber data, dua nilai turunan. Tidak ada yang perlu diingat
+// karena keduanya selalu dihitung dari items yang sama.
+const jumlahItem = items.reduce((total, i) =&gt; total + i.qty, 0);
+const totalHarga = items.reduce((total, i) =&gt; total + i.qty * i.harga, 0);</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Menyimpan nilai turunan membuka pintu ketidaksinkronan: satu operasi yang lupa
+      memperbaruinya sudah cukup merusak tampilan.
+      Nilai seperti <code>totalHarga</code> dan <code>jumlahItem</code> lebih aman dihitung.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Kalau total harga dihitung pada setiap render, apakah aplikasi jadi lambat? (Jawaban: tidak untuk daftar sependek keranjang; optimasi dini belum perlu.)</p>
+  </div>
+</section>
+
+<section class="subbab" id="s2-7">
+  <p class="label-subbab">
+    Subbab 9.6 <span class="sumber-slide">· deck: “Zustand dan Redux Toolkit: Bukan untuk Skala Kuliah” · buku §9.6</span>
+  </p>
+  <h2>Zustand dan Redux Toolkit: Bukan untuk Skala Kuliah</h2>
+
+  <p>
+    Context API menyelesaikan masalah distribusi data, tetapi aplikasi berskala besar
+    menuntut hal tambahan: melacak siapa mengubah state dan kapan (devtools), membatasi render
+    ulang hanya pada komponen yang memakai sebagian data (selector), memisahkan logika bisnis
+    dari komponen, serta mempersistensikan state.
+    Dari kebutuhan itulah lahir pustaka state management modern.
+  </p>
+
+  <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Dua pustaka populer · sumber: deck &amp; buku §9.6</caption>
+      <thead>
+        <tr><th scope="col">Aspek</th><th scope="col">Zustand</th><th scope="col">Redux Toolkit</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Bentuk store</td><td>Dibuat dengan fungsi <code>create</code></td><td>Satu store global, action dan reducer</td></tr>
+        <tr><td>Cara pakai</td><td>Lewat hook, tanpa provider</td><td><code>createSlice</code> dan <code>configureStore</code></td></tr>
+        <tr><td>Keunggulan</td><td>Ringkas, kode minim</td><td>Devtools matang, alur terprediksi</td></tr>
+        <tr><td>Biaya</td><td>Pola di luar pohon komponen</td><td>Kurva belajar curam, kode lebih banyak</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">store/keranjangStore.js</span>
+      <span class="kode-sumber">buku §9.6 · ILUSTRASI — tidak dipakai buku ini · sintaks sensitif versi</span>
+    </figcaption>
+    <pre><code class="language-js">import { create } from 'zustand';
+
+export const useKeranjangStore = create((set) =&gt; ({
+  items: [],
+  tambahItem: (produk) =&gt;
+    set((sekarang) =&gt; ({ items: [...sekarang.items, produk] })),
+}));</code></pre>
+  </figure>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">store/keranjangSlice.js</span>
+      <span class="kode-sumber">buku §9.6 · ILUSTRASI — tidak dipakai buku ini · sintaks sensitif versi</span>
+    </figcaption>
+    <pre><code class="language-js">import { createSlice } from '@reduxjs/toolkit';
+
+const keranjangSlice = createSlice({
+  name: 'keranjang',
+  initialState: { items: [] },
+  reducers: {
+    tambahItem(state, aksi) {
+      state.items.push(aksi.payload);
+    },
+  },
+});</code></pre>
+  </figure>
+
+  <p>
+    <strong>Keduanya tidak dipakai buku ini</strong> — Context API plus custom hook sudah
+    memadai untuk project kuliah, dan buku menunda pengenalan pustaka sampai kamu benar-benar
+    merasakan keterbatasan Context.
+    Memilih pustaka bukan soal “mana yang terbaik”, melainkan mencocokkan dengan kompleksitas
+    aplikasi dan ukuran tim: Context untuk skala kecil-menengah, Zustand untuk tim yang ingin
+    ringkas, Redux Toolkit untuk aplikasi besar dengan banyak kolaborator.
+  </p>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      “Aplikasi profesional selalu memakai Redux” adalah keyakinan yang perlu diberantas.
+      Untuk satu layar yang hanya butuh satu toggle, Redux Toolkit disebut buku ini sebagai
+      kanon untuk menembak nyamuk.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Untuk satu layar yang hanya butuh satu toggle, apakah Redux Toolkit sepadan? (Jawaban: tidak; biaya kode dan kurva belajarnya jauh melampaui kebutuhan.)</p>
+  </div>
+</section>

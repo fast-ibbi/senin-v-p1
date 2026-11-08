@@ -1,0 +1,281 @@
+<h1>Praktikum Bab 14 — Unit Test, Console, dan Checklist</h1>
+
+<p class="ringkas">
+  Empat pekerjaan: menjalankan 13 unit test fungsi validasi, menelusuri data dengan tiga jenis
+  pesan console, memeriksa endpoint dari terminal sebelum menyentuh aplikasi, lalu mengisi
+  checklist pengujian minimal lima kasus uji. Tanpa satu pun <code>npm install</code> untuk
+  bagian test.
+</p>
+
+<div class="kotak kotak-tiruan">
+  <p class="kotak-judul">Tujuan praktikum</p>
+  <p>Setelah menyelesaikan praktikum ini, kamu mampu:</p>
+  <ol>
+    <li>menjalankan unit test fungsi validasi dengan <code>node:test</code> dan membaca laporannya;</li>
+    <li>menggunakan <code>console.log</code>, <code>console.warn</code>, dan <code>console.table</code> untuk menelusuri data;</li>
+    <li>memeriksa endpoint API dari terminal, termasuk membaca kegagalannya;</li>
+    <li>mengisi checklist testing berdasarkan hasil pengujian aplikasi sendiri.</li>
+  </ol>
+</div>
+
+<h2>Kebutuhan</h2>
+
+<ul>
+  <li>Node.js LTS versi 22 atau lebih baru — cek dengan <code>node --version</code>. Di bawah Node 18 modul <code>node:test</code> belum tersedia; lihat Troubleshooting.</li>
+  <li>Project hasil Bab 10 (sudah terhubung API) atau project Bab 8 (formulir + validasi). Bila keduanya belum ada, folder kerja kosong dengan dua berkas dari subbab 14.4 sudah cukup.</li>
+  <li>Backend buku berjalan: <code>cd backend &amp;&amp; npm install &amp;&amp; npm start</code> (lihat Bab 10) — hanya diperlukan untuk langkah 4 dan 5.</li>
+  <li>Terminal atau Command Prompt, dan editor teks.</li>
+</ul>
+
+<h2>Persiapan</h2>
+
+<ol>
+  <li>Buat folder <code>praktikum14</code> di lokasi kerja.</li>
+  <li>Di dalamnya buat struktur folder <code>utils/</code> dan <code>__tests__/</code>. Folder <code>__tests__</code> diawali dua garis bawah — konvensi yang dikenali banyak alat pengujian.</li>
+  <li>Salin <code>utils/validators.js</code> dari bagian 3 ke <code>praktikum14/utils/validators.js</code>, dan <code>__tests__/validators.test.js</code> ke <code>praktikum14/__tests__/validators.test.js</code>.</li>
+  <li>Pastikan terminal berada di dalam <code>praktikum14</code>, bukan di dalam <code>__tests__</code>, karena path relatif <code>../utils/validators.js</code> dihitung dari folder <code>__tests__</code>.</li>
+</ol>
+
+<h2>Langkah kerja</h2>
+
+<ol>
+  <li>Jalankan test lewat eksekusi langsung: <code>node __tests__/validators.test.js</code>. Amati keluaran TAP yang tercetak.</li>
+  <li>Jalankan mode deteksi otomatis: <code>node --test</code>. Bandingkan ringkasannya dengan langkah 1.</li>
+  <li>Buat berkas <code>console-demo.js</code> (kode di bawah), jalankan <code>node console-demo.js</code>, dan amati perbedaan tampilan <code>console.log</code>, <code>console.warn</code>, serta <code>console.table</code>.</li>
+  <li>Uji endpoint dari terminal: pastikan backend berjalan, lalu jalankan perintah <code>node -e "fetch(...)"</code> di bawah. Catat status yang tercetak.</li>
+  <li>Simulasikan kegagalan: hentikan server backend, ulangi langkah 4, lalu perhatikan pesan error dari blok <code>catch</code>.</li>
+  <li>Buka project Expo kamu (hasil Bab 8 atau Bab 10), jalankan <code>npx expo start</code>, lalu tekan <code>m</code> untuk menu developer, <code>r</code> untuk reload, dan <code>j</code> untuk membuka debugger. Temukan pesan <code>console.log</code> aplikasimu di sana.</li>
+  <li>Dengan project yang sama, buka React Native DevTools dan tab Network, lalu lakukan satu operasi yang memanggil API. Amati satu permintaan <code>fetch</code>, statusnya, dan isi responsnya.</li>
+  <li>Terakhir, isi checklist pada subbab 14.7 untuk aplikasimu sendiri: jalankan minimal 5 kasus uji, tulis hasil aktual, dan beri status.</li>
+</ol>
+
+<h2>Kode: console-demo.js</h2>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">console-demo.js</span>
+    <span class="kode-sumber">buku §Praktikum · Kode</span>
+  </figcaption>
+  <pre><code class="language-js">// Demo penggunaan console untuk debugging data mahasiswa.
+// Menjalankan: node console-demo.js
+
+const mahasiswa = [
+  { nim: '2201001', nama: 'Budi Santoso', prodi: 'Sistem Informasi', ipk: 3.45 },
+  { nim: '2201002', nama: 'Siti Aminah', prodi: 'Teknik Informatika', ipk: 3.82 },
+  { nim: '2201003', nama: 'Agus Wijaya', prodi: 'Informatika', ipk: 3.2 },
+  { nim: '2201004', nama: 'Dewi Lestari', prodi: 'Rekayasa Perangkat Lunak', ipk: 3.61 },
+  { nim: '2201005', nama: 'Rizky Pratama', prodi: 'Sistem Informasi', ipk: 2.95 },
+];
+
+console.log('Jumlah data mahasiswa:', mahasiswa.length);
+
+console.log('IPK tertinggi:', Math.max(...mahasiswa.map((m) =&gt; m.ipk)));
+
+console.warn('Mahasiswa dengan IPK di bawah 3.0:', mahasiswa
+  .filter((m) =&gt; m.ipk &lt; 3.0)
+  .map((m) =&gt; m.nama));
+
+console.table(mahasiswa.map((m) =&gt; ({
+  NIM: m.nim, Nama: m.nama, Prodi: m.prodi, IPK: m.ipk,
+})));</code></pre>
+</figure>
+
+<p>
+  <code>utils/validators.js</code> dan <code>__tests__/validators.test.js</code> tidak
+  ditampilkan ulang di halaman ini; gunakan isi persis dari bagian 3, subbab 14.4.
+</p>
+
+<h2>Kode: perintah terminal</h2>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">(terminal · dari folder praktikum14)</span>
+    <span class="kode-sumber">buku §14.4 · §Contoh 2</span>
+  </figcaption>
+  <pre><code class="language-bash">node __tests__/validators.test.js
+node --test
+
+node -e "fetch('http://localhost:3000/api/mahasiswa').then(r =&gt; { console.log('Status:', r.status); return r.json(); }).then(d =&gt; console.table(d.data)).catch(err =&gt; console.warn('Gagal:', err.message))"</code></pre>
+</figure>
+
+<h2>Penjelasan kode</h2>
+
+<p>
+  <strong><code>console-demo.js</code></strong> memakai kelima data mahasiswa baku buku ini
+  (Bab 4–10). Tiga hal yang perlu diperhatikan. Pertama, setiap panggilan console diberi label
+  teks, misalnya <code>'Jumlah data mahasiswa:'</code>, sehingga saat banyak log bercampur di
+  terminal kamu tetap tahu arti tiap baris. Kedua, <code>console.warn</code> dipakai untuk
+  kondisi abnormal — ada mahasiswa ber-IPK di bawah 3.0 — sehingga tampil mencolok dan tidak
+  terlewat. Ketiga, <code>console.table</code> mengubah larik objek menjadi tabel berkolom NIM,
+  Nama, Prodi, dan IPK: cara tercepat memverifikasi apakah datanya benar-benar sampai dan
+  berbentuk seperti dugaan.
+</p>
+
+<p>
+  Operator spread <code>...</code> (Bab 3) meneruskan setiap IPK ke <code>Math.max</code>,
+  sedangkan <code>filter</code> lalu <code>map</code> memilih nama mahasiswa yang IPK-nya di
+  bawah 3.0. <strong>Berkas test</strong> bekerja dengan pola satu test satu perilaku:
+  <code>strictEqual</code> memeriksa kesetaraan nilai, <code>notStrictEqual</code> memeriksa
+  ketidaksamaan, dan <code>deepStrictEqual</code> membandingkan struktur objek secara
+  menyeluruh. Desain itu membuat laporan kegagalan langsung menunjuk aturan validasi yang
+  dilanggar — baik aturan itu memang salah maupun test-nya yang salah menduga.
+</p>
+
+<p>
+  <strong>Perintah <code>fetch</code></strong> pada langkah 4 menjalankan permintaan yang sama
+  dengan aplikasi. <code>r.status</code> mencetak kode status HTTP (200 sukses, 404 tidak
+  ditemukan, 500 error server — artinya dijelaskan di Bab 10). Bila respons sukses,
+  <code>console.table</code> menampilkan data; bila server mati atau alamatnya salah, blok
+  <code>catch</code> mencetak penyebabnya. Perintah ini dijalankan dari folder mana pun, selama
+  server backend hidup di port 3000.
+</p>
+
+<h2>Hasil yang diharapkan</h2>
+
+<ol>
+  <li><strong>Langkah 1–2:</strong> seluruh 13 test lulus; keluaran diakhiri ringkasan <code>pass 13</code> dan <code>fail 0</code> dalam format TAP.</li>
+  <li><strong>Langkah 3:</strong> terminal menampilkan tiga jenis pesan — dua baris <code>console.log</code>, satu baris peringatan <code>console.warn</code>, dan satu tabel 5 baris × 4 kolom dari <code>console.table</code>.</li>
+  <li><strong>Langkah 4:</strong> tercetak <code>Status: 200</code> dan tabel data mahasiswa.</li>
+  <li><strong>Langkah 5:</strong> server dimatikan, blok <code>catch</code> mencetak pesan kegagalan, dan aplikasimu tetap aman karena tidak ikut dijalankan.</li>
+  <li><strong>Langkah 6–7:</strong> menu developer muncul di emulator, <code>r</code> memuat ulang aplikasi, dan tab Network menampilkan permintaan <code>fetch</code> beserta statusnya.</li>
+  <li><strong>Langkah 8:</strong> checklist terisi minimal 5 baris dengan hasil aktual dan status; bila ada kasus gagal, perbaiki lalu uji ulang.</li>
+</ol>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">(contoh keluaran terminal · format TAP)</span>
+    <span class="kode-sumber">buku §Praktikum · Hasil yang Diharapkan</span>
+  </figcaption>
+  <pre><code class="language-text">✔ validateNim menerima NIM 7 digit
+✔ validateNim menolak NIM bukan 7 digit
+...
+ℹ tests 13
+ℹ pass 13
+ℹ fail 0</code></pre>
+</figure>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">(ilustrasi keluaran console-demo.js)</span>
+    <span class="kode-sumber">ilustrasi · buku §Praktikum langkah 3 (lebar tabel bergantung terminal)</span>
+  </figcaption>
+  <pre><code class="language-text">Jumlah data mahasiswa: 5
+IPK tertinggi: 3.82
+Mahasiswa dengan IPK di bawah 3.0: [ 'Rizky Pratama' ]
+┌─────────┬─────────┬────────────────┬──────────────────────────┬──────┐
+│ (index) │ NIM     │ Nama           │ Prodi                    │ IPK  │
+├─────────┼─────────┼────────────────┼──────────────────────────┼──────┤
+│ 0       │ '2201001' │ 'Budi Santoso' │ 'Sistem Informasi'      │ 3.45 │
+└─────────┴─────────┴────────────────┴──────────────────────────┴──────┘</code></pre>
+</figure>
+
+<h2>Troubleshooting</h2>
+
+<div class="tabel-gulir">
+  <table class="tabel">
+    <caption>Ketika praktikum tidak berjalan sesuai harapan · sumber: buku §Praktikum · Troubleshooting</caption>
+    <thead>
+      <tr><th scope="col">Gejala</th><th scope="col">Penyebab</th><th scope="col">Solusi</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>node __tests__/validators.test.js</code> mencetak “Unknown file extension” atau tidak mencetak hasil test sama sekali</td>
+        <td>Versi Node.js terlalu tua — <code>node:test</code> stabil sejak Node 20 dan butuh sintaks modern</td>
+        <td>Cek <code>node --version</code>, lalu pasang Node.js LTS 22 atau lebih baru (Bab 2) dan jalankan ulang</td>
+      </tr>
+      <tr>
+        <td>Test gagal dengan “Cannot find module '../utils/validators.js'”</td>
+        <td>Path relatif salah; nama berkas tidak sama persis; atau terminal berada di folder yang salah</td>
+        <td>Pastikan <code>praktikum14/utils/validators.js</code> dan <code>praktikum14/__tests__/validators.test.js</code> ada, lalu jalankan perintah dari <code>praktikum14</code></td>
+      </tr>
+      <tr>
+        <td>Test gagal dengan “AssertionError: Expected values to be strictly equal”</td>
+        <td>Fungsi validasi mengembalikan nilai berbeda dari harapan test — aturan berubah, atau test menuliskan harapan yang keliru</td>
+        <td>Baca nama test yang gagal, nilai aktual, dan nilai harapan; periksa baris fungsi terkait; putuskan mana yang salah lalu perbaiki satu di antaranya</td>
+      </tr>
+      <tr>
+        <td>Menu developer tidak muncul saat menekan <code>m</code>, atau <code>r</code>/<code>j</code> tidak merespons</td>
+        <td>Jendela terminal Expo tidak dalam keadaan fokus, atau kombinasi tombol berbeda pada versi SDK yang dipakai</td>
+        <td>Fokuskan terminal <code>npx expo start</code> lalu tekan tombolnya; alternatif: goyangkan emulator, tekan <code>Ctrl+M</code>, atau <code>adb shell input keyevent 82</code></td>
+      </tr>
+      <tr>
+        <td>Contoh <code>fetch</code> mencetak “TypeError: fetch is not defined”</td>
+        <td><code>fetch</code> bawaan hanya tersedia di Node.js 18 ke atas</td>
+        <td>Perbarui ke Node.js LTS 22, lalu ulangi perintah jaringan dari terminal</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="kotak kotak-salah">
+  <p class="kotak-judul">Salah paham</p>
+  <p>
+    Kegagalan lingkungan bukan kegagalan logika. “Unknown file extension” atau “Cannot find
+    module” belum membuktikan test-mu salah; keduanya masalah versi dan path. Sebaliknya,
+    laporan yang hijau juga bukan bukti aplikasi benar — 13 test yang lulus hanya menyatakan
+    aturan validasi terverifikasi, bukan bahwa aplikasimu layak dirilis. Dua kekeliruan ini
+    sama-sama mahal: yang pertama menghabiskan waktu memperbaiki kode yang tidak rusak, yang
+    kedua membuatmu melewatkan bug yang nyata.
+  </p>
+</div>
+
+<h2>Yang harus teramati</h2>
+
+<ul>
+  <li><strong><code>node --test</code> menutup dengan ringkasan <code>pass 13</code> dan <code>fail 0</code></strong> — bukti terukur bahwa seluruh kasus uji pernah dijalankan.</li>
+  <li><strong><code>console.table</code> mencetak tabel lima baris</strong> untuk data mahasiswa, lengkap dengan kolom NIM, Nama, Prodi, dan IPK.</li>
+  <li><strong><code>curl</code> atau <code>fetch</code> menjawab status 200</strong> selama server backend hidup.</li>
+  <li><strong>Server dimatikan:</strong> blok <code>catch</code> mencetak pesan kegagalan, bukan aplikasi berhenti.</li>
+  <li><strong>Checklist pengujianmu sendiri terisi minimal 5 kasus uji</strong> dengan hasil aktual dan status.</li>
+</ul>
+
+<blockquote>
+  Laporan yang baik melampirkan keluaran terminal dan tabel checklist, bukan hanya tulisan
+  “berhasil”.
+</blockquote>
+
+<h2>Kuis kilat</h2>
+
+<ol>
+  <li>Kegiatan mencari dan memperbaiki kesalahan di kode disebut apa?</li>
+  <li>Fungsi console mana yang paling tepat untuk daftar mahasiswa berkolom?</li>
+  <li>Sifat apa pada fungsi murni yang membuatnya ideal untuk unit test?</li>
+  <li>Apa beda utama unit testing dan integration testing?</li>
+</ol>
+
+<div class="kotak kotak-jawab">
+  <details>
+    <summary>Kunci kuis kilat</summary>
+    <ol>
+      <li>Debugging — bukan testing, dan bukan quality assurance.</li>
+      <li><code>console.table</code> — menyusun array objek menjadi kolom rapi, sehingga nilai yang salah langsung terlihat.</li>
+      <li>Deterministik: hasilnya hanya ditentukan argumennya, sehingga masukan yang sama selalu memberi keluaran yang sama.</li>
+      <li>Tingkat cakupannya: satu unit yang dipisahkan dari sekitarnya versus kerja sama antarbagian (state, <code>fetch</code>, dan tampilan).</li>
+    </ol>
+  </details>
+</div>
+
+<h2>Ringkasan bab</h2>
+
+<ol>
+  <li>Debugging mencari dan memperbaiki; testing memeriksa secara terencana; QA mencegah sejak awal lewat standar, checklist, dan prosedur.</li>
+  <li><code>console.log</code> untuk nilai biasa, <code>console.warn</code> untuk kondisi mencurigakan, <code>console.table</code> untuk data tabel; label pada setiap log membuat pesan mudah ditelusuri.</li>
+  <li>React Native DevTools menyediakan breakpoint dan tab Network; React DevTools menampilkan pohon komponen dan state; kombinasi tombol <code>m</code>/<code>r</code>/<code>j</code> bersifat sensitif versi.</li>
+  <li>Enam error React Native yang umum masing-masing punya penyebab dan solusi khas; RedBox selalu memuat lokasi baris kesalahan.</li>
+  <li>Uji endpoint dengan <code>curl</code>, browser, atau <code>fetch</code> bawaan Node sebelum mengintegrasikannya; perhatikan alamat <code>localhost</code>, <code>10.0.2.2</code>, dan IP LAN (Bab 10).</li>
+  <li>Unit test menguji satu fungsi secara terisolasi; fungsi murni adalah target termudah karena deterministik.</li>
+  <li><code>node:test</code> menjalankan unit test tanpa dependency tambahan; piramida testing menaruh banyak unit test di dasar dan sedikit end-to-end test di puncak.</li>
+  <li>Manual testing dipandu checklist; usability testing mengamati sekitar lima pengguna nyata untuk menilai kemudahan pemakaian.</li>
+  <li>Checklist testing adalah produk QA yang hidup: setiap bug yang diperbaiki menjadi kasus uji permanen (test case regression).</li>
+</ol>
+
+<div class="kotak kotak-tanya">
+  <p class="kotak-judul">Pertanyaan penuntun</p>
+  <p>
+    Tutup dengan dua pertanyaan diskusi deck: gejala mana dari insiden KRS Online yang paling
+    mungkin muncul di proyekmu, dan bila tim hanya punya satu hari untuk menguji, urutan QA mana
+    yang paling murah? (Jawaban yang kuat menyebut alasan biaya dan risiko, bukan hanya urutan
+    kegiatannya.) Setelah itu bab ini selesai — Bab 15 menanti, dan checklist yang baru kamu isi
+    akan dipakai lagi saat persiapan rilis.
+  </p>
+</div>

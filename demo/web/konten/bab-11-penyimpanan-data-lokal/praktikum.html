@@ -1,0 +1,574 @@
+<h1>Praktikum Bab 11 — Aplikasi Catatan</h1>
+
+<p class="ringkas">
+  Aplikasi catatan lengkap: tambah, edit, hapus dengan konfirmasi, dan pencarian — semuanya
+  bertahan setelah aplikasi ditutup. Satu ujian menentukan keberhasilan praktikum ini: tutup
+  aplikasi sepenuhnya, buka lagi, catatan masih ada.
+</p>
+
+<div class="kotak kotak-tiruan">
+  <p class="kotak-judul">Tujuan praktikum</p>
+  <p>Setelah menyelesaikan praktikum ini, kamu mampu:</p>
+  <ol>
+    <li>menginstal dan memakai <code>@react-native-async-storage/async-storage</code> dalam project Expo;</li>
+    <li>menerapkan pola modul penyimpanan terpisah (API kecil) dengan serialisasi JSON yang aman;</li>
+    <li>membangun aplikasi catatan fungsional: tambah, edit, hapus dengan konfirmasi, dan pencarian;</li>
+    <li>memverifikasi persistensi data lintas restart aplikasi.</li>
+  </ol>
+</div>
+
+<h2>Kebutuhan</h2>
+
+<ul>
+  <li>Project Expo berbasis SDK 57 dengan Expo Router aktif (pola navigasi Bab 7).</li>
+  <li>Node.js LTS minimal versi 22 (pengaturan awalnya di Bab 2).</li>
+  <li>Expo Go di perangkat, atau emulator Android/iOS (Bab 2).</li>
+  <li>Editor teks seperti VS Code.</li>
+</ul>
+
+<h2>Persiapan</h2>
+
+<p>
+  Dari terminal, buat project baru dengan template blank (JavaScript, sesuai kontrak buku
+  ini), lalu pasang pustaka AsyncStorage dengan perintah Expo.
+</p>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">(terminal)</span>
+    <span class="kode-sumber">buku §Praktikum · Persiapan</span>
+  </figcaption>
+  <pre><code class="language-bash">npx create-expo-app aplikasi-catatan --template blank
+cd aplikasi-catatan
+npx expo install @react-native-async-storage/async-storage</code></pre>
+</figure>
+
+<p>
+  Karena template blank tidak menyertakan Expo Router, aktifkan router mengikuti langkah resmi
+  instalasi (konsepnya di Bab 7). Perintahnya peka versi, jadi periksa kembali
+  docs.expo.dev/router/installation untuk SDK 57.
+</p>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">(terminal)</span>
+    <span class="kode-sumber">buku §Praktikum · Persiapan (sensitiv versi)</span>
+  </figcaption>
+  <pre><code class="language-bash">npx expo install expo-router react-native-safe-area-context react-native-screens expo-linking expo-constants expo-status-bar</code></pre>
+</figure>
+
+<p>
+  Lalu dua penyesuaian: pada <code>package.json</code>, ubah nilai <code>"main"</code> menjadi
+  <code>"expo-router/entry"</code>; pada <code>app.json</code>, tambahkan properti
+  <code>"scheme": "aplikasi-catatan"</code> di dalam objek <code>expo</code>. Hapus
+  <code>App.js</code> yang tidak lagi dipakai.
+</p>
+
+<h2>Langkah kerja</h2>
+
+<ol>
+  <li><strong>Siapkan struktur folder.</strong> Buat folder <code>storage/</code>, <code>screens/</code>, <code>utils/</code>, dan <code>app/catatan/</code> di dalam project.</li>
+  <li><strong>Tulis <code>app/_layout.js</code></strong> — navigator Stack dengan tiga layar: daftar, form baru, dan form edit.</li>
+  <li><strong>Tulis <code>storage/notesStorage.js</code></strong> — API kecil penyimpanan: <code>muatCatatan</code>, <code>simpanCatatan</code>, <code>hapusCatatan</code>.</li>
+  <li><strong>Tulis <code>utils/formatTanggal.js</code></strong> — pemformat timestamp ISO menjadi teks “tanggal jam”.</li>
+  <li><strong>Tulis <code>screens/DaftarCatatan.js</code></strong> — daftar catatan, kolom pencarian, tombol tambah, dan hapus dengan konfirmasi.</li>
+  <li><strong>Tulis <code>screens/FormCatatan.js</code></strong> — form tambah dan edit (satu komponen untuk dua mode).</li>
+  <li><strong>Tulis tiga rute:</strong> <code>app/index.js</code>, <code>app/catatan/buat.js</code>, dan <code>app/catatan/[id].js</code> — masing-masing hanya merender komponen layar terkait.</li>
+  <li><strong>Jalankan dan uji</strong> dengan <code>npx expo start</code>, lalu ikuti alur uji pada “Hasil yang diharapkan”.</li>
+</ol>
+
+<h2>Kode: app/_layout.js</h2>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">app/_layout.js</span>
+    <span class="kode-sumber">buku §Praktikum · Kode</span>
+  </figcaption>
+  <pre><code class="language-jsx">import { Stack } from 'expo-router';
+
+export default function LayoutAplikasi() {
+  return (
+    &lt;Stack&gt;
+      &lt;Stack.Screen name="index" options={{ title: 'Catatan Saya' }} /&gt;
+      &lt;Stack.Screen name="catatan/buat" options={{ title: 'Catatan Baru' }} /&gt;
+      &lt;Stack.Screen name="catatan/[id]" options={{ title: 'Edit Catatan' }} /&gt;
+    &lt;/Stack&gt;
+  );
+}</code></pre>
+</figure>
+
+<h2>Kode: storage/notesStorage.js</h2>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">storage/notesStorage.js</span>
+    <span class="kode-sumber">buku §Praktikum · Kode</span>
+  </figcaption>
+  <pre><code class="language-js">import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const KUNCI_CATATAN = 'catatan:v1';
+
+// Membaca seluruh daftar catatan. Mengembalikan array (kosong jika belum ada).
+export async function muatCatatan() {
+  try {
+    const teks = await AsyncStorage.getItem(KUNCI_CATATAN);
+    if (teks === null) return [];
+    const data = JSON.parse(teks);
+    return Array.isArray(data) ? data : [];
+  } catch (error) {
+    console.warn('Gagal membaca catatan:', error);
+    return [];
+  }
+}
+
+// Menyimpan seluruh daftar catatan (strategi tulis-ulang).
+export async function simpanCatatan(daftarCatatan) {
+  try {
+    const teks = JSON.stringify(daftarCatatan);
+    await AsyncStorage.setItem(KUNCI_CATATAN, teks);
+  } catch (error) {
+    console.warn('Gagal menyimpan catatan:', error);
+  }
+}
+
+// Menghapus satu catatan berdasarkan id, lalu mengembalikan daftar terbaru.
+export async function hapusCatatan(id) {
+  const daftar = await muatCatatan();
+  const tersaring = daftar.filter((catatan) => catatan.id !== id);
+  await simpanCatatan(tersaring);
+  return tersaring;
+}</code></pre>
+</figure>
+
+<h2>Kode: utils/formatTanggal.js</h2>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">utils/formatTanggal.js</span>
+    <span class="kode-sumber">buku §Praktikum · Kode</span>
+  </figcaption>
+  <pre><code class="language-js">export function formatTanggal(iso) {
+  const tanggal = new Date(iso);
+  const hari = String(tanggal.getDate()).padStart(2, '0');
+  const bulan = String(tanggal.getMonth() + 1).padStart(2, '0');
+  const tahun = tanggal.getFullYear();
+  const jam = String(tanggal.getHours()).padStart(2, '0');
+  const menit = String(tanggal.getMinutes()).padStart(2, '0');
+  return `${hari}/${bulan}/${tahun} ${jam}:${menit}`;
+}</code></pre>
+</figure>
+
+<h2>Kode: screens/DaftarCatatan.js</h2>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">screens/DaftarCatatan.js</span>
+    <span class="kode-sumber">buku §Praktikum · Kode (tanpa blok styles)</span>
+  </figcaption>
+  <pre><code class="language-jsx">import { useCallback, useState } from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  FlatList,
+  Pressable,
+  StyleSheet,
+  Alert,
+} from 'react-native';
+import { useRouter, useFocusEffect } from 'expo-router';
+import { muatCatatan, hapusCatatan } from '../storage/notesStorage';
+import { formatTanggal } from '../utils/formatTanggal';
+
+export default function DaftarCatatan() {
+  const router = useRouter();
+  const [daftar, setDaftar] = useState([]);
+  const [kataKunci, setKataKunci] = useState('');
+
+  useFocusEffect(
+    useCallback(() => {
+      muatCatatan().then(setDaftar);
+    }, [])
+  );
+
+  const daftarTersaring = daftar.filter((catatan) => {
+    const kunci = kataKunci.trim().toLowerCase();
+    if (kunci === '') return true;
+    return (
+      catatan.judul.toLowerCase().includes(kunci) ||
+      catatan.isi.toLowerCase().includes(kunci)
+    );
+  });
+
+  const konfirmasiHapus = (catatan) => {
+    Alert.alert('Hapus catatan', `Hapus "${catatan.judul}"?`, [
+      { text: 'Batal', style: 'cancel' },
+      {
+        text: 'Hapus',
+        style: 'destructive',
+        onPress: async () => {
+          const hasil = await hapusCatatan(catatan.id);
+          setDaftar(hasil);
+        },
+      },
+    ]);
+  };
+
+  const renderItem = ({ item }) => (
+    &lt;View style={styles.kartu}&gt;
+      &lt;Pressable
+        style={styles.bagianEdit}
+        onPress={() =&gt; router.push(`/catatan/${item.id}`)}
+      &gt;
+        &lt;Text style={styles.judulKartu}&gt;{item.judul}&lt;/Text&gt;
+        &lt;Text style={styles.isiKartu} numberOfLines={2}&gt;{item.isi}&lt;/Text&gt;
+        &lt;Text style={styles.tanggalKartu}&gt;{formatTanggal(item.createdAt)}&lt;/Text&gt;
+      &lt;/Pressable&gt;
+      &lt;Pressable style={styles.tombolHapus} onPress={() =&gt; konfirmasiHapus(item)}&gt;
+        &lt;Text style={styles.teksTombolHapus}&gt;Hapus&lt;/Text&gt;
+      &lt;/Pressable&gt;
+    &lt;/View&gt;
+  );
+
+  return (
+    &lt;View style={styles.layar}&gt;
+      &lt;TextInput
+        style={styles.kolomCari}
+        placeholder="Cari catatan…"
+        value={kataKunci}
+        onChangeText={setKataKunci}
+      /&gt;
+      &lt;FlatList
+        data={daftarTersaring}
+        keyExtractor={(item) =&gt; item.id}
+        renderItem={renderItem}
+        contentContainerStyle={styles.daftar}
+        ListEmptyComponent={
+          &lt;Text style={styles.teksKosong}&gt;
+            {kataKunci.trim() === ''
+              ? 'Belum ada catatan. Ketuk tombol di bawah untuk membuat.'
+              : 'Tidak ada catatan yang cocok dengan pencarian.'}
+          &lt;/Text&gt;
+        }
+      /&gt;
+      &lt;Pressable
+        style={styles.tombolTambah}
+        onPress={() =&gt; router.push('/catatan/buat')}
+      &gt;
+        &lt;Text style={styles.teksTombolTambah}&gt;+ Tambah Catatan&lt;/Text&gt;
+      &lt;/Pressable&gt;
+    &lt;/View&gt;
+  );
+}</code></pre>
+</figure>
+
+<p>
+  Gaya tampilan (<code>StyleSheet</code>) tidak disalin di sini; ambil versi lengkapnya dari
+  <code>kode/bab-11/</code> di repositori buku. Yang menentukan perilaku adalah bagian di atas:
+  pemuatan lewat <code>useFocusEffect</code>, penyaringan pencarian, dan konfirmasi hapus.
+</p>
+
+<h2>Kode: screens/FormCatatan.js</h2>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">screens/FormCatatan.js</span>
+    <span class="kode-sumber">buku §Praktikum · Kode (tanpa blok styles)</span>
+  </figcaption>
+  <pre><code class="language-jsx">import { useEffect, useState } from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  Pressable,
+  StyleSheet,
+  ScrollView,
+  Alert,
+} from 'react-native';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { muatCatatan, simpanCatatan } from '../storage/notesStorage';
+
+export default function FormCatatan() {
+  const router = useRouter();
+  const params = useLocalSearchParams();
+  const idCatatan = typeof params.id === 'string' ? params.id : null;
+  const [judul, setJudul] = useState('');
+  const [isi, setIsi] = useState('');
+  const [memuat, setMemuat] = useState(idCatatan !== null);
+
+  useEffect(() => {
+    if (idCatatan === null) return;
+    let aktif = true;
+    (async () =&gt; {
+      const daftar = await muatCatatan();
+      const catatan = daftar.find((item) =&gt; item.id === idCatatan);
+      if (aktif && catatan) {
+        setJudul(catatan.judul);
+        setIsi(catatan.isi);
+      }
+      if (aktif) setMemuat(false);
+    })();
+    return () =&gt; {
+      aktif = false;
+    };
+  }, [idCatatan]);
+
+  const simpan = async () =&gt; {
+    const judulBersih = judul.trim();
+    if (judulBersih === '') {
+      Alert.alert('Judul wajib diisi', 'Beri judul sebelum menyimpan catatan.');
+      return;
+    }
+    const daftar = await muatCatatan();
+    const sekarang = new Date().toISOString();
+    if (idCatatan === null) {
+      const catatanBaru = {
+        id: Date.now().toString(),
+        judul: judulBersih,
+        isi: isi.trim(),
+        createdAt: sekarang,
+      };
+      await simpanCatatan([...daftar, catatanBaru]);
+    } else {
+      const daftarBaru = daftar.map((item) =&gt;
+        item.id === idCatatan
+          ? { ...item, judul: judulBersih, isi: isi.trim() }
+          : item
+      );
+      await simpanCatatan(daftarBaru);
+    }
+    router.back();
+  };
+
+  return (
+    &lt;ScrollView style={styles.layar} keyboardShouldPersistTaps="handled"&gt;
+      &lt;View style={styles.form}&gt;
+        &lt;Text style={styles.label}&gt;Judul&lt;/Text&gt;
+        &lt;TextInput
+          style={styles.kolomJudul}
+          placeholder="Judul catatan"
+          value={judul}
+          onChangeText={setJudul}
+        /&gt;
+        &lt;Text style={styles.label}&gt;Isi&lt;/Text&gt;
+        &lt;TextInput
+          style={styles.kolomIsi}
+          placeholder="Tulis isi catatan di sini…"
+          value={isi}
+          onChangeText={setIsi}
+          multiline
+          textAlignVertical="top"
+        /&gt;
+        &lt;Pressable style={styles.tombolSimpan} onPress={simpan}&gt;
+          &lt;Text style={styles.teksSimpan}&gt;Simpan&lt;/Text&gt;
+        &lt;/Pressable&gt;
+      &lt;/View&gt;
+    &lt;/ScrollView&gt;
+  );
+}</code></pre>
+</figure>
+
+<h2>Kode: tiga berkas rute</h2>
+
+<p>
+  Ketiga rute hanya memetakan URL ke komponen layar; seluruh logika tetap berada di
+  <code>screens/</code>.
+</p>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">app/index.js</span>
+    <span class="kode-sumber">buku §Praktikum · Kode</span>
+  </figcaption>
+  <pre><code class="language-jsx">import DaftarCatatan from '../screens/DaftarCatatan';
+
+export default function HalamanDaftar() {
+  return &lt;DaftarCatatan /&gt;;
+}</code></pre>
+</figure>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">app/catatan/buat.js</span>
+    <span class="kode-sumber">buku §Praktikum · Kode</span>
+  </figcaption>
+  <pre><code class="language-jsx">import FormCatatan from '../../screens/FormCatatan';
+
+export default function HalamanBuat() {
+  return &lt;FormCatatan /&gt;;
+}</code></pre>
+</figure>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">app/catatan/[id].js</span>
+    <span class="kode-sumber">buku §Praktikum · Kode</span>
+  </figcaption>
+  <pre><code class="language-jsx">import FormCatatan from '../../screens/FormCatatan';
+
+export default function HalamanEdit() {
+  return &lt;FormCatatan /&gt;;
+}</code></pre>
+</figure>
+
+<h2>Penjelasan kode</h2>
+
+<p>
+  Perhatikan <strong>alur data</strong> aplikasi ini secara keseluruhan, karena pola inilah yang
+  dipakai lagi pada aplikasi berikutnya. Saat aplikasi dibuka, <code>DaftarCatatan</code> memuat
+  seluruh daftar lewat <code>muatCatatan()</code> dan menyimpannya ke state <code>daftar</code>.
+  State itulah satu-satunya “jendela” data untuk tampilan; <code>FlatList</code> sekadar
+  menggambar isi state. Setiap perubahan mengikuti urutan yang sama: ubah data di penyimpanan
+  dulu, lalu perbarui state. Urutan “simpan dulu, tampilkan kemudian” memastikan layar tidak
+  pernah menampilkan data yang sebenarnya gagal disimpan.
+</p>
+
+<p>
+  Keputusan memuat data dengan <code>useFocusEffect</code> — bukan <code>useEffect</code> biasa —
+  layak dipahami sebagai pola. <code>useEffect</code> dengan dependensi kosong hanya berjalan
+  sekali saat komponen terpasang; karena layar daftar tetap terpasang saat layar form menimpa di
+  atasnya, sekembalinya dari form efek itu tidak berjalan lagi. <code>useFocusEffect</code>
+  memicu ulang setiap kali layar menjadi fokus, dengan <code>useCallback</code> agar efek tidak
+  dibuat ulang di setiap render.
+</p>
+
+<p>
+  Modul <code>notesStorage.js</code> memperlihatkan pola API kecil yang konsisten: tiga fungsi
+  dengan tanggung jawab tunggal, semuanya asinkron, semuanya aman dari kegagalan, dan tidak ada
+  satu pun yang berurusan dengan tampilan. Bila kelak struktur catatan berubah — misalnya
+  menambah kolom <code>penting</code> — cukup edit modul ini dan mungkin versi kuncinya; layar
+  tidak berubah. Terakhir, perhatikan identitas data: <code>id</code> dari
+  <code>Date.now()</code> dipakai untuk operasi per-baris dan sebagai
+  <code>keyExtractor</code>, sedangkan <code>createdAt</code> dipakai untuk menampilkan waktu
+  pembuatan.
+</p>
+
+<h2>Hasil yang diharapkan</h2>
+
+<ol>
+  <li>Aplikasi terbuka pada rute “/” menampilkan kolom pencarian dan pesan “Belum ada catatan. Ketuk tombol di bawah untuk membuat.”</li>
+  <li>Mengetuk “+ Tambah Catatan” membuka form; mengisi judul dan isi lalu menekan Simpan kembali ke daftar dengan kartu catatan baru yang menampilkan judul, dua baris isi, dan waktu pembuatan.</li>
+  <li>Mengetuk kartu membuka form dengan judul dan isi terisi; mengubah lalu menyimpan memperbarui kartu di daftar.</li>
+  <li>Mengetuk “Hapus” memunculkan dialog konfirmasi; setelah dikonfirmasi kartu hilang dari daftar.</li>
+  <li>Mengetik kata di kolom pencarian memfilter daftar secara langsung; mencocokkan judul maupun isi, tidak peka huruf besar/kecil; menampilkan “Tidak ada catatan yang cocok dengan pencarian.” bila tak ada yang cocok.</li>
+  <li><strong>Uji persistensi:</strong> tutup aplikasi sepenuhnya (atau tekan “r” untuk reload di Metro, atau tutup Expo Go lalu buka lagi) — seluruh catatan tetap ada.</li>
+  <li>Reload aplikasi tidak pernah menampilkan layar error meskipun penyimpanan belum berisi data — lapisan pengaman <code>notesStorage</code> bekerja.</li>
+</ol>
+
+<div class="kotak kotak-tiruan">
+  <p class="kotak-judul">Bukti untuk laporan</p>
+  <p>
+    Lampirkan tangkapan layar sebelum aplikasi ditutup dan sesudah dibuka kembali. Bukti yang
+    paling sulit dipalsukan adalah tangkapan layar yang menunjukkan jam perangkat berbeda di
+    kedua gambar.
+  </p>
+</div>
+
+<h2>Troubleshooting</h2>
+
+<div class="tabel-gulir">
+  <table class="tabel">
+    <caption>Lima masalah yang paling sering muncul · sumber: buku §Praktikum, Troubleshooting</caption>
+    <thead>
+      <tr><th scope="col">Gejala</th><th scope="col">Penyebab</th><th scope="col">Solusi</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Catatan baru tidak muncul setelah kembali dari form, aplikasi tidak error</td>
+        <td>Daftar hanya dimuat saat layar pertama kali dirender (<code>useEffect</code> sekali jalan); layar daftar masih terpasang saat form menutupinya</td>
+        <td>Ganti pemuatan menjadi <code>useFocusEffect</code> agar dimuat ulang setiap layar mendapat fokus</td>
+      </tr>
+      <tr>
+        <td>Tampil <code>[object Object]</code> atau error <code>JSON Parse error: Unexpected token</code></td>
+        <td>Objek atau array disimpan tanpa <code>JSON.stringify</code>, atau data lama dibaca dengan <code>JSON.parse</code> tanpa penanganan kegagalan</td>
+        <td>Pastikan penyimpanan selalu lewat modul <code>notesStorage</code>; bila data sudah korup, bersihkan data aplikasi atau naikkan versi kunci menjadi <code>catatan:v2</code></td>
+      </tr>
+      <tr>
+        <td><code>Module not found: Can't resolve '@react-native-async-storage/async-storage'</code></td>
+        <td>Pustaka belum terpasang, atau terpasang lewat <code>npm install</code> dengan versi bebas sehingga tidak cocok dengan SDK</td>
+        <td>Jalankan <code>npx expo install @react-native-async-storage/async-storage</code>, lalu <code>npx expo start</code>; bila perlu bersihkan cache Metro dengan <code>npx expo start --clear</code></td>
+      </tr>
+      <tr>
+        <td>Pencarian tidak menemukan catatan yang jelas ada (“belanja” vs “Belanja mingguan”)</td>
+        <td>Perbandingan string peka huruf besar-kecil, dan spasi tepi kata kunci ikut dibandingkan</td>
+        <td>Normalisasi kedua sisi dengan <code>.toLowerCase()</code> dan buang spasi tepi dengan <code>.trim()</code> sebelum <code>includes</code></td>
+      </tr>
+      <tr>
+        <td>Data catatan “hilang” setelah beberapa saat, padahal tidak pernah dihapus</td>
+        <td>Aplikasi di-uninstall, data aplikasi dibersihkan, atau kode menyimpan ke kunci berbeda dari kunci yang dibaca</td>
+        <td>Periksa konsistensi nama kunci; praktikum memakai satu konstanta <code>KUNCI_CATATAN</code>. Verifikasi dengan <code>console.log</code> pada hasil <code>getItem</code></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="kotak kotak-salah">
+  <p class="kotak-judul">Salah paham</p>
+  <p>
+    Menutup aplikasi dengan tombol Home belum cukup sebagai uji persistensi, dan memaksa render
+    ulang bukan perbaikan bug “catatan baru tidak muncul”. Pastikan dulu di mana datanya dibaca
+    dan kapan pemuatan dijalankan, sebelum mengubah kode. Untuk masalah pemasangan, bacalah
+    pesan errornya sebelum memasang ulang apa pun.
+  </p>
+</div>
+
+<h2>Yang harus teramati</h2>
+
+<ul>
+  <li>Daftar catatan tetap ada setelah aplikasi ditutup penuh, lalu dibuka lagi.</li>
+  <li>Satu kunci <code>catatan:v1</code> menyimpan seluruh daftar, bukan satu kunci per catatan.</li>
+  <li>Yang tampil di layar berasal dari <code>muatCatatan()</code>, bukan dari data contoh di dalam berkas.</li>
+  <li>Pencarian berhuruf kecil menemukan judul yang berhuruf kapital.</li>
+  <li>Catatan yang dihapus tidak muncul lagi setelah layar dimuat ulang.</li>
+</ul>
+
+<blockquote>
+  Laporan yang baik melampirkan tangkapan layar sebelum dan sesudah aplikasi dibuka ulang.
+</blockquote>
+
+<h2>Kuis kilat</h2>
+
+<ol>
+  <li>Kalau <code>{ nama: 'Budi' }</code> dikirim langsung ke <code>setItem</code>, apa yang tersimpan?</li>
+  <li>Apa nilai kembalian <code>getItem</code> untuk kunci yang belum pernah disimpan?</li>
+  <li>Kenapa token autentikasi tidak boleh disimpan di AsyncStorage?</li>
+  <li>Apa peran TTL dalam pola caching?</li>
+</ol>
+
+<div class="kotak kotak-jawab">
+  <details>
+    <summary>Kunci kuis kilat</summary>
+    <ol>
+      <li><code>[object Object]</code> — nilai non-string harus diserialisasi lebih dulu dengan <code>JSON.stringify</code>.</li>
+      <li><code>null</code> — bukan string kosong, jadi diperiksa dengan <code>=== null</code>.</li>
+      <li>Karena data di AsyncStorage tidak terenkripsi; gunakan secure storage seperti <code>expo-secure-store</code> yang dibahas di Bab 13.</li>
+      <li>Batas umur cache sebelum datanya dianggap kedaluwarsa — berbeda dari timeout, yang merupakan batas waktu menunggu jawaban server.</li>
+    </ol>
+  </details>
+</div>
+
+<h2>Ringkasan bab</h2>
+
+<ol>
+  <li>State React hidup di memori yang volatil; data yang harus bertahan menyeberangi restart ditempatkan di penyimpanan lokal.</li>
+  <li>Tiga pilihan penyimpanan lokal utama di ekosistem Expo: AsyncStorage (kunci–nilai), SQLite (relasional), dan expo-file-system (berkas); pilih yang paling sederhana namun memadai.</li>
+  <li>AsyncStorage bersifat asinkron, berbentuk pasangan kunci–nilai, hanya menerima string, persisten lintas restart, dan tidak terenkripsi.</li>
+  <li>Pasangan metode inti: <code>setItem</code>/<code>getItem</code> untuk simpan dan baca, <code>removeItem</code> untuk hapus, <code>multiGet</code>/<code>multiSet</code> untuk banyak kunci, <code>getAllKeys</code> dan <code>clear</code> untuk pengelolaan menyeluruh.</li>
+  <li>Nilai non-string wajib diserialisasi dengan <code>JSON.stringify</code> saat menyimpan dan di-deserialisasi dengan <code>JSON.parse</code> saat membaca.</li>
+  <li>Pembacaan data lokal harus aman dari kegagalan: tangani <code>null</code>, bungkus parsing dengan <code>try/catch</code>, dan validasi bentuk data dengan <code>Array.isArray</code>.</li>
+  <li>Cache sederhana terdiri dari snapshot data, timestamp penyimpanan, dan aturan TTL; tampilkan penanda saat data berasal dari cache.</li>
+  <li>Token dan data sensitif lain tidak boleh disimpan di AsyncStorage karena tidak terenkripsi; gunakan secure storage (Keychain/Android Keystore).</li>
+  <li>Pisahkan logika penyimpanan dari antarmuka dalam satu modul API kecil agar aplikasi mudah dipelihara dan diuji.</li>
+  <li>Strategi tulis-ulang seluruh daftar cocok untuk data kecil; untuk data besar, gunakan penyimpanan per-baris atau basis data.</li>
+</ol>
+
+<div class="kotak kotak-tanya">
+  <p class="kotak-judul">Pertanyaan penuntun</p>
+  <p>
+    Aplikasi yang baik bukan yang tidak pernah gagal, melainkan yang tetap berguna saat gagal:
+    tidak kehilangan data, dan jujur soal kesegaran datanya. Sebelum menutup pertemuan, jawab
+    satu pertanyaan ini — data di aplikasimu, mana yang layak disimpan lokal, dan mana yang
+    justru tidak boleh disimpan sama sekali? Bab 12 sudah menunggu: penyimpanan yang baru kamu
+    kuasai akan dipakai lagi saat kamera, lokasi, dan notifikasi menghasilkan berkas yang harus
+    ditahan di perangkat.
+  </p>
+</div>

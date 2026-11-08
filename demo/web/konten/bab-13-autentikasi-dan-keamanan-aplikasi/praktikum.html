@@ -1,0 +1,671 @@
+<h1>Praktikum Bab 13 — Login, Token, dan Logout</h1>
+
+<p class="ringkas">
+  Satu pekerjaan besar yang terdiri atas sembilan berkas: membangun lapisan autentikasi pada
+  Aplikasi Manajemen Data Mahasiswa dari Bab 10. Daftarkan akun, masuk, simpan token di
+  SecureStore, lindungi halaman daftar mahasiswa, lalu keluar.
+</p>
+
+<div class="kotak kotak-tiruan">
+  <p class="kotak-judul">Tujuan praktikum</p>
+  <p>Setelah menyelesaikan praktikum ini, kamu mampu:</p>
+  <ol>
+    <li>memasang <code>expo-secure-store</code> dengan perintah Expo yang benar;</li>
+    <li>membungkus tiga fungsi penyimpanan aman dalam satu berkas utilitas;</li>
+    <li>memusatkan pemanggilan API pada satu berkas yang menyisipkan header <code>Authorization</code>;</li>
+    <li>menyusun penyedia autentikasi dengan tiga status: <code>memuat</code>, <code>masuk</code>, <code>keluar</code>;</li>
+    <li>melindungi seluruh kelompok rute <code>(app)</code> dengan satu berkas <code>_layout.js</code>, lalu menutup siklus dengan logout.</li>
+  </ol>
+</div>
+
+<h2>Kebutuhan</h2>
+
+<ol>
+  <li>
+    Project <code>aplikasi-mahasiswa</code> hasil praktikum Bab 10 — berisi rute
+    <code>app/(app)/mahasiswa/</code>, pemanggilan API, dan <code>BASE_URL</code>.
+  </li>
+  <li>
+    Backend buku berjalan di <code>http://localhost:3000</code> (folder <code>backend/</code>;
+    jalankan <code>npm install</code> sekali, lalu <code>npm start</code>).
+  </li>
+  <li>Expo Go atau emulator Android/iOS, dan Node.js LTS.</li>
+  <li>Paket <code>expo-secure-store</code>, dipasang pada langkah persiapan.</li>
+</ol>
+
+<h2>Persiapan</h2>
+
+<ol>
+  <li>
+    Buka <code>backend/README.md</code>. Catat dua hal: (a) bentuk request dan respons endpoint
+    <code>/api/auth/register</code> dan <code>/api/auth/login</code>; (b) cara mengaktifkan
+    proteksi rute pada server. Bila middleware proteksi tersedia, aktifkan untuk
+    <code>GET /api/mahasiswa</code>, karena praktikum ini justru menguji bahwa halaman mahasiswa
+    <em>tidak</em> bisa diambil tanpa token.
+  </li>
+  <li>Pada folder project, pasang penyimpanan aman dengan perintah di bawah.</li>
+  <li>
+    Mulai server backend dan pastikan endpoint login dapat diakses — membuka alamatnya di
+    peramban sudah cukup untuk melihat gambaran struktur JSON yang dikembalikan server.
+  </li>
+</ol>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">(terminal)</span>
+    <span class="kode-sumber">buku §Persiapan · verbatim</span>
+  </figcaption>
+  <pre><code class="language-bash">npx expo install expo-secure-store</code></pre>
+</figure>
+
+<div class="kotak kotak-salah">
+  <p class="kotak-judul">Peringatan sensitif versi</p>
+  <p>
+    Bila respons server berbeda dari asumsi kode di bawah — misalnya nama field —
+    sesuaikan kode dengan <code>backend/README.md</code>. Jangan mengubah server agar cocok
+    dengan slide; yang menyesuaikan adalah kode praktikum.
+  </p>
+</div>
+
+<h2>Langkah kerja</h2>
+
+<ol>
+  <li>Buat struktur folder <code>utils/</code>, <code>api/</code>, <code>context/</code>, dan <code>screens/</code> pada folder project bila belum ada.</li>
+  <li>Tulis <code>utils/tokenStorage.js</code> — pembungkus SecureStore (Kode 1).</li>
+  <li>Tulis <code>api/client.js</code> — pemanggil API dengan dukungan token (Kode 2). Salin nilai <code>BASE_URL</code> dari praktikum Bab 10; emulator Android memakai <code>http://10.0.2.2:3000</code>.</li>
+  <li>Tulis <code>context/AuthContext.js</code> — provider autentikasi dan hook <code>useAuth</code> (Kode 3).</li>
+  <li>Ubah <code>app/_layout.js</code> menjadi layout akar yang membungkus seluruh aplikasi dengan <code>AuthProvider</code> (Kode 4).</li>
+  <li>Ubah <code>app/index.js</code> menjadi halaman pengarah berdasarkan status autentikasi (Kode 5).</li>
+  <li>Tulis <code>screens/Login.js</code> (Kode 6), lalu ubah <code>app/login.js</code> agar menampilkan komponen tersebut (Kode 7).</li>
+  <li>Ubah <code>app/(app)/_layout.js</code> menjadi protected route (Kode 8) — halaman yang sudah ada di dalam <code>(app)</code> otomatis terlindungi.</li>
+  <li>Tambahkan tombol Keluar pada halaman beranda <code>app/(app)/index.js</code> (Kode 9).</li>
+  <li>Uji alur lengkap: daftar akun baru → masuk → buka Daftar Mahasiswa → keluar → coba akses langsung <code>/(app)/mahasiswa</code>, yang harus melempar kamu ke <code>/login</code>.</li>
+</ol>
+
+<h2>Kode 1: utils/tokenStorage.js</h2>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">utils/tokenStorage.js</span>
+    <span class="kode-sumber">buku §Praktikum, Kode 1 · verbatim</span>
+  </figcaption>
+  <pre><code class="language-js">// utils/tokenStorage.js — bungkus penyimpanan token berbasis SecureStore
+import * as SecureStore from 'expo-secure-store';
+
+const KUNCI_TOKEN = 'token_mahasiswa_app';
+
+export async function simpanToken(token) {
+  await SecureStore.setItemAsync(KUNCI_TOKEN, token);
+}
+
+export async function bacaToken() {
+  return await SecureStore.getItemAsync(KUNCI_TOKEN);
+}
+
+export async function hapusToken() {
+  await SecureStore.deleteItemAsync(KUNCI_TOKEN);
+}</code></pre>
+</figure>
+
+<h2>Kode 2: api/client.js</h2>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">api/client.js</span>
+    <span class="kode-sumber">buku §Praktikum, Kode 2 · verbatim</span>
+  </figcaption>
+  <pre><code class="language-js">// api/client.js — pemanggil API buku dengan dukungan token
+export const BASE_URL = 'http://localhost:3000'; // emulator Android: http://10.0.2.2:3000
+
+async function kirim(method, path, { body, token } = {}) {
+  const headers = { 'Content-Type': 'application/json' };
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+  const response = await fetch(`${BASE_URL}${path}`, {
+    method,
+    headers,
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  const data = await response.json().catch(() =&gt; null);
+  if (!response.ok) {
+    throw new Error((data &amp;&amp; data.pesan) || `Permintaan gagal (status ${response.status})`);
+  }
+  return data;
+}
+
+export function loginApi(email, password) {
+  return kirim('POST', '/api/auth/login', { body: { email, password } });
+}
+
+export function registerApi(nama, email, password) {
+  return kirim('POST', '/api/auth/register', { body: { nama, email, password } });
+}
+
+export function ambilMahasiswa(token) {
+  return kirim('GET', '/api/mahasiswa', { token });
+}</code></pre>
+</figure>
+
+<h2>Kode 3: context/AuthContext.js</h2>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">context/AuthContext.js</span>
+    <span class="kode-sumber">buku §Praktikum, Kode 3 · verbatim</span>
+  </figcaption>
+  <pre><code class="language-js">// context/AuthContext.js — state global autentikasi + custom hook useAuth
+import { createContext, useContext, useEffect, useState } from 'react';
+import { loginApi, registerApi } from '../api/client';
+import { bacaToken, hapusToken, simpanToken } from '../utils/tokenStorage';
+
+const AuthContext = createContext(null);
+
+export function AuthProvider({ children }) {
+  // status: 'memuat' (sedang cek token) | 'masuk' | 'keluar'
+  const [status, setStatus] = useState('memuat');
+  const [user, setUser] = useState(null);
+  const [token, setToken] = useState(null);
+
+  useEffect(() =&gt; {
+    (async () =&gt; {
+      try {
+        const tersimpan = await bacaToken();
+        if (tersimpan) {
+          setToken(tersimpan);
+          setStatus('masuk');
+        } else {
+          setStatus('keluar');
+        }
+      } catch (error) {
+        setStatus('keluar');
+      }
+    })();
+  }, []);
+
+  async function signIn(email, password) {
+    const data = await loginApi(email, password);
+    await simpanToken(data.token);
+    setToken(data.token);
+    setUser(data.user);
+    setStatus('masuk');
+  }
+
+  async function signUp(nama, email, password) {
+    return registerApi(nama, email, password);
+  }
+
+  async function signOut() {
+    await hapusToken();
+    setToken(null);
+    setUser(null);
+    setStatus('keluar');
+  }
+
+  return (
+    &lt;AuthContext.Provider value={{ status, user, token, signIn, signUp, signOut }}&gt;
+      {children}
+    &lt;/AuthContext.Provider&gt;
+  );
+}
+
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth harus dipanggil di dalam AuthProvider');
+  }
+  return context;
+}</code></pre>
+</figure>
+
+<h2>Kode 4 dan 5: layout akar dan halaman pengarah</h2>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">app/_layout.js</span>
+    <span class="kode-sumber">buku §Praktikum, Kode 4 · verbatim</span>
+  </figcaption>
+  <pre><code class="language-jsx">// app/_layout.js — layout akar: semua halaman dilayani provider autentikasi
+import { Stack } from 'expo-router';
+import { AuthProvider } from '../context/AuthContext';
+
+export default function LayoutAkar() {
+  return (
+    &lt;AuthProvider&gt;
+      &lt;Stack screenOptions={{ headerShown: false }} /&gt;
+    &lt;/AuthProvider&gt;
+  );
+}</code></pre>
+</figure>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">app/index.js</span>
+    <span class="kode-sumber">buku §Praktikum, Kode 5 · verbatim</span>
+  </figcaption>
+  <pre><code class="language-jsx">// app/index.js — pengarah: ke kelompok (app) bila sudah masuk, selain itu ke login
+import { Redirect } from 'expo-router';
+import { ActivityIndicator, View } from 'react-native';
+import { useAuth } from '../context/AuthContext';
+
+export default function Pengarah() {
+  const { status } = useAuth();
+
+  if (status === 'memuat') {
+    return (
+      &lt;View style={{ flex: 1, justifyContent: 'center' }}&gt;
+        &lt;ActivityIndicator size="large" /&gt;
+      &lt;/View&gt;
+    );
+  }
+  return &lt;Redirect href={status === 'masuk' ? '/(app)' : '/login'} /&gt;;
+}</code></pre>
+</figure>
+
+<h2>Kode 6: screens/Login.js</h2>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">screens/Login.js</span>
+    <span class="kode-sumber">buku §Praktikum, Kode 6 · verbatim, satu string disesuaikan kontrak bahasa ("kamu")</span>
+  </figcaption>
+  <pre><code class="language-jsx">// screens/Login.js — layar masuk &amp; daftar akun (mode dapat diganti)
+import { useState } from 'react';
+import {
+  ActivityIndicator, Alert, KeyboardAvoidingView, Platform,
+  Pressable, StyleSheet, Text, TextInput, View,
+} from 'react-native';
+import { router } from 'expo-router';
+import { useAuth } from '../context/AuthContext';
+
+export default function Login() {
+  const { signIn, signUp } = useAuth();
+  const [mode, setMode] = useState('masuk'); // 'masuk' | 'daftar'
+  const [nama, setNama] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [sedangMemuat, setSedangMemuat] = useState(false);
+
+  const judul = mode === 'masuk' ? 'Masuk' : 'Daftar Akun';
+  const labelTombol = mode === 'masuk' ? 'Masuk' : 'Daftar';
+
+  function validasi() {
+    if (mode === 'daftar' &amp;&amp; nama.trim() === '') {
+      Alert.alert('Validasi', 'Nama belum diisi.');
+      return false;
+    }
+    if (email.trim() === '' || !email.includes('@')) {
+      Alert.alert('Validasi', 'Isi alamat email dengan benar.');
+      return false;
+    }
+    if (password.length &lt; 6) {
+      Alert.alert('Validasi', 'Kata sandi minimal 6 karakter.');
+      return false;
+    }
+    return true;
+  }
+
+  async function tekanTombolUtama() {
+    if (!validasi()) return;
+    setSedangMemuat(true);
+    try {
+      if (mode === 'masuk') {
+        await signIn(email.trim(), password);
+        router.replace('/'); // pengarah meneruskan ke halaman beranda
+      } else {
+        await signUp(nama.trim(), email.trim(), password);
+        Alert.alert('Berhasil', 'Pendaftaran berhasil. Silakan masuk.', [
+          { text: 'OK', onPress: () =&gt; { setMode('masuk'); setPassword(''); } },
+        ]);
+      }
+    } catch (error) {
+      Alert.alert('Gagal', error.message || 'Terjadi kesalahan yang tidak diketahui.');
+    } finally {
+      setSedangMemuat(false);
+    }
+  }
+
+  return (
+    &lt;KeyboardAvoidingView
+      style={styles.penampung}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    &gt;
+      &lt;View style={styles.kartu}&gt;
+        &lt;Text style={styles.judul}&gt;{judul}&lt;/Text&gt;
+
+        &lt;View style={styles.tabMode}&gt;
+          &lt;Pressable
+            style={[styles.tabItem, mode === 'masuk' &amp;&amp; styles.tabAktif]}
+            onPress={() =&gt; setMode('masuk')}
+          &gt;
+            &lt;Text style={[styles.tabTeks, mode === 'masuk' &amp;&amp; styles.tabTeksAktif]}&gt;Masuk&lt;/Text&gt;
+          &lt;/Pressable&gt;
+          &lt;Pressable
+            style={[styles.tabItem, mode === 'daftar' &amp;&amp; styles.tabAktif]}
+            onPress={() =&gt; setMode('daftar')}
+          &gt;
+            &lt;Text style={[styles.tabTeks, mode === 'daftar' &amp;&amp; styles.tabTeksAktif]}&gt;Daftar&lt;/Text&gt;
+          &lt;/Pressable&gt;
+        &lt;/View&gt;
+
+        {mode === 'daftar' &amp;&amp; (
+          &lt;TextInput
+            style={styles.input}
+            placeholder="Nama lengkap"
+            value={nama}
+            onChangeText={setNama}
+          /&gt;
+        )}
+        &lt;TextInput
+          style={styles.input}
+          placeholder="Email"
+          keyboardType="email-address"
+          autoCapitalize="none"
+          value={email}
+          onChangeText={setEmail}
+        /&gt;
+        &lt;TextInput
+          style={styles.input}
+          placeholder="Kata sandi"
+          secureTextEntry
+          value={password}
+          onChangeText={setPassword}
+        /&gt;
+
+        &lt;Pressable
+          style={[styles.tombol, sedangMemuat &amp;&amp; styles.tombolNonaktif]}
+          onPress={tekanTombolUtama}
+          disabled={sedangMemuat}
+        &gt;
+          {sedangMemuat ? (
+            &lt;ActivityIndicator color="#ffffff" /&gt;
+          ) : (
+            &lt;Text style={styles.teksTombol}&gt;{labelTombol}&lt;/Text&gt;
+          )}
+        &lt;/Pressable&gt;
+
+        &lt;Text style={styles.catatan}&gt;
+          {mode === 'masuk'
+            ? 'Belum punya akun? Tekan tab Daftar untuk mendaftar.'
+            : 'Data kamu hanya dipakai untuk autentikasi.'}
+        &lt;/Text&gt;
+      &lt;/View&gt;
+    &lt;/KeyboardAvoidingView&gt;
+  );
+}
+
+const styles = StyleSheet.create({
+  penampung: { flex: 1, justifyContent: 'center', padding: 24, backgroundColor: '#f2f4f7' },
+  kartu: { backgroundColor: '#ffffff', borderRadius: 12, padding: 24, elevation: 2 },
+  judul: { fontSize: 22, fontWeight: 'bold', textAlign: 'center', marginBottom: 16 },
+  tabMode: { flexDirection: 'row', backgroundColor: '#e9edf3', borderRadius: 8, marginBottom: 16 },
+  tabItem: { flex: 1, paddingVertical: 10, borderRadius: 8, alignItems: 'center' },
+  tabAktif: { backgroundColor: '#2563eb' },
+  tabTeks: { color: '#4b5563', fontWeight: '600' },
+  tabTeksAktif: { color: '#ffffff' },
+  input: {
+    borderWidth: 1, borderColor: '#d1d5db', borderRadius: 8,
+    paddingHorizontal: 12, paddingVertical: 10, marginBottom: 12, fontSize: 16,
+  },
+  tombol: {
+    backgroundColor: '#2563eb', borderRadius: 8,
+    paddingVertical: 12, alignItems: 'center', marginTop: 4,
+  },
+  tombolNonaktif: { opacity: 0.6 },
+  teksTombol: { color: '#ffffff', fontWeight: 'bold', fontSize: 16 },
+  catatan: { textAlign: 'center', color: '#6b7280', fontSize: 13, marginTop: 14 },
+});</code></pre>
+</figure>
+
+<h2>Kode 7 dan 8: rute login dan protected route</h2>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">app/login.js</span>
+    <span class="kode-sumber">buku §Praktikum, Kode 7 · verbatim</span>
+  </figcaption>
+  <pre><code class="language-jsx">// app/login.js — rute login; layar sesungguhnya ada di screens/Login.js
+import Login from '../screens/Login';
+
+export default function RuteLogin() {
+  return &lt;Login /&gt;;
+}</code></pre>
+</figure>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">app/(app)/_layout.js</span>
+    <span class="kode-sumber">buku §Praktikum, Kode 8 · verbatim</span>
+  </figcaption>
+  <pre><code class="language-jsx">// app/(app)/_layout.js — semua rute di kelompok ini hanya untuk pengguna masuk
+import { Redirect, Stack } from 'expo-router';
+import { ActivityIndicator, View } from 'react-native';
+import { useAuth } from '../../context/AuthContext';
+
+export default function LayoutTerproteksi() {
+  const { status } = useAuth();
+
+  if (status === 'memuat') {
+    return (
+      &lt;View style={{ flex: 1, justifyContent: 'center' }}&gt;
+        &lt;ActivityIndicator size="large" /&gt;
+      &lt;/View&gt;
+    );
+  }
+  if (status === 'keluar') {
+    return &lt;Redirect href="/login" /&gt;;
+  }
+  return &lt;Stack /&gt;;
+}</code></pre>
+</figure>
+
+<h2>Kode 9: tombol keluar pada beranda</h2>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">app/(app)/index.js</span>
+    <span class="kode-sumber">buku §Praktikum, Kode 9 · verbatim (tambahan pada Beranda)</span>
+  </figcaption>
+  <pre><code class="language-jsx">import { Pressable, StyleSheet, Text } from 'react-native';
+import { router } from 'expo-router';
+import { useAuth } from '../../context/AuthContext';
+
+export default function Beranda() {
+  const { user, signOut } = useAuth();
+
+  async function keluar() {
+    await signOut();           // hapus token dari SecureStore
+    router.replace('/login');  // arahkan ulang ke halaman login
+  }
+
+  return (
+    &lt;&gt;
+      &lt;Text style={styles.sapa}&gt;Selamat datang, {user ? user.nama : 'pengguna'}&lt;/Text&gt;
+      &lt;Pressable style={styles.tombolKeluar} onPress={keluar}&gt;
+        &lt;Text style={styles.teksKeluar}&gt;Keluar&lt;/Text&gt;
+      &lt;/Pressable&gt;
+    &lt;/&gt;
+  );
+}
+
+const styles = StyleSheet.create({
+  sapa: { fontSize: 18, fontWeight: 'bold', marginBottom: 16 },
+  tombolKeluar: {
+    backgroundColor: '#dc2626', borderRadius: 8,
+    paddingVertical: 10, alignItems: 'center',
+  },
+  teksKeluar: { color: '#ffffff', fontWeight: 'bold' },
+});</code></pre>
+</figure>
+
+<h2>Penjelasan kode</h2>
+
+<p>
+  <strong>Kode 1</strong> membungkus tiga fungsi SecureStore agar pemakaiannya seragam di
+  seluruh aplikasi. Kunci penyimpanan dibuat konstan (<code>token_mahasiswa_app</code>) supaya
+  tidak salah ketik di tempat lain; modul ini satu-satunya tempat yang mengenal nama kunci
+  tersebut. Bila kebijakan penyimpanan berubah nanti, cukup satu berkas yang diubah.
+</p>
+
+<p>
+  <strong>Kode 2</strong> adalah pemanggil API tunggal: fungsi <code>kirim</code> menyusun
+  header, mengirim <code>fetch</code>, membaca JSON, dan melempar error berisi pesan dari server
+  bila status bukan sukses. Perhatikan baris <code>headers.Authorization = `Bearer ${token}`</code>
+  — di situlah token disisipkan ke setiap permintaan yang membutuhkannya. Memusatkan logika ini
+  menghindari pengulangan di setiap layar sekaligus memudahkan penanganan kesalahan terpusat,
+  misalnya mendeteksi status <code>401</code>.
+</p>
+
+<p>
+  <strong>Kode 3</strong> memegang tiga status autentikasi. <code>memuat</code> berarti aplikasi
+  sedang membaca token dari SecureStore saat dibuka — penting agar halaman pengarah tidak
+  mengambil keputusan sebelum data terbaca, sehingga layar tidak berkedip.
+  <code>signIn</code> memanggil API, menyimpan token, lalu memperbarui state;
+  <code>signUp</code> hanya mendaftarkan akun; <code>signOut</code> menghapus token dan
+  mengosongkan state. Hook <code>useAuth</code> melempar error bila dipakai di luar provider —
+  perilaku yang membantu mengenali kesalahan sedini mungkin.
+</p>
+
+<p>
+  <strong>Kode 4 dan 5</strong> membentuk pintu masuk aplikasi. Provider dibungkus di layout akar
+  sehingga semua halaman dapat memanggil <code>useAuth</code>. Halaman pengarah memutuskan arah:
+  status <code>masuk</code> menuju <code>/(app)</code>, selain itu ke <code>/login</code>.
+  Keputusan arah hanya dibuat di satu tempat — pola sumber kebenaran tunggal yang menghindari
+  navigasi yang saling bertentangan.
+</p>
+
+<p>
+  <strong>Kode 6</strong> menyatukan dua mode pada satu layar. Validasi di sini tujuannya umpan
+  balik cepat; validasi lengkap dibahas di Bab 8 dan server tetap memvalidasi ulang.
+  <code>router.replace('/')</code> dipakai — bukan <code>push</code> — agar layar login tidak
+  tertinggal di tumpukan navigasi, sehingga pengguna tidak dapat kembali ke sana dengan tombol
+  kembali. Pada mode daftar, setelah sukses aplikasi beralih ke mode masuk; keputusan ini
+  menghindari asumsi bahwa endpoint register langsung menerbitkan token.
+</p>
+
+<p>
+  <strong>Kode 7</strong> menunjukkan pola pemisahan rute dan layar: berkas rute hanya meneruskan
+  ke <code>screens/Login.js</code>. <strong>Kode 8</strong> adalah proteksi rute pada kelompok
+  <code>(app)</code>: satu berkas <code>_layout.js</code> melindungi Beranda, Daftar Mahasiswa,
+  Detail, dan Formulir tanpa mengubah satu pun berkas halaman — inilah nilai utama pola route
+  group dari Bab 7. <strong>Kode 9</strong> melengkapi siklus: tombol Keluar memanggil
+  <code>signOut</code> lalu <code>router.replace('/login')</code>.
+</p>
+
+<h2>Hasil yang diharapkan</h2>
+
+<ol>
+  <li>Saat aplikasi dibuka pertama kali — belum ada token — yang muncul adalah halaman Masuk, bukan Beranda.</li>
+  <li>Pendaftaran akun baru lewat tab Daftar menampilkan pemberitahuan “Pendaftaran berhasil”, lalu beralih ke tab Masuk.</li>
+  <li>Login dengan email dan kata sandi yang baru didaftarkan membawa kamu ke Beranda, dengan sapaan “Selamat datang, &lt;nama&gt;” dari respons server.</li>
+  <li>Halaman Daftar Mahasiswa menampilkan data dari API — berhasil hanya karena token dikirim pada header dan server memproteksi rute tersebut.</li>
+  <li>Tombol Keluar mengembalikan kamu ke halaman Masuk; upaya membuka <code>/(app)/mahasiswa</code> setelahnya ditolak dan dialihkan ke <code>/login</code>.</li>
+  <li>Menutup lalu membuka kembali aplikasi tanpa logout membuatmu tetap masuk karena token terbaca dari SecureStore; memasang ulang aplikasi mengembalikanmu ke halaman Masuk karena token tersimpan di area aman perangkat yang ikut dibersihkan.</li>
+</ol>
+
+<h2>Troubleshooting</h2>
+
+<div class="tabel-gulir">
+  <table class="tabel">
+    <caption>Ketika alur autentikasi belum berjalan · sumber: buku §Troubleshooting</caption>
+    <thead>
+      <tr><th scope="col">Gejala</th><th scope="col">Penyebab</th><th scope="col">Solusi</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Menekan tombol Masuk memunculkan alert “Network request failed”</td>
+        <td>Aplikasi tidak dapat menjangkau server: <code>BASE_URL</code> salah, server belum berjalan, atau emulator Android tidak dapat memakai <code>localhost</code> — di emulator, <code>localhost</code> menunjuk ke emulator itu sendiri</td>
+        <td>Pastikan <code>npm start</code> berjalan di folder <code>backend/</code>. Gunakan <code>http://localhost:3000</code> untuk Expo Go di perangkat yang sama dengan komputer, dan <code>http://10.0.2.2:3000</code> untuk emulator Android. Verifikasi dengan membuka alamat itu di peramban komputer</td>
+      </tr>
+      <tr>
+        <td>Login berhasil, tetapi halaman Daftar Mahasiswa menampilkan error 401</td>
+        <td>Server memproteksi <code>GET /api/mahasiswa</code> dan menolak token — kemungkinan token tidak dikirim, atau token kedaluwarsa</td>
+        <td>Pastikan layar memanggil <code>ambilMahasiswa(token)</code> dengan token dari <code>useAuth()</code>, bukan versi pemanggilan Bab 10 tanpa token. Bila token kedaluwarsa, logout lalu login ulang</td>
+      </tr>
+      <tr>
+        <td>Error “Cannot find native module ‘ExpoSecureStore’” saat aplikasi dijalankan</td>
+        <td>Paket <code>expo-secure-store</code> belum terpasang, atau versinya tidak cocok dengan SDK</td>
+        <td>Pasang dengan <code>npx expo install expo-secure-store</code> — bukan <code>npm install</code> — lalu mulai ulang Metro dengan <code>npx expo start -c</code></td>
+      </tr>
+      <tr>
+        <td>Setelah logout, tombol kembali perangkat membawa lagi ke halaman Beranda</td>
+        <td>Navigasi ke Beranda memakai <code>router.push</code> sehingga layar lama terdorong ke tumpukan, atau halaman beranda lama masih tersimpan di tumpukan</td>
+        <td>Pada alur masuk gunakan <code>router.replace('/')</code>, dan setelah logout gunakan <code>router.replace('/login')</code> — penggantian mencegah halaman lama tersisa di tumpukan</td>
+      </tr>
+      <tr>
+        <td>Pendaftaran ditolak server dengan pesan validasi, misalnya “email sudah terdaftar”</td>
+        <td>Email yang sama sudah pernah didaftarkan, atau aturan kata sandi server berbeda dari pemeriksaan ringan di layar</td>
+        <td>Gunakan email lain yang belum terdaftar; periksa pesan kesalahan persis dari server yang tampil pada alert, karena pesan itu diambil dari respons server melalui <code>api/client.js</code></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="kotak kotak-salah">
+  <p class="kotak-judul">Salah paham</p>
+  <p>
+    Kegagalan autentikasi jarang berupa kesalahan logika rumit; yang paling sering adalah alamat
+    server yang salah dan paket yang dipasang dengan perintah keliru. Baca pesan errornya lebih
+    dulu, dan jangan pernah menampilkan kata sandi pada alert atau log saat menelusuri masalah.
+  </p>
+</div>
+
+<h2>Yang harus teramati</h2>
+
+<ul>
+  <li><strong>Layar Login pada pembukaan pertama</strong> — sebelum ada token sama sekali.</li>
+  <li><strong>Sapaan nama pengguna di Beranda</strong> setelah login berhasil.</li>
+  <li><strong>Penolakan akses</strong> ke <code>/(app)/mahasiswa</code> setelah logout, disertai pengalihan ke <code>/login</code>.</li>
+  <li><strong>Tetap masuk setelah aplikasi ditutup dan dibuka</strong> tanpa logout, karena token dibaca dari SecureStore.</li>
+  <li><strong>Kembali ke halaman Masuk setelah aplikasi dipasang ulang</strong>, karena token tersimpan di area aman perangkat.</li>
+</ul>
+
+<blockquote>
+  Laporan yang baik menyertakan tangkapan layar tiap butir, bukan hanya tulisan “berhasil”.
+</blockquote>
+
+<h2>Kuis kilat</h2>
+
+<ol>
+  <li>Apa yang menjamin keaslian sebuah JWT?</li>
+  <li>Kenapa server tetap disebut <em>stateless</em> padahal memakai token?</li>
+  <li>Kapan keunggulan session paling dibutuhkan?</li>
+  <li>Fungsi <code>expo-secure-store</code> mana yang menghapus token saat logout?</li>
+</ol>
+
+<div class="kotak kotak-jawab">
+  <details>
+    <summary>Kunci kuis kilat</summary>
+    <ol>
+      <li>Signature yang dihitung dengan secret key milik server; header dan payload hanya disandikan dengan base64url, bukan dirahasiakan.</li>
+      <li>Karena verifikasi hanya memerlukan secret key, aritmetika, dan pemeriksaan klaim <code>exp</code> — tidak ada pencarian ke basis data untuk daftar token yang sah.</li>
+      <li>Saat pencabutan akses harus berlaku seketika, misalnya aplikasi internal perbankan: hapus sesi di server dan akses langsung berhenti.</li>
+      <li><code>deleteItemAsync</code>.</li>
+    </ol>
+  </details>
+</div>
+
+<h2>Ringkasan bab</h2>
+
+<ol>
+  <li>Autentikasi membuktikan <em>siapa</em> pengguna; otorisasi menentukan <em>apa yang boleh dilakukan</em>; keduanya berurutan dan diputuskan final di server.</li>
+  <li>Register dan login adalah dua endpoint REST; kata sandi tidak pernah disimpan polos — server menyimpan hasil hash, dan buku ini tidak pernah menampilkan kata sandi asli.</li>
+  <li>Session menyimpan state di server: mudah dicabut, sulit diskalakan. Token bersifat stateless: mudah diskalakan, sulit dicabut.</li>
+  <li>JWT terdiri atas header, payload, dan signature; isinya hanya di-<em>encode</em> sehingga dapat dibaca, sedangkan keasliannya dijamin tanda tangan dengan secret key server.</li>
+  <li>Klaim <code>exp</code> membatasi umur token; token yang dicuri tetap berlaku sampai kedaluwarsa — solusi umumnya umur pendek plus refresh token.</li>
+  <li>Protected route di klien memakai <code>Redirect</code> berbasis state autentikasi; keamanan sebenarnya ditentukan proteksi di sisi server.</li>
+  <li>Token disimpan dengan <code>expo-secure-store</code> — enkripsi Keystore/Keychain — bukan AsyncStorage yang tanpa enkripsi.</li>
+  <li>Empat prinsip API security: validasi input di server, tanpa secret key di kode klien, HTTPS untuk semua lalu lintas non-lokal, dan least privilege pada izin, klaim token, serta data respons.</li>
+  <li>Logout dalam arsitektur token berarti menghapus token di klien lalu mengarahkan ulang ke halaman login; server tidak punya sesi untuk ditutup.</li>
+  <li>HTTP hanya untuk pengembangan lokal; Android memblokir <em>cleartext</em> pada build produksi, dan perilaku Expo Go terhadap HTTP lokal bersifat sensitif versi.</li>
+</ol>
+
+<div class="kotak kotak-tanya">
+  <p class="kotak-judul">Pertanyaan penuntun</p>
+  <p>
+    Tutup dengan satu kalimat deck: “Bab ini mengajari aplikasi menjaga pintu; bab berikutnya
+    mengajari kita memeriksa setiap ruang sebelum diserahkan ke pengguna.” Sebelum menutup,
+    ajukan satu pertanyaan yang akan kamu pakai terus sampai Project Akhir: “bagaimana kalau
+    perangkat ini dipegang orang jahat?”
+  </p>
+</div>

@@ -1,0 +1,575 @@
+<h1>Bagian 1 — Kebutuhan &amp; AsyncStorage</h1>
+
+<p class="ringkas">
+  Subbab 11.1–11.2. Bagian ini menjawab dua pertanyaan berurutan: mengapa state React tidak
+  cukup untuk data yang harus bertahan, dan bagaimana AsyncStorage menyimpan serta membaca
+  data itu — lengkap dengan lima prinsip yang menentukan cara pakainya.
+</p>
+
+<section class="subbab" id="s1-1">
+  <p class="label-subbab">
+    Subbab 11.1 <span class="sumber-slide">· deck: “State Hanya Bertahan Sampai Aplikasi Ditutup” · buku §11.1</span>
+  </p>
+  <h2>State Hanya Bertahan Sampai Aplikasi Ditutup</h2>
+
+  <p>
+    Sejak Bab 4 sampai Bab 10, seluruh data aplikasi kita disimpan di dalam state React, yaitu
+    variabel yang hidup di memori (RAM) perangkat. Memori bersifat <strong>volatil</strong>:
+    begitu aplikasi ditutup, proses aplikasinya dimatikan sistem karena kekurangan RAM, atau
+    pengguna memuat ulang aplikasi, semua nilai di state lenyap tanpa jejak.
+  </p>
+
+  <p>
+    Tiga kenyataan mendorong lahirnya penyimpanan lokal. Pertama, RAM itu cepat tetapi mahal
+    dan terbatas, sehingga sistem operasi sewaktu-waktu membunuh proses aplikasi untuk merebut
+    memorinya. Kedua, jaringan tidak selalu tersedia: sinyal buruk, kuota habis, atau server
+    bermasalah membuat aplikasi yang bergantung penuh pada server tidak berguna di saat paling
+    dibutuhkan. Ketiga, tidak semua data perlu dikirim ke server; menyimpannya di perangkat
+    membuat aplikasi lebih cepat, lebih hemat kuota, dan lebih menghormati privasi pengguna.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">peta-konsep-bab-11.txt</span>
+      <span class="kode-sumber">buku §Peta Konsep · peta konsep bab</span>
+    </figcaption>
+    <pre><code class="language-text">Penyimpanan Data Lokal
+│
+├─ Kebutuhan: offline · preferensi · cache · draf
+│
+├─ AsyncStorage — key-value · asinkron · string-only
+│   ├─ setItem / getItem / removeItem
+│   ├─ multiGet / multiSet / getAllKeys / clear
+│   └─ persisten lintas restart · tidak terenkripsi
+│
+├─ Serialisasi JSON — JSON.stringify ⇄ JSON.parse
+│   └─ try/catch + validasi bentuk data
+│
+├─ Caching — snapshot data API + timestamp + TTL
+│   └─ fallback saat offline dengan penanda
+│
+└─ Token — ⚠ bukan untuk AsyncStorage
+    └─ secure storage (Keychain/Keystore) → Bab 13</code></pre>
+  </figure>
+
+  <div class="banding"
+       data-label-lama="State di memori (RAM)"
+       data-label-benar="Penyimpanan lokal (disk)"
+       data-petunjuk="Analogi buku: state itu papan tulis kelas — cepat ditulis, cepat dihapus; penyimpanan lokal itu buku catatan — harus dibuka dan ditutup, tetapi isinya masih ada besok pagi.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">state-react.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §11.1</span>
+      </figcaption>
+      <pre><code class="language-text">const [daftar, setDaftar] = useState([]);
+→ hidup di RAM
+→ hilang saat proses aplikasi dimatikan
+→ hilang saat reload (r di Metro)
+→ tidak butuh await, tidak butuh disk</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">penyimpanan-lokal.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §11.1</span>
+      </figcaption>
+      <pre><code class="language-text">await AsyncStorage.setItem('catatan:v1', teks);
+→ hidup di sandbox aplikasi
+→ bertahan melewati restart
+→ terhapus saat uninstall / data dibersihkan
+→ selalu asinkron, butuh await</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Menekan tombol Home tidak berarti aplikasi berhenti. Prosesnya tetap hidup sampai sistem
+      membutuhkan memorinya kembali, sehingga data di state bisa terlihat “bertahan” padahal
+      belum tentu. Uji persistensi yang benar adalah menutup proses aplikasinya dari daftar
+      aplikasi yang berjalan, lalu membukanya lagi.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Mengapa state digambarkan sebagai papan tulis kelas, sedangkan penyimpanan lokal sebagai
+      buku catatan? (Jawaban: papan tulis cepat ditulis dan cepat dihapus; buku catatan harus
+      dibuka dan ditutup, tetapi isinya masih ada besok pagi — itulah beda RAM dan disk.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s1-2">
+  <p class="label-subbab">
+    Subbab 11.1 <span class="sumber-slide">· deck: “Lima Jenis Data yang Harus Bertahan” · buku §11.1</span>
+  </p>
+  <h2>Lima Jenis Data yang Harus Bertahan</h2>
+
+  <p>
+    Tidak semua data perlu diselamatkan; yang perlu adalah data yang kehilangannya membuat
+    pengguna merasa dirugikan. Buku ini mendaftar lima jenisnya, dan daftar ini akan dipakai
+    lagi saat merancang aplikasi pada bab-bab berikutnya.
+  </p>
+
+  <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Lima jenis data yang harus bertahan · sumber: deck “Lima Jenis Data yang Harus Bertahan”</caption>
+      <thead>
+        <tr><th scope="col">Jenis data</th><th scope="col">Contoh di aplikasi</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Preferensi pengguna</td><td>Tema gelap, bahasa antarmuka, ukuran huruf</td></tr>
+        <tr><td>Draf formulir</td><td>Isian formulir Bab 8 yang belum selesai</td></tr>
+        <tr><td>Cache isi server</td><td>Salinan data API Bab 10 agar tetap tampil</td></tr>
+        <tr><td>Data operasional offline</td><td>Catatan atau pesanan yang dibuat tanpa sinyal</td></tr>
+        <tr><td>Kredensial sesi</td><td>Token agar pengguna tidak login berulang</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    Dua baris pertama sudah cukup untuk menjelaskan mengapa bab ini ada. Preferensi yang
+    diatur ulang setiap kali aplikasi dibuka terasa seperti aplikasi yang tidak mengenal
+    pemiliknya, sedangkan draf yang hilang sekali sering membuat pengguna berhenti memakai
+    aplikasi itu. Baris ketiga dan keempat adalah bahan subbab 11.4 serta studi kasus bab ini;
+    baris kelima sengaja disebut sekarang agar subbab 11.5 nanti tidak mengejutkan.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">utils/preferensi.js</span>
+      <span class="kode-sumber">buku §Contoh 1 · preferensi pengguna (baris pertama tabel)</span>
+    </figcaption>
+    <pre><code class="language-js">import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const KUNCI_PREFERENSI = 'preferensi:pengguna';
+
+export async function ambilPreferensi() {
+  try {
+    const teks = await AsyncStorage.getItem(KUNCI_PREFERENSI);
+    if (teks === null) {
+      return { nama: '', temaGelap: false };
+    }
+    return JSON.parse(teks);
+  } catch (error) {
+    console.warn('Gagal membaca preferensi:', error);
+    return { nama: '', temaGelap: false };
+  }
+}
+
+export async function simpanPreferensi(preferensi) {
+  try {
+    await AsyncStorage.setItem(KUNCI_PREFERENSI, JSON.stringify(preferensi));
+  } catch (error) {
+    console.warn('Gagal menyimpan preferensi:', error);
+  }
+}</code></pre>
+  </figure>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Pilih satu baris tabel di atas dan sebutkan satu aplikasi nyata yang memakainya.
+      (Jawaban yang diharapkan: baris mana pun boleh, asalkan contohnya konkret — misalnya
+      preferensi tema di aplikasi perpesanan, atau draf isian KRS di aplikasi kampus.)
+    </p>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Draf formulir bukan urusan penyimpanan biasa, melainkan soal kepercayaan pengguna. Data
+      yang hilang sekali sering membuat pengguna berhenti memakai aplikasi itu — jauh lebih
+      mahal daripada beberapa baris kode tambahan untuk menyimpannya.
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s1-3">
+  <p class="label-subbab">
+    Subbab 11.1 <span class="sumber-slide">· deck: “Tiga Pilihan Penyimpanan Lokal di Expo” · buku §11.1</span>
+  </p>
+  <h2>Tiga Pilihan Penyimpanan Lokal di Expo</h2>
+
+  <p>
+    Setiap platform mobile menyediakan mekanisme penyimpanannya sendiri: Android punya
+    SharedPreferences dan SQLite, iOS punya UserDefaults dan Core Data. React Native
+    menyatukan perbedaan itu lewat pustaka lintas platform, dan di ekosistem Expo tersedia
+    tiga pilihan utama.
+  </p>
+
+  <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Tiga pilihan penyimpanan lokal di Expo · sumber: deck “Tiga Pilihan Penyimpanan Lokal di Expo”</caption>
+      <thead>
+        <tr><th scope="col">Pilihan</th><th scope="col">Sifat</th><th scope="col">Paling cocok untuk</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>AsyncStorage</td><td>Pasangan kunci–nilai sederhana</td><td>Preferensi, cache, daftar pendek</td></tr>
+        <tr><td>SQLite</td><td>Basis data relasional</td><td>Data besar dengan kueri rumit</td></tr>
+        <tr><td><code>expo-file-system</code></td><td>Penyimpanan file</td><td>Gambar dan media (Bab 12)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    Prinsip pemilihannya sederhana: <em>gunakan alat yang paling sederhana namun memadai</em>.
+    Memakai SQLite untuk menyimpan preferensi sama borosnya dengan membawa truk untuk
+    mengangkut satu kardus. Karena bab ini memilih AsyncStorage, pemasangannya memakai
+    perintah khusus Expo agar versi pustaka otomatis cocok dengan SDK project.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">(terminal)</span>
+      <span class="kode-sumber">buku §11.2 · memasang AsyncStorage</span>
+    </figcaption>
+    <pre><code class="language-bash">npx expo install @react-native-async-storage/async-storage</code></pre>
+  </figure>
+
+  <div class="banding"
+       data-label-lama="AsyncStorage untuk semuanya"
+       data-label-benar="AsyncStorage untuk yang memadai saja"
+       data-petunjuk="Pertanyaannya bukan “mana yang paling canggih”, melainkan “mana yang paling sederhana namun memadai untuk data ini”. Buku menyebut memakai SQLite untuk preferensi itu seperti membawa truk untuk satu kardus.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">salah-tempat.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §11.1</span>
+      </figcaption>
+      <pre><code class="language-text">✗ 10.000 baris transaksi → AsyncStorage
+   satu string JSON raksasa, ditulis ulang
+   setiap kali satu baris berubah
+✗ 50 foto produk → AsyncStorage base64
+   ukuran menggelembung ±33%, cepat penuh</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">tempat-yang-tepat.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §11.1</span>
+      </figcaption>
+      <pre><code class="language-text">✓ preferensi, cache, daftar pendek → AsyncStorage
+✓ 10.000 baris dengan kueri tanggal → SQLite
+✓ 50 foto produk → expo-file-system (Bab 12)
+✓ token dan kata sandi → secure storage (Bab 13)</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Untuk 50 foto produk, pilih yang mana? Dan untuk 10.000 baris transaksi yang dicari
+      menurut tanggal? (Jawaban berturut-turut: <code>expo-file-system</code>, karena media
+      adalah berkas dan bukan teks; SQLite, karena kueri rentang tanggal tidak mungkin
+      dilakukan efisien pada satu string JSON.)
+    </p>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Pustaka yang lebih canggih tidak otomatis lebih baik. Memakai SQLite untuk menyimpan
+      preferensi itu boros — seperti membawa truk untuk mengangkut satu kardus — karena
+      menambah skema, migrasi, dan kode yang harus dipelihara tanpa manfaat yang sepadan.
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s1-4">
+  <p class="label-subbab">
+    Subbab 11.2 <span class="sumber-slide">· deck: “AsyncStorage Bukan Database, Hanya Kunci dan Nilai” · buku §11.2</span>
+  </p>
+  <h2>AsyncStorage Bukan Database, Hanya Kunci dan Nilai</h2>
+
+  <p>
+    <strong>AsyncStorage</strong> adalah pustaka penyimpanan <strong>kunci–nilai</strong> yang
+    asinkron untuk React Native. Konsepnya sama dengan laci arsip: setiap data disimpan pada
+    sebuah <strong>kunci</strong>, yaitu nama unik, dan dibaca kembali menggunakan kunci
+    tersebut. Pustaka ini dikelola komunitas React Native, didukung penuh Expo, dan berfungsi
+    di Android, iOS, maupun web.
+  </p>
+
+  <p>
+    Yang penting ditegaskan: AsyncStorage bukan basis data. Tidak ada tabel, tidak ada relasi,
+    tidak ada kueri — hanya pasangan kunci dan nilai. Konsekuensinya, tanggung jawab menata
+    data sepenuhnya ada pada kode kita. Perintah pemasangannya pun berbeda dari kebiasaan
+    <code>npm install</code>: Expo memilihkan versi pustaka yang sudah teruji kompatibel
+    dengan SDK project (SDK 57 pada buku ini).
+  </p>
+
+  <div class="banding"
+       data-label-lama="npm install dengan versi bebas"
+       data-label-benar="npx expo install dengan versi pilihan Expo"
+       data-petunjuk="Ketidakcocokan versi pustaka native adalah keluhan yang paling sering muncul di forum mahasiswa, dan hampir selalu berasal dari baris pemasangan yang salah.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">(terminal) — versi bebas</span>
+        <span class="kode-sumber">ilustrasi · buku §11.2</span>
+      </figcaption>
+      <pre><code class="language-bash">npm install @react-native-async-storage/async-storage
+# versi bebas, tidak dicocokkan dengan SDK 57
+# akibatnya: Module not found / aplikasi gagal dijalankan</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">(terminal) — versi pilihan Expo</span>
+        <span class="kode-sumber">ilustrasi · buku §11.2</span>
+      </figcaption>
+      <pre><code class="language-bash">npx expo install @react-native-async-storage/async-storage
+# Expo memilih versi yang teruji untuk SDK project
+# itulah sebabnya buku ini selalu memakai perintah ini</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Apa yang terjadi kalau nama kunci berbeda saat menyimpan dan saat membaca? (Jawaban:
+      datanya terlihat hilang padahal tersimpan di kunci yang lain — itulah sebabnya praktikum
+      memakai satu konstanta <code>KUNCI_CATATAN</code> di satu modul.)
+    </p>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      AsyncStorage sering disangka basis data kecil. Ia bukan: tidak ada tabel, tidak ada
+      relasi, dan tidak ada kueri. Yang tersedia hanya pasangan kunci dan nilai, sehingga
+      seluruh penataan data menjadi tanggung jawab kode kita.
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s1-5">
+  <p class="label-subbab">
+    Subbab 11.2 <span class="sumber-slide">· deck: “Metode AsyncStorage, Semuanya Promise” · buku §11.2</span>
+  </p>
+  <h2>Metode AsyncStorage, Semuanya Promise</h2>
+
+  <p>
+    Seluruh API AsyncStorage dapat dibaca dalam satu tabel, dan tabel ini layak dihafal
+    kelompoknya: tiga metode untuk satu kunci, dua metode untuk banyak kunci, dan dua metode
+    untuk pengelolaan seluruh penyimpanan. Kolom ketiga adalah yang paling sering dilupakan:
+    semuanya mengembalikan Promise, jadi semuanya harus di-<code>await</code>.
+  </p>
+
+  <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>API AsyncStorage · sumber: buku §11.2</caption>
+      <thead>
+        <tr><th scope="col">Metode</th><th scope="col">Fungsi</th><th scope="col">Nilai kembalian</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>setItem(kunci, nilai)</code></td><td>Menyimpan satu pasangan kunci–nilai</td><td><code>Promise&lt;void&gt;</code></td></tr>
+        <tr><td><code>getItem(kunci)</code></td><td>Membaca nilai sebuah kunci</td><td><code>Promise&lt;string | null&gt;</code></td></tr>
+        <tr><td><code>removeItem(kunci)</code></td><td>Menghapus satu kunci beserta nilainya</td><td><code>Promise&lt;void&gt;</code></td></tr>
+        <tr><td><code>multiGet([k1, k2])</code></td><td>Membaca beberapa kunci sekaligus</td><td><code>Promise&lt;[string, string | null][]&gt;</code></td></tr>
+        <tr><td><code>multiSet([[k1, v1]])</code></td><td>Menyimpan beberapa pasangan sekaligus</td><td><code>Promise&lt;void&gt;</code></td></tr>
+        <tr><td><code>getAllKeys()</code></td><td>Mendapatkan daftar semua kunci</td><td><code>Promise&lt;string[]&gt;</code></td></tr>
+        <tr><td><code>clear()</code></td><td>Menghapus seluruh data aplikasi</td><td><code>Promise&lt;void&gt;</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    <code>multiGet</code> berguna saat aplikasi perlu membaca banyak kunci dalam satu kali
+    operasi, misalnya kunci preferensi dan kunci sesi sekaligus. Pola kembaliannya adalah array
+    berisi pasangan <code>[kunci, nilai]</code>; nilai <code>null</code> menandakan kunci tidak
+    ditemukan. Metode ini lebih efisien daripada memanggil <code>getItem</code> berulang kali.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">App.js</span>
+      <span class="kode-sumber">buku §11.2 · contoh penggunaan multiGet</span>
+    </figcaption>
+    <pre><code class="language-js">const pasangan = await AsyncStorage.multiGet(['preferensi:nama', 'sesi:aktif']);
+const namaPengguna = pasangan[0][1];
+const sesiAktif = pasangan[1][1];</code></pre>
+  </figure>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      <code>clear()</code> menghapus seluruh data aplikasi, bukan hanya satu bagian. Di
+      aplikasi nyata ia menghapus semua preferensi dan sesi pengguna sekaligus, sehingga hanya
+      boleh dipanggil pada alur logout atau reset yang memang disengaja.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Mengapa semua metode AsyncStorage mengembalikan Promise, dan apa akibatnya bila
+      <code>await</code> dihilangkan? (Jawaban: agar baca–tulis berjalan di luar alur utama
+      antarmuka sehingga layar tidak membeku; tanpa <code>await</code>, baris berikutnya
+      berjalan sebelum data benar-benar tertulis.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s1-6">
+  <p class="label-subbab">
+    Subbab 11.2 <span class="sumber-slide">· deck: “Pola Dasar: Simpan dengan await, Baca dengan Cek null” · buku §11.2</span>
+  </p>
+  <h2>Pola Dasar: Simpan dengan <code>await</code>, Baca dengan Cek <code>null</code></h2>
+
+  <p>
+    Pola dasar penyimpanan hanya butuh tiga hal: <code>await</code> yang menunggu penulisan
+    dan pembacaan selesai, <code>try/catch</code> yang menjaga aplikasi tidak berhenti, dan
+    pemeriksaan <code>null</code> sebelum nilai dipakai. Kunci diberi awalan seperti
+    <code>preferensi:nama</code> agar tidak bertabrakan dengan kunci fitur lain.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Menulis tanpa await"
+       data-label-benar="Menulis dengan await dan try/catch"
+       data-petunjuk="Bug “data tidak tersimpan” hampir selalu berasal dari baris yang berjalan sebelum penulisan selesai, bukan dari pustakanya.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">tanpa-await.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §11.2, prinsip 1</span>
+      </figcaption>
+      <pre><code class="language-text">AsyncStorage.setItem('preferensi:nama', nama);
+console.log('Nama berhasil disimpan');
+bacaNamaPengguna();   // ← bisa berjalan sebelum data tertulis
+✗ urutan tidak dijamin
+✗ error penulisan tidak tertangkap</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">dengan-await.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §11.2, prinsip 1</span>
+      </figcaption>
+      <pre><code class="language-text">await AsyncStorage.setItem('preferensi:nama', nama);
+console.log('Nama berhasil disimpan');
+await bacaNamaPengguna();   // ← data pasti sudah tertulis
+✓ urutan dijamin
+✓ error penulisan masuk ke catch</code></pre>
+    </figure>
+  </div>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">App.js</span>
+      <span class="kode-sumber">buku §11.2 · pola dasar setItem dan getItem</span>
+    </figcaption>
+    <pre><code class="language-js">import AsyncStorage from '@react-native-async-storage/async-storage';
+
+async function simpanNamaPengguna(nama) {
+  try {
+    await AsyncStorage.setItem('preferensi:nama', nama);
+    console.log('Nama berhasil disimpan');
+  } catch (error) {
+    console.warn('Gagal menyimpan:', error);
+  }
+}
+
+async function bacaNamaPengguna() {
+  try {
+    const nama = await AsyncStorage.getItem('preferensi:nama');
+    if (nama === null) {
+      console.log('Belum ada nama tersimpan');
+    } else {
+      console.log('Nama tersimpan:', nama);
+    }
+  } catch (error) {
+    console.warn('Gagal membaca:', error);
+  }
+}</code></pre>
+  </figure>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Kalau <code>await</code> dihapus, apa yang terjadi? Dan apa yang dikembalikan
+      <code>getItem</code> untuk kunci yang belum pernah disimpan? (Jawaban berturut-turut:
+      baris berikutnya berjalan sebelum data tertulis; <code>null</code>, bukan string kosong,
+      sehingga diperiksa dengan <code>=== null</code>.)
+    </p>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Menghapus <code>await</code> bukan optimasi, melainkan sumber bug. Yang terjadi bukan
+      aplikasi menjadi lebih cepat, tetapi urutan kerja menjadi tidak dijamin — dan kegagalan
+      penulisan tidak lagi tertangkap <code>catch</code>.
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s1-7">
+  <p class="label-subbab">
+    Subbab 11.2 <span class="sumber-slide">· deck: “Lima Prinsip yang Menentukan Cara Pakainya” · buku §11.2</span>
+  </p>
+  <h2>Lima Prinsip yang Menentukan Cara Pakainya</h2>
+
+  <p>
+    Dari mana sifat-sifat AsyncStorage berasal? Di balik layar implementasinya berbeda
+    antarplatform untuk memanfaatkan mekanisme bawaan sistem: di Android data disimpan dalam
+    database SQLite di dalam sandbox aplikasi, di iOS dalam berkas-berkas kecil di direktori
+    aplikasi, dan di web memakai <code>localStorage</code> peramban. Karena berada di dalam
+    sandbox, data bertahan saat aplikasi ditutup, tetapi ikut terhapus ketika aplikasi
+    di-uninstall.
+  </p>
+
+  <ol>
+    <li><strong>Asinkron</strong> — semua metode mengembalikan Promise; pakai <code>await</code>.</li>
+    <li><strong>Hanya string</strong> — kunci dan nilai harus string; objek harus diserialisasi.</li>
+    <li><strong>Nilai <code>null</code></strong> — artinya belum ada; periksa dengan <code>=== null</code>, bukan string kosong.</li>
+    <li><strong>Tidak terenkripsi</strong> — data tersimpan apa adanya di dalam sandbox aplikasi.</li>
+    <li><strong>Bukan data besar</strong> — untuk preferensi, cache, dan daftar pendek.</li>
+  </ol>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">utils/keranjangStorage.js</span>
+      <span class="kode-sumber">buku §Contoh 2 · keranjang belanja dari Bab 9</span>
+    </figcaption>
+    <pre><code class="language-js">import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const KUNCI_KERANJANG = 'keranjang:belanja';
+
+export async function ambilKeranjang() {
+  try {
+    const teks = await AsyncStorage.getItem(KUNCI_KERANJANG);
+    if (teks === null) return [];
+    const data = JSON.parse(teks);
+    return Array.isArray(data) ? data : [];
+  } catch (error) {
+    console.warn('Gagal membaca keranjang:', error);
+    return [];
+  }
+}
+
+export async function simpanKeranjang(keranjang) {
+  try {
+    await AsyncStorage.setItem(KUNCI_KERANJANG, JSON.stringify(keranjang));
+  } catch (error) {
+    console.warn('Gagal menyimpan keranjang:', error);
+  }
+}</code></pre>
+  </figure>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Data lokal tidak abadi. Uninstall, membersihkan data aplikasi lewat pengaturan
+      perangkat, atau berganti perangkat menghapusnya tanpa pemberitahuan. Untuk data bernilai
+      tinggi, kehilangan data lokal harus dijawab dengan cadangan atau sinkronisasi ke server.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Setelah aplikasi di-restart, daftar catatan kosong — sebutkan tiga kemungkinan
+      penyebabnya, dan mana yang bisa kamu buktikan dari kode? (Jawaban yang diharapkan:
+      <code>await</code> yang hilang; nama kunci berbeda antara menyimpan dan membaca;
+      penyimpanan terhapus karena uninstall; <code>JSON.parse</code> gagal sehingga daftar
+      kosong; data hanya dimuat sekali sehingga layar tidak menyegarkan tampilannya. Yang bisa
+      dibuktikan dari kode adalah tiga penyebab pertama.)
+    </p>
+  </div>
+</section>

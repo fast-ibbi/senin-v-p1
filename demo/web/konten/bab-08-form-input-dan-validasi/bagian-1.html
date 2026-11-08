@@ -1,0 +1,326 @@
+<h1>Bagian 1 — TextInput dan Papan Ketik</h1>
+
+<p class="ringkas">
+  Subbab 8.1. Bagian ini terlihat teknis, tetapi di sinilah sebagian besar keluhan pengguna
+  lahir: field tertutup papan ketik dan tombol yang harus ditekan dua kali.
+</p>
+
+<section class="subbab" id="s1-1">
+  <p class="label-subbab">
+    Subbab 8.1 <span class="sumber-slide">· deck: “Data yang Salah Masuk Adalah Biaya” · buku §8.1 &amp; §8.4</span>
+  </p>
+  <h2>Data yang Salah Masuk Adalah Biaya</h2>
+
+  <p>
+    Mari mulai dari biaya, bukan dari kode. <strong>Validasi</strong> adalah proses memastikan
+    data yang dimasukkan pengguna memenuhi aturan sebelum dipakai. Alasannya sederhana: data
+    yang salah masuk ke sistem adalah biaya.
+  </p>
+
+  <p>
+    Sebuah email yang salah eja berarti informasi akademik tidak sampai ke mahasiswa. Nomor
+    telepon yang kurang satu digit berarti dosen wali tidak dapat menghubungi orang tua. NIM
+    yang salah format merusak laporan pangkalan data, dan laporan itu harus diperbaiki
+    berulang kali. Prinsip lama sistem informasi berlaku di sini: <em>garbage in, garbage
+    out</em> — data buruk yang masuk menghasilkan keluaran yang buruk pula.
+  </p>
+
+  <p>
+    Validasi formulir adalah pertahanan pertama, tetapi bukan satu-satunya. Buku ini menganut
+    <strong>pertahanan berlapis</strong>: sisi klien pada bab ini, sisi server pada Bab 10 dan
+    Bab 13, serta skema basis data. Validasi klien tidak menggantikan validasi server; ia
+    membuat kesalahan terdeteksi lebih awal.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Validasi dianggap urusan server"
+       data-label-benar="Pertahanan berlapis"
+       data-petunjuk="Keduanya sama-sama menaruh validasi di server; yang berbeda adalah apakah layar ikut memeriksa lebih dulu.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">anggapan.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §8.4</span>
+      </figcaption>
+      <pre><code class="language-text">✗ "Server sudah memeriksa, jadi layar
+  tidak perlu memeriksa apa pun."
+✗ "Pengguna pasti mengisi dengan benar."
+✗ Kesalahan baru terlihat setelah data
+  terkirim, lalu staf akademik yang
+  memperbaikinya.</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">kenyataan.txt</span>
+        <span class="kode-sumber">buku §8.4</span>
+      </figcaption>
+      <pre><code class="language-text">✓ Lapis klien (bab ini): wajib diisi,
+  email, telepon, NIM.
+✓ Lapis server (Bab 10 dan Bab 13).
+✓ Lapis skema basis data.
+✓ Kesalahan tertangkap di layar, bukan
+  di meja staf akademik.</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Kalau satu mahasiswa salah mengetik email saat daftar ulang, siapa yang dirugikan?
+      (Jawaban: mahasiswa, dosen wali, dan staf akademik — satu rantai.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s1-2">
+  <p class="label-subbab">
+    Subbab 8.1 <span class="sumber-slide">· deck: “TextInput Tidak Menyimpan Nilainya Sendiri” · buku §8.1</span>
+  </p>
+  <h2>TextInput Tidak Menyimpan Nilainya Sendiri</h2>
+
+  <p>
+    <code>TextInput</code> adalah komponen inti React Native untuk menerima ketikan satu baris
+    atau banyak baris (<code>multiline</code>) dari pengguna. Karakteristik pertama yang harus
+    dipahami: <code>TextInput</code> tidak menyimpan nilainya sendiri dalam logika aplikasi.
+  </p>
+
+  <p>
+    Setiap ketikan memicu peristiwa <code>onChangeText</code> berisi teks baru, dan nilai yang
+    diketik harus disimpan oleh komponen lain — biasanya state React. Analogi yang sering
+    dipakai di kelas: <code>TextInput</code> seperti papan tulis yang tidak mencatat apa pun;
+    kalau tidak ada yang menyalin tulisannya, isinya hilang begitu papan dihapus.
+  </p>
+
+  <p>
+    Sifat inilah yang melahirkan <em>controlled component</em> pada subbab 8.2. Tiga props
+    pertama pada Tabel 8.1 adalah pasangan konseptual yang wajib hadir di setiap field
+    formulir.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">(potongan Tabel 8.1)</span>
+      <span class="kode-sumber">kolom “Contoh nilai” · buku §8.1</span>
+    </figcaption>
+    <pre><code class="language-jsx">value={form.email}
+onChangeText={(teks) => handleChange('email', teks)}
+placeholder="contoh: 2201001"</code></pre>
+  </figure>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      <code>value</code> sering dianggap hanya menampilkan nilai awal, padahal ia mengikat
+      field ke state sepanjang waktu. Sebaliknya, pola tak terkendali dengan
+      <code>defaultValue</code> masih sah untuk kasus yang sangat sederhana — tetapi formulir
+      yang divalidasi hampir selalu memakai pola terkendali.
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s1-3">
+  <p class="label-subbab">
+    Subbab 8.1 <span class="sumber-slide">· deck: “Tabel 8.1 — Props Utama TextInput (1/2)” &amp; “(2/2)” · buku §8.1</span>
+  </p>
+  <h2>Tabel 8.1 — Props Utama TextInput</h2>
+
+  <p>
+    Props yang akan dipakai terus-menerus pada bab ini dirangkum pada Tabel 8.1. Jangan dibaca
+    satu per satu: tiga baris pertama adalah pasangan wajib setiap field, lalu perhatikan
+    <code>keyboardType</code>.
+  </p>
+
+  <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Props utama TextInput · sumber: buku §8.1, Tabel 8.1</caption>
+      <thead>
+        <tr><th scope="col">Prop</th><th scope="col">Fungsi</th><th scope="col">Contoh nilai</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>value</code></td><td>Nilai teks yang sedang ditampilkan, dikontrol dari luar</td><td><code>{form.email}</code></td></tr>
+        <tr><td><code>onChangeText</code></td><td>Dipanggil setiap kali teks berubah, menerima teks baru</td><td><code>(teks) =&gt; handleChange('email', teks)</code></td></tr>
+        <tr><td><code>placeholder</code></td><td>Teks contoh yang tampil saat field kosong</td><td><code>"contoh: 2201001"</code></td></tr>
+        <tr><td><code>keyboardType</code></td><td>Jenis papan ketik virtual yang muncul</td><td><code>"email-address"</code>, <code>"number-pad"</code>, <code>"decimal-pad"</code>, <code>"phone-pad"</code></td></tr>
+        <tr><td><code>secureTextEntry</code></td><td>Menyamarkan ketikan untuk kata sandi</td><td><code>secureTextEntry</code></td></tr>
+        <tr><td><code>autoCapitalize</code></td><td>Kapitalisasi otomatis teks</td><td><code>"none"</code></td></tr>
+        <tr><td><code>autoCorrect</code></td><td>Koreksi ejaan otomatis</td><td><code>autoCorrect={false}</code></td></tr>
+        <tr><td><code>returnKeyType</code></td><td>Label tombol Enter di papan ketik</td><td><code>"next"</code>, <code>"done"</code></td></tr>
+        <tr><td><code>maxLength</code></td><td>Batas jumlah karakter yang dapat diketik</td><td><code>maxLength={10}</code></td></tr>
+        <tr><td><code>multiline</code></td><td>Mengizinkan lebih dari satu baris</td><td><code>multiline</code></td></tr>
+        <tr><td><code>onSubmitEditing</code></td><td>Dipanggil saat tombol Enter ditekan</td><td><code>onSubmitEditing={handleSubmit}</code></td></tr>
+        <tr><td><code>editable</code></td><td>Mengunci field agar tidak dapat diedit</td><td><code>editable={false}</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    <code>keyboardType</code> penting karena papan ketik virtual mobile tidak memiliki tombol
+    fisik: memilih <code>"number-pad"</code> untuk NIM menghadirkan papan angka sehingga
+    kesalahan ketik berkurang. Field email memakai <code>autoCapitalize="none"</code> dan
+    <code>autoCorrect={false}</code> karena alamat email peka huruf, sedangkan koreksi ejaan
+    justru sering merusak teks yang diketik.
+  </p>
+
+  <p>
+    Inilah bentuk lengkap props itu pada satu field nyata. Komponen <code>FormField</code>
+    yang membungkusnya dibahas di subbab 8.6.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">screens/FormMahasiswa.js</span>
+      <span class="kode-sumber">buku §8.7 · field Email</span>
+    </figcaption>
+    <pre><code class="language-jsx">        &lt;FormField
+          label="Email"
+          value={form.email}
+          onChangeText={(teks) =&gt; handleChange('email', teks)}
+          placeholder="nama.kecil@students.univ.ac.id"
+          keyboardType="email-address"
+          autoCapitalize="none"
+          autoCorrect={false}
+          returnKeyType="next"
+          error={errors.email}
+        /&gt;</code></pre>
+  </figure>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      <code>maxLength</code> hanya membatasi jumlah karakter; ia tidak memeriksa isinya. NIM
+      tetap membutuhkan fungsi <code>validasiNim</code> supaya benar-benar hanya berisi angka.
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s1-4">
+  <p class="label-subbab">
+    Subbab 8.1 <span class="sumber-slide">· deck: “Papan Ketik Virtual Menutupi Setengah Layar” · buku §8.1</span>
+  </p>
+  <h2>Papan Ketik Virtual Menutupi Setengah Layar</h2>
+
+  <p>
+    Papan ketik virtual menempati separuh layar saat muncul. Ia menutupi field bagian bawah
+    dan tombol submit, sementara perangkat tidak menyediakan cara alami untuk menyingkirkannya
+    selain tombol kembali sistem.
+  </p>
+
+  <p>
+    Strategi pertama adalah <code>KeyboardAvoidingView</code>, komponen pembungkus yang
+    menggeser kontennya ke atas saat papan ketik muncul sehingga field yang sedang diketik
+    tetap terlihat. Prop <code>behavior</code> menentukan cara pergeseran: <code>"padding"</code>
+    menambah ruang bawah, <code>"height"</code> mengecilkan tinggi. Keduanya memberi hasil
+    berbeda antar platform, sehingga pola umumnya menyesuaikan <code>Platform.OS</code>.
+  </p>
+
+  <p>
+    Strategi kedua adalah <code>keyboardShouldPersistTaps</code>, prop <code>ScrollView</code>
+    yang mengatur apa yang terjadi saat pengguna mengetuk layar ketika papan ketik terbuka.
+    Nilai <code>"handled"</code> membuat ketukan pada elemen berpenangan langsung dieksekusi;
+    tanpa prop ini, ketukan pertama hanya menutup papan ketik dan tombol perlu ditekan dua kali.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Tanpa penanganan papan ketik"
+       data-label-benar="Kerangka layar form bab ini"
+       data-petunjuk="Kerangka kanan dipakai semua layar form bab ini: KeyboardAvoidingView di luar, ScrollView di dalam, dan rantai returnKeyType.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">layar-tanpa-penanganan.jsx</span>
+        <span class="kode-sumber">ilustrasi · buku §8.1</span>
+      </figcaption>
+      <pre><code class="language-jsx">// ✗ field bawah tertutup papan ketik
+// ✗ ketukan pertama hanya menutup papan ketik
+&lt;ScrollView contentContainerStyle={styles.konten}&gt;
+  &lt;FormField label="Telepon" ... /&gt;
+  &lt;Pressable onPress={handleSubmit}&gt;
+    &lt;Text&gt;Simpan Data&lt;/Text&gt;
+  &lt;/Pressable&gt;
+&lt;/ScrollView&gt;</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">screens/FormLogin.js</span>
+        <span class="kode-sumber">buku §Contoh 2</span>
+      </figcaption>
+      <pre><code class="language-jsx">// (cuplikan kerangka — versi lengkap pada Subbab 8.7)
+&lt;KeyboardAvoidingView
+  style={styles.halaman}
+  behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+&gt;
+  &lt;ScrollView contentContainerStyle={styles.konten} keyboardShouldPersistTaps="handled"&gt;
+    &lt;Text style={styles.judul}&gt;Masuk&lt;/Text&gt;
+    {/* field-field form diletakkan di sini */}
+  &lt;/ScrollView&gt;
+&lt;/KeyboardAvoidingView&gt;</code></pre>
+    </figure>
+  </div>
+
+  <p>
+    Perilaku papan ketik juga diatur lewat <code>returnKeyType</code>: <code>"next"</code>
+    memindahkan fokus ke field berikutnya, <code>"done"</code> menutup papan ketik sambil
+    memicu submit.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">(potongan deck)</span>
+      <span class="kode-sumber">deck “Papan Ketik Virtual Menutupi Setengah Layar” · buku §8.1</span>
+    </figcaption>
+    <pre><code class="language-jsx">// behavior berbeda antar platform, jadi polanya disesuaikan Platform.OS
+behavior={Platform.OS === 'ios' ? 'padding' : 'height'}</code></pre>
+  </figure>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Nilai <code>keyboardType</code> dan perilaku <code>behavior</code> bisa berbeda tipis
+      antarversi SDK dan platform. Nilai pada tabel dan contoh di bab ini bukan janji yang
+      berlaku selamanya — periksa reactnative.dev untuk nilai terkini.
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s1-5">
+  <p class="label-subbab">
+    Subbab 8.1 <span class="sumber-slide">· deck: “Tabel 8.1 — Props Utama TextInput (2/2)” · buku §8.1</span>
+  </p>
+  <h2>Rantai returnKeyType: next sampai done</h2>
+
+  <p>
+    Rantai <code>"next"</code> → <code>"next"</code> → <code>"done"</code> memungkinkan
+    formulir diselesaikan tanpa menyentuh layar sama sekali: pengguna berpindah field lewat
+    tombol Enter, lalu menutup papan ketik sekaligus mengirim data pada field terakhir.
+  </p>
+
+  <p>
+    Agar rantai itu bekerja, field yang bukan terakhir memakai <code>returnKeyType="next"</code>,
+    sedangkan field terakhir memakai <code>returnKeyType="done"</code> yang dipasangkan dengan
+    <code>onSubmitEditing</code>. Pada FormMahasiswa, field Telepon menutup rantai tersebut.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">screens/FormMahasiswa.js</span>
+      <span class="kode-sumber">buku §8.7 · field Telepon</span>
+    </figcaption>
+    <pre><code class="language-jsx">        &lt;FormField
+          label="Telepon"
+          value={form.telepon}
+          onChangeText={(teks) =&gt; handleChange('telepon', teks)}
+          placeholder="contoh: 081234567890"
+          keyboardType="phone-pad"
+          maxLength={13}
+          returnKeyType="done"
+          onSubmitEditing={handleSubmit}
+          error={errors.telepon}
+        /&gt;</code></pre>
+  </figure>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Field mana yang layak mendapat <code>editable={false}</code>? (Jawaban: NIM pada mode
+      edit — kunci identitas tidak boleh berubah.)
+    </p>
+  </div>
+</section>

@@ -1,0 +1,64 @@
+<h1>Bab 12 — Mengakses Fitur Perangkat</h1>
+
+<p class="ringkas">
+  Kamera, lokasi, notifikasi, dan izin · Pertemuan 13. Bab ini membahas cara aplikasi React
+  Native memakai fitur perangkat — kamera, galeri foto, lokasi, notifikasi, sistem file, dan
+  informasi perangkat — melalui paket-paket resmi Expo.
+  Intinya satu kata: <strong><code>izin</code></strong>.
+  Hampir semua fitur ini menyentuh data pribadi pengguna, jadi bab ini melatih cara meminta
+  izin secara benar, menangani penolakan sebagai keadaan normal, dan memegang tiga prinsip
+  privasi.
+</p>
+
+<div class="pengantar-pertanyaan">
+  <p><strong>Pertanyaan pembuka deck:</strong> “Sebutkan izin yang diminta aplikasi kampus di HP-mu.”</p>
+  <p>Tampung dua atau tiga jawaban tanpa dikoreksi dulu — subbab 12.1 di bagian 1 yang menjawabnya.</p>
+</div>
+
+<h2>Tujuan pembelajaran</h2>
+
+<ul>
+  <li>Menjelaskan API perangkat dan model izin runtime Android serta iOS</li>
+  <li>Mengidentifikasi peran enam paket Expo untuk fitur perangkat</li>
+  <li>Menerapkan permintaan izin dan penanganan penolakannya</li>
+  <li>Mengambil foto dan membaca koordinat beserta nilai ketelitiannya</li>
+  <li>Menganalisis privasi data perangkat dan membangun Aplikasi Profil Mahasiswa</li>
+</ul>
+
+<h2>Peta halaman</h2>
+
+<ul>
+  <li><strong>Bagian 1 — API Perangkat &amp; Izin</strong> (subbab 12.1): device API, sandbox, dua lapis izin, config plugin, alur tiga pintu keluar, dan pola periksa-dulu-minta-kalau-perlu.</li>
+  <li><strong>Bagian 2 — Kamera &amp; Lokasi</strong> (subbab 12.2–12.3): dua paket kamera untuk dua kebutuhan, satu foto lewat antarmuka sistem, dua sumber posisi, dan arti nilai ketelitian.</li>
+  <li><strong>Bagian 3 — Notifikasi, File &amp; Info Perangkat</strong> (subbab 12.4–12.5): notifikasi lokal versus push, kanal notifikasi, folder privat aplikasi, dan data perangkat.</li>
+  <li><strong>Bagian 4 — Privasi &amp; Proyek Mini</strong> (subbab 12.6–12.7): tiga prinsip privasi, modul profil, dan studi kasus presensi foto plus lokasi.</li>
+  <li><strong>Praktikum</strong>: Aplikasi Profil Mahasiswa lengkap — foto, lokasi, info perangkat, penyimpanan AsyncStorage, notifikasi uji, troubleshooting, dan kuis kilat.</li>
+</ul>
+
+<div class="kotak kotak-tiruan">
+  <p class="kotak-judul">Yang perlu diketahui sebelum membaca</p>
+  <p>
+    Bab 11 menyediakan penyimpanan lokal AsyncStorage; di bab ini hasil fitur perangkat
+    disimpan ke sana supaya bertahan setelah aplikasi ditutup dan dibuka lagi.
+    Bab 4 dan 5 sudah memberi component, props, state, dan <code>useEffect</code> — semuanya
+    dipakai lagi di layar profil.
+    Tidak semua fitur bisa diuji di emulator: GPS dan kamera paling baik diuji di perangkat
+    fisik.
+  </p>
+  <p class="kotak-jawab">
+    Setiap kode di halaman-halaman berikut disalin verbatim dari
+    <code>buku/bab-12-mengakses-fitur-perangkat.md</code> atau deck
+    <code>slides/bab-12-mengakses-fitur-perangkat.md</code>.
+    Perbandingan <strong>sebelum/sesudah</strong> menampilkan cara lama yang salah atau naif
+    di samping cara yang benar; tombol di kepala panel untuk berpindah.
+  </p>
+</div>
+
+<div class="kotak kotak-tanya">
+  <p class="kotak-judul">Pertanyaan penuntun</p>
+  <p>
+    Bagian mana yang paling sering diuji?
+    Pola izin di bagian 1 — pola itu dipakai ulang oleh semua paket di bagian 2 sampai 4,
+    dan lima pertanyaan kuis kilat di halaman praktikum semuanya menyentuhnya.
+  </p>
+</div>

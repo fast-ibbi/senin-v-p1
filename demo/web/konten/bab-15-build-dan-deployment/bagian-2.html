@@ -1,0 +1,577 @@
+<h1>Bagian 2 — Identitas Aplikasi dan Keaslian Berkas</h1>
+
+<p class="ringkas">
+  Subbab 15.5–15.7. Bagian ini menjawab “siapa aplikasi ini” dan “mengapa toko aplikasi percaya
+  pada berkas ini”: identitas di <code>app.json</code>, dua pembaca versi, application ID yang
+  permanen, ikon adaptif dan splash, konfigurasi yang dipisahkan dari kode lewat environment
+  variable, lalu tanda tangan digital yang membuktikan keaslian.
+</p>
+
+<section class="subbab" id="s2-1">
+  <p class="label-subbab">
+    Subbab 15.5 <span class="sumber-slide">· deck: “app.json: Dua Pembaca Versi yang Sering Tertukar” &amp; “Contoh app.json: Identitas Aplikasi Kita” · buku §15.5</span>
+  </p>
+  <h2><code>app.json</code>: Dua Pembaca Versi yang Sering Tertukar</h2>
+
+  <p>
+    Semua keputusan “siapa aplikasi ini” ditulis di <code>app.json</code>, berkas konfigurasi
+    pusat yang lahir bersama proyek dari <code>npx create-expo-app</code> di Bab 2. Toko aplikasi
+    dan layanan build membaca identitas dari berkas ini, sehingga memahami tiap kunci setara
+    dengan memahami akta kelahiran aplikasi.
+  </p>
+
+  <p>
+    <code>expo.name</code> adalah nama yang tampil di bawah ikon aplikasi dan di Play Store atau
+    App Store; ia boleh berubah kapan saja. <code>expo.slug</code> adalah identitas internal
+    proyek di ekosistem Expo yang dipakai pada tautan proyek dan EAS; ia harus ditulis tanpa
+    spasi dan huruf besar, dan sebaiknya stabil. <code>expo.version</code> memakai penomoran
+    versi semantik <code>utama.tengah.tambalan</code>: angka utama naik saat perubahan besar yang
+    tidak kompatibel, angka tengah naik saat fitur baru ditambahkan tanpa merusak yang lama, dan
+    angka tambalan naik saat perbaikan bug. Perjalanannya: <code>1.0.0</code> → <code>1.1.0</code>
+    (fitur baru) → <code>1.1.1</code> (perbaikan bug) → <code>2.0.0</code> (perombakan besar).
+  </p>
+
+  <p>
+    Di sinilah letak pembedaan yang paling sering tertukar: ada dua pembaca versi.
+    <strong>Manusia</strong> membaca <code>version</code>; <strong>mesin</strong> membaca
+    <code>android.versionCode</code> dan <code>ios.buildNumber</code>.
+    <code>versionCode</code> adalah bilangan bulat yang wajib naik setiap kali AAB diunggah ke
+    Google Play, karena Play menolak dua unggahan dengan nomor yang sama.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">app.json</span>
+      <span class="kode-sumber">deck Bab 15 · verbatim, versi ringkas dari buku §Contoh 1</span>
+    </figcaption>
+    <pre><code class="language-json">{
+  "expo": {
+    "name": "Aplikasi Mahasiswa",
+    "slug": "aplikasi-mahasiswa",
+    "version": "1.0.0",
+    "icon": "./assets/icon.png",
+    "ios": { "bundleIdentifier": "ac.id.univ.mahasiswa" },
+    "android": {
+      "package": "ac.id.univ.mahasiswa",
+      "versionCode": 1,
+      "adaptiveIcon": { "foregroundImage": "./assets/adaptive-icon.png" }
+    }
+  }
+}</code></pre>
+  </figure>
+
+  <p>
+    Berkas lengkapnya memuat <code>orientation</code>, <code>scheme</code>,
+    <code>buildNumber</code>, plugin <code>expo-router</code>, dan konfigurasi
+    <code>expo-splash-screen</code> penuh; potongan di atas sengaja dipendekkan agar terbaca,
+    sedangkan versi lengkapnya ada di <code>buku/bab-15-build-dan-deployment.md</code> §Contoh 1
+    dan pada subbab 15.5 sesudah ini.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Versi mesin lupa dinaikkan"
+       data-label-benar="Versi mesin dinaikkan otomatis"
+       data-petunjuk="Ini kesalahan paling umum pada unggahan kedua ke Play Console, dan pesannya selalu sama: version code sudah dipakai.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">ilustrasi-versioncode-tetap.json</span>
+        <span class="kode-sumber">ilustrasi · buku §15.5 &amp; §Troubleshooting</span>
+      </figcaption>
+      <pre><code class="language-text">"android": {
+  "versionCode": 1
+}
+
+# unggahan kedua tanpa menyentuh app.json
+→ "Version code 1 has already been used"
+✗ AAB ditolak Google Play</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">eas.json — profil production</span>
+        <span class="kode-sumber">ilustrasi · kunci verbatim dari buku §Contoh 2</span>
+      </figcaption>
+      <pre><code class="language-text">"production": {
+  "autoIncrement": true
+}
+
+→ versionCode/buildNumber dinaikkan tiap build
+✓ tidak pernah lupa menaikkan versi mesin</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Mengira <code>slug</code> sama bebasnya dengan <code>name</code>. Slug menjadi bagian
+      tautan proyek di ekosistem Expo dan sebaiknya tidak diubah setelah project pernah
+      terdaftar, sedangkan name boleh diganti kapan pun tanpa akibat. Keterangan
+      <code>autoIncrement</code> juga <em>sensitif versi</em>: perilakunya bergantung pada versi
+      eas-cli dan pengaturan <code>appVersionSource</code>, jadi cek dokumentasi EAS.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Versi naik dari <code>1.1.1</code> ke <code>2.0.0</code> — biasanya apa yang berubah?
+      (Jawaban: perombakan besar yang tidak kompatibel dengan versi sebelumnya.) Dan siapa yang
+      membaca <code>versionCode</code>, manusia atau mesin? (Jawaban: mesin — Play Console.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s2-2">
+  <p class="label-subbab">
+    Subbab 15.5 <span class="sumber-slide">· deck: “Application ID: Sekali Terbit, Tidak Bisa Diganti” · buku §15.5</span>
+  </p>
+  <h2>Application ID: Sekali Terbit, Tidak Bisa Diganti</h2>
+
+  <p>
+    <code>expo.android.package</code> untuk Android dan <code>expo.ios.bundleIdentifier</code>
+    untuk iOS adalah <strong>application ID</strong>: identitas unik global aplikasi, ditulis
+    dengan aturan <strong>kebalikan nama domain</strong>. Kita mulai dari nama domain milik
+    organisasi, lalu menambahkan nama aplikasi. Domain <code>univ.ac.id</code> ditambah
+    <code>mahasiswa</code> menghasilkan <code>ac.id.univ.mahasiswa</code>.
+  </p>
+
+  <p>
+    Aturan penulisannya: huruf kecil, angka, dan titik; tiap ruas diawali huruf; dan tidak boleh
+    ada dua titik beruntun. Mari melatihnya sekali lagi dengan papan tulis: domain
+    <code>politeknik.ac.id</code> ditambah <code>siakad</code> menghasilkan
+    <code>ac.id.politeknik.siakad</code>.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Application ID diubah setelah terbit"
+       data-label-benar="Application ID permanen sejak awal"
+       data-petunjuk="Sifat permanen inilah yang membuat waktu termurah menentukan ID adalah sebelum build pertama yang terbit.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">ilustrasi-id-diganti.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §15.5</span>
+      </figcaption>
+      <pre><code class="language-text">"package": "ac.id.univ.mahasiswa"
+              ↓ diubah setelah terbit
+"package": "ac.id.univ.siakad"
+
+→ toko menganggapnya aplikasi baru
+✗ pengguna dan ulasan lama "hilang"
+✗ pembaruan versi lama tidak berlaku</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">ilustrasi-id-benar.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §15.5</span>
+      </figcaption>
+      <pre><code class="language-text">politeknik.ac.id + siakad
+→ ac.id.politeknik.siakad
+
+aturan: huruf kecil, angka, titik;
+        tiap ruas diawali huruf;
+        tanpa dua titik beruntun
+✓ satu ID untuk Android dan iOS
+✓ dipakai selamanya</code></pre>
+    </figure>
+  </div>
+
+  <p>
+    Application ID adalah identitas permanen: begitu aplikasi dipublikasikan, ID tidak boleh
+    diubah. Mengubahnya berarti Play atau App Store menganggapnya aplikasi baru yang berbeda,
+    lengkap dengan “hilangnya” pengguna dan ulasan yang sudah terkumpul. Kedua platform memakai
+    ID yang sama karena keduanya adalah kebalikan domain organisasi yang sama.
+  </p>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Kapan waktu termurah untuk menentukan application ID? (Jawaban: sebelum build pertama yang
+      terbit.) Mengapa penulisan <code>ac.id.univ..mahasiswa</code> salah? (Jawaban: aturan
+      melarang dua titik beruntun, dan tiap ruas harus diawali huruf.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s2-3">
+  <p class="label-subbab">
+    Subbab 15.5 <span class="sumber-slide">· deck: “Ikon Adaptif: Dua Lapis agar Tidak Terpotong” · buku §15.5</span>
+  </p>
+  <h2>Ikon Adaptif dan Splash: Dua Lapis agar Tidak Terpotong</h2>
+
+  <p>
+    Ikon aplikasi disediakan sebagai PNG persegi 1024×1024 piksel pada <code>expo.icon</code>.
+    Android modern tidak lagi menampilkan ikon persegi penuh: peluncur memotongnya sesuai bentuk
+    perangkat — lingkaran, persegi membulat, dan lainnya — melalui <strong>adaptive icon</strong>.
+    Karena itulah ikon adaptif punya dua lapis: <code>foregroundImage</code> adalah gambar latar
+    depan dengan area aman di tengah, sedangkan <code>backgroundColor</code> mengisi wilayah
+    yang terpotong oleh peluncur. Tujuannya agar ikon tetap terlihat baik di bentuk peluncur apa
+    pun tanpa perlu mendesain ulang per vendor.
+  </p>
+
+  <p>
+    <strong>Splash screen</strong> adalah layar yang tampil sesaat saat aplikasi dibuka, menutupi
+    proses pemuatan kerangka native. Pada SDK modern konfigurasinya melalui config plugin
+    <strong>expo-splash-screen</strong> di properti <code>plugins</code>; pada SDK lama berkas ini
+    dikonfigurasi lewat kunci <code>splash</code> di level atas. Parameternya:
+    <code>image</code> (PNG, lazimnya 1024×1024), <code>imageWidth</code> (lebar gambar pada
+    layar), <code>resizeMode</code> (<code>contain</code> memuat gambar utuh tanpa terpotong,
+    <code>cover</code> memenuhi layar dengan memotong), dan <code>backgroundColor</code>.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">app.json — bagian plugins</span>
+      <span class="kode-sumber">buku §Contoh 1 · kutipan verbatim</span>
+    </figcaption>
+    <pre><code class="language-json">"plugins": [
+  "expo-router",
+  [
+    "expo-splash-screen",
+    {
+      "image": "./assets/splash-icon.png",
+      "imageWidth": 200,
+      "resizeMode": "contain",
+      "backgroundColor": "#1D4ED8"
+    }
+  ]
+],</code></pre>
+  </figure>
+
+  <p>
+    <code>imageWidth: 200</code> membuat gambar splash tidak memenuhi layar,
+    <code>resizeMode: "contain"</code> menjamin gambar utuh, dan
+    <code>backgroundColor: "#1D4ED8"</code> menyamakan warna latar splash dengan warna utama
+    aplikasi — trik agar transisi ke halaman pertama terasa mulus, tanpa kedip. Jika proyek
+    tidak memakai Expo Router, hapus <code>"expo-router"</code> dari <code>plugins</code> dan
+    <code>scheme</code> dari <code>app.json</code>; router yang terpasang tetapi tidak
+    dikonfigurasi akan membuat build gagal.
+  </p>
+
+  <p>
+    Spesifikasi area aman ikon adaptif — sekitar 66% kanvas — dan ukuran yang dianjurkan
+    ditandai <em>sensitif versi</em>, sehingga harus mengikuti panduan aset Android saat
+    menyiapkan ikon. Cara mengatur splash pun berubah antarsdk: contoh di atas mengikuti pola
+    config plugin SDK 57, bukan kunci <code>splash</code> yang lama.
+  </p>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Mengapa splash dianjurkan memakai warna latar yang sama dengan tema aplikasi? (Jawaban: agar
+      peralihan ke halaman pertama terasa mulus, tanpa kedip.) Dan mengapa teks atau logo tidak
+      boleh melewati area aman <code>foregroundImage</code>? (Jawaban: sebagian peluncur memotong
+      wilayah di luar area aman.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s2-4">
+  <p class="label-subbab">
+    Subbab 15.6 <span class="sumber-slide">· deck: “Environment Variable: Konfigurasi di Luar Kode” · buku §15.6 &amp; §Contoh 3</span>
+  </p>
+  <h2>Environment Variable: Konfigurasi di Luar Kode</h2>
+
+  <p>
+    Aplikasi yang sama sering harus berperilaku berbeda di lingkungan berbeda: di emulator ia
+    memanggil backend di <code>10.0.2.2</code> seperti di Bab 10, sedangkan di produksi ia
+    memanggil server dengan domain <code>https</code>. Menuliskan alamat langsung di dalam kode
+    memaksa kita mengubah kode setiap kali lingkungan berganti — tidak profesional dan rawan
+    lupa.
+  </p>
+
+  <p>
+    Solusinya <strong>environment variable</strong>: nilai konfigurasi yang disimpan di luar
+    kode, biasanya dalam berkas <code>.env</code>. Expo membaca <code>.env</code>,
+    <code>.env.local</code>, <code>.env.development</code>, dan <code>.env.production</code> di
+    akar proyek. Namun ada aturan penting: hanya variabel berawalan
+    <strong><code>EXPO_PUBLIC_</code></strong> yang nilainya disisipkan ke dalam kode aplikasi
+    saat bundel dibuat, dan di dalam kode nilainya dibaca sebagai
+    <code>process.env.EXPO_PUBLIC_NAMA_VARIABEL</code>. Variabel tanpa awalan tetap tersedia
+    selama proses build, misalnya untuk <code>app.config.js</code>, tetapi tidak akan sampai ke
+    kode aplikasi.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Alamat ditulis keras di dalam kode"
+       data-label-benar="Alamat dibaca dari environment variable"
+       data-petunjuk="Insiden di studi kasus bab ini berakar pada pola di kiri: build yang diunggah masih menunjuk IP laptop pengembang.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">ilustrasi-alamat-keras.js</span>
+        <span class="kode-sumber">ilustrasi · buku §Studi Kasus</span>
+      </figcaption>
+      <pre><code class="language-text">// alamat ditulis keras di dalam kode
+const API_URL = 'http://192.168.1.10:3000';
+
+→ build Play membawa IP laptop pengembang
+✗ pengguna tidak bisa terhubung ke server
+✗ ganti lingkungan berarti ubah kode</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">config/api.js</span>
+        <span class="kode-sumber">buku §Contoh 3 · verbatim</span>
+      </figcaption>
+      <pre><code class="language-js">// Alamat server API. Nilai EXPO_PUBLIC_API_URL disisipkan saat bundel dibuat;
+// bila tidak ada, fallback ke alamat emulator Android (pola Bab 10).
+const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://10.0.2.2:3000';
+
+export async function ambilDaftarMahasiswa() {
+  const respons = await fetch(`${API_URL}/api/mahasiswa`);
+  if (!respons.ok) {
+    throw new Error(`Gagal memuat data: HTTP ${respons.status}`);
+  }
+  const data = await respons.json();
+  return data.data;
+}
+
+export default API_URL;</code></pre>
+    </figure>
+  </div>
+
+  <p>
+    Di production kita membuat <code>.env.production</code> berisi
+    <code>EXPO_PUBLIC_API_URL=https://api.univ.ac.id</code>, sehingga build production otomatis
+    memakai domain resmi tanpa mengubah kode. Operator <code>||</code> memberi nilai cadangan
+    bila berkas <code>.env</code> belum dibuat, dan <code>API_URL</code> sengaja diekspor agar
+    layar lain mengimpor satu sumber alamat yang sama.
+  </p>
+
+  <p>
+    Nilai disisipkan saat bundel dibuat, bukan saat aplikasi berjalan. Mengubah
+    <code>.env</code> tanpa menjalankan ulang server pengembangan adalah penyebab paling umum
+    nilai lama masih dipakai. Dukungan berkas <code>.env</code>, prioritasnya, dan fasilitas
+    environment variable EAS ditandai <em>sensitif versi</em>, jadi cocokkan dengan dokumentasi
+    Expo dan EAS.
+  </p>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Kalau bukan untuk menyembunyikan rahasia, lalu environment variable ini untuk apa?
+      (Jawaban: memisahkan alamat server per lingkungan tanpa mengubah kode.) Dan mengapa aplikasi
+      tetap berjalan walau <code>.env</code> belum dibuat? (Jawaban: karena ada nilai cadangan
+      lewat operator <code>||</code>.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s2-5">
+  <p class="label-subbab">
+    Subbab 15.6 <span class="sumber-slide">· deck: “Nilai EXPO_PUBLIC_ Ikut Terbaca Semua Pengguna” · buku §15.6</span>
+  </p>
+  <h2>Nilai <code>EXPO_PUBLIC_</code> Ikut Terbaca Semua Pengguna</h2>
+
+  <p>
+    Ini slide keamanan terpenting di bab ini. Karena mekanismenya menyisipkan nilai langsung ke
+    dalam kode, nilai <code>EXPO_PUBLIC_*</code> <em>tertanam di dalam bundel JavaScript</em> —
+    berkas yang dibagikan ke semua pengguna. Siapa pun yang membongkar aplikasi dapat membaca
+    nilainya.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">.env</span>
+      <span class="kode-sumber">buku §Contoh 3 · verbatim</span>
+    </figcaption>
+    <pre><code class="language-text"># File: .env (jangan di-commit ke repository publik)
+# Nilai default untuk pengembangan di emulator Android (Bab 10).
+EXPO_PUBLIC_API_URL=http://10.0.2.2:3000</code></pre>
+  </figure>
+
+  <p>
+    Perhatikan bahwa contoh di atas aman: alamat server memang bukan rahasia. Yang tidak boleh
+    ditulis di sana adalah <strong>secret</strong> — kata sandi, token autentikasi, kunci API yang
+    melindungi server, atau nomor kartu. Data rahasia yang benar disimpan di sisi server,
+    misalnya <code>.env</code> backend dari Bab 10, atau token JWT yang dikelola Bab 13. Untuk
+    keperluan build-time yang tidak boleh masuk bundel, EAS menyediakan penyimpanan environment
+    variable khusus build; aturan dasarnya tetap: apa pun yang dibutuhkan aplikasi di perangkat
+    pengguna akan terbaca oleh pengguna.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Rahasia dititipkan ke EXPO_PUBLIC_"
+       data-label-benar="Rahasia tinggal di sisi server"
+       data-petunjuk="Panah terakhir di panel kiri adalah inti slide ini: berkas yang dibagikan ke setiap pengguna memuat nilai itu apa adanya.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">ilustrasi-anggapan-salah.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §15.6</span>
+      </figcaption>
+      <pre><code class="language-text"># .env terlihat seperti brankas
+EXPO_PUBLIC_API_KEY=...
+
+→ nilai disisipkan ke bundel saat build
+✗ tertanam di berkas yang dibagikan
+✗ terbaca siapa pun yang membongkar aplikasi</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">ilustrasi-tempat-yang-benar.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §15.6, §Bab 10 &amp; 13</span>
+      </figcaption>
+      <pre><code class="language-text">sisi server:
+  .env backend (Bab 10)
+  token JWT yang dikelola server (Bab 13)
+
+→ aplikasi hanya memegang alamat server
+✓ rahasia tidak pernah ikut dibundel</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Mengira awalan <code>EXPO_PUBLIC_</code> membuat nilainya tersembunyi atau aman. Justru
+      sebaliknya: awalan itulah yang menandai nilai untuk ikut dibundel, sehingga nilainya bisa
+      dibaca siapa pun. Jangan pernah menaruh rahasia di variabel env aplikasi.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Jadi di mana kunci API yang melindungi server disimpan? (Jawaban: di sisi server, misalnya
+      berkas <code>.env</code> backend dari Bab 10, atau token JWT yang dikelola Bab 13.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s2-6">
+  <p class="label-subbab">
+    Subbab 15.7 <span class="sumber-slide">· deck: “Signing: Tanda Tangan yang Membuktikan Keaslian” · buku §15.7</span>
+  </p>
+  <h2>Signing: Tanda Tangan yang Membuktikan Keaslian</h2>
+
+  <p>
+    <strong>Signing</strong> adalah pemberian tanda tangan digital pada build: bukti kriptografis
+    bahwa berkas benar-benar berasal dari pengembang yang bersangkutan dan tidak diubah di
+    tengah jalan. Siapa pun dapat membangun ulang aplikasi kita dari kode yang sama, tetapi hanya
+    pemilik kunci rahasia yang dapat menghasilkan tanda tangan yang cocok. Analogi deck: tanda
+    tangan digital seperti segel notaris — isi dokumennya boleh sama, tetapi segelnya hanya bisa
+    dibuat pemegang kunci.
+  </p>
+
+  <p>
+    Di Android, tanda tangan dibuat dengan <strong>keystore</strong>: berkas lazimnya
+    <code>.jks</code> atau <code>.keystore</code> yang berisi pasangan kunci dan sertifikat.
+    Perannya ganda: memverifikasi keaslian saat instalasi, dan memverifikasi kelanjutan
+    identitas saat pembaruan. Peran kedua itulah yang membuat kehilangan kunci berbahaya —
+    sistem menolak pembaruan yang ditandatangani dengan kunci berbeda karena dianggap aplikasi
+    lain, bukan versi baru aplikasi yang sama.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">(terminal)</span>
+      <span class="kode-sumber">buku §15.7 · kutipan perintah verbatim</span>
+    </figcaption>
+    <pre><code class="language-bash">keytool -genkeypair -v -keystore mahasiswa.jks -alias mahasiswa -keyalg RSA -keysize 2048 -validity 10000</code></pre>
+  </figure>
+
+  <p>
+    Perintah di atas hanya diperlukan bila kita membangun di mesin lokal, misalnya
+    <code>npx expo run:android</code> varian release. Sintaks <code>keytool</code> dan cara
+    menghubungkan keystore ke konfigurasi build ditandai <em>sensitif versi</em>; EAS
+    mengotomatiskan seluruh proses ini sehingga tidak wajib dikuasai sekarang.
+  </p>
+
+  <p>
+    EAS mengurangi risiko kehilangan kunci dengan mengelola keystore secara otomatis: keystore
+    dibuat saat build pertama, disimpan di akun Expo, dan dapat diunduh dari halaman kredensial
+    lewat perintah <code>eas credentials</code> bila kita ingin membangun lokal. EAS memakai
+    mekanisme persetujuan dua orang untuk mengunduh kunci karena inilah barang paling berharga
+    dalam siklus hidup aplikasi.
+  </p>
+
+  <p>
+    Google Play menambah satu lapis perlindungan dengan <strong>Play App Signing</strong>: kunci
+    penandatanganan disimpan oleh Google, sedangkan pengembang memegang <strong>upload
+    key</strong> khusus untuk mengirim build. Dengan pola ini kunci produksi tidak pernah berada
+    di mesin pengembang. Di iOS konsepnya sama: sertifikat distribusi dan provisioning profile
+    membuktikan identitas pengembang, dan EAS juga mengelolanya otomatis.
+  </p>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Mengapa sistem menolak pembaruan yang ditandatangani dengan kunci berbeda? (Jawaban: karena
+      dianggap aplikasi lain, bukan versi baru aplikasi yang sama.) Dan mengapa Play App Signing
+      meringankan beban pengembang? (Jawaban: kunci produksi dipegang Google, sedangkan kita hanya
+      memegang upload key.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s2-7">
+  <p class="label-subbab">
+    Subbab 15.7 <span class="sumber-slide">· deck: “Kalau Keystore Hilang, Apa yang Terjadi?” &amp; “Kunci yang Hilang Menutup Jalan Pembaruan” · buku §15.7</span>
+  </p>
+  <h2>Kunci yang Hilang Menutup Jalan Pembaruan</h2>
+
+  <p>
+    Skenarionya sederhana dan sering terjadi: laptop pengembang rusak, keystore lokal tidak punya
+    salinan, versi lama aplikasi sudah terpasang di sejumlah perangkat pengguna, dan minggu depan
+    perbaikan bug harus dirilis. Apa yang terjadi saat build baru dipasang di perangkat lama?
+    Tanda tangannya tidak cocok, sehingga aplikasi yang sudah terpasang tidak pernah bisa
+    diperbarui — sistem menganggap build baru sebagai aplikasi yang berbeda.
+  </p>
+
+  <p>
+    Pengguna secara teknis bisa menghapus aplikasi lama lalu memasang yang baru, tetapi datanya
+    hilang dan sebagian besar tidak akan melakukannya. Inilah alasan deck menyebut kehilangan
+    kunci sebagai bencana, bukan sekadar ketidaknyamanan.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Keystore hanya di laptop pengembang"
+       data-label-benar="Keystore dikelola EAS dan Play App Signing"
+       data-petunjuk="Dua lapis pencegahan, bukan satu: EAS menyimpan keystore di akun Expo, dan Play App Signing memisahkan kunci produksi dari kunci unggah.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">ilustrasi-keystore-lokal.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §15.7 &amp; §Studi Kasus</span>
+      </figcaption>
+      <pre><code class="language-text">laptop rusak
+→ keystore lokal ikut hilang, tanpa salinan
+→ build baru ditandatangani kunci berbeda
+✗ sistem menolak pembaruan
+✗ pengguna harus memasang ulang, data hilang</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">ilustrasi-dua-lapis.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §15.7</span>
+      </figcaption>
+      <pre><code class="language-text">lapis 1: EAS menyimpan keystore di akun Expo
+         unduh lewat `eas credentials`
+lapis 2: Play App Signing menyimpan kunci
+         produksi di Google
+
+✓ laptop rusak tidak menghapus kunci
+✓ pengembang hanya memegang upload key</code></pre>
+    </figure>
+  </div>
+
+  <p>
+    Sejak praktikum pertama, simpan salinan keystore di tempat aman. Bila build dikerjakan lewat
+    EAS, keystore tidak ikut hancur bersama laptop; bila build dikerjakan lokal, salinan itulah
+    satu-satunya jalan pembaruan yang tersisa.
+  </p>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Mengira kehilangan keystore hanya berarti “harus membuat kunci baru”. Membuat kunci baru
+      berarti membangun aplikasi baru di mata sistem: pengguna lama tidak menerima pembaruan,
+      ulasan dan jumlah pemasangan tidak terbawa, dan application ID seolah dimulai dari nol.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Mengapa EAS memakai mekanisme persetujuan dua orang untuk mengunduh kunci? (Jawaban: karena
+      kunci itu barang paling berharga dalam siklus hidup aplikasi.)
+    </p>
+  </div>
+</section>

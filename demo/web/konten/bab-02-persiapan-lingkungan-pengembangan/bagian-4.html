@@ -1,0 +1,414 @@
+<h1>Bagian 4 — Proyek Pertama &amp; Struktur Folder</h1>
+
+<p class="ringkas">
+  Subbab 2.7–2.9. Bagian ini adalah urutan kerja praktikum hari ini: dari folder kosong,
+  membuat proyek dengan templat yang tepat, menyalakan server, membaca isi folder, sampai
+  memahami mengapa <code>App.js</code> adalah berkas yang paling sering kamu ubah. Selesaikan
+  setiap langkah sebelum melangkah ke langkah berikutnya.
+</p>
+
+<section class="subbab" id="s4-1">
+  <p class="label-subbab">
+    Subbab 2.7 <span class="sumber-slide">· deck: “Alur Membuat Proyek: Enam Langkah, Tidak Boleh Melompat” &amp; “Empat Perintah dari Folder Kosong sampai Aplikasi Jalan” · buku §2.7</span>
+  </p>
+  <h2>Empat Perintah dari Folder Kosong sampai Aplikasi Jalan</h2>
+
+  <p>
+    Alur pembuatan proyek boleh dibaca sebagai dua baris: menyiapkan, lalu menjalankan. Tidak
+    ada langkah yang boleh dilewati — melewati pemeriksaan versi di awal adalah kebiasaan yang
+    paling sering dan penyebab galat berantai di langkah sesudahnya. Empat perintah berikut
+    dijalankan berurutan dari folder kerja.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">(terminal)</span>
+      <span class="kode-sumber">deck “Empat Perintah…” · buku §2.7</span>
+    </figcaption>
+    <pre><code class="language-bash">npx create-expo-app aplikasi-pertama --template blank
+cd aplikasi-pertama
+code .
+npx expo start</code></pre>
+  </figure>
+
+  <p>
+    Bacalah perintahnya, jangan dihafal. <code>npx</code> menjalankan versi terbaru
+    <code>create-expo-app</code> tanpa memasangnya global; <code>aplikasi-pertama</code> adalah
+    nama proyek sekaligus nama folder, sebaiknya huruf kecil tanpa spasi;
+    <code>--template blank</code> memilih cetakan awal. Proses pembuatan memakan waktu satu
+    sampai beberapa menit karena npm mengunduh setiap dependensi ke <code>node_modules</code>.
+  </p>
+
+  <p>
+    Lalu <code>cd aplikasi-pertama</code> memindahkan terminal ke folder proyek, dan
+    <code>code .</code> meminta VS Code membuka folder yang sedang aktif. Kalau
+    <code>code .</code> tidak dikenali, buka lewat menu <em>File &gt; Open Folder</em>.
+  </p>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Kenapa setiap perintah berikutnya dijalankan dari dalam folder proyek? (Jawaban: npm dan
+      Expo membaca <code>package.json</code> di folder yang sedang aktif; di luar folder itu
+      mereka tidak menemukan apa pun.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s4-2">
+  <p class="label-subbab">
+    Subbab 2.7 <span class="sumber-slide">· deck: “Kenapa Template blank, Bukan Template Bawaan?” · buku §2.7</span>
+  </p>
+  <h2>Kenapa Template blank, Bukan Template Bawaan?</h2>
+
+  <p>
+    Ini keputusan penulisan buku, bukan sekadar selera. Templat <strong>blank</strong> berisi
+    proyek React Native dan Expo minimal <em>tanpa</em> TypeScript — JavaScript polos, sesuai
+    bahasa yang dipakai seluruh buku ini. Templat <strong>default</strong> yang dipakai
+    <code>create-expo-app</code> tanpa opsi <code>--template</code> justru berbasis TypeScript
+    dan langsung menyertakan Expo Router.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Tanpa opsi: templat bawaan"
+       data-label-benar="Dengan --template blank"
+       data-petunjuk="Bedanya bukan besar-kecil proyek, melainkan dua konsep tambahan yang belum diajarkan: anotasi tipe dan navigasi berbasis berkas."
+    >
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">(terminal)</span>
+        <span class="kode-sumber">buku §2.7</span>
+      </figcaption>
+      <pre><code class="language-bash">npx create-expo-app aplikasi-pertama</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">(terminal)</span>
+        <span class="kode-sumber">buku §2.7</span>
+      </figcaption>
+      <pre><code class="language-bash">npx create-expo-app aplikasi-pertama --template blank</code></pre>
+    </figure>
+  </div>
+
+  <p>
+    Akibat memilih templat bawaan: proyekmu berisi berkas berekstensi <code>.tsx</code> dan
+    struktur navigasi yang belum dibutuhkan di tahap ini, sehingga kamu belajar dua hal
+    sekaligus. Dengan memilih <code>blank</code> secara eksplisit, struktur proyek menjadi
+    sesederhana mungkin dan perhatianmu tetap pada fondasi. Navigasi berbasis berkas baru
+    dipelajari di Bab 7, dan alasan pemilihan JavaScript di Bab 3.
+  </p>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Perilaku templat dapat berubah antarversi Expo, jadi jangan menganggap susunan berkas
+      hari ini berlaku selamanya. Bila ragu, periksa keterangan templat di docs.expo.dev atau
+      jalankan <code>npx create-expo-app --help</code> sebelum membuat proyek untuk tugas.
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s4-3">
+  <p class="label-subbab">
+    Subbab 2.7 <span class="sumber-slide">· deck: “Menjalankan Development Server dan Membaca Layarnya” · buku §2.7</span>
+  </p>
+  <h2>Menjalankan Development Server dan Membaca Layarnya</h2>
+
+  <p>
+    Perintah ini menyalakan Metro Bundler lalu menampilkan antarmuka interaktif di terminal:
+    kode QR untuk Expo Go, alamat jaringan tempat aplikasi disajikan, serta daftar tombol
+    pintas. Jalankan dari dalam folder proyek.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">(terminal)</span>
+      <span class="kode-sumber">buku §2.7</span>
+    </figcaption>
+    <pre><code class="language-bash">npx expo start</code></pre>
+  </figure>
+
+  <ul>
+    <li><strong>a</strong> — membuka aplikasi di emulator Android</li>
+    <li><strong>i</strong> — membuka di iOS Simulator (khusus macOS)</li>
+    <li><strong>w</strong> — membuka versi web</li>
+    <li><strong>r</strong> — memuat ulang aplikasi secara manual</li>
+    <li><strong>Ctrl+C</strong> — menghentikan server pengembangan</li>
+  </ul>
+
+  <p>
+    Kamu juga dapat langsung menuju sasaran tertentu, misalnya
+    <code>npx expo start --android</code> (setara menekan a) atau
+    <code>npx expo start --tunnel</code>. Setelah server menyala, simpan perubahan pada
+    <code>App.js</code> dan layar berubah dalam satu sampai dua detik — itulah Fast Refresh
+    yang dibahas di bagian 2.
+  </p>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Jangan menutup terminal Expo selama praktikum. Menutupnya mematikan Metro, dan aplikasi
+      di ponsel langsung kehilangan sambungan walaupun kodenya tidak berubah sama sekali.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Kenapa alamat <code>exp://</code> penting bagi mahasiswa yang memakai ponsel? (Jawaban:
+      itulah alamat tempat Metro menyajikan aplikasi, dan ponsel harus berada di jaringan yang
+      sama dengan alamat itu.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s4-4">
+  <p class="label-subbab">
+    Subbab 2.8 <span class="sumber-slide">· deck: “Isi Folder Proyek: Delapan Entri, Tiga yang Sering Disentuh” · buku §2.8</span>
+  </p>
+  <h2>Isi Folder Proyek: Delapan Entri, Tiga yang Sering Disentuh</h2>
+
+  <p>
+    Buka folder <code>aplikasi-pertama</code> di VS Code dan cocokkan panel Explorer dengan
+    struktur berikut — mencocokkan lebih berguna daripada menghafal.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">aplikasi-pertama/</span>
+      <span class="kode-sumber">buku §2.8</span>
+    </figcaption>
+    <pre><code class="language-plaintext">aplikasi-pertama/
+├── assets/
+│   └── (ikon dan gambar bawaan template)
+├── node_modules/
+├── .gitignore
+├── App.js
+├── app.json
+├── index.js
+└── package.json</code></pre>
+  </figure>
+
+  <p>
+    Setelah <code>npx expo start</code> dijalankan, muncul satu entri tambahan yaitu folder
+    <strong>.expo/</strong> yang menyimpan pengaturan lokal dan informasi perangkat. Folder itu
+    dibuat otomatis dan tidak perlu disentuh.
+  </p>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Isi persis templat bisa berbeda antarversi SDK — nama aset ikon, berkas tambahan seperti
+      <code>expo-env.d.ts</code>, atau susunan <code>app.json</code>. Kalau strukturmu tidak
+      sama persis dengan gambar di atas, itu normal. Yang wajib dipahami adalah peran empat
+      berkas inti: <code>App.js</code>, <code>index.js</code>, <code>app.json</code>, dan
+      <code>package.json</code>.
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s4-5">
+  <p class="label-subbab">
+    Subbab 2.8 <span class="sumber-slide">· deck: “Peran File Inti: Identitas, Titik Masuk, Pendukung” · buku §2.8 &amp; §Contoh 3</span>
+  </p>
+  <h2>Peran File Inti: Identitas, Titik Masuk, Pendukung</h2>
+
+  <p>
+    Enam entri di folder proyek dapat dikelompokkan menjadi tiga fungsi: identitas proyek
+    (<code>app.json</code>, <code>package.json</code>), titik masuk aplikasi
+    (<code>index.js</code>, <code>App.js</code>), dan isi pendukung (<code>assets/</code>,
+    <code>node_modules/</code>). Mengelompokkan seperti ini membuatmu tahu berkas mana yang
+    boleh disentuh dan mana yang sebaiknya dibiarkan.
+  </p>
+
+  <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Peran berkas dan folder inti proyek Expo · sumber: deck “Peran File Inti”, buku §2.8</caption>
+      <thead>
+        <tr><th scope="col">Berkas / folder</th><th scope="col">Perannya</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>App.js</code></td><td>Komponen utama aplikasi — berkas yang paling sering kamu ubah</td></tr>
+        <tr><td><code>index.js</code></td><td>Titik masuk; memanggil <code>registerRootComponent</code></td></tr>
+        <tr><td><code>app.json</code></td><td>Konfigurasi proyek: nama, slug, versi, orientasi, ikon</td></tr>
+        <tr><td><code>package.json</code></td><td>Nama proyek, daftar skrip, dan dependensi versi pasti</td></tr>
+        <tr><td><code>assets/</code></td><td>Aset statis: ikon aplikasi dan gambar bawaan templat</td></tr>
+        <tr><td><code>node_modules/</code></td><td>Semua paket unduhan npm; tidak diedit dan tidak dilacak Git</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    <code>app.json</code> dibuat otomatis, tetapi beberapa kuncinya perlu kamu kenali sejak
+    awal. Berikut inti yang wajib dipahami — bukan salinan persis templat, karena berkas hasil
+    templat memuat lebih banyak kunci seperti ikon, splash screen, dan plugin.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">kode/bab-02/app.json</span>
+      <span class="kode-sumber">buku §Contoh 3</span>
+    </figcaption>
+    <pre><code class="language-json">{
+  "expo": {
+    "name": "AplikasiPertama",
+    "slug": "aplikasi-pertama",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true
+  }
+}</code></pre>
+  </figure>
+
+  <p>
+    <code>name</code> adalah nama yang tampil di bawah ikon pada ponsel; <code>slug</code>
+    adalah identitas unik untuk layanan Expo; <code>version</code> adalah nomor versi
+    aplikasimu, berbeda dari versi SDK; <code>orientation</code> membatasi orientasi layar;
+    <code>userInterfaceStyle</code> mengatur tema; <code>newArchEnabled</code> menandakan proyek
+    memakai New Architecture React Native. Konfigurasi inilah yang menjadi dasar saat build ke
+    toko aplikasi di Bab 15.
+  </p>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Jangan mengedit <code>package.json</code> dengan tangan kecuali kamu memahami akibatnya.
+      Daftar dependensi di dalamnya sudah disesuaikan dengan SDK; ubahlah lewat perintah
+      <code>npm install</code> atau <code>npx expo install</code>, bukan lewat editor.
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s4-6">
+  <p class="label-subbab">
+    Subbab 2.8 <span class="sumber-slide">· deck: “package.json Memanggil index.js, index.js Memanggil App.js” · buku §Contoh 2</span>
+  </p>
+  <h2>package.json Memanggil index.js, index.js Memanggil App.js</h2>
+
+  <p>
+    Urutan pemanggilannya sederhana dan menjelaskan banyak hal:
+    <code>package.json</code> menunjuk <code>index.js</code> melalui kunci <code>main</code>;
+    <code>index.js</code> mendaftarkan <code>App.js</code>; <code>App.js</code> menggambar
+    tampilan. Inilah sebabnya <code>App.js</code> menjadi berkas yang paling sering kamu ubah —
+    ia titik masuk tampilan.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">kode/bab-02/index.js</span>
+      <span class="kode-sumber">buku §Contoh 2</span>
+    </figcaption>
+    <pre><code class="language-js">import { registerRootComponent } from 'expo';
+import App from './App';
+
+// Mendaftarkan komponen utama agar Metro tahu apa yang harus dirender pertama kali
+registerRootComponent(App);</code></pre>
+  </figure>
+
+  <p>
+    Baris pertama meminjam fungsi <code>registerRootComponent</code> dari paket
+    <code>expo</code>, baris kedua mengimpor komponen <code>App</code> dari berkas
+    <code>App.js</code>, dan baris terakhir menetapkan <code>App</code> sebagai komponen akar.
+    Konsep <code>import</code> dan <code>export</code> dibahas tuntas di Bab 3; untuk sekarang
+    cukup pahami alurnya: <code>index.js</code> → <code>App.js</code> → tampilan.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Titik masuk diputus"
+       data-label-benar="Titik masuk utuh"
+       data-petunjuk="Perhatikan bahwa yang gagal bukan gambarnya, melainkan pendaftarannya — App.js masih ada, tetapi tidak ada yang mendaftarkannya."
+    >
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">index.js dihapus</span>
+        <span class="kode-sumber">ilustrasi · deck “package.json Memanggil index.js…”</span>
+      </figcaption>
+      <pre><code class="language-text">✗ index.js tidak ada
+→ package.json menunjuk berkas
+  yang tidak ditemukan
+→ Metro tidak menemukan titik masuk
+→ aplikasi gagal dimuat
+  (walaupun App.js masih utuh)</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">rantai lengkap</span>
+        <span class="kode-sumber">buku §Contoh 2 · §2.8</span>
+      </figcaption>
+      <pre><code class="language-text">✓ package.json  "main": index.js
+✓ index.js      registerRootComponent(App)
+✓ App.js        menggambar tampilan
+→ layar menyala</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Karena <code>App.js</code> yang paling sering diubah, banyak yang menyimpulkan ia juga
+      titik masuk proyek. Bukan begitu: yang didaftarkan di <code>package.json</code> adalah
+      <code>index.js</code>. Menghapus atau mengganti nama berkas itu memutus rantai di atas
+      walaupun kode tampilanmu benar.
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s4-7">
+  <p class="label-subbab">
+    Subbab 2.8–2.9 <span class="sumber-slide">· deck: “Tiga Komponen Sudah Cukup untuk Layar Pertama” · buku §Praktikum (Kode)</span>
+  </p>
+  <h2>Tiga Komponen Sudah Cukup untuk Layar Pertama</h2>
+
+  <p>
+    Aplikasi pertama yang kamu lihat bukan “Hello World” bawaan templat, melainkan versi
+    ringkas yang kamu tulis sendiri. Tiga hal saja yang perlu ditunjukkan hari ini: dua baris
+    <code>import</code> meminjam alat dari paket, <code>View</code> adalah kotak wadah
+    (seperti <code>div</code> di web), dan <code>Text</code> adalah teks yang tampil.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">App.js (kutipan)</span>
+      <span class="kode-sumber">deck “Tiga Komponen…” · kutipan berhenti sebelum StyleSheet.create; versi lengkap di Praktikum</span>
+    </figcaption>
+    <pre><code class="language-jsx">import { StatusBar } from 'expo-status-bar';
+import { StyleSheet, Text, View } from 'react-native';
+
+export default function App() {
+  return (
+    &lt;View style={styles.kontainer}&gt;
+      &lt;Text style={styles.judul}&gt;Halo, Dunia!&lt;/Text&gt;
+      &lt;Text style={styles.keterangan}&gt;
+        Project Expo pertama saya berhasil berjalan di perangkat.
+      &lt;/Text&gt;
+      &lt;StatusBar style="auto" /&gt;
+    &lt;/View&gt;
+  );
+}</code></pre>
+  </figure>
+
+  <p>
+    <code>View</code>, <code>Text</code>, dan <code>StyleSheet</code> dibahas mendalam di Bab 5,
+    jadi di sini cukup meniru polanya. Bagian yang boleh kamu ubah hari ini adalah isi teks di
+    dalam <code>Text</code> — ganti dengan namamu, simpan, lalu amati Fast Refresh bekerja.
+  </p>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Kode di atas mengikuti pola resmi templat SDK 57, tetapi belum dijalankan di emulator oleh
+      tim penyusun buku. Karena itu tanggung jawab mengujinya ada padamu: bila tampilannya
+      berbeda dari yang kamu bayangkan, periksa dulu apakah galatnya di kode atau di
+      lingkungan — praktikum di halaman berikutnya memandu urutan pemeriksaannya.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Bagian mana yang boleh kamu ubah hari ini? (Jawaban: isi teks di dalam
+      <code>Text</code> judul dan keterangan, lalu simpan untuk melihat Fast Refresh bekerja.)
+    </p>
+  </div>
+</section>

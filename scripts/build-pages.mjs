@@ -14,9 +14,10 @@
  * Satu salinan aset ditaruh di `dist/assets` dan dipakai bersama semua deck.
  * Base situs diambil dari env PAGES_BASE (default: /senin-v-p1 = nama repo).
  *
- *  3. Halaman demo web di `demo/web/<bab>/` disalin apa adanya menjadi
- *      `dist/<bab>-demo/`. Berbeda dari deck, halaman demo memakai tautan relatif
- *      sepenuhnya, jadi tidak ada yang perlu ditulis ulang di dalamnya.
+ *  3. Aplikasi demo web (Vite + React di `demo/web/`) dibangun ke `dist/demo/`
+ *     SEBELUM script ini dijalankan (lihat package.json root). Script ini hanya
+ *     memastikan hasilnya ada. URL-nya: `/<base>/demo/` — aplikasi memakai base
+ *     relatif dan HashRouter, jadi tidak ada yang perlu ditulis ulang di dalamnya.
  */
 import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
@@ -65,23 +66,17 @@ for (const deck of decks) {
   rmSync(source)
 }
 
-// 3. Halaman demo web.
-const DEMO_WEB = join(ROOT, 'demo', 'web')
-const demo = existsSync(DEMO_WEB) ? readdirSync(DEMO_WEB, { withFileTypes: true }).filter((d) => d.isDirectory()) : []
-for (const bab of demo) {
-  const tujuan = join(DIST, `${bab.name}-demo`)
-  rmSync(tujuan, { recursive: true, force: true })
-  // `docs/` berisi tangkapan layar untuk meninjau hasil (3 MB untuk satu halaman);
-  // tidak ikut dipublikasikan supaya halaman tetap ringan.
-  cpSync(join(DEMO_WEB, bab.name), tujuan, {
-    recursive: true,
-    filter: (sumber) => !sumber.includes(`${bab.name}/docs`),
-  })
-}
-
-console.log(`build-pages: ${decks.length} deck, ${refsRewritten} referensi aset diarahkan ke ${BASE}/assets/`)
-if (demo.length > 0) {
-  console.log(
-    `build-pages: ${demo.length} demo web disalin ke ${demo.map((d) => `${BASE}/${d.name}-demo/`).join(', ')}`
+// 3. Aplikasi demo web: dibangun oleh Vite setelah script ini (lihat package.json
+//    root). Pastikan hasil build-nya sudah ada supaya situs demo tidak hilang diam-diam.
+const DIST_DEMO = join(DIST, 'demo')
+if (!existsSync(join(DIST_DEMO, 'index.html'))) {
+  throw new Error(
+    `dist/demo/index.html tidak ditemukan. Jalankan "npm --prefix demo/web run build" (atau npm run build penuh).`
   )
 }
+
+console.log(
+  `build-pages: ${decks.length} deck, ${refsRewritten} referensi aset diarahkan ke ${BASE}/assets/`
+)
+console.log(`build-pages: aplikasi demo web siap di ${BASE}/demo/`)
+

@@ -1,0 +1,88 @@
+<h1>Bab 13 — Autentikasi dan Keamanan Aplikasi</h1>
+
+<p class="ringkas">
+  Autentikasi dan otorisasi, register dan login, session dan token, struktur JWT, protected
+  route, penyimpanan token dengan <code>expo-secure-store</code>, serta empat prinsip keamanan
+  API. Satu alur menyatukan semuanya: login → token → simpan aman → akses API → logout ·
+  Pertemuan 14.
+</p>
+
+<div class="pengantar-pertanyaan">
+  <p><strong>Pertanyaan pembuka deck:</strong> “Aplikasi apa di HP-mu yang masih membiarkanmu masuk padahal aplikasinya sudah ditutup?”</p>
+  <p>
+    Susulan yang menyiapkan seluruh bab: “Kalau login sudah aman, apa lagi yang perlu
+    diamankan?”
+  </p>
+  <p>
+    Tampung dua sampai tiga jawaban tanpa dikoreksi dulu — jawaban lengkapnya tersebar di
+    bagian 1 dan bagian 2.
+  </p>
+</div>
+
+<h2>Tujuan pembelajaran</h2>
+
+<p>Setelah bab ini, kamu bisa:</p>
+
+<ul>
+  <li>Menjelaskan perbedaan autentikasi dan otorisasi pada aplikasi sistem informasi</li>
+  <li>Membandingkan mekanisme session dan token beserta akibatnya pada skalabilitas</li>
+  <li>Menganalisis struktur JWT (<em>JSON Web Token</em>): header, payload, dan signature</li>
+  <li>Menerapkan protected route serta penyimpanan token dengan SecureStore</li>
+  <li>Mengevaluasi prinsip keamanan API: validasi server, HTTPS, dan least privilege</li>
+</ul>
+
+<p>
+  Butir ketiga dan kelima adalah inti cara berpikirnya: token tidak diamankan oleh aplikasi,
+  melainkan oleh signature di server dan kebijakan hak akses.
+</p>
+
+<h2>Peta halaman</h2>
+
+<ul>
+  <li><strong>Bagian 1 — Autentikasi, Session &amp; Token</strong> (subbab 13.1–13.3): perbedaan autentikasi dan otorisasi, dua endpoint masuk, mekanisme session dan token, serta tiga bagian JWT.</li>
+  <li><strong>Bagian 2 — Perlindungan, Penyimpanan &amp; Keamanan API</strong> (subbab 13.4–13.7): protected route, penanganan status <code>401</code>, AsyncStorage dan SecureStore, empat prinsip keamanan API, dan alur lima langkah dari login sampai logout.</li>
+  <li><strong>Praktikum</strong>: <code>utils/tokenStorage.js</code>, <code>api/client.js</code>, <code>context/AuthContext.js</code>, halaman pengarah, layar masuk, protected route, dan tombol keluar.</li>
+</ul>
+
+<p>
+  Bagian 1 halaman ini memecah “Bagian 1 — Autentikasi, Session &amp; Token” milik deck; bagian
+  2 memecah “Bagian 2 — Perlindungan, Penyimpanan &amp; Keamanan API”.
+</p>
+
+<div class="kotak kotak-tiruan">
+  <p class="kotak-judul">Yang perlu diketahui sebelum membaca</p>
+  <p>
+    Bab ini melanjutkan tiga bab sekaligus: grup route dari Bab 7 menjadi protected route yang
+    hidup, pemanggilan <code>fetch</code> dari Bab 10 mendapat token, dan penyimpanan lokal dari
+    Bab 11 dipindahkan ke tempat yang benar. Tanpa ketiganya, bab ini akan terasa seperti
+    resep tanpa bahan.
+  </p>
+  <p>
+    Beberapa keterangan ditandai <em>sensitif versi</em> (bahasa sumber: <em>version-sensitive</em>):
+    bentuk respons server, nama dan cara aktivasi middleware, batas ukuran SecureStore, dan
+    kebijakan <em>cleartext</em> Expo Go. Semuanya dapat berubah antarversi SDK atau antarversi
+    backend, sehingga harus dicocokkan dengan <code>backend/README.md</code> dan docs.expo.dev.
+    Halaman ini tidak mengarang detail teknis di luar sumbernya.
+  </p>
+  <p>
+    Praktikum bab ini sekaligus menjadi tonggak autentikasi Project Akhir, jadi simpan
+    tangkapan layarnya untuk dikumpulkan lagi sampai Bab 15.
+  </p>
+  <p class="kotak-jawab">
+    Setiap kode di halaman-halaman berikut disalin verbatim dari
+    <code>buku/bab-13-autentikasi-dan-keamanan-aplikasi.md</code> atau deck
+    <code>slides/bab-13-autentikasi-dan-keamanan-aplikasi.md</code>; label
+    <code>kode-sumber</code> menyebut asalnya, dan panel berlabel <em>ilustrasi</em> memang
+    bukan kode. Perbandingan <strong>sebelum/sesudah</strong> menampilkan pola yang salah di
+    samping pola yang benar; tombol di kepala panel untuk berpindah.
+  </p>
+</div>
+
+<div class="kotak kotak-tanya">
+  <p class="kotak-judul">Pertanyaan penuntun</p>
+  <p>
+    Konsep mana yang paling sering tertukar di bab ini? Autentikasi dan otorisasi — dan
+    sesudahnya JWT dan enkripsi. Perhatikan subbab 13.1 di bagian 1, lalu subbab 13.3 di
+    bagian yang sama.
+  </p>
+</div>

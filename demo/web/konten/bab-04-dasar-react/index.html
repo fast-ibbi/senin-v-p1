@@ -1,0 +1,55 @@
+<h1>Bab 4 — Dasar-Dasar React</h1>
+
+<p class="ringkas">
+  Component, JSX, props, state, dan hook · Pertemuan 4–5. Bab ini menjawab satu pertanyaan:
+  kalau data berubah, siapa yang memperbarui layar — kode kita, atau alatnya? Jawabannya
+  <strong><code>UI = f(state)</code></strong>: tampilan adalah fungsi dari state.
+</p>
+
+<div class="pengantar-pertanyaan">
+  <p><strong>Pertanyaan pembuka deck:</strong> “Kalau data mahasiswa berubah, siapa yang seharusnya memperbarui layar? Kode kita atau alatnya?”</p>
+  <p>Tampung jawaban tanpa dikoreksi dulu — halaman bagian 1 yang menjawabnya.</p>
+</div>
+
+<h2>Tujuan pembelajaran</h2>
+
+<ul>
+  <li>Menjelaskan konsep UI deklaratif dan <code>UI = f(state)</code></li>
+  <li>Menulis JSX yang benar dan membedakan component dari elemen</li>
+  <li>Menerapkan component yang dipakai ulang lewat props dan nilai default</li>
+  <li>Membedakan props dari state dan memperbarui state tanpa mengubahnya langsung</li>
+  <li>Menerapkan event, render kondisional, dan render daftar dengan <code>key</code> yang benar</li>
+  <li>Menerapkan siklus hidup sederhana dengan <code>useEffect</code>, termasuk cleanup</li>
+  <li>Mengevaluasi kapan <code>useMemo</code> dan <code>useCallback</code> benar-benar perlu</li>
+</ul>
+
+<h2>Peta halaman</h2>
+
+<ul>
+  <li><strong>Bagian 1 — Pola Pikir, Component &amp; Props</strong> (subbab 4.1–4.4): kenapa React perlu ada, <code>UI = f(state)</code>, component dan enam aturan JSX, props, lalu state dan <code>useState</code>.</li>
+  <li><strong>Bagian 2 — Interaksi, Render &amp; Komposisi</strong> (subbab 4.5–4.7): event handling, render kondisional tiga pola, render daftar dengan <code>map</code> dan <code>key</code>, serta komposisi component.</li>
+  <li><strong>Bagian 3 — Hook: useEffect, useMemo, useCallback</strong> (subbab 4.8–4.9): efek samping dan cleanup, siklus hidup mount/update/unmount, dan kapan optimasi benar-benar perlu.</li>
+  <li><strong>Praktikum</strong>: aplikasi Data Mahasiswa lengkap (filter program studi, detail per kartu, rata-rata IPK), troubleshooting, dan kuis kilat.</li>
+</ul>
+
+<div class="kotak kotak-tiruan">
+  <p class="kotak-judul">Yang perlu diketahui sebelum membaca</p>
+  <p>
+    Bab 3 sudah menyediakan alat bahasanya (variabel, fungsi, array, objek, spread, map).
+    Di bab ini alat itu dipakai untuk membangun antarmuka. Kode contoh memakai komponen
+    React Native (<code>View</code>, <code>Text</code>, <code>Pressable</code>) karena
+    project kuliah berjalan di Expo; di web, padanannya adalah elemen HTML biasa —
+    konsepnya sama persis, dan padanan ini dibahas tuntas di Bab 5.
+  </p>
+  <p class="kotak-jawab">
+    Setiap kode di halaman-halaman berikut disalin verbatim dari
+    <code>buku/bab-04-dasar-react.md</code> atau deck <code>slides/bab-04-dasar-react.md</code>.
+    Perbandingan <strong>sebelum/sesudah</strong> menampilkan cara lama yang salah atau naif
+    di samping cara yang benar; tombol di kepala panel untuk berpindah.
+  </p>
+</div>
+
+<div class="kotak kotak-tanya">
+  <p class="kotak-judul">Pertanyaan penuntun</p>
+  <p>Praktik apa di bab ini yang paling sering diuji? Hampir semua masalah pemula lahir dari props dan state yang tertukar — perhatikan tabel perbedaan keduanya di bagian 1.</p>
+</div>

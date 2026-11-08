@@ -1,0 +1,328 @@
+<h1>Bagian 3 — fetch: GET, POST, PUT, dan DELETE</h1>
+
+<p class="ringkas">
+  Subbab 10.5. Satu fungsi bawaan JavaScript, empat cara memakainya. Bagian ini menelusuri pola
+  yang sama berulang kali: kirim permintaan, periksa status, urai hasil — dan tiga jebakan yang
+  paling sering membuat kode mahasiswa gagal di praktikum.
+</p>
+
+<section class="subbab" id="s3-1">
+  <p class="label-subbab">
+    Subbab 10.5 <span class="sumber-slide">· deck: “Membaca Data dengan GET: Tiga Langkah” · buku §10.5</span>
+  </p>
+  <h2>Membaca Data dengan GET: Tiga Langkah</h2>
+
+  <p>
+    <code>fetch</code> adalah fungsi bawaan JavaScript untuk mengirim permintaan HTTP. Karena
+    React Native dibangun di atas JavaScript, <code>fetch</code> tersedia langsung di aplikasi
+    Expo tanpa menginstal paket apa pun. Ia mengembalikan <em>Promise</em>, sehingga diproses
+    dengan <code>async/await</code> yang sudah kamu pelajari di Bab 3.
+  </p>
+
+  <p>
+    Perhatikan tiga komentar bernomor di blok berikut: kirim permintaan, periksa status code,
+    lalu urai JSON. Alamat endpoint disimpan pada satu konstanta <code>API_URL</code> supaya
+    hanya perlu diubah di satu tempat.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">api/mahasiswa.js</span>
+      <span class="kode-sumber">buku §10.5 · pola GET tiga langkah</span>
+    </figcaption>
+    <pre><code class="language-js">const API_URL = 'http://10.0.2.2:3000/api/mahasiswa';
+
+async function muatDaftarMahasiswa() {
+  const response = await fetch(API_URL);   // 1. kirim permintaan GET
+  if (!response.ok) {                      // 2. periksa status code
+    throw new Error(`Permintaan gagal (HTTP ${response.status})`);
+  }
+  return await response.json();            // 3. ubah teks JSON menjadi objek
+}</code></pre>
+  </figure>
+
+  <p>
+    <code>response.ok</code> bernilai benar hanya untuk status code 2xx, sehingga cara ini lebih
+    baik daripada membandingkan <code>response.status === 200</code> satu per satu. Terakhir,
+    <code>response.json()</code> membaca body tanggapan sebagai teks lalu mengurainya menjadi
+    objek atau array JavaScript.
+  </p>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Bila server menjawab <code>201 Created</code>, apakah <code>response.ok</code> bernilai
+      benar? (Jawaban: ya — <code>ok</code> mencakup seluruh kelompok 2xx, bukan hanya 200.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s3-2">
+  <p class="label-subbab">
+    Subbab 10.5 <span class="sumber-slide">· deck: “Menambah Data dengan POST Butuh Tiga Opsi” · buku §10.5</span>
+  </p>
+  <h2>Menambah Data dengan POST Butuh Tiga Opsi</h2>
+
+  <p>
+    Untuk mengirim data, <code>fetch</code> diberi opsi kedua. Tiga opsi itu berpasangan dengan
+    tiga pertanyaan: <code>method</code> menjawab “operasi apa”, <code>headers</code> menjawab
+    “isi pesan ini apa”, dan <code>body</code> membawa datanya.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">api/mahasiswa.js</span>
+      <span class="kode-sumber">buku §10.5 · POST dengan tiga opsi</span>
+    </figcaption>
+    <pre><code class="language-js">async function tambahMahasiswa(dataBaru) {
+  const response = await fetch(API_URL, {
+    method: 'POST',                                  // 1. jenis operasi
+    headers: { 'Content-Type': 'application/json' }, // 2. jenis isi pesan
+    body: JSON.stringify(dataBaru),                  // 3. data → teks JSON
+  });
+  if (!response.ok) {
+    throw new Error(`Gagal menyimpan mahasiswa (HTTP ${response.status})`);
+  }
+  return await response.json();
+}</code></pre>
+  </figure>
+
+  <p>
+    Body HTTP hanya dapat berisi teks, bukan objek. Itulah sebabnya <strong>serialisasi</strong>
+    dengan <code>JSON.stringify</code> wajib dipakai, dan header
+    <code>Content-Type: application/json</code> memberi tahu server bahwa teks itu berformat JSON.
+    Nilai yang dikembalikan adalah data mahasiswa yang baru tersimpan, kini disertai
+    <code>id</code> dari server.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Objek dikirim apa adanya"
+       data-label-benar="Objek diserialisasi menjadi teks JSON"
+       data-petunjuk="Tanpa serialisasi dan tanpa header, server menerima body yang tidak dikenali lalu menjawab 400 Bad Request.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">baris-body.js</span>
+        <span class="kode-sumber">ilustrasi · buku §10.5</span>
+      </figcaption>
+      <pre><code class="language-js">body: dataBaru,</code></pre>
+</figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">api/mahasiswa.js</span>
+        <span class="kode-sumber">buku §10.5 · kutipan tiga opsi</span>
+      </figcaption>
+      <pre><code class="language-js">    method: 'POST',                                  // 1. jenis operasi
+    headers: { 'Content-Type': 'application/json' }, // 2. jenis isi pesan
+    body: JSON.stringify(dataBaru),                  // 3. data → teks JSON</code></pre>
+    </figure>
+  </div>
+</section>
+
+<section class="subbab" id="s3-3">
+  <p class="label-subbab">
+    Subbab 10.5 <span class="sumber-slide">· deck: “Menghapus Data: Respons Sukses Bisa Kosong” · buku §10.5 &amp; §Praktikum</span>
+  </p>
+  <h2>Mengubah Data dan Menghadapi 204</h2>
+
+  <p>
+    Pola PUT hampir sama dengan POST: metode ditukar, alamatnya ditambah <code>id</code>, body
+    tetap hasil <code>JSON.stringify</code>. Bedanya satu hal kecil yang mudah terlewat — server
+    boleh menjawab <code>204 No Content</code>, yaitu sukses tanpa mengirim isi tanggapan.
+    Memanggil <code>response.json()</code> pada tanggapan kosong justru melempar error.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">api/mahasiswa.js</span>
+      <span class="kode-sumber">buku §Praktikum · kutipan fungsi ubahMahasiswa</span>
+    </figcaption>
+    <pre><code class="language-js">  const response = await fetch(`${API_URL}/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(dataMahasiswa),
+  });
+  if (!response.ok) {
+    throw new Error(`Gagal memperbarui mahasiswa (HTTP ${response.status})`);
+  }
+  // 204 No Content: server sukses tanpa mengirim isi respons.
+  if (response.status === 204) return dataMahasiswa;
+  return response.json();
+}
+</code></pre>
+  </figure>
+
+  <p>
+    Pengecekan <code>response.status === 204</code> sebelum membaca body adalah bentuk kehati-hatian
+    yang murah: bila server memilih mengirim data, data itu dipakai; bila tidak, fungsi
+    mengembalikan data yang tadi dikirim. Pemanggil tidak perlu tahu bedanya.
+  </p>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Kalau server menjawab 204 untuk PUT, apa nilai balik yang paling masuk akal dari
+      <code>ubahMahasiswa</code>? (Jawaban: data yang tadi dikirim — pemanggil sudah memilikinya,
+      dan server menyatakan datanya tersimpan.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s3-4">
+  <p class="label-subbab">
+    Subbab 10.5 <span class="sumber-slide">· deck: “Menghapus Data: Respons Sukses Bisa Kosong” · buku §10.5</span>
+  </p>
+  <h2>Menghapus Data: Respons Sukses Bisa Kosong</h2>
+
+  <p>
+    DELETE hanya butuh satu opsi: metode. Sesudah sukses, banyak server menjawab
+    <code>204 No Content</code> — sukses tanpa body — sedangkan server lain menjawab
+    <code>200</code> dengan pesan singkat. Kode yang membaca body tanpa memeriksa lebih dulu akan
+    bekerja pada server kedua dan gagal pada server pertama.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Body respons selalu dibaca"
+       data-label-benar="Cukup status, nilai balik boolean"
+       data-petunjuk="Kedua potongan ini sama-sama sukses pada server yang menjawab 200 dengan body; hanya yang kanan tetap selamat ketika server menjawab 204 tanpa body.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">api/krs.js</span>
+        <span class="kode-sumber">deck “Menghapus Data: Respons Sukses Bisa Kosong”</span>
+      </figcaption>
+      <pre><code class="language-js">async function batalkanKrs(id) {
+  const response = await fetch(`${BASE_URL}/api/krs/${id}`, { method: 'DELETE' });
+  if (!response.ok) throw new Error(`HTTP ${response.status}`);
+  return await response.json(); // server ini menjawab 200 + { pesan, id }
+}</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">api/mahasiswa.js</span>
+        <span class="kode-sumber">buku §Contoh 10.3 · DELETE dan 204</span>
+      </figcaption>
+      <pre><code class="language-js">async function hapusMahasiswa(id) {
+  const response = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+  if (!response.ok) throw new Error(`HTTP ${response.status}`);
+  return true; // DELETE sukses: server umumnya membalas 204 (tanpa isi)
+}</code></pre>
+    </figure>
+  </div>
+
+  <p>
+    Bila pemanggil hanya perlu tahu berhasil atau tidak, nilai balik boolean adalah pilihan yang
+    tepat: ia tidak menjanjikan body yang belum tentu ada. Buku ini memilih jalan itu, dan layar
+    daftar memakainya untuk langsung menghapus kartu dari state tanpa memuat ulang seluruh daftar.
+  </p>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      “Sukses berarti ada respons untuk dibaca.” Tidak selalu. <code>response.json()</code> pada
+      tanggapan <code>204</code> melempar error karena tidak ada teks untuk diurai, sehingga
+      operasi yang sebenarnya berhasil dilaporkan gagal. Periksa status atau panjang body lebih
+      dulu.
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s3-5">
+  <p class="label-subbab">
+    Subbab 10.5 <span class="sumber-slide">· deck: “fetch Tidak Melempar Error saat Server Menjawab 500” · buku §10.5</span>
+  </p>
+  <h2>fetch Tidak Melempar Error saat Server Menjawab 500</h2>
+
+  <p>
+    Inilah kehalusan yang paling sering mengecoh pemula: <code>fetch</code> hanya melempar error
+    untuk kegagalan jaringan — server mati, Wi-Fi putus. Status 4xx dan 5xx tetap dianggap
+    permintaan yang “berhasil” oleh <code>fetch</code>, sehingga tanpa pemeriksaan tambahan,
+    aplikasi akan memperlakukan pesan galat server sebagai data.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Tanpa memeriksa response.ok"
+       data-label-benar="Periksa response.ok lalu lempar Error sendiri"
+       data-petunjuk="Yang kiri tidak salah sintaks, tetapi salah asumsi: status 500 pun lolos ke setMahasiswa. Yang kanan mengubah status non-2xx menjadi Error yang bisa ditangkap pemanggil.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">layar-daftar.js</span>
+        <span class="kode-sumber">ilustrasi · buku §10.5</span>
+      </figcaption>
+      <pre><code class="language-js">const response = await fetch(API_URL);
+const json = await response.json();
+setMahasiswa(json);</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">api/mahasiswa.js</span>
+        <span class="kode-sumber">buku §10.5 · kutipan pemeriksaan status</span>
+      </figcaption>
+      <pre><code class="language-js">  const response = await fetch(API_URL);   // 1. kirim permintaan GET
+  if (!response.ok) {                      // 2. periksa status code
+    throw new Error(`Permintaan gagal (HTTP ${response.status})`);
+  }
+  return await response.json();            // 3. ubah teks JSON menjadi objek</code></pre>
+    </figure>
+  </div>
+
+  <p>
+    Karena itu pola <code>if (!response.ok) throw</code> adalah keharusan, bukan pelengkap.
+    Kegagalan jaringan tetap muncul sebagai <code>TypeError: Network request failed</code> dan
+    harus ditangkap dengan <code>try/catch</code> di pemanggil — bagian 4 menutup lingkaran itu
+    dengan tiga keadaan antarmuka.
+  </p>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Aplikasi menampilkan daftar kosong padahal server menjawab 500. Di lapisan mana kesalahannya?
+      (Jawaban: di aplikasi — respons galat tidak diperiksa, lalu isinya dipakai sebagai data;
+      server memang salah, tetapi aplikasi seharusnya menampilkan keadaan galat.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s3-6">
+  <p class="label-subbab">
+    Subbab 10.5 <span class="sumber-slide">· deck: “Membaca Data dengan GET: Tiga Langkah” · buku §10.5</span>
+  </p>
+  <h2>Menormalkan Bentuk Respons</h2>
+
+  <p>
+    Satu jebakan terakhir bersifat kontraktual, bukan sintaksis: sebagian server mengirim array
+    langsung, sebagian membungkusnya pada properti <code>data</code>. Kode yang menganggap hanya
+    satu bentuk akan menampilkan daftar kosong meski statusnya 200 — kasus yang sulit diduga
+    karena semuanya tampak berhasil.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">api/mahasiswa.js</span>
+      <span class="kode-sumber">buku §Contoh 10.1 · GET dan normalisasi respons</span>
+    </figcaption>
+    <pre><code class="language-js">async function muatDaftarMahasiswa() {
+  const response = await fetch(API_URL);       // GET -&gt; daftar mahasiswa
+  if (!response.ok) throw new Error(`HTTP ${response.status}`);
+  const json = await response.json();
+  // Server buku membungkus daftar pada properti data; kode ini menyesuaikan
+  // bentuk respons yang juga bisa berupa array langsung.
+  return Array.isArray(json) ? json : json.data;
+}</code></pre>
+  </figure>
+
+  <p>
+    Baris <code>Array.isArray(json) ? json : json.data</code> menormalkan kedua bentuk menjadi
+    array, sehingga layar tidak perlu tahu bentuk aslinya. Normalisasi kecil seperti ini membuat
+    aplikasi tahan terhadap perbedaan antarserver tanpa mengubah satu baris pun di layar.
+  </p>
+
+  <div class="kotak kotak-tiruan">
+    <p class="kotak-judul">fetch atau Axios?</p>
+    <p>
+      Axios memberi sintaks lebih ringkas, melempar error HTTP otomatis, dan punya
+      <em>interceptor</em> untuk menyisipkan header token secara global. <code>fetch</code> adalah
+      bawaan, lebih ringan, dan — karena “telanjang” — memaksa kamu memahami apa yang sebenarnya
+      terjadi. Bab ini konsisten memakai <code>fetch</code>; Axios dapat kamu evaluasi setelah
+      konsepnya kuasai.
+    </p>
+  </div>
+</section>

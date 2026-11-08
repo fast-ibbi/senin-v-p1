@@ -1,0 +1,340 @@
+<h1>Bagian 2 — Interaksi, Render &amp; Komposisi</h1>
+
+<p class="ringkas">
+  Subbab 4.5 Event · 4.6 Render kondisional &amp; daftar · 4.7 Komposisi. Bagian ini inti
+  praktikum dan paling padat. Semua kode yang dibahas di sini bertemu menjadi satu aplikasi
+  kecil di halaman praktikum.
+</p>
+
+<section class="subbab" id="s2-1">
+  <p class="label-subbab">
+    Subbab 4.5 <span class="sumber-slide">· deck: “Serahkan Fungsi, Bukan Hasil Pemanggilannya” · buku §4.5</span>
+  </p>
+  <h2>Serahkan Fungsi, Bukan Hasil Pemanggilannya</h2>
+
+  <p>
+    Inti subbab ini satu kalimat: yang diserahkan ke <code>onPress</code> (atau
+    <code>onClick</code> di web) adalah <em>fungsi itu sendiri</em>, bukan hasil
+    pemanggilannya. Menulis <code>onPress={ubahTampilDetail()}</code> membuat fungsi berjalan
+    saat render, sehingga tombol terlihat tidak bekerja.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">components/KartuMahasiswa.jsx</span>
+      <span class="kode-sumber">buku §4.5</span>
+    </figcaption>
+    <pre><code class="language-jsx">const ubahTampilDetail = () =&gt; {
+  setDetailTampil((tampilSebelumnya) =&gt; !tampilSebelumnya);
+};
+
+&lt;Pressable onPress={ubahTampilDetail}&gt;
+  &lt;Text&gt;Tampilkan Detail&lt;/Text&gt;
+&lt;/Pressable&gt;</code></pre>
+  </figure>
+
+  <div class="banding"
+       data-label-lama="Fungsi dipanggil saat render — tombol mati"
+       data-label-benar="Referensi fungsi — dipanggil saat ditekan"
+       data-petunjuk="Dengan tanda kurung, fungsi dijalankan seketika saat render dan hasilnya (undefined) yang disimpan; saat tombol ditekan tidak ada fungsi tersisa.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">cara-lama.jsx</span>
+        <span class="kode-sumber">buku §4.5</span>
+      </figcaption>
+      <pre><code class="language-jsx">&lt;Pressable onPress={ubahTampilDetail()}&gt;
+  {/* ✗ ubahTampilDetail() berjalan saat render;
+       hasilnya (undefined) yang disimpan di onPress. */}
+  &lt;Text&gt;Tampilkan Detail&lt;/Text&gt;
+&lt;/Pressable&gt;</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">cara-benar.jsx</span>
+        <span class="kode-sumber">buku §4.5</span>
+      </figcaption>
+      <pre><code class="language-jsx">&lt;Pressable onPress={ubahTampilDetail}&gt;
+  {/* ✓ fungsi disimpan, React memanggilnya saat tombol ditekan. */}
+  &lt;Text&gt;Tampilkan Detail&lt;/Text&gt;
+&lt;/Pressable&gt;</code></pre>
+    </figure>
+  </div>
+
+  <p>
+    Handler di atas memakai <strong>functional update</strong>:
+    <code>setDetailTampil((tampilSebelumnya) =&gt; !tampilSebelumnya)</code>. Nilai baru
+    dihitung dari nilai lama, jadi aman walaupun pembaruan terjadi beberapa kali dalam satu
+    gelombang. Kalau handler perlu membawa data, pakai fungsi panah sebaris.
+  </p>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Bagaimana membawa data ke handler, misalnya nama program? (Jawaban: <code>onPress={() =&gt; ubahKategoriProdi(prodi)}</code>.)</p>
+  </div>
+</section>
+
+<section class="subbab" id="s2-2">
+  <p class="label-subbab">
+    Subbab 4.6 <span class="sumber-slide">· deck: “Render Kondisional: Tiga Pola yang Cukup” · buku §4.6</span>
+  </p>
+  <h2>Render Kondisional: Tiga Pola yang Cukup</h2>
+
+  <p>
+    Ketiga pola ini memakai ekspresi JavaScript yang mengembalikan nilai truthy/falsy
+    (materi Bab 3 subbab 3.2) — bukan fitur baru milik React. Perhatikan contoh murah
+    <code>UI = f(state)</code>: satu state menggerakkan dua tampilan sekaligus —
+    <code>detailTampil</code> menentukan teks tombol <em>dan</em> memunculkan blok detail
+    pada saat yang sama.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">App.jsx</span>
+      <span class="kode-sumber">pola ternary · buku §4.6</span>
+    </figcaption>
+    <pre><code class="language-jsx">{sedangMemuat ? (
+  &lt;Text&gt;Memuat data mahasiswa...&lt;/Text&gt;
+) : (
+  &lt;DaftarMahasiswa data={dataTampil} /&gt;
+)}</code></pre>
+  </figure>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">components/KartuMahasiswa.jsx</span>
+      <span class="kode-sumber">pola &amp;&amp; · buku §4.6</span>
+    </figcaption>
+    <pre><code class="language-jsx">{detailTampil &amp;&amp; (
+  &lt;View style={styles.detail}&gt;
+    &lt;Text&gt;IPK: {mahasiswa.ipk.toFixed(2)}&lt;/Text&gt;
+  &lt;/View&gt;
+)}</code></pre>
+  </figure>
+
+  <p>
+    Pilihan ketiga adalah mengembalikan <code>null</code> secara eksplisit dari dalam
+    component — cara paling eksplisit untuk “jangan tampilkan apa pun”.
+  </p>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Hati-hati dengan <code>&amp;&amp;</code> bila nilainya <code>0</code> atau string
+      kosong: keduanya nilai falsy yang bisa <em>tercetak</em> di layar. Untuk kondisi
+      seperti ini pakai ternary.
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s2-3">
+  <p class="label-subbab">
+    Subbab 4.6 <span class="sumber-slide">· deck: “Render Daftar dengan map” · buku §4.6</span>
+  </p>
+  <h2>Render Daftar dengan map</h2>
+
+  <p>
+    Render daftar dan component yang dipakai ulang adalah pasangan yang tidak terpisah:
+    <code>map</code> menghasilkan component yang sama berulang kali, sekali untuk setiap
+    anggota array.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">components/DaftarMahasiswa.jsx</span>
+      <span class="kode-sumber">buku §4.6</span>
+    </figcaption>
+    <pre><code class="language-jsx">{data.map((mahasiswa) =&gt; (
+  &lt;KartuMahasiswa key={mahasiswa.id} mahasiswa={mahasiswa} /&gt;
+))}</code></pre>
+  </figure>
+
+  <p>
+    Dua hal patut dicermati. Pertama, <code>data</code> tidak pernah dimutasi —
+    <code>map</code> sudah mengembalikan array baru; mengubah datanya di dalam
+    <code>map</code> justru melanggar aturan immutability. Kedua, <code>key</code> ditulis
+    pada elemen yang dihasilkan <code>map</code>, <em>bukan</em> di dalam component
+    <code>KartuMahasiswa</code> — ini kesalahan yang paling sering.
+  </p>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Kenapa data tidak boleh diubah di dalam map? (Jawaban: map sudah mengembalikan array baru; mengubah datanya justru melanggar immutability.)</p>
+  </div>
+</section>
+
+<section class="subbab" id="s2-4">
+  <p class="label-subbab">
+    Subbab 4.6 <span class="sumber-slide">· deck: “key: Unik, Stabil, Bukan Indeks” · buku §4.6</span>
+  </p>
+  <h2>key: Unik, Stabil, Bukan Indeks</h2>
+
+  <p>
+    Tekankan kata <strong>stabil</strong>: key bukan hanya unik, tetapi juga tidak berubah
+    antar-render. Key adalah identitas yang dipakai React untuk mencocokkan elemen lama dan
+    baru ketika daftar berubah. Praktik terbaik: pakai identitas data yang memang unik,
+    seperti <code>mahasiswa.id</code>.
+  </p>
+
+  <div class="banding"
+       data-label-lama="key={index} — elemen tertukar saat daftar berubah"
+       data-label-benar="key={mahasiswa.id} — identitas stabil"
+       data-petunjuk="Indeks bergeser saat daftar difilter atau diurutkan; React lalu mencocokkan elemen lama dengan elemen yang salah.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">cara-lama.jsx</span>
+        <span class="kode-sumber">buku §4.6</span>
+      </figcaption>
+      <pre><code class="language-jsx">{data.map((mahasiswa, index) =&gt; (
+  &lt;KartuMahasiswa key={index} mahasiswa={mahasiswa} /&gt;
+))}
+
+{/* ✗ Setelah daftar difilter, indeks bergeser:
+     state detailTampil ikut tersangkut ke kartu yang salah. */}</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">cara-benar.jsx</span>
+        <span class="kode-sumber">buku §4.6</span>
+      </figcaption>
+      <pre><code class="language-jsx">{data.map((mahasiswa) =&gt; (
+  &lt;KartuMahasiswa key={mahasiswa.id} mahasiswa={mahasiswa} /&gt;
+))}
+
+{/* ✓ id unik dan tidak berubah antar-render;
+     React selalu mencocokkan elemen yang benar. */}</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Key yang hilang tidak menghentikan aplikasi; peringatannya mudah diabaikan justru
+      karena aplikasi tetap jalan. Masalahnya baru muncul belakangan dan sulit dilacak. Juga,
+      jangan memakai key acak (<code>Math.random()</code>) sebagai jalan pintas — key-nya
+      berubah di setiap render, sehingga React membuang lalu membangun ulang setiap elemen:
+      lebih buruk daripada indeks.
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s2-5">
+  <p class="label-subbab">
+    Subbab 4.6 <span class="sumber-slide">· deck: “Apa yang Terjadi Jika…?” &amp; “Detail Menempel di Kartu yang Salah” · buku §4.6</span>
+  </p>
+  <h2>Apa yang Terjadi Jika…?</h2>
+
+  <p>
+    Skenario ini diambil dari praktikum bab ini. Tuliskan dugaan jawabanmu sebelum membaca
+    penjelasannya: daftar lima mahasiswa memakai <code>key={index}</code>, lalu kamu filter
+    per program; satu kartu sedang terbuka detailnya, lalu daftar diurutkan ulang menurut
+    nama. Apa yang terjadi?
+  </p>
+
+  <p>
+    <strong>Detail menempel di kartu yang salah.</strong> Indeks bergeser, React mencocokkan
+    elemen lama dengan elemen yang salah, dan state <code>detailTampil</code> kartu lain ikut
+    terbuka — <em>datanya benar, tampilannya keliru</em>. Gejalanya menipu: mahasiswa akan
+    menyalahkan data yang tertukar, padahal yang keliru adalah pencocokan elemen oleh React.
+    Perbaikannya: <code>key={mahasiswa.id}</code> — unik dan tidak berubah antar-render.
+  </p>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Kenapa React tidak membereskan masalah ini sendiri? (Jawaban: React tidak tahu identitas sebenarnya dari data; hanya pengembang yang tahu.)</p>
+  </div>
+</section>
+
+<section class="subbab" id="s2-6">
+  <p class="label-subbab">
+    Subbab 4.7 <span class="sumber-slide">· deck: “Komposisi Component: Data Turun, State Tinggal” · buku §4.7</span>
+  </p>
+  <h2>Komposisi Component: Data Turun, State Tinggal</h2>
+
+  <p>
+    <strong>Component composition</strong> adalah praktik menyusun component besar dari
+    component-component kecil: <code>App</code> memuat <code>DaftarMahasiswa</code>,
+    <code>DaftarMahasiswa</code> memuat beberapa <code>KartuMahasiswa</code>. Setiap component
+    punya satu tanggung jawab yang jelas. Arah datanya: <em>data mengalir turun, sedangkan
+    state berdiri di tempat ia dideklarasikan</em> — kalau tombol di kartu Budi ditekan,
+    kartu Siti tidak ikut terbuka, karena <code>detailTampil</code> adalah state lokal di
+    tiap kartu.
+  </p>
+
+  <p>
+    Pola <code>children</code> adalah cara kedua menyerahkan tampilan: component induk
+    menyiapkan slot, pemakainya mengisi slot itu.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">components/KartuInfo.jsx</span>
+      <span class="kode-sumber">buku §4.7</span>
+    </figcaption>
+    <pre><code class="language-jsx">export default function KartuInfo({ judul, children }) {
+  return (
+    &lt;View&gt;
+      &lt;Text&gt;{judul}&lt;/Text&gt;
+      {children}
+    &lt;/View&gt;
+  );
+}</code></pre>
+  </figure>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Jangan memecah component terlalu halus. Aturan praktis di bab ini hanya dua: pecah
+      component ketika ia (a) dipakai ulang di lebih dari satu tempat, atau (b) mulai terlalu
+      panjang untuk dipahami sekali lihat.
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s2-7">
+  <p class="label-subbab">
+    Subbab 4.8 <span class="sumber-slide">· deck: “Dua Aturan Hook yang Tidak Boleh Dilanggar” · buku §4.8</span>
+  </p>
+  <h2>Dua Aturan Hook yang Tidak Boleh Dilanggar</h2>
+
+  <p>
+    Hooks adalah jalan masuk ke fitur React dari component fungsi. Dua aturannya:
+    <strong>hooks hanya dipanggil di dalam fungsi component</strong> (atau custom hook), dan
+    <strong>selalu dipanggil di tingkat atas component</strong> — tidak di dalam percabangan
+    (<code>if</code>), perulangan, atau fungsi bersarang.
+  </p>
+
+  <p>
+    Alasannya: React tidak menyimpan state berdasarkan nama variabel, melainkan berdasarkan
+    <em>urutan pemanggilan</em>. Kalau urutannya bergeser karena pemanggilan berada di dalam
+    percabangan, React membaca state yang salah. ESLint bawaan project Expo sudah
+    memperingatkan saat aturan ini dilanggar, jadi kamu tidak perlu menghafalnya tanpa alat
+    bantu.
+  </p>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Kenapa <code>useEffect</code> di dalam <code>if</code> berbahaya? (Jawaban: pada sebagian render efeknya dipanggil dan pada sebagian lain tidak, sehingga urutan hook bergeser.)</p>
+  </div>
+</section>
+
+<section class="subbab" id="s2-8">
+  <p class="label-subbab">
+    Subbab 4.5–4.7 <span class="sumber-slide">· deck: “Satu Ketukan, Satu Re-render” · rangkuman buku §4.5–4.7</span>
+  </p>
+  <h2>Satu Ketukan, Satu Re-render</h2>
+
+  <p>
+    Slide ini merangkum bagian tengah bab. Ceritakan ulang rantai ini dengan kalimatmu
+    sendiri: tombol <strong>Tampilkan Detail</strong> ditekan → handler
+    <code>ubahTampilDetail</code> berjalan → setter
+    <code>setDetailTampil((s) =&gt; !s)</code> dipanggil → React menyimpan state baru →
+    component dijalankan ulang (re-render) → render kondisional
+    <code>{detailTampil &amp;&amp; …}</code> menampilkan blok detail. Layar tidak bisa berubah
+    tanpa setter, karena React hanya tahu state berubah kalau setter dipanggil.
+  </p>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Kenapa layar tidak bisa berubah tanpa setter? (Jawaban: perubahan langsung tidak terdeteksi React.)</p>
+  </div>
+</section>

@@ -304,3 +304,11 @@
 | 13  | Autentikasi dan Keamanan Aplikasi                                 | [bab-13](https://fast-ibbi.github.io/senin-v-p1/bab-13-autentikasi-dan-keamanan-aplikasi)             |
 | 14  | Debugging, Testing, dan Quality Assurance                         | [bab-14](https://fast-ibbi.github.io/senin-v-p1/bab-14-debugging-testing-dan-quality-assurance)       |
 | 15  | Build dan Deployment                                              | [bab-15](https://fast-ibbi.github.io/senin-v-p1/bab-15-build-dan-deployment)                          |
+
+## Indeks Demo Web
+
+Situs demo interaktif (React SPA): penjelasan per bab dari slides, snippet kode verbatim,
+dan perbandingan sebelum/sesudah. Bab 4 dan 5 sudah lengkap; bab lain menyusul.
+
+- [Demo Web — Pemrograman Mobile](https://fast-ibbi.github.io/senin-v-p1/demo/)
+- Dokumentasi: [`demo/web/README.md`](demo/web/README.md)

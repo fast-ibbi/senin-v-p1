@@ -1,0 +1,226 @@
+<h1>Bagian 3 — Hook: useEffect, useMemo, useCallback</h1>
+
+<p class="ringkas">
+  Subbab 4.8–4.9. <code>useState</code> sudah dibahas di bagian 1; bagian ini melengkapi
+  kotak alat hook: <code>useEffect</code> untuk efek samping, <code>useMemo</code> dan
+  <code>useCallback</code> untuk optimasi yang <em>terukur</em> perlu.
+</p>
+
+<section class="subbab" id="s3-1">
+  <p class="label-subbab">
+    Subbab 4.8 <span class="sumber-slide">· deck: “useEffect: Efek Samping dan Cleanup” · buku §4.8</span>
+  </p>
+  <h2>useEffect: Efek Samping dan Cleanup</h2>
+
+  <p>
+    Render seharusnya murni — hanya menghitung tampilan dari props dan state. Segala
+    sesuatu yang “menyentuh dunia luar” adalah <strong>efek samping</strong> (side effect):
+    membaca data, mengatur pengatur waktu (timer), atau berlangganan event. Tempatnya di
+    <strong><code>useEffect</code></strong>, yang menerima dua argumen: fungsi efek dan
+    <strong>dependency array</strong> (daftar ketergantungan). Fungsi efek berjalan
+    <em>setelah</em> component dirender, sedangkan array menentukan kapan ia dijalankan lagi.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">App.js</span>
+      <span class="kode-sumber">buku §4.8</span>
+    </figcaption>
+    <pre><code class="language-jsx">useEffect(() =&gt; {
+  const timer = setTimeout(() =&gt; {
+    setSedangMemuat(false);
+  }, 2000);
+
+  return () =&gt; clearTimeout(timer);
+}, []);</code></pre>
+  </figure>
+
+  <p>
+    Fungsi yang dikembalikan adalah <strong>cleanup</strong> (pembersih): dipanggil saat
+    component dilepas atau sebelum efek berjalan lagi. Tanpa cleanup, timer terus berjalan
+    dan bisa memperbarui state pada component yang sudah tidak ada. Catatan: di mode
+    pengembangan, React sengaja menjalankan efek dua kali (Strict Mode) untuk membantu
+    menemukan efek yang tidak bersih — itu normal dan bukan kesalahan kode kamu.
+  </p>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Efek di atas hanya simulasi pemuatan data, bukan pengambilan data sungguhan. State
+      loading yang sebenarnya dibahas di Bab 10.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Apa bedanya <code>[]</code>, <code>[dep]</code>, dan tanpa array sama sekali? (Jawaban: sekali saat mount, diulang saat dep berubah, dan di setiap render.)</p>
+  </div>
+</section>
+
+<section class="subbab" id="s3-2">
+  <p class="label-subbab">
+    Subbab 4.8 <span class="sumber-slide">· deck: “Siklus Hidup: Mount, Update, Unmount” · buku §4.8</span>
+  </p>
+  <h2>Siklus Hidup: Mount, Update, Unmount</h2>
+
+  <p>
+    Analogi sederhana: menyalakan lampu saat masuk ruangan (mount), menyesuaikan terangnya
+    saat keadaan berubah (update), lalu mematikannya saat keluar ruangan (unmount). Istilah
+    mount dan unmount akan muncul lagi di siklus navigasi pada Bab 7, jadi pakai keduanya
+    dengan makna yang konsisten.
+  </p>
+
+  <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Siklus hidup component fungsi · sumber: buku §4.8</caption>
+      <thead>
+        <tr><th scope="col">Momen</th><th scope="col">Kapan terjadi</th><th scope="col">Cara menangkap</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Mount (terpasang)</td><td>render pertama selesai</td><td><code>useEffect(fn, [])</code></td></tr>
+        <tr><td>Update (diperbarui)</td><td>ada dependency yang berubah</td><td><code>useEffect(fn, [dep])</code> — efek dijalankan ulang</td></tr>
+        <tr><td>Unmount (dilepas)</td><td>component dihapus dari layar</td><td>fungsi cleanup dari efek</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Jangan menyamakan siklus hidup dengan cara kerja class component. Di React modern
+      semuanya dikelola lewat effect.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Kalau dependency array dihapus sama sekali, kapan efeknya berjalan? (Jawaban: di setiap render — hampir selalu tidak diinginkan, dan sering menjadi sumber masalah performa.)</p>
+  </div>
+</section>
+
+<section class="subbab" id="s3-3">
+  <p class="label-subbab">
+    Subbab 4.9 <span class="sumber-slide">· deck: “useMemo dan useCallback: Kapan Benar-Benar Perlu” · buku §4.9</span>
+  </p>
+  <h2>useMemo: Simpan Hasil Perhitungan</h2>
+
+  <p>
+    Setiap kali state berubah, seluruh component dijalankan ulang — termasuk semua
+    perhitungan di dalamnya, meskipun hasilnya tidak berubah. Untuk daftar lima mahasiswa,
+    menghitung ulang filter setiap render tidak terasa; untuk ribuan data atau perhitungan
+    berat, ini membuang waktu. <strong><code>useMemo</code></strong> menyimpan hasil
+    perhitungan dan hanya menghitung ulang ketika dependency-nya berubah.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">App.js</span>
+      <span class="kode-sumber">buku §4.9</span>
+    </figcaption>
+    <pre><code class="language-jsx">const dataTampil = useMemo(() =&gt; {
+  if (kategoriProdi === 'Semua') {
+    return DATA_MAHASISWA;
+  }
+  return DATA_MAHASISWA.filter((m) =&gt; m.prodi === kategoriProdi);
+}, [kategoriProdi]);</code></pre>
+  </figure>
+
+  <p>
+    Fungsi di dalam <code>useMemo</code> dijalankan pada render pertama, lalu hasilnya
+    di-cache. Selama <code>kategoriProdi</code> tidak berubah, render berikutnya langsung
+    memakai hasil cache — <code>filter</code> tidak dijalankan ulang.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Tanpa useMemo — dihitung ulang tiap render"
+       data-label-benar="Dengan useMemo — dihitung saat dependency berubah"
+       data-petunjuk="Perbedaan baru terasa ketika datanya besar; pada data kecil keduanya sama cepat, tetapi pola yang benar layak dibiasakan.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">tanpa-useMemo.jsx</span>
+        <span class="kode-sumber">ilustrasi · buku §4.9</span>
+      </figcaption>
+      <pre><code class="language-jsx">// Dijalankan di setiap render, meski kategori tidak berubah.
+const dataTampil =
+  kategoriProdi === 'Semua'
+    ? DATA_MAHASISWA
+    : DATA_MAHASISWA.filter((m) =&gt; m.prodi === kategoriProdi);</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">dengan-useMemo.jsx</span>
+        <span class="kode-sumber">buku §4.9</span>
+      </figcaption>
+      <pre><code class="language-jsx">// Dihitung ulang hanya ketika kategoriProdi berubah.
+const dataTampil = useMemo(() =&gt; {
+  if (kategoriProdi === 'Semua') {
+    return DATA_MAHASISWA;
+  }
+  return DATA_MAHASISWA.filter((m) =&gt; m.prodi === kategoriProdi);
+}, [kategoriProdi]);</code></pre>
+    </figure>
+  </div>
+</section>
+
+<section class="subbab" id="s3-4">
+  <p class="label-subbab">
+    Subbab 4.9 <span class="sumber-slide">· deck: “useMemo dan useCallback: Kapan Benar-Benar Perlu” · buku §4.9</span>
+  </p>
+  <h2>useCallback: Simpan Referensi Fungsi</h2>
+
+  <p>
+    <strong><code>useCallback</code></strong> adalah saudara <code>useMemo</code> untuk
+    fungsi: ia mengembalikan fungsi yang <em>sama</em> (referensi stabil) selama
+    dependency-nya tidak berubah, alih-alih membuat fungsi baru di tiap render. Ini penting
+    ketika fungsi tersebut diteruskan sebagai props ke component anak yang dibungkus
+    pembanding referensi (<code>React.memo</code>): tanpa <code>useCallback</code>, fungsi
+    baru setiap render membuat anak ikut dirender ulang secara percuma.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">App.js</span>
+      <span class="kode-sumber">buku §4.9</span>
+    </figcaption>
+    <pre><code class="language-jsx">const ubahKategoriProdi = useCallback((kategori) =&gt; {
+  setKategoriProdi(kategori);
+}, []);</code></pre>
+  </figure>
+
+  <p>
+    Pembagian tugasnya dalam satu kalimat: <code>useMemo</code> menyimpan <em>nilai</em>,
+    <code>useCallback</code> menyimpan <em>fungsi</em>. Keduanya memakai dependency array
+    yang bekerja sama seperti di <code>useEffect</code>.
+  </p>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Jangan memakai <code>useMemo</code>/<code>useCallback</code> secara berlebihan.
+      Keduanya menyimpan data di memori dan menambah kompleksitas membaca kode; untuk
+      komputasi ringan dan daftar kecil, biayanya lebih besar daripada manfaatnya. Kalau
+      <code>useMemo</code> dipakai di setiap perhitungan, akibatnya bukan hanya tidak
+      berguna, tetapi menambah pemakaian memori dan membuat kode lebih sulit dibaca.
+      Optimasi dilakukan karena ada bukti beban, bukan karena kebiasaan atau sedang tren.
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s3-5">
+  <p class="label-subbab">
+    Subbab 4.9 <span class="sumber-slide">· deck: “useMemo dan useCallback: Kapan Benar-Benar Perlu” · buku §4.9</span>
+  </p>
+  <h2>Kapan Benar-Benar Perlu</h2>
+
+  <ul>
+    <li>Gunakan <code>useMemo</code> hanya ketika perhitungannya <em>terukur mahal</em>: agregasi data, pencarian, atau transformasi array besar.</li>
+    <li>Gunakan <code>useCallback</code> hanya ketika fungsinya benar-benar diteruskan ke anak yang dibungkus <code>React.memo</code>.</li>
+    <li>Praktikum bab ini memakai <code>useMemo</code> untuk filter dan rata-rata IPK sebagai gambaran polanya — pada data sekecil ini manfaatnya baru terasa bila jumlah data membesar, dan itu diakui terus terang.</li>
+    <li>Optimasi prematur yang menebak-nebak tanpa data kinerja justru membuat kode lebih sulit dipelihara.</li>
+  </ul>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Kalau <code>useMemo</code> dipakai di setiap perhitungan, apa akibatnya? (Jawaban: menambah pemakaian memori dan membuat kode lebih sulit dibaca, tanpa manfaat.)</p>
+  </div>
+</section>

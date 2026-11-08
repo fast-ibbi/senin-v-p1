@@ -1,0 +1,221 @@
+<h1>Bagian 5 — Studi Kasus dan Pengantar Autentikasi</h1>
+
+<p class="ringkas">
+  Subbab 10.7–10.8. Bagian penutup ini membawa seluruh konsep ke satu kasus nyata — tiga sistem
+  dengan tiga angka IPK yang berbeda — lalu membuka pintu berikutnya: bagaimana API produksi
+  menjaga dirinya dengan token.
+</p>
+
+<section class="subbab" id="s5-1">
+  <p class="label-subbab">
+    Subbab 10.7 <span class="sumber-slide">· deck: “Studi Kasus: Tiga Sistem, Tiga Angka IPK yang Berbeda” · buku §Studi Kasus</span>
+  </p>
+  <h2>Studi Kasus: Tiga Sistem, Tiga Angka IPK yang Berbeda</h2>
+
+  <p>
+    Sebuah kampus menengah memiliki tiga sistem yang berjalan terpisah: aplikasi web akademik
+    berbasis PHP, aplikasi mobile untuk mahasiswa, dan sistem informasi kepegawaian. Setiap kali
+    data mahasiswa berubah — misalnya pembaruan IPK — ketiganya menolak sinkron, dan mahasiswa
+    melihat angka berbeda di aplikasi mobile dan di web.
+  </p>
+
+  <p>
+    Akar masalahnya bukan teknologi, melainkan data yang terduplikasi di tiga tempat tanpa satu
+    sumber kebenaran. Solusi yang dipilih adalah satu REST API pusat yang menjadi satu-satunya
+    pintu ke data, sehingga web, mobile, dan kepegawaian sama-sama menjadi client.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">tiga-sistem.txt</span>
+      <span class="kode-sumber">ilustrasi · buku §Studi Kasus</span>
+    </figcaption>
+    <pre><code class="language-text">website-akademik (PHP)   → salinan data mahasiswa sendiri
+aplikasi-mobile (Expo)   → salinan data mahasiswa sendiri
+sistem-kepegawaian       → salinan data mahasiswa sendiri</code></pre>
+  </figure>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      “Angka IPK berbeda karena ketiga sistem memakai teknologi yang berbeda.” Bukan itu akarnya.
+      Tiga teknologi berbeda dapat menampilkan angka yang sama persis bila semuanya membaca satu
+      sumber; yang bermasalah adalah data yang terduplikasi tanpa satu sumber kebenaran.
+    </p>
+  </div>
+
+  <p>
+    Di situlah materi bab ini berbayar: pemisahan client–server (subbab 10.1) mewujudkan satu
+    sumber kebenaran, dan pemilihan REST (subbab 10.2) memungkinkan tiga client berbeda teknologi
+    berbicara dengan satu bahasa HTTP/JSON.
+  </p>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Kalau API pusat mati pada jam pengisian KRS, siapa yang paling dirugikan, dan apa
+      mitigasinya? (Jawaban: mahasiswa; mitigasinya dua sisi — menjaga ketersediaan di sisi
+      server, dan tiga keadaan antarmuka di sisi aplikasi.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s5-2">
+  <p class="label-subbab">
+    Subbab 10.7 <span class="sumber-slide">· deck: “Pola Ini Bertahan Sampai Project Akhir” · buku §Studi Kasus</span>
+  </p>
+  <h2>Titik Kegagalan Tunggal dan Dua Sisi Mitigasi</h2>
+
+  <p>
+    Satu pintu berarti satu titik gagal: bila API pusat mati, semua sistem kehilangan data
+    sekaligus. Itu harga yang sudah tercatat di tabel bagian 1, dan mitigasinya dipraktikkan di
+    dua sisi sekaligus.
+  </p>
+
+  <p>
+    Sisi server menjaga ketersediaan: status code 5xx yang jujur, pengawasan log, dan dokumentasi
+    kontrak pada <code>backend/README.md</code>. Sisi aplikasi menjaga pengalaman pengguna:
+    loading, error dengan aksi, empty state, serta pengulangan yang sopan. Sebelum semua itu
+    diuji, server harus lebih dulu dijalankan — sebagai program terpisah dari aplikasi.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">(terminal)</span>
+      <span class="kode-sumber">buku §10.7 · menjalankan server buku</span>
+    </figcaption>
+    <pre><code class="language-bash">cd backend &amp;&amp; npm install &amp;&amp; npm start</code></pre>
+</figure>
+
+  <p>
+    Inilah sebabnya server yang mati adalah alat uji termurah: ia membuktikan apakah keadaan galat
+    benar-benar ada di aplikasimu, atau hanya ada di slide.
+  </p>
+</section>
+
+<section class="subbab" id="s5-3">
+  <p class="label-subbab">
+    Subbab 10.8 <span class="sumber-slide">· deck: “API Produksi Hampir Selalu Dijaga” · buku §10.8</span>
+  </p>
+  <h2>API Produksi Hampir Selalu Dijaga</h2>
+
+  <p>
+    Server pada praktikum bab ini berjalan tanpa autentikasi agar kamu fokus pada mekanisme HTTP.
+    Namun API produksi yang menyimpan data pribadi — nilai, email, data mahasiswa — hampir selalu
+    melindungi diri: tidak semua orang boleh membaca, apalagi mengubah.
+  </p>
+
+  <p>
+    Pola yang paling umum adalah <strong>token</strong>. Setelah pengguna login, server
+    menerbitkan rangkaian karakter unik sebagai tanda pengenal. Permintaan berikutnya menyertakan
+    token itu pada header <code>Authorization</code> dengan format <em>Bearer</em> — “pembawa
+    kartu ini berhak atas akses berikut”.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">header-otorisasi.txt</span>
+      <span class="kode-sumber">buku §10.8 · header Authorization</span>
+    </figcaption>
+    <pre><code class="language-text">Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...</code></pre>
+</figure>
+
+  <p>
+    Bila token tidak ada, salah, atau kedaluwarsa, server menjawab <code>401 Unauthorized</code>
+    dan aplikasi seharusnya mengarahkan pengguna kembali ke layar login. Untuk sekarang cukup dua
+    hal yang diingat: di mana token disampaikan, dan apa arti 401.
+  </p>
+</section>
+
+<section class="subbab" id="s5-4">
+  <p class="label-subbab">
+    Subbab 10.8 <span class="sumber-slide">· deck: “Token Menumpang di Header Setiap Permintaan” · buku §10.8</span>
+  </p>
+  <h2>Token Menumpang di Header Setiap Permintaan</h2>
+
+  <p>
+    Kabar baiknya: pola <code>fetch</code> tidak berubah. Menyertakan token hanya berarti
+    menambah satu entri pada <code>headers</code> — keterampilan yang sudah kamu bangun di bagian 3
+    langsung terpakai. Yang berubah hanya jawaban server ketika token tidak ada.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Tanpa header Authorization"
+       data-label-benar="Dengan header Authorization: Bearer"
+       data-petunjuk="Server tidak tahu siapa yang bertanya, jadi ia menolak dengan 401. Satu header sudah cukup untuk membedakan keduanya.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">permintaan-tanpa-token.http</span>
+        <span class="kode-sumber">ilustrasi · buku §10.8</span>
+      </figcaption>
+      <pre><code class="language-text">GET /api/mahasiswa HTTP/1.1
+Host: 10.0.2.2:3000
+
+HTTP/1.1 401 Unauthorized</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">permintaan-dengan-token.http</span>
+        <span class="kode-sumber">ilustrasi · buku §10.8</span>
+      </figcaption>
+      <pre><code class="language-text">GET /api/mahasiswa HTTP/1.1
+Host: 10.0.2.2:3000
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+HTTP/1.1 200 OK</code></pre>
+    </figure>
+  </div>
+
+  <p>
+    Siklus penuh — login, token, permintaan terlindungi, logout — beserta cara menyimpan token
+    dengan aman dibahas di Bab 13. Bagian ini hanya menutup jarak antara “API terbuka” dan “API
+    yang tahu siapa pemanggilnya”.
+  </p>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Kenapa nilai IPK sebaiknya tidak dibiarkan dapat dibaca siapa saja? (Jawaban: itu data
+      pribadi; server harus tahu siapa yang bertanya sebelum menjawab.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s5-5">
+  <p class="label-subbab">
+    Subbab 10.7–10.8 <span class="sumber-slide">· deck: “Diskusi Kelas: Kapan Memisahkan api/ Terbayar?” · buku §Studi Kasus</span>
+  </p>
+  <h2>Kontrak API, Versi, dan Langkah Menuju Project Akhir</h2>
+
+  <p>
+    Kampus pada studi kasus itu juga belajar dua hal yang tidak terlihat di kode. Pertama,
+    kontrak API harus didokumentasikan — itulah fungsi <code>backend/README.md</code>. Kedua, API
+    versi mendatang sebaiknya diberi nomor versi, agar perubahan tidak memutus client lama.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">versi-api.txt</span>
+      <span class="kode-sumber">buku §Studi Kasus · nomor versi API</span>
+    </figcaption>
+    <pre><code class="language-text">GET /api/mahasiswa      ← kontrak hari ini
+GET /api/v1/mahasiswa   ← bila kontrak berubah, client lama tetap jalan</code></pre>
+  </figure>
+
+  <p>
+    Dari sini jalan ke depan jelas: pola fetch dan tiga keadaan antarmuka dipakai lagi di Bab 11
+    saat penyimpanan lokal ditambahkan, dan menjadi butir penilaian Project Akhir pada aspek
+    integrasi API. Latihan yang tersedia — memakai PATCH untuk satu field, membuat layar detail,
+    menyimpan daftar terakhir dengan AsyncStorage — semuanya variasi dari pola yang sama.
+  </p>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Kapan pemisahan <code>api/mahasiswa.js</code> menguntungkan, dan kapan justru menjadi beban?
+      (Jawaban: menguntungkan ketika banyak layar memakai endpoint yang sama dan alamat server
+      dapat berubah; menjadi beban ketika aplikasi hanya punya satu layar dan satu permintaan,
+      karena lapisan tambahan harus dipelajari tanpa manfaat.)
+    </p>
+  </div>
+</section>

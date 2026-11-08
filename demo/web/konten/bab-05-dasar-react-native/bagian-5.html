@@ -1,0 +1,876 @@
+<h1>Bagian 5 — Scroller dan Perbedaan Platform</h1>
+
+  <p class="ringkas">
+    Tujuh kartu: dua komponen penggulir (<code>ScrollView</code> dan <code>FlatList</code>),
+    cara memilih di antara keduanya, perbedaan Android dan iOS, tiga alat penyesuaian
+    platform, satu subbab tentang keyboard yang tidak menabrak guliran, dan Praktikum 5.
+    Setiap kode disalin verbatim dari <code>slides/bab-05-dasar-react-native.md</code>,
+    <code>buku/bab-05-dasar-react-native.md</code>, atau <code>praktikum/bab-05-*.md</code>,
+    dan setiap angka di halaman ini ditelusuri ke salah satunya.
+  </p>
+
+  <div class="pengantar-pertanyaan">
+    <p><strong>Pertanyaan pembuka deck:</strong> “Komponen gulir mana yang dipakai untuk data seperti ini?”</p>
+    <p>
+      Bagian ini juga menjadi jembatan ke Bab 6: hampir setiap halaman yang dibangun nanti berisi
+      daftar. Tampung dua sampai tiga jawaban sebelum membaca Subbab 5.1–5.3.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tiruan">
+    <p class="kotak-judul">Yang perlu diketahui sebelum membaca</p>
+    <p>
+      Panel bertanda <strong>React Native</strong> di halaman ini adalah <strong>tiruan HTML/CSS</strong>,
+      bukan React Native sungguhan. Nilai gaya (warna, jarak, radius, ukuran huruf) ditulis inline pada
+      markup tiruan dan diambil dari objek <code>StyleSheet</code> pada blok kode yang ditampilkan di
+      subbab yang sama.
+    </p>
+    <p>
+      Dua hal di halaman ini <em>benar-benar hidup</em>. Pertama, bingkai Subbab 5.1 dan 5.3 bisa
+      <strong>digulir di dalam bingkainya</strong> — itulah <code>ScrollView</code>: semua anaknya sudah
+      dirender, guliran hanya menggeser pandangan. Kedua, <strong>virtualisasi <code>FlatList</code> tidak
+      bisa ditiru</strong> dengan CSS: bingkai Subbab 5.2 dan 5.3 menggambar jendela render yang sudah
+      jadi, sedangkan di perangkat baris-baris itu benar-benar dibuat dan dibuang saat Anda menggulir.
+    </p>
+    <p class="kotak-jawab">
+      Penanda bergaris putus-putus dan bilah “status bar” adalah <strong>keterangan gambar</strong> milik
+      halaman ini, bukan gaya dari <code>StyleSheet</code> mana pun. Di mana pun keduanya dipakai, catatan
+      di bawah bingkai menyebutkannya.
+    </p>
+  </div>
+
+  <!-- ============================================================ SUBBAB 5.1 -->
+
+  <section class="subbab" id="s5-1" data-subbab="5.1">
+    <p class="label-subbab">
+      Subbab 5.1 <span class="sumber-slide">· deck: “ScrollView untuk Konten Statis yang Panjang” · buku §5.6</span>
+    </p>
+    <h2>ScrollView untuk Konten Statis yang Panjang</h2>
+
+    <ul>
+      <li>Konsep pengguliran untuk konten statis.</li>
+      <li>Cocok untuk formulir, halaman detail, dan konten panjang.</li>
+      <li><code>contentContainerStyle</code> mengatur padding dan jarak di dalam area gulir.</li>
+      <li>Seluruh konten anak umumnya dirender sekaligus.</li>
+    </ul>
+
+    <p>
+      <code>ScrollView</code> menggulirkan semua anaknya sekaligus: seluruh isi dirender sejak awal, dan
+      guliran hanya menggeser pandangan (buku §5.6). Sederhana dan cocok untuk konten yang singkat serta
+      berukuran pasti — artikel, formulir, sekumpulan kartu yang sedikit. Deck memberi analogi yang mudah
+      diingat: <code>ScrollView</code> seperti mencetak seluruh buku untuk membaca satu halaman.
+    </p>
+
+    <p>
+      Kelemahannya justru pada kebalikannya: merender 1.000 item sekaligus menghabiskan memori dan membuat
+      aplikasi tersendat (buku §5.6). Satu catatan teknis dari deck yang sering terlewat — <code>padding</code>
+      pada <code>style</code> tidak selalu memberi hasil yang diharapkan pada area gulir, jadi jarak di
+      dalam <code>ScrollView</code> ditulis pada <code>contentContainerStyle</code>.
+    </p>
+
+    <p>
+      <strong>Catatan sumber.</strong> Deck dan buku §5.6 tidak memuat satu pun blok kode
+      <code>ScrollView</code>: kode §5.6 adalah <code>FlatList</code>, dan ditampilkan pada Subbab 5.2.
+      Satu-satunya blok <code>ScrollView</code> di keempat sumber ada di Praktikum Soal 6, dan itulah yang
+      dikutip di bawah — termasuk kekeliruan yang sengaja dipakai soal itu: <code>FlatList</code> di dalam
+      <code>ScrollView</code>. Bahasan mengapa pola itu berbahaya ada di Subbab 5.3.
+    </p>
+
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">App.js</span>
+        <span class="kode-sumber">soal · Soal 6 — Satu Layar, Satu Scroller Utama</span>
+      </figcaption>
+      <pre><code class="language-jsx">&lt;ScrollView&gt;
+  &lt;View style={styles.kartuProfil}&gt;
+    &lt;Text style={styles.judul}&gt;Profil Mahasiswa&lt;/Text&gt;
+    &lt;Text&gt;Total 1.000 mahasiswa&lt;/Text&gt;
+  &lt;/View&gt;
+
+  &lt;FlatList
+    data={DAFTAR_MAHASISWA}
+    keyExtractor={(item) =&gt; item.id}
+    renderItem={({ item }) =&gt; &lt;BarisMahasiswa mahasiswa={item} /&gt;}
+  /&gt;
+&lt;/ScrollView&gt;
+</code></pre>
+    </figure>
+
+    <div class="keluaran">
+      <p class="keluaran-kepala"><span>Hasil yang diharapkan · coba gulir di dalam bingkai</span><span class="keluaran-lebar">390 × 240 px</span></p>
+      <div class="bingkai bingkai-pendek">
+        <div class="bingkai-layar">
+          <div class="rn">
+            <div class="rn-scroll">
+              <div class="rn-view kartu-tiruan">
+                <div class="rn-text">Profil Mahasiswa</div>
+                <div class="rn-text">Total 1.000 mahasiswa</div>
+              </div>
+              <div class="rn-view baris-tiruan">
+                <div class="rn-text">Budi Santoso</div>
+                <div class="rn-text">22101001 · Sistem Informasi</div>
+              </div>
+              <div class="rn-view baris-tiruan">
+                <div class="rn-text">Siti Aminah</div>
+                <div class="rn-text">22101002 · Informatika</div>
+              </div>
+              <div class="rn-view baris-tiruan">
+                <div class="rn-text">Rizky Pratama</div>
+                <div class="rn-text">22101003 · Sistem Informasi</div>
+              </div>
+              <div class="rn-view baris-tiruan">
+                <div class="rn-text">Dewi Lestari</div>
+                <div class="rn-text">22101004 · Informatika</div>
+              </div>
+              <div class="rn-view baris-tiruan">
+                <div class="rn-text">Andi Wijaya</div>
+                <div class="rn-text">22101005 · Sistem Informasi</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="keluaran-catatan">
+        Bingkai ini dipendekkan menjadi 240 px (bawaan halaman 430 px) supaya gulirannya terlihat; di
+        perangkat, tinggi layar yang menentukan. Isi yang digulir: satu kartu dan <strong>lima baris</strong>
+        — kelima nama itu data contoh dari <code>praktikum/bab-05-soal-praktikum.md</code>, sedangkan teks
+        “Total 1.000 mahasiswa” adalah isi kode apa adanya. Semua baris sudah ada di dalam area gulir sejak
+        bingkai ini dibuka; yang bergerak hanya pandangan. Jarak dan garis pemisah antarbaris di sini adalah
+        chrome halaman, karena potongan Soal 6 memanggil <code>BarisMahasiswa</code> yang gayanya tidak ikut
+        ditampilkan.
+      </p>
+    </div>
+
+    <div class="kotak kotak-salah">
+      <p class="kotak-judul">Salah paham</p>
+      <p>
+        Menaruh <code>FlatList</code> di dalam <code>ScrollView</code> dengan arah yang sama — persis yang
+        dilakukan potongan Soal 6 di atas. Slide pilihan penggulir membahas akibatnya; Subbab 5.3
+        menguraikannya.
+      </p>
+    </div>
+
+    <div class="kotak kotak-tanya">
+      <p class="kotak-judul">Pertanyaan penuntun</p>
+      <p>“Kenapa <code>ScrollView</code> berisi seribu baris terasa berat?”</p>
+      <details class="kotak-jawab">
+        <summary>Lihat jawaban</summary>
+        <p>Seribu baris itu dirender semua, bukan hanya yang terlihat.</p>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============================================================ SUBBAB 5.2 -->
+
+  <section class="subbab" id="s5-2" data-subbab="5.2">
+    <p class="label-subbab">
+      Subbab 5.2 <span class="sumber-slide">· deck: “FlatList untuk Data yang Bisa Memanjang” · buku §5.6</span>
+    </p>
+    <h2>FlatList untuk Data yang Bisa Memanjang</h2>
+
+    <ul>
+      <li><code>data</code> dan <code>renderItem</code> menentukan sumber data dan tampilan tiap item.</li>
+      <li><code>keyExtractor</code> memberi identitas unik untuk setiap item.</li>
+      <li><code>ListHeaderComponent</code>, <code>ListEmptyComponent</code>, <code>ItemSeparatorComponent</code>.</li>
+      <li>Item dirender bertahap, sehingga daftar panjang tetap ringan.</li>
+    </ul>
+
+    <p>
+      <code>FlatList</code> menjawab kelemahan <code>ScrollView</code> dengan <strong>virtualisasi</strong>:
+      hanya item yang terlihat di layar — ditambah beberapa item cadangan di atas dan di bawahnya — yang
+      dirender; saat Anda menggulir, item yang terlewati dibuang dan yang baru dibangun (buku §5.6, deck).
+      Itulah sebabnya daftar panjang tetap mulus: kerjanya sebanding dengan layar, bukan dengan jumlah data.
+      Analogi deck melanjutkan yang tadi: <code>ScrollView</code> mencetak seluruh buku untuk membaca satu
+      halaman, <code>FlatList</code> mencetak satu halaman saat halamannya dibutuhkan.
+    </p>
+
+    <p>
+      Dua properti pertama wajib dipahami sebagai pasangan: <code>data</code> adalah array objek, dan
+      <code>renderItem</code> menerima <code>{ item }</code> lalu mengembalikan JSX untuk satu baris.
+      <code>keyExtractor</code> menutupnya dengan identitas unik tiap item — tanpa itu, React memunculkan
+      peringatan “unique key” dan pembaruan daftar menjadi boros. Properti lain yang tersedia:
+      <code>ItemSeparatorComponent</code> (pemisah antarbaris), <code>ListHeaderComponent</code> dan
+      <code>ListFooterComponent</code> (konten di atas/bawah daftar), <code>ListEmptyComponent</code>
+      (tampilan saat data kosong), serta <code>numColumns</code> untuk daftar berkolom.
+    </p>
+
+    <p>
+      Deck menulis versi paling telanjang: dua produk, tanpa satu pun gaya. Buku §5.6 menulis versi yang
+      dipakai sepanjang bab — dengan <code>StyleSheet</code>, sehingga angka pada bingkai kedua di bawah
+      bisa ditelusuri baris demi baris.
+    </p>
+
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">App.js</span>
+        <span class="kode-sumber">deck · slide “FlatList untuk Data yang Bisa Memanjang”</span>
+      </figcaption>
+      <pre><code class="language-jsx">import { FlatList, Text } from 'react-native';
+const products = [
+  { id: '1', name: 'Laptop' },
+  { id: '2', name: 'Tablet' },
+];
+export default function App() {
+  return (
+    &lt;FlatList
+      data={products}
+      keyExtractor={(item) =&gt; item.id}
+      renderItem={({ item }) =&gt; &lt;Text&gt;{item.name}&lt;/Text&gt;}
+    /&gt;
+  );
+}
+</code></pre>
+    </figure>
+
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">App.js</span>
+        <span class="kode-sumber">buku · §5.6 ScrollView dan FlatList</span>
+      </figcaption>
+      <pre><code class="language-jsx">
+import { FlatList, StyleSheet, Text, View } from 'react-native';
+
+const DATA = [
+  { id: '1', nama: 'Budi Santoso', nim: '2201001' },
+  { id: '2', nama: 'Siti Aminah', nim: '2201002' },
+];
+
+export default function App() {
+  return (
+    &lt;FlatList
+      data={DATA}
+      keyExtractor={(item) =&gt; item.id}
+      renderItem={({ item }) =&gt; (
+        &lt;View style={styles.baris}&gt;
+          &lt;Text style={styles.nama}&gt;{item.nama}&lt;/Text&gt;
+          &lt;Text style={styles.nim}&gt;{item.nim}&lt;/Text&gt;
+        &lt;/View&gt;
+      )}
+    /&gt;
+  );
+}
+
+const styles = StyleSheet.create({
+  baris: { padding: 12, borderBottomWidth: 1, borderBottomColor: '#e4e9f2' },
+  nama: { fontSize: 16 },
+  nim: { fontSize: 13, color: '#667085' },
+});
+</code></pre>
+    </figure>
+
+    <div class="padanan">
+      <div class="padanan-sisi">
+        <h3>Deck <span class="peran">· dua item, tanpa gaya</span></h3>
+
+        <div class="keluaran">
+          <p class="keluaran-kepala"><span>Hasil yang diharapkan</span><span class="keluaran-lebar">390 px</span></p>
+          <div class="bingkai">
+            <div class="bingkai-layar">
+              <div class="rn">
+                <div class="rn-text">Laptop</div>
+                <div class="rn-text">Tablet</div>
+              </div>
+            </div>
+          </div>
+          <p class="keluaran-catatan">
+            Kode deck tidak menulis satu pun <code>style</code>, jadi kedua baris memakai teks bawaan 14 pt
+            dan menempel tanpa jarak — <code>FlatList</code> tidak menambahkan bingkai, garis, atau padding
+            untuk Anda. Bentuk yang enak dibaca baru muncul saat gayanya ditulis, seperti pada bingkai
+            sebelah.
+          </p>
+        </div>
+      </div>
+
+      <div class="padanan-sisi">
+        <h3>Buku <span class="peran">· dua baris bergaya, jendela render</span></h3>
+
+        <div class="keluaran">
+          <p class="keluaran-kepala"><span>Hasil yang diharapkan</span><span class="keluaran-lebar">390 px</span></p>
+          <div class="bingkai">
+            <div class="bingkai-layar">
+              <div class="rn">
+                <div class="rn-view" style="padding: 12px; border-bottom: 1px solid #e4e9f2">
+                  <div class="rn-text" style="font-size: 16px">Budi Santoso</div>
+                  <div class="rn-text" style="font-size: 13px; color: #667085">2201001</div>
+                </div>
+                <div class="rn-view" style="padding: 12px; border-bottom: 1px solid #e4e9f2">
+                  <div class="rn-text" style="font-size: 16px">Siti Aminah</div>
+                  <div class="rn-text" style="font-size: 13px; color: #667085">2201002</div>
+                </div>
+                <div class="tiruan-jendela">
+                  <div class="tiruan-jendela-label">batas jendela render — pada daftar 300 item, sekitar 12 baris tergambar</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p class="keluaran-catatan">
+            Garis putus-putus itu <strong>keterangan gambar, bukan tampilan aplikasi</strong>. Tiruan ini
+            tidak bisa meniru virtualisasi: yang diperlihatkan hanyalah <strong>jendela render</strong> —
+            pada daftar 300 item, sekitar <strong>12 baris</strong> yang tergambar di layar dan beberapa baris
+            cadangan di atas-bawahnya, sedangkan 288 baris sisanya belum dibuat sama sekali. Di perangkat,
+            baris-baris itu lahir dan dibuang saat Anda menggulir; di halaman statis, mereka tidak pernah ada.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="kotak kotak-salah">
+      <p class="kotak-judul">Salah paham</p>
+      <p>
+        Mengisi <code>keyExtractor</code> dengan nilai acak, sehingga daftar dibangun ulang terus.
+      </p>
+    </div>
+
+    <div class="kotak kotak-tanya">
+      <p class="kotak-judul">Pertanyaan penuntun</p>
+      <p>“Kenapa <code>item.id</code> lebih baik daripada indeks array sebagai <code>key</code>?”</p>
+      <details class="kotak-jawab">
+        <summary>Lihat jawaban</summary>
+        <p>
+          Indeks bergeser saat data difilter atau diurutkan, sehingga baris tercocokkan dengan salah.
+        </p>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============================================================ SUBBAB 5.3 -->
+
+  <section class="subbab" id="s5-3" data-subbab="5.3"
+           data-tanpa-kode="Subbab ini berisi tabel keputusan dan perbandingan dua bingkai; kode ScrollView sudah ditampilkan di Subbab 5.1 dan kode FlatList di Subbab 5.2, jadi tidak ada blok baru yang bisa ditampilkan tanpa mengulang.">
+    <p class="label-subbab">
+      Subbab 5.3 <span class="sumber-slide">· deck: “Memilih Komponen Pengguliran” · buku §5.6</span>
+    </p>
+    <h2>Memilih Komponen Pengguliran</h2>
+
+    <p>
+      Deck membacakan tabelnya sebagai lima pertanyaan yang dijawab berurutan, bukan sebagai daftar hafalan.
+      Prinsip di baliknya: pilih komponen berdasarkan <strong>struktur data dan jumlah item</strong>, bukan
+      berdasarkan kebiasaan. Kolom komponen disalin dari deck; kolom “jumlah data” dan “sifat data” disusun
+      dari buku §5.6, yang menjelaskan pekerjaan masing-masing komponen.
+    </p>
+
+    <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Tabel keputusan · disusun dari deck “Memilih Komponen Pengguliran” dan buku §5.6</caption>
+      <thead>
+        <tr>
+          <th scope="col">Jumlah data</th>
+          <th scope="col">Sifat data</th>
+          <th scope="col">Kebutuhan</th>
+          <th scope="col">Komponen yang disarankan</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Sedikit, muat beberapa layar</td>
+          <td>Tetap, tidak bertambah saat dipakai</td>
+          <td>Konten halaman relatif sedikit: formulir, halaman detail, artikel</td>
+          <td><code>ScrollView</code></td>
+        </tr>
+        <tr>
+          <td>Bisa memanjang</td>
+          <td>Dinamis — bisa difilter, diurutkan, bertambah</td>
+          <td>Daftar data panjang atau dinamis</td>
+          <td><code>FlatList</code></td>
+        </tr>
+        <tr>
+          <td>Bisa memanjang</td>
+          <td>Dua dimensi: baris dan kolom</td>
+          <td>Daftar dua dimensi</td>
+          <td><code>FlatList</code> dengan <code>numColumns</code></td>
+        </tr>
+        <tr>
+          <td>Bisa memanjang</td>
+          <td>Bertingkat, terbagi menjadi beberapa bagian berjudul</td>
+          <td>Daftar bertingkat dengan beberapa bagian</td>
+          <td><code>SectionList</code></td>
+        </tr>
+        <tr>
+          <td>Kecil, tetapi berada di dalam daftar lain</td>
+          <td>Bersarang</td>
+          <td>Daftar kecil di dalam daftar lain</td>
+          <td>Evaluasi ulang struktur; hindari scroll bersarang</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+    <p>
+      Deck meminta tiga hal diperhatikan: risiko performa, tinggi container, dan konflik pengguliran
+      bersarang. Yang terakhir paling mahal akibatnya. Dua penggulir searah berebut kendali gulir, dan
+      virtualisasi <code>FlatList</code> di dalamnya rusak — Metro menampilkan peringatan
+      “VirtualizedLists should never be nested inside plain ScrollViews with the same orientation”
+      (pesan lengkapnya dikutip pada kunci Praktikum Soal 6). Buku §5.6 memberi jalan keluarnya: jadikan
+      <code>FlatList</code> penggulir luar, lalu pindahkan konten lain ke <code>ListHeaderComponent</code>.
+      Aturan praktisnya satu kalimat: <strong>satu halaman, satu penggulir utama</strong>.
+    </p>
+
+    <div class="padanan">
+      <div class="padanan-sisi">
+        <h3>ScrollView <span class="peran">· semua anak dirender</span></h3>
+
+        <div class="keluaran">
+          <p class="keluaran-kepala"><span>Rujukan ulang dari Subbab 5.1</span><span class="keluaran-lebar">390 × 240 px</span></p>
+          <div class="bingkai bingkai-pendek">
+            <div class="bingkai-layar">
+              <div class="rn">
+                <div class="rn-scroll">
+                  <div class="rn-view kartu-tiruan">
+                    <div class="rn-text">Profil Mahasiswa</div>
+                    <div class="rn-text">Total 1.000 mahasiswa</div>
+                  </div>
+                  <div class="rn-view baris-tiruan">
+                    <div class="rn-text">Budi Santoso</div>
+                    <div class="rn-text">22101001 · Sistem Informasi</div>
+                  </div>
+                  <div class="rn-view baris-tiruan">
+                    <div class="rn-text">Siti Aminah</div>
+                    <div class="rn-text">22101002 · Informatika</div>
+                  </div>
+                  <div class="rn-view baris-tiruan">
+                    <div class="rn-text">Rizky Pratama</div>
+                    <div class="rn-text">22101003 · Sistem Informasi</div>
+                  </div>
+                  <div class="rn-view baris-tiruan">
+                    <div class="rn-text">Dewi Lestari</div>
+                    <div class="rn-text">22101004 · Informatika</div>
+                  </div>
+                  <div class="rn-view baris-tiruan">
+                    <div class="rn-text">Andi Wijaya</div>
+                    <div class="rn-text">22101005 · Sistem Informasi</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p class="keluaran-catatan">
+            Satu penggulir, semuanya saudara: kartu dan lima baris dirender sekaligus, dan seluruh isinya
+            sudah ada sejak layar dibuka.
+          </p>
+        </div>
+      </div>
+
+      <div class="padanan-sisi">
+        <h3>FlatList <span class="peran">· jendela render</span></h3>
+
+        <div class="keluaran">
+          <p class="keluaran-kepala"><span>Rujukan ulang dari Subbab 5.2</span><span class="keluaran-lebar">390 px</span></p>
+          <div class="bingkai">
+            <div class="bingkai-layar">
+              <div class="rn">
+                <div class="rn-view" style="padding: 12px; border-bottom: 1px solid #e4e9f2">
+                  <div class="rn-text" style="font-size: 16px">Budi Santoso</div>
+                  <div class="rn-text" style="font-size: 13px; color: #667085">2201001</div>
+                </div>
+                <div class="rn-view" style="padding: 12px; border-bottom: 1px solid #e4e9f2">
+                  <div class="rn-text" style="font-size: 16px">Siti Aminah</div>
+                  <div class="rn-text" style="font-size: 13px; color: #667085">2201002</div>
+                </div>
+                <div class="tiruan-jendela">
+                  <div class="tiruan-jendela-label">batas jendela render — 288 baris berikutnya belum dibuat</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p class="keluaran-catatan">
+            Satu penggulir, tetapi isinya dibangun bertahap: yang ada di memori hanya jendela render dan
+            beberapa baris cadangan.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <p class="keluaran-catatan">
+      Kedua bingkai di atas adalah <strong>rujukan ulang</strong> dari Subbab 5.1 dan 5.2; tidak ada kode baru
+      di subbab ini. Perhatikan bahwa bentuk luar keduanya sama — yang berbeda adalah apa yang sudah ada di
+      memori saat layar dibuka.
+    </p>
+
+    <div class="kotak kotak-salah">
+      <p class="kotak-judul">Salah paham</p>
+      <p>
+        Menganggap <code>FlatList</code> selalu lebih baik, termasuk untuk lima kartu statis yang seluruhnya
+        muat di satu layar.
+      </p>
+    </div>
+
+    <div class="kotak kotak-tanya">
+      <p class="kotak-judul">Pertanyaan penuntun</p>
+      <p>“Kenapa scroll bersarang berbahaya?”</p>
+      <details class="kotak-jawab">
+        <summary>Lihat jawaban</summary>
+        <p>
+          Dua scroller berebut kendali gulir, dan virtualisasi <code>FlatList</code> di dalamnya rusak —
+          console Metro menampilkan peringatan.
+        </p>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============================================================ SUBBAB 5.4 -->
+
+  <section class="subbab" id="s5-4" data-subbab="5.4">
+    <p class="label-subbab">
+      Subbab 5.4 <span class="sumber-slide">· deck: “Android dan iOS Tidak Selalu Sama” · buku §5.7 dan §5.10</span>
+    </p>
+    <h2>Android dan iOS Tidak Selalu Sama</h2>
+
+    <ul>
+      <li>Perbedaan tampilan, indikator, dan perilaku scroll.</li>
+      <li>Penyesuaian padding serta area aman.</li>
+      <li>Uji sentuhan, keyboard, dan navigasi pada kedua platform.</li>
+    </ul>
+
+    <p>
+      Menguji di satu platform saja bukan bukti aplikasi berjalan benar; deck menyebut bagian inilah yang
+      paling sering menjadi temuan saat pengujian akhir. Perbedaan yang paling mudah dilihat di dua emulator
+      berdampingan adalah indikator gulir dan perilaku tombol kembali, sedangkan yang paling sering
+      menggigit pemula adalah <strong>area aman</strong>.
+    </p>
+
+    <p>
+      Buku §5.7 menjelaskan sebabnya. <code>SafeAreaView</code> bawaan React Native menambahkan padding
+      otomatis sebesar <em>inset</em> — jarak dari tepi layar ke area aman — <strong>tetapi hanya di
+      iOS</strong>; di Android ia tidak melakukan apa-apa. Sejak Android 15 konten dirender
+      <em>edge-to-edge</em> (menembus sampai tepi layar, di balik status bar dan navigation bar), dan pada
+      React Native 0.86 perilaku itu menjadi bawaan di Android. Karena itu judul halaman bisa tertutup status
+      bar <em>di satu platform saja</em>. Buku menandai bagian ini peka versi: kebijakan edge-to-edge dan
+      status <code>SafeAreaView</code> bawaan dapat berubah antarrilis, jadi periksa dokumentasi resmi.
+    </p>
+
+    <p>
+      Perbedaan kedua yang mudah dibuktikan ada di gaya: bayangan di iOS memakai
+      <code>shadowColor</code>/<code>shadowOpacity</code>/<code>shadowRadius</code>/<code>shadowOffset</code>,
+      sedangkan Android memakai <code>elevation</code> — sepasang properti yang tidak saling menggantikan
+      lintas platform (buku §5.10). Perbedaan seperti ini diselesaikan dengan <code>Platform.select</code>,
+      bukan dengan menulis ulang komponennya.
+    </p>
+
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">App.js</span>
+        <span class="kode-sumber">soal · Soal 8 — Safe Area di Dua Platform</span>
+      </figcaption>
+      <pre><code class="language-jsx">import { SafeAreaView } from "react-native";
+
+export default function App() {
+  return (
+    &lt;SafeAreaView style={styles.layar}&gt;
+      &lt;Text style={styles.judul}&gt;Profil Mahasiswa&lt;/Text&gt;
+    &lt;/SafeAreaView&gt;
+  );
+}
+</code></pre>
+    </figure>
+
+    <div class="padanan">
+      <div class="padanan-sisi">
+        <h3>Android <span class="peran">· konten menembus tepi layar</span></h3>
+
+        <div class="keluaran">
+          <p class="keluaran-kepala"><span>Hasil yang diharapkan</span><span class="keluaran-lebar">390 px</span></p>
+          <div class="bingkai bingkai-status">
+            <div class="bingkai-layar">
+              <div class="rn">
+                <div class="rn-text">Profil Mahasiswa</div>
+              </div>
+              <div class="tiruan-bilah-status tumpang">status bar · ilustrasi</div>
+            </div>
+          </div>
+          <p class="keluaran-catatan">
+            <code>SafeAreaView</code> bawaan tidak menambah jarak apa pun. Karena React Native 0.86
+            merender konten sampai tepi layar di Android, judul mulai dari puncak dan tertutup bilah
+            status.
+          </p>
+        </div>
+      </div>
+
+      <div class="padanan-sisi">
+        <h3>iOS <span class="peran">· inset dihormati</span></h3>
+
+        <div class="keluaran">
+          <p class="keluaran-kepala"><span>Hasil yang diharapkan</span><span class="keluaran-lebar">390 px</span></p>
+          <div class="bingkai bingkai-status">
+            <div class="bingkai-layar">
+              <div class="tiruan-bilah-status">status bar · ilustrasi</div>
+              <div class="rn">
+                <div class="rn-text">Profil Mahasiswa</div>
+              </div>
+            </div>
+          </div>
+          <p class="keluaran-catatan">
+            Di iOS, <code>SafeAreaView</code> bawaan menyisipkan padding sebesar inset, sehingga judul
+            terdorong turun ke area aman. Kode yang sama, hasil yang berbeda.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <p class="keluaran-catatan">
+      Tinggi bilah “status bar” di kedua bingkai itu <strong>ilustrasi</strong>, bukan angka dari sumber:
+      deck dan kunci Praktikum Soal 8 justru menegaskan bahwa nilai inset berbeda di tiap perangkat. Kunci
+      Praktikum Soal 8
+      menyebut <code>paddingTop: 44</code> yang di-<em>hardcode</em> sebagai salah satu kesalahan umum,
+      karena tinggi status bar dan notch berbeda antarmodel dan berubah saat rotasi atau saat keyboard
+      muncul. Perbaikannya, menurut buku §5.7: pasang <code>react-native-safe-area-context</code> dengan
+      <code>npx expo install react-native-safe-area-context</code>, bungkus aplikasi dengan
+      <code>SafeAreaProvider</code>, lalu pakai <code>SafeAreaView</code> dari pustaka itu dengan
+      <code>edges={['top', 'bottom']}</code>.
+    </p>
+
+    <div class="kotak kotak-salah">
+      <p class="kotak-judul">Salah paham</p>
+      <p>
+        Menambahkan <code>paddingTop</code> tetap sebagai tambal area aman — nilainya berbeda di tiap
+        perangkat.
+      </p>
+    </div>
+
+    <div class="kotak kotak-tanya">
+      <p class="kotak-judul">Pertanyaan penuntun</p>
+      <p>“Kenapa judul tertutup status bar di satu platform saja?”</p>
+      <details class="kotak-jawab">
+        <summary>Lihat jawaban</summary>
+        <p>
+          Kebijakan area aman berbeda; Android modern menggambar isi sampai tepi layar, sedangkan
+          <code>SafeAreaView</code> bawaan hanya menghormati inset di iOS.
+        </p>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============================================================ SUBBAB 5.5 -->
+
+  <section class="subbab" id="s5-5" data-subbab="5.5">
+    <p class="label-subbab">
+      Subbab 5.5 <span class="sumber-slide">· deck: “Platform.OS dan File Khusus Platform” · buku §5.10</span>
+    </p>
+    <h2>Platform.OS dan File Khusus Platform</h2>
+
+    <ul>
+      <li><code>Platform.OS</code> dipakai untuk logika khusus platform.</li>
+      <li>File <code>.ios.js</code> dan <code>.android.js</code> untuk perbedaan yang lebih besar.</li>
+      <li>Utamakan komponen bersama; penyesuaian platform adalah pengecualian.</li>
+    </ul>
+
+    <p>
+      React Native menyediakan tiga alat, dan urutan keputusannya penting (deck): satu kode untuk dua
+      platform lebih dulu, <code>Platform.OS</code> kalau bedanya kecil, dan berkas terpisah hanya kalau
+      perbedaannya satu komponen utuh. <code>Platform.OS</code> bernilai string <code>'android'</code> atau
+      <code>'ios'</code>, sehingga cukup untuk percabangan langsung seperti contoh di bawah. Untuk memilih
+      <em>nilai</em> per platform, buku §5.10 memakai <code>Platform.select</code> dengan kunci
+      <code>ios</code>, <code>android</code>, dan <code>default</code> sebagai cadangan.
+    </p>
+
+    <p>
+      Perbedaan yang lebih besar diserahkan kepada Metro, bundler React Native: berkas berakhiran
+      <code>.ios.js</code> dan <code>.android.js</code> mendapat prioritas, sehingga jika satu folder berisi
+      <code>pesan.js</code>, <code>pesan.ios.js</code>, dan <code>pesan.android.js</code>, hanya berkas yang
+      sesuai platform aktif yang dikompilasi. Aturan praktis buku §5.10:
+      <code>Platform.select</code> untuk perbedaan kecil (nilai, gaya), ekstensi berkas untuk perbedaan besar
+      (komponen utuh yang benar-benar berbeda). Harganya: dua berkas berarti dua kali perawatan — setiap
+      perbaikan harus disalin, dan itu sumber bug yang klasik (deck).
+    </p>
+
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">App.js</span>
+        <span class="kode-sumber">deck · slide “Platform.OS dan File Khusus Platform”</span>
+      </figcaption>
+      <pre><code class="language-jsx">import { Platform, Text } from 'react-native';
+
+export default function App() {
+  return (
+    &lt;Text&gt;
+      {Platform.OS === 'ios'
+        ? 'Berjalan di iOS'
+        : 'Berjalan di Android'}
+    &lt;/Text&gt;
+  );
+}
+</code></pre>
+    </figure>
+
+    <div class="padanan">
+      <div class="padanan-sisi">
+        <h3>Platform.OS = 'ios' <span class="peran">· cabang benar</span></h3>
+
+        <div class="keluaran">
+          <p class="keluaran-kepala"><span>Hasil yang diharapkan</span><span class="keluaran-lebar">390 px</span></p>
+          <div class="bingkai">
+            <div class="bingkai-layar">
+              <div class="rn">
+                <div class="rn-text">Berjalan di iOS</div>
+              </div>
+            </div>
+          </div>
+          <p class="keluaran-catatan">
+            Percabangan <code>Platform.OS === 'ios'</code> bernilai benar, jadi yang dirender cabang pertama.
+          </p>
+        </div>
+      </div>
+
+      <div class="padanan-sisi">
+        <h3>Platform.OS = 'android' <span class="peran">· cabang alternatif</span></h3>
+
+        <div class="keluaran">
+          <p class="keluaran-kepala"><span>Hasil yang diharapkan</span><span class="keluaran-lebar">390 px</span></p>
+          <div class="bingkai">
+            <div class="bingkai-layar">
+              <div class="rn">
+                <div class="rn-text">Berjalan di Android</div>
+              </div>
+            </div>
+          </div>
+          <p class="keluaran-catatan">
+            Di Android perbandingan bernilai salah, sehingga cabang kedua yang dipakai — teksnya berganti,
+            komponennya tetap satu.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <p class="keluaran-catatan">
+      Tidak ada <code>style</code> pada kode di atas, jadi teks tampil 14 pt tanpa jarak dan menempel di
+      puncak layar — persis seperti <code>Text</code> tanpa gaya di perangkat. Yang berubah antara kedua
+      bingkai hanya isi teks, bukan susunannya.
+    </p>
+
+    <div class="kotak kotak-salah">
+      <p class="kotak-judul">Salah paham</p>
+      <p>
+        Memakai <code>Platform.OS</code> untuk menebak model perangkat atau ukuran layar.
+      </p>
+    </div>
+
+    <div class="kotak kotak-tanya">
+      <p class="kotak-judul">Pertanyaan penuntun</p>
+      <p>“Kapan <code>Platform.OS</code> tidak lagi cukup?”</p>
+      <details class="kotak-jawab">
+        <summary>Lihat jawaban</summary>
+        <p>
+          Saat layout atau komponennya sendiri berbeda, bukan hanya nilainya. Di titik itu berkas
+          <code>.ios.js</code> dan <code>.android.js</code> yang dipakai.
+        </p>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============================================================ SUBBAB 5.6 -->
+
+  <section class="subbab" id="s5-6" data-subbab="5.6"
+           data-tanpa-kode="Deck dan buku tidak memuat satu pun blok kode untuk keyboard atau gulir; penanganan papan ketik yang lengkap dibahas di Bab 8, sehingga subbab ini hanya merangkum butir deck.">
+    <p class="label-subbab">
+      Subbab 5.6 <span class="sumber-slide">· deck: “Input, Keyboard, dan Gulir yang Tidak Tabrakan” · buku §5.6 dan §5.5</span>
+    </p>
+    <h2>Input, Keyboard, dan Gulir yang Tidak Tabrakan</h2>
+
+    <ul>
+      <li>Perilaku keyboard pada formulir perlu diatur.</li>
+      <li><code>keyboardShouldPersistTaps</code> menentukan apakah sentuhan pertama diteruskan.</li>
+      <li><code>RefreshControl</code> untuk menyegarkan data bila diperlukan.</li>
+      <li>Uji performa pada daftar panjang.</li>
+    </ul>
+
+    <p>
+      Deck menunjukkan dua gejala di emulator, dan keduanya sering dilaporkan sebagai “aplikasinya rusak”.
+      Pertama, keyboard menutupi kotak isian sehingga pengguna tidak melihat apa yang diketik. Kedua,
+      sentuhan pertama pada tombol hanya menutup keyboard tanpa menekan tombol. Yang kedua dijawab oleh
+      <code>keyboardShouldPersistTaps</code>: properti itu menentukan apakah sentuhan diteruskan ke anak
+      penggulir atau dipakai lebih dulu untuk menutup papan ketik.
+    </p>
+
+    <p>
+      Deck menegaskan bahwa penanganan papan ketik yang lengkap dibahas di Bab 8; di sini cukup tahu properti
+      mana yang menanganinya. <code>RefreshControl</code> dipakai bila daftar perlu disegarkan dengan tarikan,
+      dan performa daftar panjang diuji ulang setelah semua properti ini dipasang — menguji di satu platform
+      saja belum cukup, sesuai Subbab 5.4.
+    </p>
+
+    <div class="bagan" role="img" aria-label="Dua gejala keyboard pada daftar: keyboard menutupi kotak isian, dan sentuhan pertama hanya menutup keyboard; masing-masing dijawab pengaturan keyboard Bab 8 dan properti keyboardShouldPersistTaps">
+      <div class="bagan-jalur">
+        <span class="bagan-kotak">keyboard terbuka</span>
+        <span class="bagan-panah" aria-hidden="true">→</span>
+        <span class="bagan-kotak">kotak isian tertutup keyboard</span>
+        <span class="bagan-panah" aria-hidden="true">→</span>
+        <span class="bagan-kotak aksen">pengaturan keyboard (Bab 8)</span>
+        <p class="bagan-label">Gejala pertama: yang diketik tidak terlihat karena papan ketik menutupi area isian.</p>
+      </div>
+      <div class="bagan-jalur">
+        <span class="bagan-kotak">keyboard terbuka</span>
+        <span class="bagan-panah" aria-hidden="true">→</span>
+        <span class="bagan-kotak">sentuhan pertama hanya menutup keyboard</span>
+        <span class="bagan-panah" aria-hidden="true">→</span>
+        <span class="bagan-kotak aksen">keyboardShouldPersistTaps</span>
+        <p class="bagan-label">Gejala kedua: tombol harus ditekan dua kali — sentuhan pertama dipakai menutup keyboard.</p>
+      </div>
+    </div>
+
+    <div class="kotak kotak-salah">
+      <p class="kotak-judul">Salah paham</p>
+      <p>
+        Mematikan keyboard pada semua layar, termasuk layar yang memang butuh input.
+      </p>
+    </div>
+
+    <div class="kotak kotak-tanya">
+      <p class="kotak-judul">Pertanyaan penuntun</p>
+      <p>“Kenapa tombol harus ditekan dua kali saat keyboard terbuka?”</p>
+      <details class="kotak-jawab">
+        <summary>Lihat jawaban</summary>
+        <p>Sentuhan pertama dipakai untuk menutup keyboard.</p>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============================================================ PRAKTIKUM 5 -->
+
+  <section class="subbab" id="p5" data-subbab="Praktikum 5"
+           data-tanpa-kode="Kode soal dan kunci praktikum ditampilkan di halaman Praktikum agar tidak tertulis dua kali; tautannya ada di bawah."
+           data-tanpa-output="Hasil praktikum bergantung pada pekerjaan mahasiswa dan pada emulator yang dipakai; patokan yang bisa diperiksa ada di halaman Praktikum.">
+    <p class="label-subbab">
+      Praktikum 5 <span class="sumber-slide">· deck: “Praktikum 5: Daftar Produk dengan FlatList”</span>
+    </p>
+    <h2>Praktikum 5 — Daftar Produk dengan FlatList</h2>
+
+    <ul>
+      <li>Daftar produk dirender dengan <code>FlatList</code>.</li>
+      <li>Tambahkan pencarian sederhana di atas daftar.</li>
+      <li>Tampilkan indikator pemuatan saat data belum siap.</li>
+      <li>Uji perilaku scroll pada Android dan iOS.</li>
+    </ul>
+
+    <p>
+      Waktu yang disediakan 40 menit. Kalau data produk tidak tersedia, ganti dengan data statis; yang
+      dinilai struktur komponennya, bukan sumber datanya. Dua kesalahan yang hampir pasti muncul:
+      <code>keyExtractor</code> kosong, dan daftar yang dibungkus <code>ScrollView</code> sehingga
+      virtualisasinya rusak — keduanya sudah dibahas di Subbab 5.2 dan 5.3.
+    </p>
+
+    <p>
+      Soal lengkap, rubrik, dan kunci ada di halaman Praktikum:
+      <a href="praktikum.html#p7">Soal 7 — Tiga Properti Wajib <code>FlatList</code> dan <code>numColumns</code></a>,
+      lalu <a href="praktikum.html#p6">Soal 6 — Satu Layar, Satu Scroller Utama</a> yang potongan kodenya
+      dipakai di Subbab 5.1. Lanjutannya, yang merangkum seluruh bab, ada di
+      <a href="praktikum.html#pi">Praktikum Integrasi — Halaman Katalog Responsif</a>.
+    </p>
+
+    <div class="kotak kotak-salah">
+      <p class="kotak-judul">Salah paham</p>
+      <p>
+        Memakai indikator pemuatan untuk menutupi daftar yang kosong. Untuk itu ada
+        <code>ListEmptyComponent</code>.
+      </p>
+    </div>
+
+    <div class="kotak kotak-tanya">
+      <p class="kotak-judul">Pertanyaan penuntun</p>
+      <p>“Kalau pencarian menyaring data, apakah <code>keyExtractor</code>-nya perlu berubah?”</p>
+      <details class="kotak-jawab">
+        <summary>Lihat jawaban</summary>
+        <p>
+          Tidak, selama nilainya memang identitas item, bukan indeks.
+        </p>
+      </details>
+    </div>
+  </section>

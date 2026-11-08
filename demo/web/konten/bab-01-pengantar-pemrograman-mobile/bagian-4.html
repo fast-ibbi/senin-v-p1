@@ -1,0 +1,249 @@
+<h1>Bagian 4 — Arsitektur, Studi Kasus &amp; Peta Perjalanan</h1>
+
+<p class="ringkas">
+  Subbab 1.8–1.10. Aplikasi mobile nyaris tidak pernah berdiri sendiri. Bagian ini memasang
+  kerangka arsitektur yang akan dipakai seluruh buku, memperlihatkan aplikasi nyata di sekitar
+  kita, lalu menutup dengan peta 15 bab.
+</p>
+
+<section class="subbab" id="s4-1">
+  <p class="label-subbab">
+    Subbab 1.8 <span class="sumber-slide">· deck: “Satu Aplikasi, Tiga Lapisan” · buku §1.8</span>
+  </p>
+  <h2>Satu Aplikasi, Tiga Lapisan</h2>
+
+  <p>
+    Pola paling umum adalah arsitektur <strong>client–server</strong>: aplikasi di perangkat
+    berperan sebagai <em>klien</em> yang menampilkan antarmuka dan mengumpulkan masukan
+    pengguna, sementara <em>server</em> menyediakan data dan aturan bisnis. Keduanya
+    berkomunikasi melalui HTTP, dengan format data <strong>JSON</strong> dan pola desain
+    <strong>REST API</strong> (dibahas menyeluruh di Bab 10).
+  </p>
+
+  <p>
+    Ketika kamu membuka aplikasi cek nilai, aplikasi mengirim permintaan “tampilkan nilai
+    saya” ke server, server menjawab dengan data JSON, lalu aplikasi menggambar tabel nilai di
+    layar. Di dalam sisi klien, aplikasi yang baik disusun dalam tiga lapisan logis.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">arsitektur-client-server.txt</span>
+      <span class="kode-sumber">buku §1.8, Gambar 1.1</span>
+    </figcaption>
+    <pre><code class="language-text">┌─────────────────────────────────────────────────────────┐
+│  PERANGKAT (klien)                                      │
+│  ┌───────────────────────────────────────────────────┐  │
+│  │ Lapisan presentasi (UI): komponen, layout, navigasi│  │
+│  ├───────────────────────────────────────────────────┤  │
+│  │ Lapisan bisnis: aturan aplikasi, validasi, state  │  │
+│  ├───────────────────────────────────────────────────┤  │
+│  │ Lapisan data: REST API client, penyimpanan lokal  │  │
+│  └───────────────────────────────────────────────────┘  │
+│                     │  HTTP + JSON                      │
+│  ┌───────────────────────────────────────────────────┐  │
+│  │ SERVER: REST API, basis data, autentikasi          │  │
+│  └───────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────┘</code></pre>
+  </figure>
+
+  <p>
+    Pemisahan ini bukan sekadar kerapian: lapisan yang terpisah dapat diuji, dirawat, dan
+    diganti secara independen — misalnya mengganti tampilan tanpa menyentuh logika, atau
+    mengganti server tanpa menulis ulang antarmuka.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Satu berkas untuk semua"
+       data-label-benar="Tiga lapisan terpisah"
+       data-petunjuk="Perbedaan baru terasa saat ada perubahan: mengganti sumber data atau tampilan.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">tanpa-lapisan.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §1.8</span>
+      </figcaption>
+      <pre><code class="language-text">Satu berkas berisi:
+  tampilan + aturan + panggilan jaringan
+
+Ketika server berubah:
+  seluruh berkas disentuh
+Ketika tampilan diubah:
+  risiko merusak logika data</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">tiga-lapisan.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §1.8</span>
+      </figcaption>
+      <pre><code class="language-text">presentasi  ← komponen &amp; navigasi
+bisnis      ← validasi &amp; state
+data        ← REST client &amp; penyimpanan
+
+Server berubah  → hanya lapisan data
+Tampilan berubah → hanya presentasi
+Logika bisa diuji tanpa UI</code></pre>
+    </figure>
+  </div>
+</section>
+
+<section class="subbab" id="s4-2">
+  <p class="label-subbab">
+    Subbab 1.8 <span class="sumber-slide">· deck: “Tiga Lapisan Client dan Babnya” · buku §1.8</span>
+  </p>
+  <h2>Tiga Lapisan Client dan Babnya</h2>
+
+  <p>
+    Di dalam ekosistem React Native/Expo, ketiga lapisan ini dipetakan ke bab-bab buku secara
+    rapi. Tabel ini adalah “peta jalan teknis” yang bisa kamu rujuk kapan pun.
+  </p>
+
+  <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Pemetaan lapisan arsitektur ke bab · sumber: buku §1.8</caption>
+      <thead>
+        <tr><th scope="col">Lapisan</th><th scope="col">Isi</th><th scope="col">Bab</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Presentasi</td>
+          <td>Komponen, tata letak, navigasi</td>
+          <td>Bab 4, Bab 5, Bab 6, Bab 7</td>
+        </tr>
+        <tr>
+          <td>Bisnis</td>
+          <td>Pengelolaan state lokal dan global, validasi form, logika yang diuji</td>
+          <td>Bab 4, Bab 8, Bab 9, Bab 14</td>
+        </tr>
+        <tr>
+          <td>Data</td>
+          <td><code>fetch</code> ke REST API, penyimpanan lokal, token autentikasi</td>
+          <td>Bab 10, Bab 11, Bab 13</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    Pola ini tidak hanya berlaku untuk React Native — ia bahasa arsitektur yang sama di semua
+    teknologi mobile, sehingga pemahamanmu tetap berguna meskipun kelak berpindah framework.
+    Dua pertimbangan khas mobile menambah kompleksitasnya: <em>konektivitas</em> (server sering
+    tidak terjangkau, sehingga lapisan data butuh penyimpanan lokal dan sinkronisasi — Bab 11)
+    dan <em>keamanan</em> (data pribadi yang dikirim lewat jaringan wajib dilindungi
+    autentikasi dan komunikasi terenkripsi — Bab 13).
+  </p>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Validasi “NIM harus 7 digit” termasuk lapisan apa? (Jawaban: bisnis — bukan presentasi, karena aturannya tidak peduli tampilannya seperti apa.)</p>
+  </div>
+</section>
+
+<section class="subbab" id="s4-3">
+  <p class="label-subbab">
+    Subbab 1.9 <span class="sumber-slide">· deck: “Aplikasi Nyata di Sekitar Kita (1/2) &amp; (2/2)” · buku §1.9</span>
+  </p>
+  <h2>Aplikasi Nyata di Sekitar Kita</h2>
+
+  <p>
+    Tidak ada cara yang lebih baik untuk memaknai teori selain mengamati aplikasi yang setiap
+    hari kamu gunakan. Perhatikan bahwa setiap aplikasi di tabel ini memenangkan pengguna
+    karena memanfaatkan lebih dari sekadar “website yang diperkecil”.
+  </p>
+
+  <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Contoh aplikasi mobile nyata dan pemanfaatan karakteristik perangkat · sumber: buku §1.9, Tabel 1.4</caption>
+      <thead>
+        <tr><th scope="col">Kategori</th><th scope="col">Contoh</th><th scope="col">Fitur perangkat yang dimanfaatkan</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Transportasi daring</td><td>Ojek daring, taksi daring</td><td>GPS, kamera (bukti foto), notifikasi status pesanan</td></tr>
+        <tr><td>Belanja daring</td><td>Marketplace, toko daring</td><td>Notifikasi promo, pembayaran pindai kode QR</td></tr>
+        <tr><td>Perbankan dan pembayaran</td><td>Aplikasi bank, dompet digital</td><td>Autentikasi sidik jari, kamera (pindai QR), notifikasi transaksi</td></tr>
+        <tr><td>Komunikasi</td><td>Aplikasi pesan, panggilan video</td><td>Mikrofon, kamera, notifikasi real-time</td></tr>
+        <tr><td>Media sosial</td><td>Jejaring sosial, berbagi video</td><td>Kamera, galeri, GPS (tag lokasi)</td></tr>
+        <tr><td>Edukasi</td><td>Platform kursus daring, aplikasi kampus</td><td>Notifikasi jadwal, unduhan materi (offline)</td></tr>
+        <tr><td>Kesehatan</td><td>Aplikasi pedometer, telekonsultasi</td><td>Sensor gerak, GPS, kamera</td></tr>
+        <tr><td>Produktivitas</td><td>Aplikasi catatan, kalender</td><td>Notifikasi pengingat, sinkronisasi lintas perangkat</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    Aplikasi transportasi daring tahu posisi kamu melalui GPS dan memberi tahu sopir bahwa kamu
+    sudah menunggu — pengalaman yang mustahil ditiru situs web. Dompet digital memindai kode QR
+    dengan kamera sambil mengunci akses dengan sidik jari. Aplikasi pesan membangunkan ponselmu
+    untuk menyampaikan kabar penting.
+  </p>
+
+  <p>
+    Ada pola menarik yang bisa diamati: banyak aplikasi besar memulai sebagai web, kemudian
+    menambahkan aplikasi mobile, dan akhirnya menjadikan aplikasi mobile sebagai produk
+    utamanya. Sebaliknya, ada pula layanan <em>mobile-first</em> yang lahir langsung sebagai
+    aplikasi. Pengamatan semacam ini akan kamu latih pada halaman Praktikum.
+  </p>
+</section>
+
+<section class="subbab" id="s4-4">
+  <p class="label-subbab">
+    Subbab 1.9–1.10 <span class="sumber-slide">· deck: “Studi Kasus: Delapan Ribu Mahasiswa, Satu Aplikasi” &amp; “Studi Kasus: Keputusan Arsitekturnya” · buku §1.9</span>
+  </p>
+  <h2>Studi Kasus: Delapan Ribu Mahasiswa, Satu Aplikasi</h2>
+
+  <p>
+    Sebuah kampus dengan delapan ribu mahasiswa mengurus layanan akademik lewat loket:
+    pengambilan KHS, pengajuan cuti, dan perubahan data. Antrean panjang, dan petugas menjawab
+    pertanyaan yang sama berulang kali. Kampus memutuskan membangun aplikasi mobile.
+  </p>
+
+  <p>
+    <strong>Keputusan arsitekturnya</strong> dapat dibaca sebagai penerapan seluruh isi bab
+    ini: satu basis kode (React Native + Expo) karena timnya kecil dan harus hadir di Android
+    dan iOS; tiga lapisan karena data akademik akan datang dari server yang sudah ada, jadi
+    tampilan tidak boleh menempel pada sumber data; lapisan data memakai penyimpanan lokal
+    karena mahasiswa sering membuka aplikasi di area sinyal lemah; dan notifikasi dipakai untuk
+    hal yang benar-benar mendesak, bukan promosi.
+  </p>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Jika kampus itu memilih native dua codebase dengan tim tiga orang, bagian mana yang paling mungkin gagal lebih dulu — penulisan awal atau pemeliharaan? Mengapa?</p>
+  </div>
+</section>
+
+<section class="subbab" id="s4-5">
+  <p class="label-subbab">
+    Subbab 1.10 <span class="sumber-slide">· deck: “Peta 15 Bab: Setiap Bab Satu Bata” · buku §1.10</span>
+  </p>
+  <h2>Peta 15 Bab: Setiap Bab Satu Bata</h2>
+
+  <p>
+    Bab ini adalah gerbang. Memahami peta ini sejak awal membantumu melihat setiap praktikum
+    sebagai bagian dari satu tujuan besar, bukan tugas yang terpisah-pisah.
+  </p>
+
+  <ul>
+    <li><strong>Fondasi (Bab 2–3):</strong> persiapan lingkungan pengembangan, lalu penguatan JavaScript modern — variabel, fungsi, array, objek, pemrograman asinkron.</li>
+    <li><strong>React dan React Native (Bab 4–7):</strong> component, props, state, hooks; komponen inti React Native dan Flexbox; antarmuka aplikasi yang rapi; navigasi antarhalaman.</li>
+    <li><strong>Aplikasi yang “hidup” (Bab 8–13):</strong> form dan validasi, pengelolaan state, REST API, penyimpanan lokal, kamera/lokasi/notifikasi, autentikasi dan keamanan.</li>
+    <li><strong>Menjadi profesional (Bab 14–15):</strong> debugging dan pengujian, build dan penerbitan ke toko aplikasi.</li>
+    <li><strong>Puncak:</strong> Project Akhir — sistem informasi akademik mobile yang menggabungkan seluruh keterampilan.</li>
+  </ul>
+
+  <p>
+    Kompetensi yang akan kamu peroleh meliputi: menjelaskan konsep dan arsitektur aplikasi
+    mobile; membangun aplikasi dengan React Native dan Expo; merancang antarmuka yang baik;
+    mengimplementasikan navigasi, state, form, dan validasi; mengintegrasikan dengan REST API;
+    menggunakan penyimpanan lokal dan fitur perangkat; menerapkan prinsip keamanan, pengujian,
+    dan debugging; serta membangun dan menerbitkan aplikasi.
+  </p>
+
+  <p>
+    Terakhir, kompetensi yang sering terlupakan tetapi paling menentukan di dunia kerja:
+    <strong>kebiasaan profesional</strong> — mendokumentasikan pekerjaan, membaca pesan
+    kesalahan dengan teliti, mencari solusi di dokumentasi resmi, dan menulis kode yang bisa
+    dibaca orang lain. Bab 1 adalah tempat yang tepat untuk memulainya: setiap kali menemui
+    istilah asing, biasakan mencari maknanya; setiap kali aplikasi tidak berjalan, biasakan
+    membaca pesan errornya sebelum bertanya.
+  </p>
+</section>

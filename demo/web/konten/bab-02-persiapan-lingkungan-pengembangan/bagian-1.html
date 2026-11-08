@@ -1,0 +1,399 @@
+<h1>Bagian 1 — Fondasi: Node.js, npm &amp; VS Code</h1>
+
+<p class="ringkas">
+  Subbab 2.1–2.3. Enam subbab ini menjawab satu pertanyaan berantai: alat apa yang benar-benar
+  bekerja di balik layar saat kita menjalankan aplikasi mobile, dan bagaimana memastikan alat
+  itu siap di komputermu. Mahasiswa yang gagal di sini hampir selalu gagal juga di bagian
+  berikutnya, karena setiap alat Expo berdiri di atas Node.js.
+</p>
+
+<section class="subbab" id="s1-1">
+  <p class="label-subbab">
+    Subbab 2.1 <span class="sumber-slide">· deck: “Node.js Menjalankan JavaScript, Bukan Bahasa Baru” · buku §2.1</span>
+  </p>
+  <h2>Node.js Menjalankan JavaScript, Bukan Bahasa Baru</h2>
+
+  <p>
+    <strong>Node.js</strong> adalah <em>runtime</em> — lingkungan eksekusi JavaScript yang
+    berjalan di luar peramban. Sebelum Node.js lahir, JavaScript hanya dapat dieksekusi di
+    dalam browser; tidak ada cara menjalankannya langsung di komputer. Node.js mengubah
+    keadaan itu dengan membungkus mesin JavaScript <strong>V8</strong> — mesin yang sama
+    dengan browser Chrome — ke dalam sebuah program yang berjalan di sistem operasi.
+  </p>
+
+  <p>
+    Mengapa teknologi ini ada? Karena ekosistem pengembangan modern membutuhkan satu bahasa
+    yang sama di banyak lapisan: bahasa yang kamu pakai menulis aplikasi mobile juga dipakai
+    oleh alat-alat pengembangnya. Dengan begitu kamu tidak perlu mempelajari bahasa kedua
+    hanya untuk memasang dependensi atau menyalakan server pengembangan. Bagi kita, Node.js
+    adalah fondasi karena <strong>Expo CLI</strong> dan <strong>Metro Bundler</strong>
+    berjalan di atasnya.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">kode/bab-02/sapaan.js</span>
+      <span class="kode-sumber">buku §Contoh 1</span>
+    </figcaption>
+    <pre><code class="language-js">console.log('Halo, calon developer mobile!');
+console.log('Node.js yang aktif: ' + process.version);
+console.log('Project React Native dan Expo siap dibangun.');</code></pre>
+  </figure>
+
+  <p>
+    Berkas sekecil itu sudah cukup membuktikan bahwa Node.js benar-benar bisa menjalankan
+    kode: <code>console.log</code> mencetak teks ke terminal, sedangkan
+    <code>process.version</code> adalah properti Node.js yang menyimpan nomor versi runtime
+    yang sedang berjalan. Jalankan dengan <code>node sapaan.js</code>; bila tiga baris teks
+    muncul, rantai Node.js → npm → proyek berfungsi penuh.
+  </p>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Banyak mahasiswa mengira Node.js adalah bahasa pemrograman atau framework. Node.js
+      tidak menambah sintaksis apa pun; ia hanya menyediakan tempat menjalankan. Kalimat
+      “belajar Node.js” dalam percakapan sehari-hari sebenarnya berarti “belajar alat-alat
+      yang berjalan di atas Node.js”.
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s1-2">
+  <p class="label-subbab">
+    Subbab 2.1 <span class="sumber-slide">· deck: “npm Mencatat Daftar Paket, Bukan Menyimpannya Sendiri” · buku §2.1</span>
+  </p>
+  <h2>npm Mencatat Daftar Paket, Bukan Menyimpannya Sendiri</h2>
+
+  <p>
+    <strong>npm</strong> (<em>Node Package Manager</em> — pengelola paket Node) adalah program
+    yang terpasang otomatis bersama Node.js. Paket adalah pustaka kode siap pakai yang
+    dibagikan melalui <strong>registry</strong>, yaitu gudang daring npmjs.com yang memuat
+    jutaan paket. Tiga tugasnya berurutan: mengunduh paket dari registry, mengelola versinya,
+    lalu mencatat daftarnya di berkas <strong>package.json</strong> dan menyimpan isinya di
+    folder <strong>node_modules/</strong>.
+  </p>
+
+  <p>
+    Analoginya seperti perpustakaan yang mencatat setiap buku yang dipinjam: rak kerjamu bisa
+    dibangun ulang kapan saja dari satu daftar. Catatan versi di <code>package.json</code>
+    adalah sumber kebenaran; <code>npm install</code> adalah satu perintah yang membacanya;
+    registry adalah toko daring tempat paket berasal — bukan folder di komputermu.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Dikerjakan manual"
+       data-label-benar="Dikerjakan npm"
+       data-petunjuk="Yang membedakan bukan kecepatan menyalin, melainkan apa yang tercatat setelahnya: satu daftar yang bisa dibaca ulang, atau ingatan seseorang.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">tanpa-npm.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §2.1</span>
+      </figcaption>
+      <pre><code class="language-text">✗ pustaka disalin sendiri dari
+  berbagai sumber
+✗ versi berbeda di tiap komputer
+✗ sulit ditelusuri saat galat muncul
+✗ proyek tidak bisa dipasang ulang
+  dengan hasil yang sama</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">dengan-npm.txt</span>
+        <span class="kode-sumber">buku §2.1</span>
+      </figcaption>
+      <pre><code class="language-text">✓ catatan versi di package.json
+✓ satu perintah: npm install
+✓ paket tersimpan di node_modules/
+✓ komputer lain memasang ulang
+  dari daftar yang sama</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Istilah <em>registry</em> sering dibayangkan sebagai folder di komputer sendiri.
+      Registry adalah gudang daring npmjs.com; yang ada di komputermu hanya
+      <code>node_modules/</code> — salinan hasil unduhan, bukan gudangnya.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Apa yang terjadi kalau folder <code>node_modules/</code> dihapus? (Jawaban: cukup jalankan <code>npm install</code> dan seluruh paket terpasang kembali sesuai catatan <code>package.json</code>.)</p>
+  </div>
+</section>
+
+<section class="subbab" id="s1-3">
+  <p class="label-subbab">
+    Subbab 2.2 <span class="sumber-slide">· deck: “Kapan Memakai npm install, Kapan npx?” · buku §2.2</span>
+  </p>
+  <h2>Kapan Memakai npm install, Kapan npx?</h2>
+
+  <p>
+    Selain <code>npm</code>, kamu akan sering menjumpai <strong>npx</strong> — pelaksana paket
+    yang ikut terpasang bersama npm. Bedanya satu kalimat: <code>npm install &lt;paket&gt;</code>
+    memasang paket ke proyekmu, sedangkan <code>npx &lt;perintah&gt;</code> menjalankan
+    perintah dari sebuah paket <em>tanpa</em> memasangnya secara permanen.
+  </p>
+
+  <p>
+    Mengapa npx ada? Karena alat seperti <code>create-expo-app</code> berubah seiring waktu.
+    Dengan npx, kamu selalu menjalankan versi terbaru dari registry tanpa harus mengingat
+    memperbarui instalasi global, dan tanpa membuat komputer penuh dengan program yang jarang
+    dipakai. Karena itu seluruh perintah pembuatan proyek dan server pengembangan di buku ini
+    memakai npx.
+  </p>
+
+  <div class="banding"
+       data-label-lama="npm install: memasang ke proyek"
+       data-label-benar="npx: menjalankan tanpa memasang"
+       data-petunjuk="Pertanyaan pemilihnya bukan “mana yang lebih baik”, melainkan “apakah alat ini perlu tinggal di proyekku, atau cukup saya pinjam sekali pakai”."
+    >
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">(terminal)</span>
+        <span class="kode-sumber">buku §2.2</span>
+      </figcaption>
+      <pre><code class="language-bash">npm install &lt;paket&gt;</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">(terminal)</span>
+        <span class="kode-sumber">buku §2.7</span>
+      </figcaption>
+      <pre><code class="language-bash">npx create-expo-app aplikasi-pertama --template blank</code></pre>
+    </figure>
+  </div>
+
+  <p>
+    <code>npm install</code> meninggalkan jejak: namanya tercatat di
+    <code>package.json</code>, isinya ada di <code>node_modules/</code>. <code>npx</code>
+    tidak meninggalkan jejak permanen — yang tersisa hanya hasil kerjanya. Keduanya tidak
+    saling menggantikan, dan keduanya akan kamu pakai di bab-bab berikutnya.
+  </p>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Dua kekeliruan yang paling mahal. Pertama, menganggap npx selalu lebih baik sehingga
+      paket JavaScript murni pun dipasang lewat npx — padahal paket JavaScript murni dipasang
+      dengan <code>npm install</code>, sedangkan paket bawaan SDK memakai
+      <code>npx expo install</code>. Kedua, menuliskan nomor versi sendiri pada perintah
+      pemasangan; biarkan npm memilih versi yang cocok dengan SDK.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Kenapa <code>create-expo-app</code> dijalankan dengan npx, bukan dipasang lebih dulu?
+      (Jawaban: alat ini berubah dari waktu ke waktu, npx selalu mengambil versi terkini dan
+      tidak menumpuk program yang jarang dipakai di komputer.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s1-4">
+  <p class="label-subbab">
+    Subbab 2.2 <span class="sumber-slide">· deck: “Tiga Pengelola Paket, Satu Pilihan untuk Kelas Ini” · buku §2.2</span>
+  </p>
+  <h2>Tiga Pengelola Paket, Satu Pilihan untuk Kelas Ini</h2>
+
+  <p>
+    Bayangkan aplikasi yang memakai sepuluh pustaka, dan setiap pustaka bergantung pada
+    pustaka lain dengan versi tertentu. Mengelola hubungan semuanya secara manual akan cepat
+    kacau — masalah yang dikenal sebagai <em>dependency hell</em>. Pengelola paket hadir untuk
+    menjawab masalah nyata itu: mencatat daftar dependensi, mengunduh versi yang kompatibel,
+    dan menyimpannya di <code>node_modules/</code> sehingga proyek dapat dipasang ulang di
+    komputer lain hanya dengan satu perintah.
+  </p>
+
+  <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Tiga pengelola paket JavaScript · sumber: buku §2.2</caption>
+      <thead>
+        <tr><th scope="col">Pengelola</th><th scope="col">Ciri pembeda</th><th scope="col">Kapan cocok dipakai</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>npm</strong></td><td>Bawaan Node.js, paling luas dipakai, tanpa instalasi tambahan</td><td>Proyek standar; buku ini memakai npm</td></tr>
+        <tr><td><strong>yarn</strong></td><td>Berkas kunci (lockfile) ketat, dikembangkan Meta</td><td>Tim yang sudah memakai yarn</td></tr>
+        <tr><td><strong>pnpm</strong></td><td>Hemat ruang disk karena berbagi paket antarproyek</td><td>Monorepo atau proyek besar</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    Perbedaan utama di antara ketiganya bukan pada kemampuan, melainkan pada strategi
+    penyimpanan berkas dan kecepatan. Trade-off-nya sederhana: npm kalah efisien di ruang disk
+    dibanding pnpm, tetapi menang di kemudahan karena tidak perlu dipasang terpisah. Kelas ini
+    konsisten memakai npm karena ia bawaan Node.js dan dipakai secara default oleh
+    <code>create-expo-app</code>; konsistensi itulah yang menghindari kebingungan saat bekerja
+    dalam tim.
+  </p>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Mencampur pengelola paket dalam satu tim bukan sekadar tidak rapi — ia menghasilkan
+      berkas kunci yang berbeda antaranggota, sehingga “di laptopku jalan, di laptopmu tidak”
+      menjadi sangat mungkin. Pilih satu pengelola, lalu tuliskan pilihan itu di dokumentasi
+      tim.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Kalau ada tiga pilihan, mana yang paling aman untuk kerja tim di kelas? (Jawaban: npm,
+      karena ikut terpasang bersama Node.js dan dipakai bawaan oleh
+      <code>create-expo-app</code> sehingga beda lockfile antaranggota tidak terjadi.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s1-5">
+  <p class="label-subbab">
+    Subbab 2.3 <span class="sumber-slide">· deck: “VS Code: Menulis, Menjalankan, dan Membaca Error” · buku §2.3</span>
+  </p>
+  <h2>VS Code: Menulis, Menjalankan, dan Membaca Error</h2>
+
+  <p>
+    <strong>Visual Studio Code</strong> adalah editor kode sumber gratis buatan Microsoft, dan
+    editor paling populer untuk pengembangan JavaScript. Alasan keberadaannya bukan selera:
+    satu proyek React Native berisi puluhan hingga ribuan berkas, sehingga menulisnya di
+    editor teks polos tidak realistis. VS Code menyediakan penyorotan sintaks, pelengkapan
+    kode otomatis (<strong>IntelliSense</strong>), penelusuran lintas berkas, dan
+    <strong>terminal terintegrasi</strong> — terminal di dalam editor, sehingga kamu tidak
+    perlu berpindah aplikasi saat menjalankan perintah.
+  </p>
+
+  <p>
+    Kekuatan VS Code bertumpu pada <strong>ekstensi</strong>. Untuk React Native dan Expo,
+    empat ekstensi ini cukup: <strong>ESLint</strong> memeriksa kualitas kode dan menandai
+    kesalahan gaya penulisan; <strong>Prettier</strong> merapikan format kode otomatis saat
+    berkas disimpan; <strong>Error Lens</strong> menampilkan pesan kesalahan tepat di samping
+    baris yang bermasalah; <strong>Material Icon Theme</strong> memberi ikon berwarna dan
+    bersifat opsional, murni kenyamanan visual.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">(terminal)</span>
+      <span class="kode-sumber">buku §2.7</span>
+    </figcaption>
+    <pre><code class="language-bash">code .</code></pre>
+  </figure>
+
+  <p>
+    Perintah <code>code .</code> menyuruh VS Code membuka folder saat ini; tanda titik berarti
+    direktori aktif. Jika perintah itu tidak dikenali, buka VS Code lewat menu Start atau
+    Launchpad, lalu pilih <em>File &gt; Open Folder</em> dan arahkan ke folder proyek.
+  </p>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Daftar ekstensi bersifat sensitif versi. Sebagian ekstensi di marketplace berhenti
+      dirawat dan diarsipkan pembuatnya — termasuk yang pernah populer seperti React Native
+      Tools. Periksa nama ekstensinya di marketplace sebelum memasang, dan ingat bahwa
+      kombinasi ESLint + Prettier + terminal Expo sudah mencukupi untuk seluruh buku ini.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Kenapa Prettier penting dalam kerja tim? (Jawaban: format kode semua anggota menjadi
+      seragam, sehingga perubahan di Git lebih mudah dibaca dan ditinjau.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s1-6">
+  <p class="label-subbab">
+    Subbab 2.1 <span class="sumber-slide">· deck: “Dua Perintah yang Membuktikan Lingkunganmu Siap” &amp; “Kalau Perintahnya Tidak Dikenali, Masalahnya di PATH” · buku §2.1</span>
+  </p>
+  <h2>Dua Perintah yang Membuktikan Lingkunganmu Siap</h2>
+
+  <p>
+    Cara memverifikasi bahwa Node.js dan npm telah terpasang adalah memeriksa versinya. Buka
+    terminal — PowerShell atau Command Prompt di Windows, Terminal di macOS dan Linux — lalu
+    jalankan dua perintah berikut. Kalau keduanya mencetak nomor versi, lingkunganmu siap.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">(terminal)</span>
+      <span class="kode-sumber">buku §2.1</span>
+    </figcaption>
+    <pre><code class="language-bash">node --version
+npm --version</code></pre>
+  </figure>
+
+  <p>
+    Buku ini memakai <strong>Node.js LTS</strong> (<em>Long Term Support</em> — dukungan jangka
+    panjang) versi minimal 22. LTS berarti versi itu dipelihara dan diperbarui keamanannya
+    dalam waktu lama, sehingga paling stabil untuk pengembangan. Pilih label LTS, bukan
+    Current. Angka LTS terbaru berubah seiring waktu; gunakan rilis LTS terbaru dari situs
+    resmi nodejs.org.
+  </p>
+
+  <p>
+    Jika terminal menjawab <code>node: command not found</code> atau
+    <code>'node' is not recognized</code>, berarti Node.js belum terpasang atau belum dikenali.
+    <strong>PATH</strong> adalah daftar folder tempat sistem operasi mencari perintah —
+    bayangkan sebagai buku alamat milik terminal. Masalah paling sering bukan pemasangan,
+    melainkan terminal lama yang belum memuat PATH yang baru.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Memasang ulang berkali-kali"
+       data-label-benar="Membuka terminal baru"
+       data-petunjuk="Lingkaran merah di panel kiri justru mengembalikan kamu ke keadaan yang sama, karena pemasangannya memang bukan masalahnya."
+    >
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">reaksi-keliru.txt</span>
+        <span class="kode-sumber">ilustrasi · deck “Kalau Perintahnya Tidak Dikenali…”</span>
+      </figcaption>
+      <pre><code class="language-text">✗ "perintah tidak dikenali"
+→ hapus Node.js
+→ pasang lagi
+→ jalankan di terminal yang sama
+→ "perintah tidak dikenali"
+   (berulang)</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">reaksi-benar.txt</span>
+        <span class="kode-sumber">buku §2.1 · §Praktikum (Troubleshooting)</span>
+      </figcaption>
+      <pre><code class="language-text">✓ "perintah tidak dikenali"
+→ pastikan Node.js LTS terpasang
+  (Windows: centang "Add to PATH")
+→ tutup semua terminal
+→ buka terminal baru
+→ v22.x.x  dan  10.x.x</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Memasang ulang Node.js berkali-kali padahal cukup membuka terminal baru adalah
+      kebiasaan paling sering di kelas. Terminal yang lama masih memakai daftar PATH lama;
+      terminal baru membaca PATH yang sudah diperbarui.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Kenapa menutup lalu membuka terminal bisa memperbaikinya? (Jawaban: terminal baru
+      membaca PATH yang sudah diperbarui, sedangkan terminal lama masih memakai daftar lama
+      yang dibaca saat ia dijalankan.)
+    </p>
+  </div>
+</section>

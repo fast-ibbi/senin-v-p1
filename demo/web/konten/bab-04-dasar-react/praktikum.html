@@ -1,0 +1,481 @@
+<h1>Praktikum Bab 4 — Data Mahasiswa</h1>
+
+<p class="ringkas">
+  Aplikasi kecil yang mempertemukan seluruh materi bab: filter program studi, kartu dengan
+  detail yang bisa dibuka-tutup, status pemuatan yang disimulasikan, dan rata-rata IPK yang
+  dihitung otomatis. Struktur folder minimal: <code>App.js</code> di akar project, lalu
+  folder <code>components</code> berisi <code>DaftarMahasiswa.js</code> dan
+  <code>KartuMahasiswa.js</code>.
+</p>
+
+<div class="kotak kotak-tiruan">
+  <p class="kotak-judul">Yang perlu diketahui sebelum membaca</p>
+  <p>
+    Data statis <code>DATA_MAHASISWA</code> dan <code>PILIHAN_PRODI</code> diletakkan
+    <em>di luar</em> component: keduanya tidak perlu dibuat ulang di setiap render. Dua jam
+    pertama praktikum biasanya habis untuk kegagalan lingkungan, bukan logika — kalau
+    aplikasi tidak mau jalan, periksa tabel troubleshooting di bawah sebelum menduga-duga
+    soal logika.
+  </p>
+</div>
+
+<h2>Kode: App.js</h2>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">App.js</span>
+    <span class="kode-sumber">buku §Contoh · praktikum bab 4</span>
+  </figcaption>
+  <pre><code class="language-jsx">import { StatusBar } from 'expo-status-bar';
+import { useEffect, useMemo, useState } from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import DaftarMahasiswa from './components/DaftarMahasiswa';
+
+const DATA_MAHASISWA = [
+  {
+    id: 1,
+    nim: '2201001',
+    nama: 'Budi Santoso',
+    prodi: 'Sistem Informasi',
+    angkatan: 2022,
+    ipk: 3.45,
+    email: 'budi.santoso@students.univ.ac.id',
+    telepon: '081234567890',
+  },
+  {
+    id: 2,
+    nim: '2201002',
+    nama: 'Siti Aminah',
+    prodi: 'Teknik Informatika',
+    angkatan: 2022,
+    ipk: 3.82,
+    email: 'siti.aminah@students.univ.ac.id',
+    telepon: '081298765432',
+  },
+  {
+    id: 3,
+    nim: '2201003',
+    nama: 'Agus Wijaya',
+    prodi: 'Informatika',
+    angkatan: 2023,
+    ipk: 3.20,
+    email: 'agus.wijaya@students.univ.ac.id',
+    telepon: '081345678901',
+  },
+  {
+    id: 4,
+    nim: '2201004',
+    nama: 'Dewi Lestari',
+    prodi: 'Rekayasa Perangkat Lunak',
+    angkatan: 2023,
+    ipk: 3.61,
+    email: 'dewi.lestari@students.univ.ac.id',
+    telepon: '081356789012',
+  },
+  {
+    id: 5,
+    nim: '2201005',
+    nama: 'Rizky Pratama',
+    prodi: 'Sistem Informasi',
+    angkatan: 2024,
+    ipk: 2.95,
+    email: 'rizky.pratama@students.univ.ac.id',
+    telepon: '081367890123',
+  },
+];
+
+const PILIHAN_PRODI = [
+  'Semua',
+  'Sistem Informasi',
+  'Teknik Informatika',
+  'Informatika',
+  'Rekayasa Perangkat Lunak',
+];
+
+export default function App() {
+  const [kategoriProdi, setKategoriProdi] = useState('Semua');
+  const [sedangMemuat, setSedangMemuat] = useState(true);
+
+  useEffect(() =&gt; {
+    const timer = setTimeout(() =&gt; {
+      setSedangMemuat(false);
+    }, 2000);
+
+    return () =&gt; clearTimeout(timer);
+  }, []);
+
+  const dataTampil = useMemo(() =&gt; {
+    if (kategoriProdi === 'Semua') {
+      return DATA_MAHASISWA;
+    }
+    return DATA_MAHASISWA.filter((m) =&gt; m.prodi === kategoriProdi);
+  }, [kategoriProdi]);
+
+  const rataRataIpk = useMemo(() =&gt; {
+    if (dataTampil.length === 0) {
+      return 0;
+    }
+    const total = dataTampil.reduce((jumlah, m) =&gt; jumlah + m.ipk, 0);
+    return total / dataTampil.length;
+  }, [dataTampil]);
+
+  return (
+    &lt;View style={styles.kontainer}&gt;
+      &lt;Text style={styles.judul}&gt;Data Mahasiswa&lt;/Text&gt;
+
+      {sedangMemuat ? (
+        &lt;Text style={styles.info}&gt;Memuat data mahasiswa...&lt;/Text&gt;
+      ) : (
+        &lt;&gt;
+          &lt;View style={styles.barisTombol}&gt;
+            {PILIHAN_PRODI.map((prodi) =&gt; {
+              const aktif = kategoriProdi === prodi;
+              return (
+                &lt;Pressable
+                  key={prodi}
+                  onPress={() =&gt; setKategoriProdi(prodi)}
+                  style={[styles.tombol, aktif &amp;&amp; styles.tombolAktif]}
+                &gt;
+                  &lt;Text style={[styles.teksTombol, aktif &amp;&amp; styles.teksTombolAktif]}&gt;
+                    {prodi}
+                  &lt;/Text&gt;
+                &lt;/Pressable&gt;
+              );
+            })}
+          &lt;/View&gt;
+
+          &lt;Text style={styles.ringkasan}&gt;
+            Menampilkan {dataTampil.length} mahasiswa · rata-rata IPK:{' '}
+            {rataRataIpk.toFixed(2)}
+          &lt;/Text&gt;
+
+          &lt;DaftarMahasiswa data={dataTampil} /&gt;
+        &lt;/&gt;
+      )}
+
+      &lt;StatusBar style="auto" /&gt;
+    &lt;/View&gt;
+  );
+}
+
+const styles = StyleSheet.create({
+  kontainer: {
+    flex: 1,
+    backgroundColor: '#f2f4f8',
+    paddingTop: 60,
+    paddingHorizontal: 16,
+  },
+  judul: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 12,
+  },
+  info: {
+    fontSize: 16,
+    color: '#555555',
+    marginTop: 24,
+  },
+  barisTombol: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginBottom: 10,
+  },
+  tombol: {
+    backgroundColor: '#ffffff',
+    borderRadius: 16,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+  },
+  tombolAktif: {
+    backgroundColor: '#1565c0',
+  },
+  teksTombol: {
+    color: '#1565c0',
+    fontSize: 13,
+  },
+  teksTombolAktif: {
+    color: '#ffffff',
+    fontWeight: 'bold',
+  },
+  ringkasan: {
+    fontSize: 14,
+    color: '#333333',
+    marginBottom: 10,
+  },
+});</code></pre>
+</figure>
+
+<h2>Kode: DaftarMahasiswa.js</h2>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">components/DaftarMahasiswa.js</span>
+    <span class="kode-sumber">buku §Contoh · praktikum bab 4</span>
+  </figcaption>
+  <pre><code class="language-jsx">import { StyleSheet, Text, View } from 'react-native';
+import KartuMahasiswa from './KartuMahasiswa';
+
+export default function DaftarMahasiswa({ data }) {
+  if (data.length === 0) {
+    return (
+      &lt;View style={styles.kontainer}&gt;
+        &lt;Text style={styles.teksKosong}&gt;
+          Tidak ada mahasiswa pada kategori ini.
+        &lt;/Text&gt;
+      &lt;/View&gt;
+    );
+  }
+
+  return (
+    &lt;View style={styles.kontainer}&gt;
+      {data.map((mahasiswa) =&gt; (
+        &lt;KartuMahasiswa key={mahasiswa.id} mahasiswa={mahasiswa} /&gt;
+      ))}
+    &lt;/View&gt;
+  );
+}
+
+const styles = StyleSheet.create({
+  kontainer: {
+    gap: 10,
+  },
+  teksKosong: {
+    fontSize: 14,
+    color: '#888888',
+    textAlign: 'center',
+    marginTop: 24,
+  },
+});</code></pre>
+</figure>
+
+<h2>Kode: KartuMahasiswa.js</h2>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">components/KartuMahasiswa.js</span>
+    <span class="kode-sumber">buku §Contoh · praktikum bab 4</span>
+  </figcaption>
+  <pre><code class="language-jsx">import { useState } from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+
+export default function KartuMahasiswa({ mahasiswa }) {
+  const [detailTampil, setDetailTampil] = useState(false);
+
+  const ubahTampilDetail = () =&gt; {
+    setDetailTampil((tampilSebelumnya) =&gt; !tampilSebelumnya);
+  };
+
+  return (
+    &lt;View style={styles.kartu}&gt;
+      &lt;View style={styles.barisUtama}&gt;
+        &lt;View style={styles.bagianKiri}&gt;
+          &lt;Text style={styles.nama}&gt;{mahasiswa.nama}&lt;/Text&gt;
+          &lt;Text style={styles.nim}&gt;NIM {mahasiswa.nim}&lt;/Text&gt;
+        &lt;/View&gt;
+        &lt;View style={styles.bagianKanan}&gt;
+          &lt;Text style={styles.prodi}&gt;{mahasiswa.prodi}&lt;/Text&gt;
+          &lt;Text style={styles.angkatan}&gt;Angkatan {mahasiswa.angkatan}&lt;/Text&gt;
+        &lt;/View&gt;
+      &lt;/View&gt;
+
+      &lt;Pressable style={styles.tombol} onPress={ubahTampilDetail}&gt;
+        &lt;Text style={styles.teksTombol}&gt;
+          {detailTampil ? 'Sembunyikan Detail' : 'Tampilkan Detail'}
+        &lt;/Text&gt;
+      &lt;/Pressable&gt;
+
+      {detailTampil &amp;&amp; (
+        &lt;View style={styles.detail}&gt;
+          &lt;Text style={styles.teksDetail}&gt;IPK: {mahasiswa.ipk.toFixed(2)}&lt;/Text&gt;
+          &lt;Text style={styles.teksDetail}&gt;Email: {mahasiswa.email}&lt;/Text&gt;
+          &lt;Text style={styles.teksDetail}&gt;Telepon: {mahasiswa.telepon}&lt;/Text&gt;
+        &lt;/View&gt;
+      )}
+    &lt;/View&gt;
+  );
+}
+
+const styles = StyleSheet.create({
+  kartu: {
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
+    padding: 16,
+    elevation: 2,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+  },
+  barisUtama: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 10,
+  },
+  bagianKiri: {
+    flex: 1,
+  },
+  bagianKanan: {
+    alignItems: 'flex-end',
+  },
+  nama: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#1a1a1a',
+  },
+  nim: {
+    fontSize: 13,
+    color: '#555555',
+    marginTop: 2,
+  },
+  prodi: {
+    fontSize: 13,
+    color: '#1565c0',
+    fontWeight: '600',
+  },
+  angkatan: {
+    fontSize: 12,
+    color: '#777777',
+    marginTop: 2,
+  },
+  tombol: {
+    backgroundColor: '#e3f2fd',
+    borderRadius: 8,
+    paddingVertical: 8,
+    alignItems: 'center',
+  },
+  teksTombol: {
+    color: '#1565c0',
+    fontWeight: '600',
+  },
+  detail: {
+    marginTop: 10,
+    borderTopWidth: 1,
+    borderTopColor: '#eeeeee',
+    paddingTop: 10,
+  },
+  teksDetail: {
+    fontSize: 13,
+    color: '#333333',
+    marginBottom: 4,
+  },
+});</code></pre>
+</figure>
+
+<h2>Hasil yang diharapkan</h2>
+
+<ol>
+  <li>Selama kurang lebih 2 detik, layar hanya menampilkan judul “Data Mahasiswa” dan teks “Memuat data mahasiswa...”.</li>
+  <li>Setelah itu muncul lima tombol kategori dengan latar biru pada tombol aktif, baris ringkasan “Menampilkan 5 mahasiswa · rata-rata IPK: 3.41”, dan lima kartu mahasiswa.</li>
+  <li>Menekan “Tampilkan Detail” pada sebuah kartu menampilkan IPK, email, dan telepon mahasiswa tersebut; teks tombol berubah menjadi “Sembunyikan Detail”; kartu lain tidak terpengaruh.</li>
+  <li>Menekan kategori “Sistem Informasi” menyaring daftar menjadi 2 mahasiswa; ringkasan berubah menjadi “Menampilkan 2 mahasiswa · rata-rata IPK: 3.20”.</li>
+  <li>Menekan kategori “Rekayasa Perangkat Lunak” menampilkan 1 kartu (Dewi Lestari) dengan rata-rata IPK 3.61.</li>
+</ol>
+
+<h2>Troubleshooting</h2>
+
+<div class="tabel-gulir">
+  <table class="tabel">
+    <caption>Ketika aplikasi tidak mau jalan · sumber: buku §Troubleshooting &amp; deck</caption>
+    <thead>
+      <tr><th scope="col">Gejala</th><th scope="col">Penyebab</th><th scope="col">Solusi</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Peringatan <em>“Each child in a list should have a unique key prop”</em>, atau detail terbuka pada kartu yang salah setelah menyaring</td>
+        <td>Elemen daftar tidak diberi <code>key</code>, atau key memakai indeks array sehingga identitas bergeser</td>
+        <td>Beri <code>key={mahasiswa.id}</code> pada elemen hasil <code>map</code> — bukan di dalam <code>KartuMahasiswa</code></td>
+      </tr>
+      <tr>
+        <td>Tombol tidak bereaksi sama sekali</td>
+        <td>Handler ditulis dengan tanda kurung (<code>onPress={ubahTampilDetail()}</code>) atau state diubah langsung tanpa setter</td>
+        <td>Tulis referensi fungsi <code>onPress={ubahTampilDetail}</code>; untuk handler berparameter pakai fungsi panah inline</td>
+      </tr>
+      <tr>
+        <td>Error merah <em>“Text strings must be rendered within a &lt;Text&gt; component”</em></td>
+        <td>Ada string teks telanjang yang tidak dibungkus komponen <code>Text</code></td>
+        <td>Bungkus setiap teks dengan <code>&lt;Text&gt;…&lt;/Text&gt;</code>; periksa juga hasil <code>map</code></td>
+      </tr>
+      <tr>
+        <td>“Memuat data mahasiswa...” tidak pernah hilang</td>
+        <td>Dependency array salah sehingga efek dijalankan ulang terus, atau timer dibatalkan cleanup setiap render</td>
+        <td>Pastikan <code>useEffect(…, [])</code> berjalan sekali setelah mount, dan setter berada di dalam fungsi efek</td>
+      </tr>
+      <tr>
+        <td><em>“Maximum update depth exceeded”</em></td>
+        <td>Setter dipanggil di badan component atau efek tanpa dependency — lingkaran pembaruan</td>
+        <td>Pindahkan semua pemanggilan setter ke handler event atau <code>useEffect</code> dengan dependency yang tepat</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="kotak kotak-salah">
+  <p class="kotak-judul">Salah paham</p>
+  <p>
+    Jangan menambal peringatan dengan key acak atau mematikan peringatan ESLint — itu
+    menyembunyikan gejalanya, bukan sebabnya. Pola yang benar: baca pesan error sebelum
+    menduga.
+  </p>
+</div>
+
+<h2>Yang harus teramati</h2>
+
+<p>Tiga hal yang dinilai di praktikum ini — bukti yang bisa diperiksa, bukan kesan:</p>
+
+<ul>
+  <li><strong>Component terpisah</strong> — <code>KartuMahasiswa</code> dipakai ulang untuk setiap baris daftar.</li>
+  <li><strong>State lokal</strong> — detail tiap kartu terbuka sendiri, tidak mengganggu kartu lain.</li>
+  <li><strong><code>key</code> yang benar</strong> — pakai <code>mahasiswa.id</code>, bukan indeks urutan.</li>
+</ul>
+
+<blockquote>
+  Bukti yang bisa diperiksa, bukan kesan: “detail kartu Budi tetap terbuka setelah daftar
+  difilter” lebih kuat daripada “aplikasinya jalan”.
+</blockquote>
+
+<h2>Kuis kilat</h2>
+
+<ol>
+  <li>Apa beda props dan state, dan mana yang memicu re-render?</li>
+  <li>Kita menulis <code>onClick={simpanData()}</code>, apa yang terjadi saat aplikasi jalan?</li>
+  <li>Kapan <code>useEffect(() =&gt; {…}, [])</code> berjalan, dan kapan cleanup-nya berjalan?</li>
+  <li>Kapan <code>useMemo</code> benar-benar diperlukan?</li>
+</ol>
+
+<div class="kotak kotak-jawab">
+  <details>
+    <summary>Kunci kuis kilat</summary>
+    <ol>
+      <li>Props hanya dibaca anak dan tidak boleh diubahnya; state diubah lewat setter — <em>keduanya</em> memicu re-render, bedanya siapa pemiliknya dan siapa yang boleh mengubahnya.</li>
+      <li><code>onClick={simpanData()}</code> memanggil fungsi saat render, bukan saat tombol ditekan — tombol terlihat mati.</li>
+      <li><code>useEffect(fn, [])</code> berjalan sekali saat mount; cleanup saat unmount atau sebelum efek jalan lagi.</li>
+      <li><code>useMemo</code> perlu saat perhitungan terukur mahal; <code>useCallback</code> saat fungsi dikirim ke anak berbalut <code>React.memo</code>.</li>
+    </ol>
+  </details>
+</div>
+
+<h2>Ringkasan bab</h2>
+
+<ol>
+  <li>React menganut pendekatan deklaratif: <code>UI = f(state)</code> — tampilan dihitung dari data, dan React memperbarui layar secara otomatis saat state berubah.</li>
+  <li>Component adalah fungsi yang mengembalikan JSX; React modern memakai functional component.</li>
+  <li>JSX: satu elemen akar, semua tag ditutup, atribut camelCase, ekspresi dalam <code>{'{ }'}</code>, komentar <code>{'{/* */}'}</code>.</li>
+  <li>Props adalah data masuk yang read-only; nilai default dibuat dengan parameter fungsi.</li>
+  <li>State adalah data internal yang diubah lewat setter, selalu secara immutable — salin dulu, jangan mutasi.</li>
+  <li>Event handling menyerahkan referensi fungsi ke prop <code>on*</code>; hindari tanda kurung saat render.</li>
+  <li>Conditional rendering memakai ternary, <code>&amp;&amp;</code>, atau <code>null</code>; list rendering memakai <code>map</code> dengan <code>key</code> unik dan stabil.</li>
+  <li>Komposisi component (termasuk prop <code>children</code>) menghasilkan component reusable dengan tanggung jawab tunggal.</li>
+  <li><code>useEffect</code> menangani efek samping dengan tiga momen lifecycle dan wajib punya cleanup untuk sumber daya seperti timer.</li>
+  <li><code>useMemo</code> dan <code>useCallback</code> menyimpan hasil/fungsi agar tidak dihitung ulang; gunakan hanya ketika terukur perlu.</li>
+</ol>
+
+<div class="kotak kotak-tanya">
+  <p class="kotak-judul">Pertanyaan penuntun</p>
+  <p>
+    Pesan penutup deck: mulai sekarang, setiap masalah “data berubah tetapi tampilan tidak”
+    punya daftar periksa sendiri — setter, immutability, dan key. Ketiga kata itu juga yang
+    menyambungkan bab ini ke Bab 5, tempat component React Native (<code>View</code>,
+    <code>Text</code>, <code>FlatList</code>) menggantikan elemen HTML.
+  </p>
+</div>

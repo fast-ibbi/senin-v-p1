@@ -1,0 +1,771 @@
+/*
+ * Lapisan dasar situs demo web Pemrograman Mobile.
+ *
+ * Token warna, keluarga font, dan aturan garis disalin dari
+ * `slides/theme/academic.css` supaya situs ini terasa satu keluarga dengan deck.
+ * Tidak ada font yang diunduh: seluruhnya font sistem, jadi halaman tetap utuh
+ * saat dibuka tanpa internet.
+ *
+ * Aturan yang dipegang (sama dengan deck):
+ *   - terang saja, kontras tinggi, terbaca dari belakang ruang kelas
+ *   - satu warna aksen, satu garis rambut di bawah judul, tanpa hiasan lain
+ *   - ukuran teks isi 17px: nyaman dibaca di layar, cukup besar untuk proyektor
+ */
+
+:root {
+  --accent: #1d4ed8;
+  --accent-soft: #eef2ff;
+  --ink: #111827;
+  --muted: #6b7280;
+  --surface: #f8fafc;
+  --border: #e5e7eb;
+  --code-bg: #f6f8fa;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+
+  /* Lebar bingkai ponsel; diubah oleh kendali lebar di bilah atas halaman. */
+  --lebar-bingkai: 390px;
+
+  /* Tinggi layar bingkai ponsel. Semua contoh memakai tinggi yang sama supaya
+     perbandingan dua kolom bisa dibandingkan baris demi baris. */
+  --tinggi-layar: 430px;
+
+  --lebar-sisi: 264px;
+  --lebar-sisi-kanan: 236px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: #ffffff;
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 17px;
+  line-height: 1.62;
+  letter-spacing: 0.002em;
+}
+
+/* ------------------------------------------------------------- lewati navigasi */
+
+.lewati {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  background: var(--accent);
+  color: #ffffff;
+  padding: 10px 16px;
+  z-index: 50;
+}
+
+.lewati:focus {
+  left: 8px;
+  top: 8px;
+}
+
+/* ---------------------------------------------------------------- kepala halaman */
+
+.puncak {
+  border-bottom: 1px solid var(--border);
+  background: #ffffff;
+  padding: 14px clamp(16px, 4vw, 48px) 12px;
+}
+
+.jejak {
+  margin: 0 0 6px;
+  font-size: 13px;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.nav-bab {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+  font-size: 14px;
+}
+
+.nav-bab a {
+  color: var(--ink);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  padding-bottom: 1px;
+}
+
+.nav-bab a:hover,
+.nav-bab a:focus-visible {
+  border-bottom-color: var(--accent);
+}
+
+.nav-bab a[aria-current="page"] {
+  color: var(--accent);
+  font-weight: 650;
+  border-bottom-color: var(--accent);
+}
+
+.nav-bab .pemisah {
+  color: var(--border);
+}
+
+/* ------------------------------------------------------------ kerangka: sisi + isi */
+
+.kerangka {
+  display: grid;
+  grid-template-columns: var(--lebar-sisi) minmax(0, 1fr) var(--lebar-sisi-kanan);
+  gap: clamp(20px, 3vw, 40px);
+  max-width: 1380px;
+  margin: 0 auto;
+  padding: clamp(20px, 3vw, 36px) clamp(16px, 3vw, 40px) 64px;
+  align-items: start;
+}
+
+/* Halaman tanpa daftar subbab (muka, ikhtisar, placeholder): dua kolom saja. */
+.kerangka-tanpa-kanan {
+  grid-template-columns: var(--lebar-sisi) minmax(0, 1fr);
+}
+
+@media (max-width: 1280px) {
+  .kerangka {
+    grid-template-columns: var(--lebar-sisi) minmax(0, 1fr);
+  }
+
+  .sisi-kanan {
+    display: none;
+  }
+}
+
+@media (max-width: 980px) {
+  .kerangka {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sisi {
+    position: static;
+  }
+}
+
+/* ----------------------------------------------------------------- bilah sisi */
+
+.sisi {
+  position: sticky;
+  top: 16px;
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.sisi-judul {
+  margin: 0 0 8px;
+  font-size: 12px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.sisi-daftar {
+  list-style: none;
+  margin: 0 0 18px;
+  padding: 0;
+  border-left: 1px solid var(--border);
+}
+
+.sisi-daftar li {
+  margin: 0;
+}
+
+.sisi-daftar a {
+  display: block;
+  padding: 6px 12px;
+  color: var(--ink);
+  text-decoration: none;
+  border-left: 3px solid transparent;
+  margin-left: -2px;
+  font-size: 15px;
+}
+
+.sisi-daftar a:hover {
+  background: var(--surface);
+}
+
+.sisi-daftar a[aria-current="page"] {
+  border-left-color: var(--accent);
+  color: var(--accent);
+  font-weight: 650;
+  background: var(--accent-soft);
+}
+
+/* Nomor bab: kecil dan redup supaya judul tetap dominan, tetapi rata angka. */
+.sisi-nomor {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  margin-right: 3px;
+}
+
+.sisi-daftar a[aria-current="page"] .sisi-nomor {
+  color: var(--accent);
+}
+
+/* Daftar halaman bab aktif: satu tingkat lebih kecil, garis tipis sendiri. */
+.sisi-daftar-cabang {
+  margin: 2px 0 6px 14px;
+  padding-left: 2px;
+  border-left: 1px solid var(--border);
+}
+
+.sisi-daftar-cabang a {
+  padding: 4px 10px;
+  font-size: 13.5px;
+  color: #374151;
+}
+
+.sisi-daftar-cabang a[aria-current="page"] {
+  background: transparent;
+  font-weight: 650;
+}
+
+.sisi-status {
+  font-size: 12px;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+
+.sisi-status .segera {
+  color: #b45309;
+  font-weight: 650;
+}
+
+.sisi-balik {
+  display: inline-block;
+  margin: 4px 0 14px;
+  font-size: 14px;
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(29, 78, 216, 0.35);
+}
+
+.sisi-balik:hover {
+  border-bottom-color: var(--accent);
+}
+
+/* ---------------------------------------------------------------------- isi */
+
+.isi-utama {
+  min-width: 0;
+}
+
+h1 {
+  font-size: clamp(28px, 3.4vw, 40px);
+  line-height: 1.2;
+  font-weight: 700;
+  margin: 0 0 0.5em;
+  padding-bottom: 0.18em;
+  border-bottom: 3px solid var(--accent);
+}
+
+h2 {
+  font-size: clamp(21px, 2.2vw, 27px);
+  line-height: 1.3;
+  font-weight: 650;
+  margin: 0 0 0.4em;
+}
+
+h3 {
+  font-size: 18px;
+  font-weight: 650;
+  margin: 0 0 0.4em;
+}
+
+p {
+  margin: 0 0 0.85em;
+}
+
+.ringkas {
+  font-size: 19px;
+  color: #374151;
+  max-width: 72ch;
+  margin-bottom: 1.2em;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(29, 78, 216, 0.35);
+}
+
+a:hover,
+a:focus-visible {
+  border-bottom-color: var(--accent);
+}
+
+strong {
+  font-weight: 700;
+}
+
+ul,
+ol {
+  margin: 0 0 0.9em;
+  padding-left: 1.25em;
+}
+
+li {
+  margin: 0.28em 0;
+}
+
+li > ul,
+li > ol {
+  margin-top: 0.2em;
+  font-size: 0.95em;
+  color: #374151;
+}
+
+ul li::marker,
+ol li::marker {
+  color: var(--accent);
+}
+
+ol li::marker {
+  font-weight: 600;
+}
+
+/* ------------------------------------------------------------------- kode inline */
+
+code {
+  font-family: var(--mono);
+  font-size: 0.88em;
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.06em 0.32em;
+}
+
+/* --------------------------------------------------------------- tabel */
+
+.tabel-gulir {
+  overflow-x: auto;
+  margin: 0 0 1em;
+}
+
+.tabel {
+  width: 100%;
+  min-width: 480px;
+  border-collapse: collapse;
+  font-size: 16px;
+  margin: 0;
+}
+
+.tabel caption {
+  caption-side: top;
+  text-align: left;
+  font-size: 13px;
+  color: var(--muted);
+  padding-bottom: 6px;
+}
+
+.tabel thead th {
+  text-align: left;
+  font-weight: 650;
+  background: var(--accent-soft);
+  border-bottom: 2px solid var(--accent);
+}
+
+.tabel th,
+.tabel td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+
+.tabel tbody tr:last-child td {
+  border-bottom: 1px solid var(--border);
+}
+
+/* ------------------------------------------------------------------ kutipan */
+
+blockquote {
+  margin: 0 0 1em;
+  padding: 0.3em 0 0.3em 0.9em;
+  border-left: 4px solid var(--border);
+  color: #374151;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 1.6em 0;
+}
+
+/* --------------------------------------------------------------- kaki halaman */
+
+.kaki {
+  border-top: 1px solid var(--border);
+  margin-top: 48px;
+  padding: 22px clamp(16px, 4vw, 48px) 40px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.kaki-isi {
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+.kaki p {
+  margin: 0 0 0.4em;
+}
+
+/* --------------------------------------------------------------- halaman muka */
+
+.daftar-bab {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 18px;
+  list-style: none;
+  margin: 26px 0 0;
+  padding: 0;
+}
+
+.daftar-bab li {
+  margin: 0;
+}
+
+.daftar-bab a {
+  display: block;
+  height: 100%;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px 20px;
+  color: var(--ink);
+  text-decoration: none;
+  background: #ffffff;
+  transition: border-color 120ms ease;
+}
+
+.daftar-bab a:hover,
+.daftar-bab a:focus-visible {
+  border-color: var(--accent);
+}
+
+.daftar-bab .nomor {
+  display: block;
+  font-size: 12px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.daftar-bab .judul {
+  display: block;
+  font-size: 18px;
+  font-weight: 650;
+  line-height: 1.3;
+}
+
+.daftar-bab .keterangan {
+  display: block;
+  margin-top: 8px;
+  font-size: 13.5px;
+  color: var(--muted);
+}
+
+.daftar-bab .segera {
+  color: #b45309;
+  font-weight: 650;
+}
+
+.kartu-kosong {
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+  padding: 26px 20px;
+  margin: 26px 0 0;
+  background: var(--surface);
+}
+
+.kartu-kosong .kartu-kosong-judul {
+  font-weight: 650;
+  margin: 0 0 4px;
+}
+
+.kartu-kosong p {
+  margin: 0;
+  font-size: 15px;
+  color: #374151;
+  max-width: 62ch;
+}
+
+/* --------------------------------------------------------- perbandingan banding */
+
+.banding {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin: 0 0 18px;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.banding-kepala {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.banding-petunjuk {
+  flex: 1 1 240px;
+  font-size: 13px;
+  color: var(--muted);
+  margin: 0;
+}
+
+.banding-tombol {
+  font-family: var(--sans);
+  font-size: 13.5px;
+  color: var(--ink);
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 5px 14px;
+  cursor: pointer;
+}
+
+.banding-tombol:hover,
+.banding-tombol:focus-visible {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.banding-tombol[aria-pressed="true"] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #ffffff;
+}
+
+.banding-tombol.benar[aria-pressed="true"] {
+  background: #15803d;
+  border-color: #15803d;
+}
+
+.banding-tombol.lama[aria-pressed="true"] {
+  background: #b45309;
+  border-color: #b45309;
+}
+
+.banding-isi {
+  padding: 14px;
+}
+
+.banding-isi > :last-child {
+  margin-bottom: 0;
+}
+
+.banding-sisi {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+.banding-sisi > * {
+  min-width: 0;
+}
+
+@media (max-width: 860px) {
+  .banding-sisi {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.banding-panel-label {
+  margin: 0 0 6px;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.banding-panel-label.lama {
+  color: #b45309;
+}
+
+.banding-panel-label.benar {
+  color: #15803d;
+}
+
+/* ----------------------------------------------- penyorotan sintaks (highlight.js) */
+
+.hljs {
+  color: var(--ink);
+}
+
+.hljs-comment,
+.hljs-quote {
+  color: #6b7280;
+  font-style: italic;
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-literal,
+.hljs-doctag {
+  color: #7c3aed;
+}
+
+.hljs-string,
+.hljs-regexp,
+.hljs-addition {
+  color: #15803d;
+}
+
+.hljs-number,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-meta {
+  color: #b45309;
+}
+
+.hljs-title,
+.hljs-title.function_,
+.hljs-title.class_,
+.hljs-section {
+  color: #1d4ed8;
+}
+
+.hljs-attr,
+.hljs-attribute,
+.hljs-variable,
+.hljs-template-variable,
+.hljs-params,
+.hljs-property {
+  color: #0369a1;
+}
+
+.hljs-built_in,
+.hljs-type {
+  color: #0f766e;
+}
+
+.hljs-tag,
+.hljs-name {
+  color: #be185d;
+}
+
+.hljs-deletion {
+  color: #b91c1c;
+}
+
+.hljs-emphasis {
+  font-style: italic;
+}
+
+.hljs-strong {
+  font-weight: 700;
+}
+
+/* ------------------------------------------------------- bilah sisi kanan: subbab */
+
+.sisi-kanan {
+  position: sticky;
+  top: 16px;
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+  padding-left: 2px;
+}
+
+.sisi-kanan-judul {
+  margin: 0 0 8px;
+  font-size: 12px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.sisi-kanan-daftar {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-left: 1px solid var(--border);
+}
+
+.sisi-kanan-daftar li {
+  margin: 0;
+}
+
+.sisi-kanan-daftar a {
+  display: block;
+  padding: 5px 12px;
+  color: #374151;
+  text-decoration: none;
+  border-left: 3px solid transparent;
+  margin-left: -2px;
+  font-size: 13.5px;
+  line-height: 1.4;
+}
+
+.sisi-kanan-daftar a:hover {
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.sisi-kanan-daftar a[aria-current="true"] {
+  border-left-color: var(--accent);
+  color: var(--accent);
+  font-weight: 650;
+  background: var(--accent-soft);
+}
+
+.sisi-kanan-nomor {
+  display: block;
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.sisi-kanan-daftar a[aria-current="true"] .sisi-kanan-nomor {
+  color: var(--accent);
+}
+
+/* ------------------------------------------------------------------------- cetak */
+
+@media print {
+  .kendali,
+  .lewati,
+  .sisi,
+  .sisi-kanan {
+    display: none;
+  }
+
+  .kerangka {
+    display: block;
+    padding: 0;
+  }
+
+  .subbab {
+    break-inside: avoid;
+  }
+
+  .bingkai {
+    box-shadow: none;
+  }
+}

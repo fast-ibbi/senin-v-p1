@@ -1,0 +1,60 @@
+<h1>Bab 7 — Navigasi Aplikasi</h1>
+
+<p class="ringkas">
+  Rute dari struktur folder · Pertemuan 7 · Sub-CPMK 4.1. Bab 5 dan Bab 6 menghasilkan
+  layar; bab ini menyambung layar-layar itu menjadi satu aplikasi yang bisa ditelusuri
+  pengguna. Kamu akan mempelajari pola navigasi mobile (stack, tab, drawer), memasang
+  Expo Router pada project template blank, mengirim parameter antar layar, menyusun
+  nested navigation, memakai siklus hidup layar, dan melindungi layar yang hanya boleh
+  dibuka setelah masuk.
+</p>
+
+<div class="pengantar-pertanyaan">
+  <p><strong>Pertanyaan pembuka deck:</strong> “Siapa yang pernah menekan tombol kembali lalu mendarat di layar yang salah?”</p>
+  <p>Tampung jawabannya tanpa dikoreksi dulu — deck menyimpan pertanyaan ini sampai pembahasan layar terlindungi di <a href="bagian-3.html#s3-7">bagian 3</a>.</p>
+</div>
+
+<h2>Tujuan Pembelajaran</h2>
+
+<p>Setelah bab ini, kamu bisa:</p>
+
+<ul>
+  <li>Menjelaskan konsep navigasi mobile serta pola stack, tab, dan drawer</li>
+  <li>Mengimplementasikan setup Expo Router pada project template blank</li>
+  <li>Membedakan navigasi deklaratif (<code>&lt;Link&gt;</code>) dan imperatif (<code>router.push</code>)</li>
+  <li>Menerapkan dynamic route dan pengiriman parameter antar layar</li>
+  <li>Merancang nested navigation, <code>useFocusEffect</code>, dan layar terlindungi</li>
+</ul>
+
+<h2>Peta halaman</h2>
+
+<ul>
+  <li><strong><a href="bagian-1.html">Bagian 1 — Pola Navigasi Mobile</a></strong> (subbab 7.1–7.4): konsep navigasi dan riwayat, tiga pola stack/tab/drawer, tiga perbedaan stack dan tab, lalu latihan memilih pola.</li>
+  <li><strong><a href="bagian-2.html">Bagian 2 — Expo Router: Rute dari Folder</a></strong> (subbab 7.2, 7.6, 7.9): file-based routing, tiga penyesuaian setup pada project blank, grup rute bertanda kurung, dan peta enam file aplikasi praktikum.</li>
+  <li><strong><a href="bagian-3.html">Bagian 3 — Layar, Parameter &amp; Perlindungan</a></strong> (subbab 7.5–7.8): stack di layout akar, Link vs router, parameter string, tab berisi stack, useFocusEffect, dan layar terlindungi.</li>
+  <li><strong><a href="praktikum.html">Praktikum</a></strong>: aplikasi Aplikasi Manajemen Data Mahasiswa lengkap (Login → Beranda → Daftar → Detail → Form), troubleshooting, dan kuis kilat.</li>
+</ul>
+
+<div class="kotak kotak-tiruan">
+  <p class="kotak-judul">Yang perlu diketahui sebelum membaca</p>
+  <p>
+    Bab ini mengandaikan project template blank dari Bab 2 (perintah
+    <code>npx create-expo-app</code> dan Expo Go) dan component, state, serta
+    <code>useEffect</code> dari Bab 4. Komponen React Native (<code>View</code>,
+    <code>Text</code>, <code>Pressable</code>, <code>FlatList</code>) dipakai dari Bab 5
+    dan Bab 6 tanpa dijelaskan ulang. Peta rute aplikasi praktikum di bagian 2 adalah
+    kontrak yang harus dipenuhi praktikum bab ini.
+  </p>
+  <p class="kotak-jawab">
+    Setiap kode di halaman-halaman berikut disalin verbatim dari
+    <code>buku/bab-07-navigasi-aplikasi.md</code> atau deck
+    <code>slides/bab-07-navigasi-aplikasi.md</code>. Kode dalam panel
+    <strong>sebelum/sesudah</strong> yang bertanda <em>ilustrasi</em> disusun untuk
+    memperjelas konsep dan bukan salinan persis sumber; labelnya menyebut sumbernya dengan jujur.
+  </p>
+</div>
+
+<div class="kotak kotak-tanya">
+  <p class="kotak-judul">Pertanyaan penuntun</p>
+  <p>Pertanyaan penutup deck untuk direnungkan selama membaca: keputusan struktur mana yang paling mahal kalau salah sejak awal — dan bagaimana kamu menguji bahwa tombol kembali berperilaku wajar?</p>
+</div>

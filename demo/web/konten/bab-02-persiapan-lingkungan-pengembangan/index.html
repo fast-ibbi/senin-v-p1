@@ -1,0 +1,89 @@
+<h1>Bab 2 — Persiapan Lingkungan Pengembangan</h1>
+
+<p class="ringkas">
+  Node.js, npm, dan npx; pengelola paket; Visual Studio Code; Expo CLI dan Expo Go; Metro
+  Bundler; emulator Android, adb, dan iOS Simulator; proyek Expo pertama beserta struktur
+  foldernya. Menyiapkan meja kerja, menjalankan aplikasi pertama · Pertemuan 2 · bobot 3 sks
+  (2 sks teori + 1 sks praktikum). Di Bab 1 kita menggambar peta; hari ini kita menyiapkan
+  alat dan menghidupkan mesinnya.
+</p>
+
+<div class="pengantar-pertanyaan">
+  <p><strong>Pertanyaan pembuka deck:</strong> “Apa yang kamu pasang lebih dulu saat memakai laptop baru untuk kuliah?”</p>
+  <p>
+    Tampung dua sampai tiga jawaban tanpa dikoreksi dulu — jawaban itu adalah jembatan ke
+    gagasan lingkungan kerja yang baku dan bisa dibangun ulang di komputer mana pun.
+    Rangkaian alatnya dibahas di bagian 1 dan bagian 2.
+  </p>
+</div>
+
+<h2>Tujuan pembelajaran</h2>
+
+<p>Setelah bab ini, kamu bisa:</p>
+
+<ul>
+  <li>Menjelaskan peran Node.js, npm, dan npx di ekosistem Expo</li>
+  <li>Mengidentifikasi komponen lingkungan pengembangan beserta fungsinya</li>
+  <li>Menerapkan pembuatan proyek Expo pertama dan menjalankannya</li>
+  <li>Menganalisis tiga jalur pengujian dari sisi kecepatan dan kesetiaan perilaku</li>
+  <li>Menjelaskan struktur folder proyek dan mengevaluasi kendala yang umum muncul</li>
+</ul>
+
+<p>
+  Butir keempat adalah inti berpikir analitis dan yang paling sering keluar di soal ujian.
+  Butir kelima bersifat diagnostik: kamu harus bisa memilih solusi, bukan sekadar menghafal
+  pesan galat.
+</p>
+
+<h2>Peta halaman</h2>
+
+<ul>
+  <li><strong>Bagian 1 — Fondasi: Node.js, npm &amp; VS Code</strong> (subbab 2.1–2.3): apa yang dijalankan Node.js, apa yang dicatat npm, beda <code>npm install</code> dan <code>npx</code>, tiga pengelola paket, editor VS Code, serta arti pesan “perintah tidak dikenali”.</li>
+  <li><strong>Bagian 2 — Expo, Expo Go &amp; Metro</strong> (subbab 2.4): Expo CLI yang dijalankan lewat npx, batas kemampuan Expo Go, kerja Metro Bundler, Fast Refresh, dan enam perintah yang paling sering dipakai.</li>
+  <li><strong>Bagian 3 — Alat Uji: Emulator, adb &amp; iOS Simulator</strong> (subbab 2.5–2.6): emulator Android lewat Android Studio dan AVD Manager, adb untuk mengenali perangkat, iOS Simulator yang hanya hidup di macOS, tiga jalur pengujian, dan opsi <code>--tunnel</code>.</li>
+  <li><strong>Bagian 4 — Proyek Pertama &amp; Struktur Folder</strong> (subbab 2.7–2.9): empat perintah dari folder kosong sampai aplikasi jalan, alasan memilih templat <code>blank</code>, isi folder proyek, peran berkas inti, dan alur <code>package.json</code> → <code>index.js</code> → <code>App.js</code>.</li>
+  <li><strong>Praktikum</strong>: dari lingkungan kosong sampai teks “Halo, Dunia!” tampil di layar, ditutup daftar periksa troubleshooting dan laporan praktikum.</li>
+</ul>
+
+<p>
+  Bagian 1 memecah deck “Bagian 1 — Fondasi: Node.js, npm &amp; VS Code”; bagian 2 sampai 4
+  memecah deck “Bagian 2 — Expo, Alat Uji &amp; Proyek Pertama”.
+</p>
+
+<div class="kotak kotak-tiruan">
+  <p class="kotak-judul">Yang perlu diketahui sebelum membaca</p>
+  <p>
+    Bab ini hampir seluruhnya berisi perintah terminal, bukan kode aplikasi. Satu-satunya
+    kode JavaScript yang ditulis hari ini adalah <code>App.js</code> hasil templat — dan itu
+    pun disalin ulang lalu diubah teksnya. Materi React Native yang sesungguhnya baru mulai
+    di Bab 4 dan Bab 5.
+  </p>
+  <p>
+    Banyak angka di bab ini sensitif versi: nomor LTS terbaru, ketersediaan Expo Go untuk
+    SDK 57, isi templat, dan nama ekstensi VS Code. Setiap kali angkanya berubah, yang wajib
+    kamu pahami tetap sama — peran alatnya.
+  </p>
+  <p>
+    Siapkan dua hal sebelum praktikum: hak memasang perangkat lunak di komputermu, dan satu
+    dari dua jalur pengujian (ponsel dengan Expo Go, atau Android Studio untuk emulator).
+    Tanpa salah satunya, aplikasi pertama tidak akan pernah terlihat.
+  </p>
+  <p class="kotak-jawab">
+    Setiap perintah dan kode di halaman-halaman berikut disalin verbatim dari
+    <code>buku/bab-02-persiapan-lingkungan-pengembangan.md</code> atau deck
+    <code>slides/bab-02-persiapan-lingkungan-pengembangan.md</code>; label
+    <code>kode-sumber</code> menyebut asalnya. Perbandingan
+    <strong>sebelum/sesudah</strong> menampilkan kebiasaan keliru di samping kebiasaan yang
+    benar; tombol di kepala panel untuk berpindah.
+  </p>
+</div>
+
+<div class="kotak kotak-tanya">
+  <p class="kotak-judul">Pertanyaan penuntun</p>
+  <p>
+    Satu pertanyaan yang jawabannya menentukan seluruh praktikum hari ini: kalau
+    <code>node --version</code> menjawab “perintah tidak dikenali”, apakah Node.js-nya yang
+    rusak, atau terminalnya yang belum tahu ke mana harus mencari?
+    Perhatikan bagian 1, subbab 2.1.
+  </p>
+</div>

@@ -1,0 +1,90 @@
+<h1>Bab 14 — Debugging, Testing, dan Quality Assurance</h1>
+
+<p class="ringkas">
+  Debugging dengan console dan React Native DevTools, enam error React Native yang paling
+  sering muncul, debugging jaringan, unit testing dengan <code>node:test</code>, integration
+  testing, pengujian manual dan usability, serta checklist QA. Dari aplikasi yang "jalan" ke
+  aplikasi yang benar · Pertemuan 15. Bab ini tidak menambah fitur satu pun, tetapi ia yang
+  menentukan apakah fitur yang sudah kamu bangun layak dipercaya.
+</p>
+
+<div class="pengantar-pertanyaan">
+  <p><strong>Pertanyaan pembuka deck:</strong> “Kalau aplikasimu lancar di emulatormu sendiri, apakah itu berarti aplikasinya benar?”</p>
+  <p>Tampung dua sampai tiga jawaban tanpa dikoreksi dulu — jawaban lengkapnya ada di subbab 14.6 dan 14.7.</p>
+</div>
+
+<h2>Tujuan pembelajaran</h2>
+
+<p>Setelah bab ini, kamu bisa:</p>
+
+<ul>
+  <li>Menjelaskan peran debugging, testing, dan QA dalam siklus hidup aplikasi</li>
+  <li>Mengidentifikasi fungsi console dan fitur React Native DevTools</li>
+  <li>Menganalisis error umum React Native beserta penyebab dan solusinya</li>
+  <li>Menerapkan unit test fungsi murni dengan <code>node:test</code></li>
+  <li>Membedakan unit, integration, manual, dan usability testing</li>
+  <li>Mengevaluasi hasil pengujian dengan checklist QA</li>
+</ul>
+
+<p>
+  Butir keempat dan kelima berpasangan: yang satu soal menulis test, yang lain soal memilih
+  jenis test yang tepat untuk masalah yang sedang dihadapi. Butir keenam adalah produk nyata
+  pertemuan ini — checklist QA yang terisi dan unit test yang benar-benar bisa dijalankan.
+</p>
+
+<h2>Peta halaman</h2>
+
+<ul>
+  <li><strong>Bagian 1 — Debugging: Console dan DevTools</strong> (subbab 14.1): tiga kegiatan yang sering tertukar, <code>console.log</code>/<code>console.warn</code>/<code>console.table</code>, log berlabel pada perubahan state, serta React Native DevTools dan tiga tombol terminal.</li>
+  <li><strong>Bagian 2 — Error Umum dan Debugging Jaringan</strong> (subbab 14.2–14.3): enam error React Native, dua error fatal pertama, properti yang dibaca sebelum datanya tiba, dua peringatan yang sering diabaikan, serta cara menguji endpoint sebelum menyalahkan aplikasi.</li>
+  <li><strong>Bagian 3 — Testing dan Quality Assurance</strong> (subbab 14.4–14.7): fungsi murni sebagai kandidat unit test, <code>node:test</code> dengan pola satu test satu perilaku, membaca laporan test, piramida testing, pengujian manual dan usability, serta checklist pengujian.</li>
+  <li><strong>Praktikum</strong>: <code>console-demo.js</code>, menjalankan 13 unit test <code>validators.js</code>, menguji endpoint dengan <code>curl</code> dan <code>fetch</code> bawaan Node.js, lalu mengisi checklist minimal lima kasus uji.</li>
+</ul>
+
+<p>
+  Deck bab ini hanya punya dua bagian besar; halaman ini memecah “Bagian 1 — Debugging”
+  menjadi bagian 1 dan bagian 2, lalu memakai “Bagian 2 — Testing dan QA” sebagai bagian 3.
+  Pemecahan itu mengikuti batas alat: console dan DevTools di bagian 1, pesan error dan
+  jaringan di bagian 2, testing dan QA di bagian 3.
+</p>
+
+<div class="kotak kotak-tiruan">
+  <p class="kotak-judul">Yang perlu diketahui sebelum membaca</p>
+  <p>
+    Bab ini tidak memperkenalkan fitur baru. Semua kode di sini sudah kamu tulis sendiri di bab
+    sebelumnya: <code>utils/validators.js</code> dari Bab 8 dipakai ulang apa adanya sebagai
+    bahan uji, dan endpoint <code>/api/mahasiswa</code> dari Bab 10 menjadi bahan debugging
+    jaringan.
+  </p>
+  <p>
+    Dua artefak keluar dari pertemuan ini: <strong>13 kasus uji</strong> yang berjalan dengan
+    <code>node --test</code> tanpa satu pun dependency tambahan, dan <strong>checklist
+    pengujian</strong> minimal lima kasus uji untuk aplikasimu sendiri. Keduanya dinilai di
+    rubrik praktikum; aspek debugging berbobot 10% dan dokumentasi 20%.
+  </p>
+  <p>
+    Perhatikan peringatan sensitif versi yang muncul beberapa kali: menu developer, kombinasi
+    tombol <code>m</code>/<code>r</code>/<code>j</code>, dan tata letak tab Network dapat
+    berbeda antarversi SDK. Sumber kebenaran kombinasi tombol adalah daftar yang dicetak
+    terminal <code>npx expo start</code>, bukan hafalan dari buku.
+  </p>
+  <p class="kotak-jawab">
+    Setiap kode di halaman-halaman berikut disalin verbatim dari
+    <code>buku/bab-14-debugging-testing-dan-quality-assurance.md</code> atau deck
+    <code>slides/bab-14-debugging-testing-dan-quality-assurance.md</code>; label
+    <code>kode-sumber</code> menyebut asalnya. Perbandingan <strong>sebelum/sesudah</strong>
+    menampilkan kebiasaan yang menghasilkan bug di samping kebiasaan yang mencegahnya; tombol
+    di kepala panel untuk berpindah.
+  </p>
+</div>
+
+<div class="kotak kotak-tanya">
+  <p class="kotak-judul">Pertanyaan penuntun</p>
+  <p>
+    Konsep mana yang paling sering tertukar di bab ini? Dua pasang. Pertama, manual testing dan
+    usability testing — keduanya mengamati manusia, tetapi pertanyaannya berbeda: “apakah
+    fiturnya bekerja?” versus “apakah pengguna mudah menemukannya?”. Kedua, unit testing dan
+    integration testing — bedanya bukan jumlah kode yang dijalankan, melainkan tingkat cakupan
+    yang diuji. Perhatikan bagian 3.
+  </p>
+</div>

@@ -1,0 +1,344 @@
+<h1>Bagian 2 — Layout dan Component: Card, Button, Form, List</h1>
+
+<p class="ringkas">
+  Subbab 6.2: fondasi visual dan component. Sistem jarak 8pt menghentikan perdebatan angka,
+  lalu empat component dibangun di atasnya — Card membungkus satu entitas, Button bicara
+  lewat varian, Form mengikuti pola label di atas kolom, dan List menuntut item yang
+  seragam.
+</p>
+
+<section class="subbab" id="s2-1" data-subbab="6.2">
+  <p class="label-subbab">
+    Subbab 6.2 <span class="sumber-slide">· deck: “Sistem Jarak 8pt: Angka yang Disepakati, Bukan Dirasa” · buku §6.2</span>
+  </p>
+  <h2>Sistem Jarak 8pt: Angka yang Disepakati, Bukan Dirasa</h2>
+
+  <p>
+    Desain antarmuka yang terlihat “rapi dengan sendirinya” biasanya memakai satu rahasia
+    sederhana: semua jarak adalah kelipatan 8.
+    Sistem ini — populer sebagai <strong>8-point grid</strong> — menetapkan nilai jarak
+    dari himpunan 4, 8, 12, 16, 24, 32, 48, 64.
+    Kenapa 8, bukan 5 atau 7? Karena 8 habis dibagi 2, cukup kecil untuk detail, dan
+    cukup besar untuk menciptakan ritme visual yang stabil.
+  </p>
+
+  <p>
+    Manfaatnya bukan estetika, melainkan kecepatan memutuskan: tim tidak lagi berdebat
+    “16 atau 17 piksel?”. Nilai inilah yang berulang di seluruh kode praktikum, jadi
+    layar yang terasa janggal biasanya punya satu nilai yang keluar dari irama.
+  </p>
+
+  <div class="tabel-gulir">
+  <table class="tabel">
+    <caption>Aturan praktis sistem 8pt · sumber: deck, slide “Sistem Jarak 8pt” · buku §6.2</caption>
+    <thead>
+      <tr><th scope="col">Aturan praktis</th><th scope="col">Nilai</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Jarak antar elemen dalam satu kelompok</td><td>8</td></tr>
+      <tr><td>Jarak antar kelompok</td><td>16</td></tr>
+      <tr><td>Margin tepi layar</td><td>16–24</td></tr>
+      <tr><td>Jarak di dalam kartu (padding)</td><td>16</td></tr>
+      <tr><td>Sudut membulat</td><td>8–12</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="banding"
+       data-label-lama="Jarak dirasa per layar"
+       data-label-benar="Semua jarak kelipatan 8"
+       data-petunjuk="Nilai yang keluar dari irama membuat layar terasa janggal tanpa sebab yang bisa dijelaskan.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">contoh-jarak-dirasa.js</span>
+        <span class="kode-sumber">ilustrasi · buku §6.2</span>
+      </figcaption>
+      <pre><code class="language-js">const gaya = {
+  padding: 17,
+  marginBottom: 9,
+  borderRadius: 11,
+};
+
+// 16 atau 17? Setiap layar menjawab sendiri, hasilnya tidak konsisten.</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">contoh-jarak-8pt.js</span>
+        <span class="kode-sumber">ilustrasi · buku §6.2</span>
+      </figcaption>
+      <pre><code class="language-js">const gaya = {
+  padding: 16,
+  marginBottom: 8,
+  borderRadius: 12,
+};
+
+// Semua nilai diambil dari himpunan {4, 8, 12, 16, 24, 32, 48, 64}.</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Menganggap “16 atau 17 piksel, tidak masalah”. Satu nilai yang keluar dari irama
+      itulah yang membuat layar terasa janggal; langkah pertama debugging visual adalah
+      memeriksa nilai mana yang menyimpang.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Kenapa 8, bukan 5 atau 7? (Jawaban: 8 habis dibagi 2, sehingga 4, 8, 16, dan 32 selalu sejajar.)</p>
+  </div>
+</section>
+
+<section class="subbab" id="s2-2" data-subbab="6.2">
+  <p class="label-subbab">
+    Subbab 6.2 <span class="sumber-slide">· deck: “Satu Kartu Membawa Satu Entitas” · buku §6.2</span>
+  </p>
+  <h2>Card: Satu Kartu Membawa Satu Entitas</h2>
+
+  <p>
+    <strong>Card</strong> (kartu) adalah wadah persegi bersudut membulat yang
+    mengelompokkan informasi menjadi satu kesatuan: satu kartu = satu gagasan = satu
+    entitas.
+    Pada Aplikasi Manajemen Data Mahasiswa, satu kartu mewakili satu mahasiswa — nama,
+    program studi, NIM, dan IPK.
+  </p>
+
+  <p>
+    Kenapa memakai kartu dan bukan sekadar baris teks? Kartu memberi batas visual yang
+    jelas sehingga mata bisa memisahkan entitas saat daftar digulir, dan memberi area
+    sentuh yang tegas.
+    Analoginya: kartu itu seperti kartu nama — setelah ditumpuk pun, mata masih bisa
+    memisahkan satu dari yang lain.
+  </p>
+
+  <p>
+    Anatomi kartu yang baik: latar putih dengan sedikit kontras terhadap latar layar,
+    sudut membulat 8–12, jarak dalam (padding) 16, dan jarak antar kartu 8.
+    Ada harganya: kartu memakan ruang vertikal lebih banyak daripada baris padat;
+    untuk data yang banyak dan seragam, baris lebih efisien.
+  </p>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Menumpuk dua entitas dalam satu kartu, misalnya dua mahasiswa sekaligus. Satu kartu
+      membawa satu pesan — ini salah paham tersering soal Card.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Kapan baris lebih tepat daripada kartu? (Jawaban: saat datanya banyak dan seragam, misalnya tabel nilai.)</p>
+  </div>
+</section>
+
+<section class="subbab" id="s2-3" data-subbab="6.2">
+  <p class="label-subbab">
+    Subbab 6.2 <span class="sumber-slide">· deck: “Empat Varian Tombol, Satu Hierarki Aksi” · buku §6.2</span>
+  </p>
+  <h2>Button: Empat Varian, Satu Hierarki Aksi</h2>
+
+  <p>
+    Pertanyaan desain sebuah tombol bukan “bentuknya bagaimana”, melainkan “seberapa
+    penting aksi ini”. Jawabannya dikomunikasikan lewat variasi visual — pengguna
+    membaca makna dari warna sebelum membaca teksnya.
+  </p>
+
+  <div class="tabel-gulir">
+  <table class="tabel">
+    <caption>Empat varian tombol · sumber: deck, slide “Empat Varian Tombol” · buku §6.2</caption>
+    <thead>
+      <tr><th scope="col">Varian</th><th scope="col">Tampilan</th><th scope="col">Kegunaan</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>primary</code></td><td>Latar warna utama, teks putih</td><td>Satu-satunya aksi utama di layar</td></tr>
+      <tr><td><code>secondary</code></td><td>Latar abu lembut</td><td>Aksi pendukung yang tetap penting</td></tr>
+      <tr><td><code>outline</code></td><td>Transparan, garis warna utama</td><td>Aksi alternatif</td></tr>
+      <tr><td><code>danger</code></td><td>Latar merah</td><td>Aksi berisiko atau merusak</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p>
+    Aturannya tegas: satu <code>primary</code> per layar — kalau semua menonjol, tidak
+    ada yang menonjol. <code>danger</code> bukan berarti “penting”, melainkan khusus
+    untuk aksi yang merusak. Label memakai verba yang jelas: “Simpan”, bukan “OK”.
+    Tombol merah yang tidak pernah dipakai untuk menghapus kehilangan artinya, dan
+    tombol simpan yang berwarna merah membuat pengguna ragu menekannya.
+  </p>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Memberi dua aksi penting varian <code>primary</code> sekaligus di satu layar, atau
+      memakai <code>danger</code> karena “aksinya penting”. Hierarki aksinya langsung
+      hilang, dan warna merah kehilangan maknanya bila tidak konsisten dipakai untuk
+      aksi merusak.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Boleh dua aksi penting sama-sama <code>primary</code> di satu layar? (Jawaban: tidak — hierarki aksinya langsung hilang.)</p>
+  </div>
+</section>
+
+<section class="subbab" id="s2-4" data-subbab="6.2">
+  <p class="label-subbab">
+    Subbab 6.2 <span class="sumber-slide">· deck: “Tombol Nonaktif Tidak Boleh Ikut Meredup” · buku §6.2, Contoh 2</span>
+  </p>
+  <h2>Tombol Nonaktif Tidak Boleh Ikut Meredup</h2>
+
+  <p>
+    Tombol punya tiga warna status: normal sesuai varian, meredup saat ditekan, dan
+    terkunci abu saat nonaktif. Implementasinya membaca status tekan dari fungsi gaya
+    <code>Pressable</code>, yang menerima objek <code>{'{ pressed }'}</code> — bukan
+    sintaksis baru: <code>Pressable</code> sudah dipelajari di Bab 5, yang baru adalah
+    alasan desain di belakangnya.
+  </p>
+
+  <p>
+    Urutan kondisinya penting: tombol nonaktif tidak boleh meredup saat “ditekan”,
+    karena ia sama sekali tidak merespons sentuhan. <code>opacity</code> ditulis sebagai
+    ekspresi, bukan dua gaya terpisah, supaya statusnya bisa dibaca saat render.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">components/Tombol.js</span>
+      <span class="kode-sumber">deck, slide “Tombol Nonaktif Tidak Boleh Ikut Meredup” · buku §Contoh 2</span>
+    </figcaption>
+    <pre><code class="language-jsx">style={({ pressed }) =&gt; [
+  styles.dasar,
+  {
+    backgroundColor: modeNonaktif ? '#E5E7EB' : LATAR_VARIASI[variasi],
+    opacity: pressed &amp;&amp; !modeNonaktif ? 0.75 : 1,
+  },
+]}</code></pre>
+  </figure>
+
+  <div class="banding"
+       data-label-lama="Opacity tanpa cek nonaktif"
+       data-label-benar="Nonaktif dikecualikan dari efek tekan"
+       data-petunjuk="Tombol nonaktif tidak merespons sentuhan, jadi efek ditekan harus padam bersamanya.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">contoh-tombol-salah.js</span>
+        <span class="kode-sumber">ilustrasi · buku §Contoh 2</span>
+      </figcaption>
+      <pre><code class="language-jsx">// Nonaktif tetap meredup saat ditekan: memberi umpan balik pada elemen yang mati.
+opacity: pressed ? 0.75 : 1,</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">contoh-tombol-benar.js</span>
+        <span class="kode-sumber">ilustrasi · buku §Contoh 2</span>
+      </figcaption>
+      <pre><code class="language-jsx">// Efek tekan hanya untuk tombol hidup; nonaktif terkunci abu dan diam.
+opacity: pressed &amp;&amp; !modeNonaktif ? 0.75 : 1,</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Membiarkan tombol nonaktif ikut meredup saat ditekan supaya “tetap terasa hidup”.
+      Justru sebaliknya: tombol nonaktif harus diam total, karena umpan balik pada
+      elemen yang tidak merespons itu menipu pengguna.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Kenapa <code>opacity</code> ditulis sebagai ekspresi, bukan dua gaya terpisah? (Jawaban: fungsi gaya <code>Pressable</code> menerima <code>{'{ pressed }'}</code>, sehingga statusnya bisa dibaca saat render.)</p>
+  </div>
+</section>
+
+<section class="subbab" id="s2-5" data-subbab="6.2">
+  <p class="label-subbab">
+    Subbab 6.2 <span class="sumber-slide">· deck: “Label Menetap, Placeholder Hanya Petunjuk” · buku §6.2</span>
+  </p>
+  <h2>Form: Label Menetap, Placeholder Hanya Petunjuk</h2>
+
+  <p>
+    Bab 8 membahas lengkap struktur form — state, validasi, keyboard; di bab ini kita
+    hanya mempelajari tampilannya: pola visual yang membuat formulir mudah diisi.
+    Pola standar mobile: label di atas kolom input (bukan di samping, karena layar
+    sempit), kolom selebar penuh dengan jarak dalam 12–16, garis tepi yang jelas, dan
+    placeholder sebagai contoh nilai.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">wireframe-form.txt</span>
+      <span class="kode-sumber">deck, slide “Label Menetap, Placeholder Hanya Petunjuk” · buku §6.2</span>
+    </figcaption>
+    <pre><code class="language-plaintext">┌──────────────────────────────┐
+│ Nama Lengkap            label│
+│ ┌──────────────────────────┐ │
+│ │ Budi Santoso         [×] │ │  ← input berisi nilai
+│ └──────────────────────────┘ │
+│ NIM                          │
+│ ┌──────────────────────────┐ │
+│ │                          │ │  ← input kosong + placeholder
+│ └──────────────────────────┘ │
+│          [ Simpan ]          │ ← tombol primary
+└──────────────────────────────┘</code></pre>
+  </figure>
+
+  <p>
+    Dua keputusan tampilan yang penting. Pertama, label selalu terlihat — jangan
+    jadikan placeholder satu-satunya penanda, karena ia hilang begitu pengguna mulai
+    mengetik. Kedua, tombol simpan menempel di bawah formulir, dekat dengan ibu jari.
+    Seluruh logika form sengaja ditunda ke Bab 8 supaya kelas fokus pada pola visualnya.
+  </p>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Kenapa label di atas kolom, bukan di sampingnya? (Jawaban: lebar layar ponsel tidak cukup untuk dua kolom berdampingan.)</p>
+  </div>
+</section>
+
+<section class="subbab" id="s2-6" data-subbab="6.2">
+  <p class="label-subbab">
+    Subbab 6.2 <span class="sumber-slide">· deck: “Item Seragam Membuat Daftar Terasa Tenang” · buku §6.2</span>
+  </p>
+  <h2>List: Item Seragam Membuat Daftar Terasa Tenang</h2>
+
+  <p>
+    <strong>List</strong> adalah pola menampilkan banyak entitas sejenis secara
+    vertikal. <code>FlatList</code> sudah diperkenalkan di Bab 5; yang dibahas di sini
+    adalah keseragaman itemnya, bukan cara memakainya.
+    Setiap item harus memiliki struktur yang sama: area sentuh minimal, jarak dalam
+    yang sama, dan hierarki teks yang sama.
+  </p>
+
+  <p>
+    Dua pola teks yang umum: satu baris (judul saja) dan dua baris (judul di atas,
+    keterangan kecil di bawah). Aplikasi kita memakai dua baris: nama mahasiswa, lalu
+    NIM–angkatan.
+    Pemisah antar item boleh berupa garis tipis atau jarak 8 — pilih satu dan pakai
+    konsisten.
+  </p>
+
+  <p>
+    Setiap daftar juga harus mengantisipasi tiga keadaan: sedang memuat, kosong, dan
+    gagal dimuat. Ketiganya baru diimplementasikan di Bab 10 saat data datang dari
+    server; untuk sekarang cukup diantisipasi di rancangan.
+  </p>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Membiarkan tinggi item dan jarak antar item berbeda-beda di daftar yang sama.
+      Itulah yang membuat daftar terasa bergetar saat digulir.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Apa yang membuat daftar terasa bergetar saat digulir? (Jawaban: tinggi item dan jarak antar item tidak seragam.)</p>
+  </div>
+</section>

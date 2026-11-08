@@ -1,0 +1,618 @@
+<h1>Bagian 3 — Merancang State dan Membangun Keranjang</h1>
+
+<p class="ringkas">
+  Subbab 9.7 perancangan state keranjang · Praktikum 9 aplikasi TokoKu. Bagian 2 sudah
+  menyiapkan alatnya — context, provider, dan custom hook; bagian ini memakainya untuk satu
+  keranjang yang dibaca dua layar, lalu menutup dengan studi kasus koperasi Primadona.
+</p>
+
+<section class="subbab" id="s3-1">
+  <p class="label-subbab">
+    Subbab 9.7 <span class="sumber-slide">· deck: “Rancang Dulu State-nya, Baru Menulis Kode” · buku §9.7</span>
+  </p>
+  <h2>Rancang Dulu State-nya, Baru Menulis Kode</h2>
+
+  <p>
+    Sebelum satu baris kode ditulis, ada lima pertanyaan yang harus dijawab.
+    Menjawabnya lebih dulu adalah latihan berpikir yang membedakan pengembang aplikasi dari
+    penyalin kode.
+  </p>
+
+  <ol>
+    <li><strong>Data apa yang disimpan?</strong> Daftar item <code>{ id, nama, harga, qty }</code>.</li>
+    <li><strong>Operasi apa yang dibutuhkan?</strong> Tambah, kurangi qty, hapus, dan kosongkan.</li>
+    <li><strong>Nilai apa yang dihitung, bukan disimpan?</strong> <code>jumlahItem</code> dan <code>totalHarga</code>.</li>
+    <li><strong>Di mana state harus hidup?</strong> Di <code>CartProvider</code> dalam <code>app/_layout.js</code>, membungkus setiap rute.</li>
+    <li><strong>Bagaimana penyimpanan permanennya?</strong> Masih di memori; ada TODO untuk Bab 11.</li>
+  </ol>
+
+  <p>
+    Satu keputusan penting menyertainya: katalog produk adalah <strong>data statis</strong>,
+    bukan state, karena isinya tidak berubah selama aplikasi berjalan.
+    Id dipakai sebagai kunci item di keranjang, dan harga disimpan dalam satuan Rupiah tanpa
+    tanda baca agar mudah dihitung — pemformatan “Rp 45.000” dilakukan di layar.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">data/produk.js</span>
+      <span class="kode-sumber">buku §Praktikum</span>
+    </figcaption>
+    <pre><code class="language-js">export const PRODUK = [
+  { id: 'p1', nama: 'Buku', harga: 45000 },
+  { id: 'p2', nama: 'Bolpoin', harga: 5000 },
+  { id: 'p3', nama: 'Tinta', harga: 25000 },
+  { id: 'p4', nama: 'Tipe-X', harga: 12000 },
+];</code></pre>
+  </figure>
+
+  <div class="banding"
+       data-label-lama="Katalog dijadikan state — salinan yang tidak perlu"
+       data-label-benar="Katalog data statis — state hanya keranjang"
+       data-petunjuk="Yang berubah selama aplikasi berjalan hanyalah isi keranjang; katalognya tetap.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">katalog-sebagai-state.jsx</span>
+        <span class="kode-sumber">ilustrasi · buku §9.7</span>
+      </figcaption>
+      <pre><code class="language-jsx">// Katalog dimasukkan ke state: muncul kemampuan mengubah harga
+// produk yang tidak pernah dipakai, plus satu salinan data.
+const [produk, setProduk] = useState(PRODUK);</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">data/produk.js</span>
+        <span class="kode-sumber">buku §Praktikum</span>
+      </figcaption>
+      <pre><code class="language-jsx">// Katalog dibaca langsung sebagai data; state hanya menyimpan
+// apa yang benar-benar berubah, yaitu daftar item keranjang.
+import { PRODUK } from '../data/produk';</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Merancang state bukan pekerjaan mewah yang hanya perlu untuk aplikasi besar.
+      Keranjang yang dirancang dengan lima pertanyaan ini tetap utuh ketika penyimpanannya
+      nanti pindah dari memori ke perangkat (Bab 11) atau ke server (Bab 10).
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Katalog produk perlu masuk ke state keranjang? (Jawaban: tidak; isinya tidak berubah selama aplikasi berjalan, jadi cukup menjadi data statis.)</p>
+  </div>
+</section>
+
+<section class="subbab" id="s3-2">
+  <p class="label-subbab">
+    Subbab 9.7 <span class="sumber-slide">· deck: “Tambah Item Menyalin Daftar, Bukan Mengubahnya” · buku §9.7</span>
+  </p>
+  <h2>Tambah Item Menyalin Daftar, Bukan Mengubahnya</h2>
+
+  <p>
+    <code>CartProvider</code> adalah sumber kebenaran tunggal keranjang.
+    State <code>items</code> berisi larik objek <code>{ id, nama, harga, qty }</code>, dan satu-satunya jalan mengubahnya adalah tiga fungsi yang
+    diekspos provider — tidak ada layar yang memanggil <code>setItems</code>.
+  </p>
+
+  <p>
+    <code>tambahItem</code> memakai <strong>pembaruan fungsional</strong>
+    <code>setItems((sekarang) =&gt; …)</code> sehingga nilainya selalu dihitung dari keadaan
+    terbaru dan aman ketika beberapa pembaruan datang berurutan.
+    Di dalamnya, <code>find</code> mencari item yang sudah ada: bila ada, qty dinaikkan lewat
+    <code>map</code> yang mengganti hanya item yang cocok; bila belum ada, item baru
+    ditambahkan dengan spread <code>{ ...produk, qty: 1 }</code>.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">context/CartContext.js</span>
+      <span class="kode-sumber">potongan verbatim · buku §Praktikum</span>
+    </figcaption>
+    <pre><code class="language-jsx">import { createContext, useState } from 'react';
+
+export const CartContext = createContext(null);
+
+export function CartProvider({ children }) {
+  const [items, setItems] = useState([]);
+
+  const tambahItem = (produk) =&gt; {
+    setItems((sekarang) =&gt; {
+      const ada = sekarang.find((i) =&gt; i.id === produk.id);
+      if (ada) {
+        return sekarang.map((i) =&gt;
+          i.id === produk.id ? { ...i, qty: i.qty + 1 } : i
+        );
+      }
+      return [...sekarang, { ...produk, qty: 1 }];
+    });
+  };</code></pre>
+  </figure>
+
+  <div class="banding"
+       data-label-lama="Mengubah larik langsung — React tidak melihat perubahan"
+       data-label-benar="Menyalin larik dengan spread — referensi baru"
+       data-petunjuk="State tidak boleh diubah di tempat: React membandingkan referensi, bukan isi, untuk memutuskan render ulang.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">push-langsung.js</span>
+        <span class="kode-sumber">ilustrasi · buku §9.7</span>
+      </figcaption>
+      <pre><code class="language-js">// Larik yang sama diubah isinya. Referensinya tidak berubah,
+// sehingga React tidak menganggap state ini berganti.
+const tambahItem = (produk) =&gt; {
+  items.push({ ...produk, qty: 1 });
+};</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">context/CartContext.js</span>
+        <span class="kode-sumber">buku §Praktikum</span>
+      </figcaption>
+      <pre><code class="language-js">// Larik baru dibentuk dari larik lama: referensi berubah,
+// item lama tetap utuh, dan React tahu harus render ulang.
+return [...sekarang, { ...produk, qty: 1 }];</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Memperbarui state tanpa bentuk fungsional cukup untuk satu ketukan, tetapi berbahaya
+      untuk dua ketukan cepat: keduanya membaca nilai yang sama, lalu saling menimpa.
+      <code>setItems((sekarang) =&gt; …)</code> menutup celah itu.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Kenapa pencarian item harus memakai id, bukan nama? (Jawaban: id unik dan stabil, sedangkan nama bisa berubah.)</p>
+  </div>
+</section>
+
+<section class="subbab" id="s3-3">
+  <p class="label-subbab">
+    Subbab 9.7 <span class="sumber-slide">· deck: “Kurangi dan Hapus Menjaga Qty Tetap Positif” · buku §9.7</span>
+  </p>
+  <h2>Kurangi dan Hapus Menjaga Qty Tetap Positif</h2>
+
+  <p>
+    <code>kurangiItem</code> menggabungkan dua langkah: <code>map</code> menurunkan qty item
+    yang cocok, lalu <code>filter</code> membuang item yang qty-nya menjadi nol.
+    Urutan itu yang membuat qty tidak pernah nol atau negatif — satu-satunya penjaga aturan
+    tersebut adalah <code>filter</code>.
+  </p>
+
+  <p>
+    <code>hapusItem</code> hanya satu baris <code>filter</code>.
+    Sesudahnya, <code>jumlahItem</code> dan <code>totalHarga</code> dihitung dengan
+    <code>reduce</code> langsung dari <code>items</code> pada setiap render, jadi keduanya
+    tidak mungkin tertinggal dari isi keranjang.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">context/CartContext.js</span>
+      <span class="kode-sumber">potongan verbatim · buku §Praktikum</span>
+    </figcaption>
+    <pre><code class="language-js">  const kurangiItem = (id) =&gt; {
+    setItems((sekarang) =&gt;
+      sekarang
+        .map((i) =&gt; (i.id === id ? { ...i, qty: i.qty - 1 } : i))
+        .filter((i) =&gt; i.qty &gt; 0)
+    );
+  };
+
+  const hapusItem = (id) =&gt; {
+    setItems((sekarang) =&gt; sekarang.filter((i) =&gt; i.id !== id));
+  };
+
+  const jumlahItem = items.reduce((total, i) =&gt; total + i.qty, 0);
+  const totalHarga = items.reduce((total, i) =&gt; total + i.qty * i.harga, 0);</code></pre>
+  </figure>
+
+  <div class="banding"
+       data-label-lama="Hanya map — baris ber-qty 0 tetap tampil"
+       data-label-benar="Map lalu filter — baris hilang di qty 0"
+       data-petunjuk="Kasus batas selalu diuji dengan satu item ber-qty 1, lalu tombol minus ditekan sekali.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">kurangi-tanpa-filter.js</span>
+        <span class="kode-sumber">ilustrasi · buku §Praktikum</span>
+      </figcaption>
+      <pre><code class="language-js">// Qty turun menjadi 0, tetapi barisnya tetap ada. Satu ketukan lagi
+// membuat qty negatif dan total harga ikut salah.
+setItems((sekarang) =&gt;
+  sekarang.map((i) =&gt; (i.id === id ? { ...i, qty: i.qty - 1 } : i))
+);</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">context/CartContext.js</span>
+        <span class="kode-sumber">buku §Praktikum</span>
+      </figcaption>
+      <pre><code class="language-js">// Setelah qty diturunkan, item dengan qty 0 dibuang dari daftar.
+setItems((sekarang) =&gt;
+  sekarang
+    .map((i) =&gt; (i.id === id ? { ...i, qty: i.qty - 1 } : i))
+    .filter((i) =&gt; i.qty &gt; 0)
+);</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Menghapus item ber-qty 1 bukan operasi khusus. Ia adalah akibat wajar dari
+      <code>map</code> lalu <code>filter</code>, sehingga tidak perlu tombol atau cabang
+      <code>if</code> tambahan di layar.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Kalau <code>totalHarga</code> dihitung pada setiap render, bisakah nilainya tidak sinkron dengan <code>items</code>? (Jawaban: tidak; nilainya selalu berasal dari <code>items</code> yang sama.)</p>
+  </div>
+</section>
+
+<section class="subbab" id="s3-4">
+  <p class="label-subbab">
+    Subbab 9.7 <span class="sumber-slide">· deck: “Tanpa value, Keranjang Tidak Sampai ke Layar” · buku §9.7</span>
+  </p>
+  <h2>Tanpa <code>value</code>, Keranjang Tidak Sampai ke Layar</h2>
+
+  <p>
+    Blok <code>return</code> inilah yang membuat keranjang benar-benar dibagikan.
+    <code>value</code> berisi enam kunci — <code>items</code>, <code>tambahItem</code>,
+    <code>kurangiItem</code>, <code>hapusItem</code>, <code>jumlahItem</code>, dan
+    <code>totalHarga</code> — dan setiap layar hanya mengambil bagian yang dibutuhkannya lewat
+    <code>useCart()</code>.
+  </p>
+
+  <p>
+    Komentar TODO menandai titik penyisipan penyimpanan di Bab 11: muat <code>items</code> dari
+    AsyncStorage saat provider dibuat, lalu simpan setiap kali berubah.
+    Sampai saat itu, keranjang hidup di memori dan kembali kosong ketika aplikasi ditutup.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">context/CartContext.js</span>
+      <span class="kode-sumber">potongan verbatim · buku §Praktikum</span>
+    </figcaption>
+    <pre><code class="language-jsx">  // TODO (Bab 11): muat items dari AsyncStorage saat provider dibuat,
+  // dan simpan items setiap kali berubah, agar keranjang bertahan
+  // setelah aplikasi ditutup.
+
+  return (
+    &lt;CartContext.Provider
+      value={{ items, tambahItem, kurangiItem, hapusItem, jumlahItem, totalHarga }}
+    &gt;
+      {children}
+    &lt;/CartContext.Provider&gt;
+  );
+}</code></pre>
+  </figure>
+
+  <div class="banding"
+       data-label-lama="Tanpa value — state hanya hidup di dalam provider"
+       data-label-benar="Dengan value — layar dapat membaca keranjang"
+       data-petunjuk="Provider yang tidak memasok nilai tetap memasang context; yang hilang hanya isinya, dan gejalanya senyap.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">provider-tanpa-value.jsx</span>
+        <span class="kode-sumber">ilustrasi · buku §9.7</span>
+      </figcaption>
+      <pre><code class="language-jsx">// Tidak ada prop value: seluruh layar membaca nilai awal null,
+// sehingga useCart melempar error atau keranjang tampak kosong.
+&lt;CartContext.Provider&gt;
+  {children}
+&lt;/CartContext.Provider&gt;</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">context/CartContext.js</span>
+        <span class="kode-sumber">buku §Praktikum</span>
+      </figcaption>
+      <pre><code class="language-jsx">// Enam kunci, satu objek. Setiap layar mengambil bagiannya sendiri.
+&lt;CartContext.Provider
+  value={{ items, tambahItem, kurangiItem, hapusItem, jumlahItem, totalHarga }}
+&gt;
+  {children}
+&lt;/CartContext.Provider&gt;</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      State di dalam provider tidak otomatis terbaca oleh layar.
+      Yang membagikannya adalah prop <code>value</code>; tanpa prop itu, context tetap kosong
+      meskipun state-nya rapi.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Kenapa <code>value</code> tidak diisi satu per satu, misalnya <code>value={items}</code>? (Jawaban: layar juga butuh fungsi pengubah dan nilai turunan; satu objek menjaga semuanya tetap satu paket.)</p>
+  </div>
+</section>
+
+<section class="subbab" id="s3-5">
+  <p class="label-subbab">
+    Subbab 9.7 <span class="sumber-slide">· deck: “Satu Provider di Akar Membungkus Setiap Rute” · buku §9.7</span>
+  </p>
+  <h2>Satu Provider di Akar Membungkus Setiap Rute</h2>
+
+  <p>
+    <code>app/_layout.js</code> adalah layout akar aplikasi Expo Router (Bab 7).
+    <code>&lt;Stack&gt;</code> mendaftarkan semua rute dari folder <code>app/</code> secara
+    otomatis; dengan membungkusnya di dalam <code>&lt;CartProvider&gt;</code>, seluruh rute
+    berada di dalam subtree provider dan dapat memanggil <code>useCart()</code>.
+  </p>
+
+  <p>
+    Penempatan inilah yang membuat keranjang sah menjadi state global: bukan karena datanya
+    besar, melainkan karena cakupan pemakaiannya mencakup semua layar.
+    Cakupan provider juga menentukan banyaknya render ulang — karena itu provider dipasang
+    sedekat mungkin dengan pemakainya, bukan otomatis di paling atas.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">app/_layout.js</span>
+      <span class="kode-sumber">buku §Praktikum · sama dengan deck</span>
+    </figcaption>
+    <pre><code class="language-jsx">import { Stack } from 'expo-router';
+import { CartProvider } from '../context/CartContext';
+
+export default function RootLayout() {
+  return (
+    &lt;CartProvider&gt;
+      &lt;Stack screenOptions={{ headerTitleAlign: 'center' }} /&gt;
+    &lt;/CartProvider&gt;
+  );
+}</code></pre>
+  </figure>
+
+  <div class="banding"
+       data-label-lama="Provider di dalam satu layar — layar lain tidak tercakup"
+       data-label-benar="Provider di layout akar — setiap rute tercakup"
+       data-petunjuk="Yang menentukan bukan di berkas mana provider ditulis, melainkan subtree mana yang berada di bawahnya.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">provider-di-layar.jsx</span>
+        <span class="kode-sumber">ilustrasi · buku §Praktikum</span>
+      </figcaption>
+      <pre><code class="language-jsx">// Provider hanya membungkus layar produk. Layar keranjang berada
+// di luar subtree-nya, jadi useCart di sana melempar error.
+export default function DaftarProduk() {
+  return (
+    &lt;CartProvider&gt;
+      &lt;View style={styles.layar}&gt;…&lt;/View&gt;
+    &lt;/CartProvider&gt;
+  );
+}</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">app/_layout.js</span>
+        <span class="kode-sumber">buku §Praktikum</span>
+      </figcaption>
+      <pre><code class="language-jsx">// Provider membungkus Stack, sehingga setiap rute berada
+// di dalam subtree yang sama.
+export default function RootLayout() {
+  return (
+    &lt;CartProvider&gt;
+      &lt;Stack screenOptions={{ headerTitleAlign: 'center' }} /&gt;
+    &lt;/CartProvider&gt;
+  );
+}</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Provider bukan hiasan layout akar yang wajib ada di setiap project.
+      Kalau suatu saat ada area yang tidak membutuhkan keranjang — misalnya halaman bantuan —
+      provider dipindah lebih ke dalam supaya area itu tidak ikut di-render ulang.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Kalau nanti ada halaman bantuan yang tidak membutuhkan keranjang, apa yang bisa dilakukan? (Jawaban: memindahkan provider lebih ke dalam, sehingga render ulangnya tidak berlebihan.)</p>
+  </div>
+</section>
+
+<section class="subbab" id="s3-6">
+  <p class="label-subbab">
+    Subbab 9.7 <span class="sumber-slide">· deck: “Dua Layar Membaca Satu Sumber Data” &amp; “Satu Ketukan Tambah, Satu Rantai Sampai Badge” · buku §9.7</span>
+  </p>
+  <h2>Dua Layar Membaca Satu Sumber Data</h2>
+
+  <p>
+    Layar produk hanya membutuhkan dua nilai dari <code>useCart()</code>: satu penulis
+    (<code>tambahItem</code>) dan satu pembaca (<code>jumlahItem</code>).
+    Layar keranjang membutuhkan enam: isi keranjang, tiga operasi, dan dua nilai turunan.
+    Perbedaan itu sendiri adalah bukti manfaat hook — tiap layar mengambil sekadar yang
+    dipakainya.
+  </p>
+
+  <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Dua layar, satu sumber data · sumber: deck &amp; buku §9.7</caption>
+      <thead>
+        <tr><th scope="col">Layar</th><th scope="col">Membaca dari <code>useCart()</code></th><th scope="col">Menulis lewat</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>app/index.js</code></td><td><code>jumlahItem</code></td><td><code>tambahItem</code></td></tr>
+        <tr><td><code>app/keranjang.js</code></td><td><code>items</code>, <code>jumlahItem</code>, <code>totalHarga</code></td><td><code>tambahItem</code>, <code>kurangiItem</code>, <code>hapusItem</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    Alur satu ketukan “Tambah” berjalan satu arah dan mudah ditelusuri:
+    <code>onPress</code> memanggil <code>tambahItem(item)</code>, provider memperbarui state,
+    nilai context berubah, lalu React me-render ulang semua komponen yang memakai
+    <code>useCart()</code> — badge di layar produk dan, bila terbuka, daftar di layar keranjang.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">app/index.js</span>
+      <span class="kode-sumber">potongan verbatim · buku §Praktikum</span>
+    </figcaption>
+    <pre><code class="language-jsx">function formatRupiah(nilai) {
+  return 'Rp ' + String(nilai).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+}
+
+export default function DaftarProduk() {
+  const { tambahItem, jumlahItem } = useCart();</code></pre>
+  </figure>
+
+  <div class="banding"
+       data-label-lama="Items disalin ke state lokal layar — lahir keranjang kedua"
+       data-label-benar="Membaca langsung dari useCart — satu keranjang untuk semua layar"
+       data-petunjuk="Salinan terasa aman karena tampilan langsung berubah, tetapi salinan itulah yang membuat dua layar bisa berbeda isi.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">salinan-lokal.jsx</span>
+        <span class="kode-sumber">ilustrasi · buku §9.7</span>
+      </figcaption>
+      <pre><code class="language-jsx">// Keranjang disalin ke state layar. Operasi dari layar lain
+// tidak akan menyentuh salinan ini.
+const { items } = useCart();
+const [daftarLokal, setDaftarLokal] = useState(items);</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">app/keranjang.js</span>
+        <span class="kode-sumber">buku §Praktikum</span>
+      </figcaption>
+      <pre><code class="language-jsx">// Tidak ada salinan: layar membaca nilai provider dan memanggil
+// operasinya langsung.
+const { items, tambahItem, kurangiItem, hapusItem, totalHarga, jumlahItem } =
+  useCart();</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Badge yang tidak bertambah tanpa pesan error bukan berarti context gagal.
+      Paling sering ada dua salinan <code>CartContext</code> di berkas berbeda, atau bundel
+      lama masih dimuat Metro.
+      Buktikan dengan memeriksa path dan huruf besar-kecil setiap <code>import</code>, lalu
+      mulai ulang bundler dengan <code>npx expo start --clear</code>.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Kalau layar pembayaran ditambahkan, apakah provider perlu diubah? (Jawaban: tidak; layar itu cukup memanggil <code>useCart()</code> seperti dua layar sebelumnya.)</p>
+  </div>
+</section>
+
+<section class="subbab" id="s3-7">
+  <p class="label-subbab">
+    Subbab 9.7 <span class="sumber-slide">· deck: “Antrean Kasir Primadona Lahir dari Total yang Dihitung Tangan” &amp; “Keranjang di HP atau di Server?” · buku §9.7 Studi Kasus</span>
+  </p>
+  <h2>Studi Kasus: Primadona — Keranjang di HP atau di Server?</h2>
+
+  <p>
+    Koperasi mahasiswa “Primadona” mengelola toko alat tulis yang melayani ribuan mahasiswa.
+    Setiap jam istirahat antrean kasir mencapai 15–20 menit: kasir menghitung total dengan
+    kalkulator, lalu mencatat penjualan pada buku harian.
+    Akibatnya kas sering selisih, stok menipis tanpa disadari, dan laporan bulanan baru selesai
+    berminggu-minggu setelah periode berakhir.
+  </p>
+
+  <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Gejala dan akar masalah · sumber: deck &amp; buku §9.7</caption>
+      <thead>
+        <tr><th scope="col">Gejala</th><th scope="col">Akar masalah</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Antrean kasir 15–20 menit</td><td>Total belanja dihitung manual dengan kalkulator</td></tr>
+        <tr><td>Uang kas tidak cocok</td><td>Salah hitung atau salah ketik</td></tr>
+        <tr><td>Stok diam-diam menipis</td><td>Penjualan dicatat di buku, tidak terekam rapi</td></tr>
+        <tr><td>Laporan bulanan terlambat</td><td>Rekap manual dari buku harian</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    Keranjang adalah jembatan antara interaksi kasir dan data transaksi.
+    Layar katalog menambah item, layar keranjang memeriksa dan mengubah qty, dan kelak layar
+    pembayaran membaca total; ketiganya berbagi satu sumber kebenaran tanpa prop drilling.
+    Total yang dihitung otomatis menghapus salah hitung — akar masalah kedua koperasi tersebut.
+  </p>
+
+  <p>
+    Keputusan arsitektur yang paling menarik adalah tempat penyimpanan keranjang.
+    Toko dengan jaringan tidak stabil dan perangkat kasir murah diuntungkan keranjang di
+    perangkat: respons cepat dan tetap berfungsi saat offline, dengan risiko data hilang bila
+    perangkat rusak.
+    Toko daring besar memilih server agar pelanggan yang berpindah perangkat menemukan keranjang
+    yang sama.
+  </p>
+
+  <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Dua tempat penyimpanan keranjang · sumber: deck</caption>
+      <thead>
+        <tr><th scope="col">Pertimbangan</th><th scope="col">Keranjang di HP</th><th scope="col">Keranjang di server</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Kecepatan respons</td><td>Cepat, tanpa menunggu jaringan</td><td>Bergantung koneksi</td></tr>
+        <tr><td>Saat jaringan putus</td><td>Tetap berjalan</td><td>Tidak bisa dipakai</td></tr>
+        <tr><td>Risiko data</td><td>Hilang bila perangkat rusak</td><td>Tersimpan terpusat</td></tr>
+        <tr><td>Pindah perangkat</td><td>Keranjang tidak ikut pindah</td><td>Keranjang yang sama ditemukan lagi</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">app/keranjang.js</span>
+      <span class="kode-sumber">potongan verbatim · buku §Praktikum</span>
+    </figcaption>
+    <pre><code class="language-jsx">          &lt;View style={styles.ringkasan}&gt;
+            &lt;Text style={styles.teksRingkasan}&gt;
+              Total ({jumlahItem} item): {formatRupiah(totalHarga)}
+            &lt;/Text&gt;
+            &lt;Pressable style={styles.tombolBeli}&gt;
+              &lt;Text style={styles.teksBeli}&gt;Beli Sekarang&lt;/Text&gt;
+            &lt;/Pressable&gt;
+          &lt;/View&gt;</code></pre>
+  </figure>
+
+  <p>
+    Baris total di atas adalah jawaban untuk antrean Primadona: nilainya tidak diketik, tetapi
+    dihitung dari <code>items</code>.
+    Praktikum memilih keranjang di perangkat dan di memori; pindah ke penyimpanan permanen
+    (Bab 11) maupun sinkronisasi server (Bab 10) tidak mengubah rancangan state-nya.
+    Inilah esensi perancangan state: bukan memilih satu teknologi untuk selamanya, melainkan
+    memahami trade-off dan merancang agar keputusan itu dapat diubah dengan biaya rendah.
+  </p>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      “Keranjang di server selalu lebih benar” tidak berlaku umum.
+      Untuk koperasi dengan jaringan tidak stabil, kombinasi keranjang lokal yang disinkronkan
+      saat online justru lebih tepat daripada menunggu jaringan sebelum kasir bisa menghitung.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Kalau kasir A membuat keranjang dan dilanjutkan kasir B, apakah Context API masih cukup? (Jawaban: tidak; perlu draf keranjang di server, dan itu soal analisis, bukan soal hook.)</p>
+  </div>
+</section>

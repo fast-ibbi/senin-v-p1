@@ -1,0 +1,453 @@
+<h1>Bagian 4 — Privasi &amp; Proyek Mini</h1>
+
+<p class="ringkas">
+  Subbab 12.6–12.7. Siapa pun bisa memanggil kamera; yang membedakan pengembang profesional
+  adalah keputusan memakainya. Bagian ini menutup bab dengan tiga prinsip privasi, modul profil
+  mahasiswa, dan studi kasus presensi yang memperlihatkan kedua sisi mata pisau yang sama.
+</p>
+
+<section class="subbab" id="s4-1">
+  <p class="label-subbab">
+    Subbab 12.6 <span class="sumber-slide">· deck: “Tiga Prinsip yang Membatasi Data yang Boleh Diambil” · buku §12.6</span>
+  </p>
+  <h2>Tiga Prinsip yang Membatasi Data yang Boleh Diambil</h2>
+
+  <p>
+    Fitur perangkat hampir selalu berarti memproses data pribadi: wajah di foto, lokasi, hingga
+    preferensi notifikasi. Tiga prinsip harus dipegang, bukan sekadar untuk mengikuti aturan,
+    tetapi karena inilah inti kepercayaan pengguna.
+  </p>
+
+  <ol>
+    <li>
+      <strong>Minta izin dengan penjelasan (informed consent).</strong> Dialog sistem memang
+      menampilkan pilihan, tetapi aplikasi yang menentukan konteks: jelaskan “untuk apa” fitur
+      dipakai, bukan sekadar “membaca lokasi”.
+    </li>
+    <li>
+      <strong>Jangan mengunggah data tanpa persetujuan.</strong> Unggahan hanya boleh terjadi
+      sebagai respons atas tindakan eksplisit pengguna, misalnya menekan tombol “Simpan dan
+      Kirim”, bukan diam-diam di latar belakang.
+    </li>
+    <li>
+      <strong>Minimalkan data (data minimization).</strong> Ambil data sesedikit mungkin yang
+      masih memenuhi fungsi, karena data yang tidak pernah dikumpulkan adalah data yang tidak
+      bisa bocor.
+    </li>
+  </ol>
+
+  <div class="banding"
+       data-label-lama="Izin tanpa penjelasan"
+       data-label-benar="Izin dengan penjelasan tujuan"
+       data-petunjuk="Dialog sistem menampilkan pilihan; aplikasilah yang menentukan konteksnya. Teks izin adalah kalimat yang dibaca pengguna tepat sebelum ia menekan Izinkan atau Tolak.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">teks-izin-naif.txt</span>
+        <span class="kode-sumber">ilustrasi · deck: “Tiga Prinsip yang Membatasi Data yang Boleh Diambil” · buku §12.6</span>
+      </figcaption>
+      <pre><code class="language-text">"Aplikasi membutuhkan izin lokasi."
+"Aplikasi membutuhkan izin kamera."
+
+✗ pengguna tidak tahu untuk apa
+✗ penolakan naik, termasuk
+   penolakan permanen</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">app.json (potongan)</span>
+        <span class="kode-sumber">buku §12.1 · verbatim, satu string izin disesuaikan kontrak bahasa (“kamu”)</span>
+      </figcaption>
+      <pre><code class="language-json">      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Aplikasi membutuhkan lokasi kamu untuk mengisi data profil."
+        }
+      ]</code></pre>
+    </figure>
+  </div>
+
+  <p>
+    Prinsip ketiga yang paling praktis: gunakan akurasi lokasi kasar bila sudah cukup, simpan
+    koordinat terakhir alih-alih jejak pergerakan, dan jangan menyalin seluruh galeri bila cukup
+    satu gambar. Pada sisi penyimpanan, ingat bahwa AsyncStorage (Bab 11) bukan tempat data
+    sensitif — token dan kredensial ditempatkan di <code>expo-secure-store</code>, yang dipelajari
+    di Bab 13. Aplikasi yang dipublikasikan juga wajib memiliki
+    <strong>kebijakan privasi</strong> yang menjelaskan praktik ini; Google Play dan App Store
+    menuntutnya.
+  </p>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Mengira dialog sistem sudah cukup sebagai persetujuan. Dialog hanya menampilkan pilihan;
+      konteks “untuk apa” ditentukan aplikasi lewat teks izin dan penjelasan sebelum dialog
+      muncul. Persetujuan yang tidak memahami tujuannya bukan informed consent.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Kenapa aplikasi yang sudah terbit wajib punya kebijakan privasi? (Jawaban: Google Play dan
+      App Store menuntutnya, dan pengguna kini makin sering membacanya sebelum memasang.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s4-2">
+  <p class="label-subbab">
+    Subbab 12.6 <span class="sumber-slide">· deck: “Tiga Prinsip yang Membatasi Data yang Boleh Diambil” · buku §12.6</span>
+  </p>
+  <h2>Minimalkan Data yang Dikumpulkan</h2>
+
+  <p>
+    Minimasi data lebih mudah dipahami lewat pasangan contoh. Menyimpan riwayat koordinat
+    setiap lima menit akibatnya sangat berbeda dengan menyimpan satu koordinat saat tombol
+    presensi ditekan. Menyalin seluruh galeri berbeda dengan menyimpan satu gambar yang
+    benar-benar dipakai. Yang pertama menambah risiko tanpa menambah fungsi; yang kedua
+    memenuhi kebutuhan dengan data sekecil mungkin.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">minimasi.txt</span>
+      <span class="kode-sumber">ilustrasi · deck: “Tiga Prinsip yang Membatasi Data yang Boleh Diambil” &amp; buku §12.6</span>
+    </figcaption>
+    <pre><code class="language-text">✗ riwayat koordinat setiap 5 menit
+✗ seluruh galeri disalin ke server
+✗ akurasi High padahal hanya perlu kota
+
+✓ satu koordinat saat tombol presensi ditekan
+✓ satu gambar yang benar-benar dipakai
+✓ akurasi terendah yang masih memenuhi fungsi
+✓ masa simpan dibatasi sesuai kebijakan kampus</code></pre>
+  </figure>
+
+  <blockquote>
+    Data yang tidak pernah dikumpulkan adalah data yang tidak bisa bocor.
+  </blockquote>
+
+  <p>
+    Pada sisi penyimpanan, dua tempat berbeda menuntut perlakuan berbeda: AsyncStorage hanya
+    cocok untuk teks biasa seperti isian profil, sedangkan kredensial harus berada di
+    <code>expo-secure-store</code>. Pada sisi pengiriman, nyatakan dengan jelas data apa yang
+    dikirim, ke mana, dan untuk apa — lalu jangan mengirim lebih dari yang dibutuhkan.
+  </p>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Mengira privasi hanya urusan teks kebijakan. Praktiknya ada di kode: pilihan tingkat
+      akurasi, jumlah gambar yang disalin, dan kapan unggahan terjadi. Kebijakan privasi yang
+      tidak sesuai perilaku aplikasinya adalah janji yang tidak ditepati.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Kenapa menyimpan satu koordinat berbeda akibatnya dengan menyimpan riwayat koordinat?
+      (Jawaban: satu titik hanya menjawab “di mana saat itu”, sedangkan riwayat dapat
+      merekonstruksi pergerakan seseorang.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s4-3">
+  <p class="label-subbab">
+    Subbab 12.7 <span class="sumber-slide">· deck: “Modul Profil: Empat Kelompok Data, Satu Layar” · buku §12.7</span>
+  </p>
+  <h2>Modul Profil: Empat Kelompok Data, Satu Layar</h2>
+
+  <p>
+    Sebagai penerapan utuh, bab ini membangun <strong>Aplikasi Profil Mahasiswa</strong>: satu
+    layar yang mengumpulkan empat kelompok data — akademik (nama, NIM, program studi, email),
+    foto profil dari kamera atau galeri, lokasi saat ini beserta akurasinya, dan informasi
+    perangkat — lalu menyimpannya ke AsyncStorage sehingga tetap ada saat aplikasi dibuka lagi.
+  </p>
+
+  <p>
+    Arsitekturnya sengaja sederhana. <code>App.js</code> sebagai pintu masuk menampilkan satu
+    layar <code>screens/ProfilMahasiswa.js</code> yang memegang keempat kelompok data; logika
+    penyimpanan dipisah ke <code>utils/profilStorage.js</code>; dan komponen kecil
+    <code>components/InfoBaris.js</code> menampilkan satu pasangan label–nilai, latihan komponen
+    yang dapat dipakai ulang ala Bab 5. Pemisahan ini menjaga pintu masuk tetap ramping dan
+    membuat layar fokus pada tampilan.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">App.js</span>
+      <span class="kode-sumber">buku §Praktikum · verbatim</span>
+    </figcaption>
+    <pre><code class="language-js">import { SafeAreaView, StatusBar, StyleSheet } from 'react-native';
+import ProfilMahasiswa from './screens/ProfilMahasiswa';
+
+export default function App() {
+  return (
+    &lt;SafeAreaView style={styles.kontainer}&gt;
+      &lt;StatusBar style="auto" /&gt;
+      &lt;ProfilMahasiswa /&gt;
+    &lt;/SafeAreaView&gt;
+  );
+}
+
+const styles = StyleSheet.create({
+  kontainer: {
+    flex: 1,
+    backgroundColor: '#f5f5f5',
+  },
+});</code></pre>
+  </figure>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">alur-profil.txt</span>
+      <span class="kode-sumber">ilustrasi · buku §12.7</span>
+    </figcaption>
+    <pre><code class="language-text">App.js (SafeAreaView)
+  └─ screens/ProfilMahasiswa.js
+       ├─ muat data tersimpan (AsyncStorage)   saat aplikasi dibuka
+       ├─ ambil foto   → izin + launchCameraAsync / launchImageLibraryAsync
+       ├─ ambil lokasi → izin + getCurrentPositionAsync → koordinat &amp; akurasi
+       ├─ info perangkat → expo-device
+       └─ simpan profil → simpanProfil() → AsyncStorage
+                          └─ kirim notifikasi uji → scheduleNotificationAsync</code></pre>
+  </figure>
+
+  <p>
+    Pembagian peran itu menunjukkan pola yang terus muncul di aplikasi nyata:
+    <strong>mengumpulkan</strong> (foto, lokasi, perangkat), <strong>memvalidasi</strong> (bidang
+    wajib), <strong>menyimpan</strong> (persistensi lokal), dan <strong>memberi umpan balik</strong>
+    (dialog, notifikasi). Implementasi lengkapnya ada di halaman praktikum.
+  </p>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Mengira arsitektur satu layar berarti tidak perlu pemisahan. Menaruh penyimpanan,
+      pembacaan lokasi, dan pembacaan perangkat langsung di dalam layar membuat layar itu tidak
+      bisa diuji sendiri dan tidak bisa dipakai ulang layar lain.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Apa yang terjadi kalau pemulihan data dijalankan pada setiap render, bukan sekali di
+      <code>useEffect</code>? (Jawaban: data tersimpan menimpa isian pengguna, sehingga layar
+      tidak bisa diperbaiki dari dalam aplikasi.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s4-4">
+  <p class="label-subbab">
+    Subbab 12.7 <span class="sumber-slide">· deck: “Simpan dan Muat Profil: Layar Tidak Perlu Tahu Caranya” · buku §12.7</span>
+  </p>
+  <h2>Simpan dan Muat Profil: Layar Tidak Perlu Tahu Caranya</h2>
+
+  <p>
+    Berkas ini membungkus AsyncStorage dengan dua fungsi saja: <code>simpanProfil</code>
+    menerima objek profil dan menyimpannya sebagai JSON, sedangkan <code>muatProfil</code>
+    mengembalikan objek atau <code>null</code> bila belum pernah disimpan. Dengan pembungkusan
+    seperti ini, layar tidak perlu tahu nama kunci atau detail serialisasinya — pemisahan
+    tanggung jawab yang sama dengan pembungkus penyimpanan di Bab 11.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">utils/profilStorage.js</span>
+      <span class="kode-sumber">buku §Praktikum · verbatim</span>
+    </figcaption>
+    <pre><code class="language-js">import AsyncStorage from '@react-native-async-storage/async-storage';
+
+// Kunci penyimpanan profil di AsyncStorage (pola serialisasi JSON, lihat Bab 11).
+const KUNCI_PROFIL = 'profil-mahasiswa';
+
+export async function simpanProfil(profil) {
+  const teksJson = JSON.stringify(profil);
+  await AsyncStorage.setItem(KUNCI_PROFIL, teksJson);
+}
+
+export async function muatProfil() {
+  const teksJson = await AsyncStorage.getItem(KUNCI_PROFIL);
+  if (!teksJson) {
+    return null;
+  }
+  return JSON.parse(teksJson);
+}</code></pre>
+  </figure>
+
+  <p>
+    Di sisi layar, pola pemulihannya selalu dua langkah: hasil <code>muatProfil()</code> diuji
+    dengan <code>if (tersimpan)</code>, lalu setiap state diisi dengan nilai bawaan seperti
+    <code>|| ''</code> atau <code>|| null</code>. Ini bukan kerapian belaka — objek profil lama
+    yang belum memiliki <code>lokasi</code> harus tetap bisa dimuat, dan tanpa nilai bawaan layar
+    akan menerima <code>undefined</code>.
+  </p>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Menganggap pembungkus penyimpanan sebagai lapisan yang memperlambat pekerjaan. Justru
+      sebaliknya: ketika kelak penyimpanan berpindah ke server (Bab 10), hanya berkas ini yang
+      berubah — layar tidak disentuh sama sekali.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Mengapa nilai bawaan seperti <code>|| ''</code> dan <code>|| null</code> penting saat
+      memuat profil lama? (Jawaban: objek lama mungkin belum memiliki <code>lokasi</code> atau
+      <code>email</code>, sehingga tanpa nilai bawaan layar menerima <code>undefined</code>.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s4-5">
+  <p class="label-subbab">
+    Subbab 12.7 <span class="sumber-slide">· deck: “Studi Kasus: Presensi Foto dan Lokasi Menutup Celah Kecurangan” · buku §Studi Kasus</span>
+  </p>
+  <h2>Studi Kasus: Presensi Foto dan Lokasi</h2>
+
+  <p>
+    Presensi tatap muka konvensional memiliki kelemahan klasik: mahasiswa dapat menitipkan
+    tanda tangan kepada temannya. Banyak perguruan tinggi beralih ke presensi digital, dan di
+    sinilah fitur perangkat menjadi tulang punggung solusinya. Mahasiswa membuka aplikasi saat
+    sesi kuliah berlangsung, sistem meminta izin kamera dan lokasi, mahasiswa berfoto, dan sistem
+    mencatat koordinat serta waktu.
+  </p>
+
+  <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Yang diperiksa server dan fitur perangkat yang dipakainya · sumber: deck Bab 12 &amp; buku §Studi Kasus</caption>
+      <thead>
+        <tr><th scope="col">Yang diperiksa server</th><th scope="col">Fitur perangkat yang dipakai</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Foto diambil dalam jendela waktu sesi</td><td>Kamera atau galeri (subbab 12.2)</td></tr>
+        <tr><td>Koordinat dalam radius 100 meter</td><td>Lokasi <code>High</code> (subbab 12.3)</td></tr>
+        <tr><td>Tidak ada dua presensi dari perangkat yang sama</td><td>Info perangkat (subbab 12.5)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    Angka radius 100 meter itulah alasan subbab 12.3 membahas ketelitian sedetail itu: nilai
+    tersebut menuntut akurasi <code>High</code>, bukan <code>Balanced</code>. Pengingat sesi
+    kuliahnya dikirim lewat notifikasi lokal (subbab 12.4), dan hasilnya praktik titip absen di
+    kertas menjadi jauh lebih sulit.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Mencatat jejak lokasi terus-menerus"
+       data-label-benar="Satu koordinat saat tombol presensi ditekan"
+       data-petunjuk="Keduanya menjawab pertanyaan “di mana mahasiswa saat presensi”. Yang kiri menghasilkan riwayat pergerakan yang tidak dibutuhkan; yang kanan hanya menyimpan bukti untuk sesi itu.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">jejak-lokasi.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §Studi Kasus, §12.6</span>
+      </figcaption>
+      <pre><code class="language-text">koordinat dicatat tiap 5 menit
+  selama aplikasi berjalan
+→ terbentuk riwayat pergerakan
+→ “di mana dan kapan” seseorang
+   dapat direkonstruksi
+✗ melampaui kebutuhan presensi</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">satu-titik.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §Studi Kasus, §12.6</span>
+      </figcaption>
+      <pre><code class="language-text">satu koordinat disimpan
+  saat tombol presensi ditekan
+→ cukup untuk memeriksa radius
+   kampus pada sesi itu
+→ masa simpan dibatasi kebijakan
+✓ memenuhi fungsi tanpa jejak
+   pergerakan</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Mengira radius kampus cukup diperiksa dengan ketelitian <code>Balanced</code>. Radius
+      ketidakpastian sekitar 100 meter membuat pemeriksaan “dalam 100 meter dari gedung” menjadi
+      tidak bermakna — nilai itu menuntut <code>High</code>.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Apa yang terjadi kalau server hanya memeriksa foto tanpa koordinat? (Jawaban: foto lama
+      bisa dikirim ulang dari rumah, sehingga verifikasi kehadirannya kehilangan makna.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s4-6">
+  <p class="label-subbab">
+    Subbab 12.7 <span class="sumber-slide">· deck: “Sisi Lain: Presensi yang Sama Bisa Menjadi Alat Pengawasan” · buku §Studi Kasus</span>
+  </p>
+  <h2>Sisi Lain: Alat Pengawasan yang Lahir dari Niat Baik</h2>
+
+  <p>
+    Data presensi menggabungkan tiga hal yang sangat pribadi: wajah, lokasi, dan waktu
+    keberadaan mahasiswa. Dari tiga titik data itu, pihak kampus dapat merekonstruksi gambaran
+    tentang di mana dan kapan persisnya seorang mahasiswa berada. Teknologi yang sama dapat
+    menjadi solusi atau masalah, tergantung keputusan rancangannya.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">rantai-pengawasan.txt</span>
+      <span class="kode-sumber">ilustrasi · deck: “Sisi Lain: Presensi yang Sama Bisa Menjadi Alat Pengawasan” &amp; buku §Studi Kasus</span>
+    </figcaption>
+    <pre><code class="language-text">wajah (foto)  +  lokasi (koordinat)  +  waktu (stempel sesi)
+                      │
+                      ▼
+        rekonstruksi “di mana dan kapan”
+                 seorang mahasiswa
+                      │
+        ┌─────────────┴─────────────┐
+        ▼                           ▼
+dengan pembatas risiko      tanpa pembatas
+  izin jujur                  pengawasan
+  data minimal                yang menimbulkan
+  unggah atas tindakan        masalah baru
+  pengguna
+  masa simpan dibatasi</code></pre>
+  </figure>
+
+  <p>
+    Penangkalnya adalah praktik subbab 12.6 yang diterapkan dengan jujur: izin yang menjelaskan
+    tujuan, data seminimal mungkin, unggahan hanya atas tindakan pengguna, dan masa simpan yang
+    dibatasi kebijakan kampus. Menyimpan satu koordinat saat tombol presensi ditekan jauh
+    berbeda akibatnya dengan menyimpan riwayat koordinat setiap lima menit. Tanpa praktik itu,
+    solusi yang dimaksudkan menjaga integritas akademik justru berubah menjadi alat pengawasan
+    yang menimbulkan masalah baru.
+  </p>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Mengira keputusan teknis bersifat netral nilai. Memilih mencatat jejak lokasi atau satu
+      titik adalah keputusan rancangan, dan keputusan itulah yang menentukan apakah aplikasi
+      membantu mahasiswa atau mengawasinya.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Kalau kamu analis sistemnya, syarat apa yang kamu ajukan ke vendor sebelum data mahasiswa
+      diserahkan? (Jawaban yang diharapkan menyebut empat hal: data apa yang dikumpulkan, berapa
+      lama disimpan, siapa yang boleh mengakses, dan bagaimana datanya dihapus.)
+    </p>
+  </div>
+</section>

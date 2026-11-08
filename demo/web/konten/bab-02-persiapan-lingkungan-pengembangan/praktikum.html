@@ -1,0 +1,278 @@
+<h1>Praktikum Bab 2 — Proyek Expo Pertama</h1>
+
+<p class="ringkas">
+  Satu pekerjaan besar hari ini: dari lingkungan kosong sampai teks “Halo, Dunia!” tampil di
+  layar — lewat Expo Go di ponsel, emulator Android, atau perangkat fisik. Di tengahnya kamu
+  sengaja merusak satu baris kode untuk melatih membaca pesan galat, lalu memperbaikinya.
+</p>
+
+<div class="kotak kotak-tiruan">
+  <p class="kotak-judul">Tujuan praktikum</p>
+  <p>Setelah menyelesaikan praktikum ini, kamu mampu:</p>
+  <ol>
+    <li>membuat proyek Expo pertama dengan templat <code>blank</code> (JavaScript polos);</li>
+    <li>menjalankan <code>npx expo start</code> dan memahami antarmuka terminalnya;</li>
+    <li>melihat aplikasi berjalan pada tiga jalur: Expo Go, emulator Android, dan perangkat fisik;</li>
+    <li>mengubah kode “Hello World” dan membuktikan Fast Refresh bekerja;</li>
+    <li>melatih diagnosis kendala lingkungan lewat daftar Troubleshooting.</li>
+  </ol>
+</div>
+
+<h2>Kebutuhan</h2>
+
+<ul>
+  <li>Laptop atau komputer (Windows, macOS, atau Linux) dengan koneksi internet.</li>
+  <li>Node.js LTS terbaru (minimal 22) yang sudah terverifikasi lewat <code>node --version</code>.</li>
+  <li>Visual Studio Code (disarankan) beserta ekstensi ESLint dan Prettier.</li>
+  <li>Ponsel Android atau iOS dengan <strong>Expo Go</strong> terpasang, dan/atau Android Studio untuk emulator — setidaknya salah satu wajib tersedia agar hasil praktikum terlihat.</li>
+</ul>
+
+<h2>Persiapan</h2>
+
+<ol>
+  <li>Pastikan Node.js dan npm terverifikasi: jalankan <code>node --version</code> dan <code>npm --version</code>, lalu catat kedua nomor versi untuk laporanmu.</li>
+  <li>Buat folder kerja khusus, misalnya <code>proyek-kuliah</code>, dan jadikan folder itu direktori aktif terminal.</li>
+  <li>Jika memakai ponsel, pastikan Expo Go terpasang dan ponsel berada di Wi-Fi yang sama dengan laptop.</li>
+  <li>Jika memakai emulator, nyalakan Android Studio, buat satu perangkat virtual lewat AVD Manager, lalu jalankan emulator sebelum langkah kerja dimulai.</li>
+  <li>Kalau memakai komputer laboratorium kampus yang terkunci, koordinasikan dengan pengelola lab lebih dulu — Node.js LTS dan VS Code wajib tersedia di sana.</li>
+</ol>
+
+<h2>Langkah kerja</h2>
+
+<ol>
+  <li><strong>Buka terminal</strong> (PowerShell atau Command Prompt di Windows; Terminal di macOS dan Linux), lalu arahkan ke folder kerja dengan <code>cd proyek-kuliah</code>.</li>
+  <li><strong>Buat proyek:</strong> jalankan <code>npx create-expo-app aplikasi-pertama --template blank</code>. Perhatikan prosesnya — npx mengunduh alat pembuat proyek, lalu npm memasang seluruh dependensi ke <code>node_modules</code>. Baca pesan sukses di akhir.</li>
+  <li><strong>Masuk ke folder proyek:</strong> <code>cd aplikasi-pertama</code>, lalu telusuri isinya dengan <code>ls</code> (macOS/Linux) atau <code>dir</code> (Windows), dan bandingkan dengan struktur folder di bagian 4.</li>
+  <li><strong>Buka di VS Code:</strong> <code>code .</code>. Di panel Explorer, buka <code>App.js</code> dan amati isinya.</li>
+  <li><strong>Nyalakan server:</strong> <code>npx expo start</code>. Tunggu sampai muncul kode QR dan alamat seperti <code>exp://192.168.x.x:8081</code>.</li>
+  <li><strong>Jalur Expo Go:</strong> buka Expo Go di ponsel lalu pindai kode QR — di iPhone lewat aplikasi Kamera, di Android lewat pemindai di dalam Expo Go. Percobaan pertama memerlukan beberapa detik untuk bundling.</li>
+  <li><strong>Jalur emulator:</strong> bila emulator sudah menyala, tekan <strong>a</strong> di terminal Expo.</li>
+  <li><strong>Jalur perangkat fisik (opsional):</strong> sambungkan ponsel Android dengan kabel USB (Developer options dan USB debugging aktif), verifikasi dengan <code>adb devices</code>, lalu tekan <strong>a</strong>.</li>
+  <li><strong>Ubah dan rusak sengaja:</strong> ganti isi <code>Text</code> menjadi namamu, simpan, dan amati Fast Refresh. Setelah itu hapus satu tanda kutip, simpan, dan baca layar kesalahan merah beserta pesannya — lalu kembalikan kode yang benar.</li>
+  <li><strong>Hentikan server</strong> dengan <strong>Ctrl+C</strong> setelah selesai, dan simpan folder proyek karena ia dipakai lagi di beberapa bab berikutnya.</li>
+</ol>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">(terminal)</span>
+    <span class="kode-sumber">buku §Praktikum · Langkah Kerja</span>
+  </figcaption>
+  <pre><code class="language-bash">node --version
+npm --version
+npx create-expo-app aplikasi-pertama --template blank
+cd aplikasi-pertama
+code .
+npx expo start</code></pre>
+</figure>
+
+<h2>Kode: App.js</h2>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">kode/bab-02/App.js</span>
+    <span class="kode-sumber">buku §Praktikum · Kode</span>
+  </figcaption>
+  <pre><code class="language-jsx">import { StatusBar } from 'expo-status-bar';
+import { StyleSheet, Text, View } from 'react-native';
+
+export default function App() {
+  return (
+    &lt;View style={styles.kontainer}&gt;
+      &lt;Text style={styles.judul}&gt;Halo, Dunia!&lt;/Text&gt;
+      &lt;Text style={styles.keterangan}&gt;
+        Project Expo pertama saya berhasil berjalan di perangkat.
+      &lt;/Text&gt;
+      &lt;StatusBar style="auto" /&gt;
+    &lt;/View&gt;
+  );
+}
+
+const styles = StyleSheet.create({
+  kontainer: {
+    flex: 1,
+    backgroundColor: '#f5f5f5',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 24,
+  },
+  judul: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#1a1a2e',
+  },
+  keterangan: {
+    fontSize: 16,
+    color: '#555555',
+    marginTop: 8,
+    textAlign: 'center',
+  },
+});</code></pre>
+</figure>
+
+<h2>Penjelasan kode</h2>
+
+<p>
+  Berkas ini adalah komponen <code>App</code> — fungsi JavaScript yang mengembalikan deskripsi
+  antarmuka. Dua baris <code>import</code> di awal meminjam alat dari pustaka:
+  <code>StatusBar</code> dari paket <code>expo-status-bar</code> (pengatur bilah status atas
+  layar), serta <code>StyleSheet</code>, <code>Text</code>, dan <code>View</code> dari
+  <code>react-native</code>. <code>View</code> adalah kotak penampung antarmuka (seperti
+  <code>div</code> di web), <code>Text</code> adalah teks yang tampil, dan
+  <code>StyleSheet.create</code> adalah cara React Native menulis gaya. Ketiganya baru dikupas
+  mendalam di Bab 5, jadi di sini cukup tiru polanya.
+</p>
+
+<p>
+  Fungsi <code>App</code> mengembalikan struktur: satu <code>View</code> berisi dua
+  <code>Text</code> dan satu <code>StatusBar</code>. Gaya ditulis sebagai objek dengan nama
+  deskriptif — <code>kontainer</code>, <code>judul</code>, <code>keterangan</code>.
+  <code>flex: 1</code> membuat kotak memenuhi layar, <code>alignItems</code> dan
+  <code>justifyContent</code> memusatkan isi, sedangkan <code>fontSize</code>,
+  <code>fontWeight</code>, dan <code>color</code> mengatur tampilan huruf.
+</p>
+
+<p>
+  Pola ini mengikuti template resmi SDK 57. Kamu dapat mengetik ulang, mengganti teksnya, lalu
+  mengamati perubahannya — dan itulah bentuk pekerjaan sehari-hari seorang pengembang
+  antarmuka: mengubah satu nilai, menyimpan, melihat hasilnya.
+</p>
+
+<h2>Hasil yang diharapkan</h2>
+
+<ol>
+  <li><strong>Dua nomor versi</strong> muncul saat <code>node --version</code> dan <code>npm --version</code> dijalankan.</li>
+  <li><strong>Folder <code>aplikasi-pertama</code></strong> terbentuk, dan <code>npx create-expo-app aplikasi-pertama --template blank</code> selesai tanpa galat.</li>
+  <li><strong>Terminal Expo</strong> menampilkan kode QR dan alamat <code>exp://...:8081</code>.</li>
+  <li><strong>Aplikasi tampil</strong> di Expo Go dan/atau emulator Android dengan teks “Halo, Dunia!” di tengah layar.</li>
+  <li><strong>Fast Refresh bekerja</strong>: setelah <code>App.js</code> diubah dan disimpan, tampilan berubah sendiri dalam 1–2 detik; layar kesalahan merah muncul ketika kode sengaja dirusak, lalu hilang setelah dikembalikan.</li>
+  <li><strong><code>adb devices</code></strong> menampilkan entri <code>emulator-5554</code> atau nama perangkat fisikmu saat terhubung.</li>
+</ol>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">(contoh keluaran terminal)</span>
+    <span class="kode-sumber">buku §Praktikum · Hasil yang Diharapkan</span>
+  </figcaption>
+  <pre><code class="language-text">$ node --version
+v22.x.x
+$ npm --version
+10.x.x
+
+$ npx expo start
+
+› Metro waiting on exp://192.168.x.x:8081
+› Scan the QR code above with Expo Go</code></pre>
+</figure>
+
+<h2>Troubleshooting</h2>
+
+<div class="tabel-gulir">
+  <table class="tabel">
+    <caption>Kendala lingkungan yang paling sering muncul · sumber: buku §Praktikum (Troubleshooting)</caption>
+    <thead>
+      <tr><th scope="col">Gejala</th><th scope="col">Penyebab</th><th scope="col">Solusi</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>node: command not found</code> / <code>'node' is not recognized</code></td>
+        <td>Node.js belum terpasang, atau pemasangannya tidak tercatat di PATH</td>
+        <td>Pasang Node.js LTS dari nodejs.org (Windows: centang “Add to PATH”), lalu buka terminal baru dan ulangi <code>node --version</code></td>
+      </tr>
+      <tr>
+        <td>Peringatan bahwa port 8081 sedang dipakai</td>
+        <td>Ada program lain yang menduduki port default Metro</td>
+        <td>Tutup program itu, atau jalankan <code>npx expo start --port 8082</code>; di Windows <code>netstat -ano | findstr 8081</code> lalu <code>taskkill /PID &lt;angka-pid&gt; /F</code></td>
+      </tr>
+      <tr>
+        <td>Layar merah saat menyimpan, atau “Unable to resolve module …”</td>
+        <td>Galat bundling Metro: kesalahan sintaksis, atau modul yang tidak ditemukan</td>
+        <td>Baca baris pertama pesan galat (berkas dan barisnya disebut), perbaiki, simpan; bila tetap, jalankan <code>npx expo start -c</code></td>
+      </tr>
+      <tr>
+        <td>Menekan <strong>a</strong> tidak membuka apa pun</td>
+        <td>Emulator belum dinyalakan, atau AVD belum pernah dibuat</td>
+        <td>Buka Android Studio &gt; Device Manager, buat perangkat virtual bila belum ada, jalankan sampai selesai booting, lalu tekan <strong>a</strong> lagi</td>
+      </tr>
+      <tr>
+        <td><code>adb devices</code> kosong atau berstatus <code>unauthorized</code></td>
+        <td>USB debugging belum aktif, kabel hanya untuk mengisi daya, atau ponsel belum menyetujui autentikasi</td>
+        <td>Aktifkan USB debugging, ganti kabel data, setujui dialog “Izinkan debugging USB?”, cabut dan pasang ulang kabel</td>
+      </tr>
+      <tr>
+        <td>Kode QR tidak bisa tersambung (“could not connect”)</td>
+        <td>Ponsel dan komputer berada di jaringan berbeda, atau jaringan memblokir komunikasi antarperangkat</td>
+        <td>Hentikan server, lalu jalankan <code>npx expo start --tunnel</code> dan pindai ulang kode QR</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="kotak kotak-salah">
+  <p class="kotak-judul">Salah paham</p>
+  <p>
+    Kegagalan lingkungan bukan kegagalan logika. Dua jam pertama praktikum sering habis untuk
+    masalah PATH, bukan untuk materi. Ajarkan urutannya: baca pesan galat, kenali lapisan mana
+    yang gagal (Node, npm, Metro, jaringan, atau perangkat), baru bertindak. Jangan memasang
+    ulang seluruh proyek sebelum membaca pesan galatnya — itu menghapus petunjuk paling
+    berharga yang kamu punya.
+  </p>
+</div>
+
+<h2>Yang harus teramati</h2>
+
+<ul>
+  <li><strong>Dua nomor versi</strong> — <code>node --version</code> dan <code>npm --version</code> menjawab dengan nomor, bukan pesan galat.</li>
+  <li><strong>Folder proyek terbuat tanpa galat</strong> — <code>aplikasi-pertama</code> ada, dan isinya cocok dengan struktur di bagian 4.</li>
+  <li><strong>Kode QR dan alamat LAN</strong> — <code>npx expo start</code> menampilkan <code>exp://...:8081</code>, bukti Metro bekerja.</li>
+  <li><strong>Teks “Halo, Dunia!”</strong> tampil di Expo Go atau emulator Android.</li>
+  <li><strong>Perubahan mengubah layar dalam 1–2 detik</strong> — Fast Refresh bekerja, dan layar merah muncul saat kode sengaja dirusak.</li>
+</ul>
+
+<blockquote>
+  Laporan yang baik menyertakan tangkapan layar dan nomor versi, bukan hanya tulisan “berhasil”.
+</blockquote>
+
+<h2>Kuis kilat</h2>
+
+<ol>
+  <li>Alat apa yang wajib terpasang sebelum menjalankan <code>npx create-expo-app</code>?</li>
+  <li>Apa beda <code>npm install &lt;paket&gt;</code> dengan <code>npx &lt;perintah&gt;</code>?</li>
+  <li>Kenapa buku ini memilih <code>--template blank</code>?</li>
+  <li>Apa peran Metro Bundler saat <code>npx expo start</code> dijalankan?</li>
+  <li>Port bawaan apa yang dipakai Metro Bundler?</li>
+</ol>
+
+<div class="kotak kotak-jawab">
+  <details>
+    <summary>Kunci kuis kilat</summary>
+    <ol>
+      <li>Node.js — wajib ada sebelum alat Expo bisa dijalankan.</li>
+      <li><code>npm install</code> memasang paket ke proyek; <code>npx</code> menjalankannya tanpa pemasangan permanen.</li>
+      <li><code>blank</code> menghasilkan JavaScript biasa, sedangkan templat bawaan memakai TypeScript dan menyertakan Expo Router.</li>
+      <li>Ia membundel modul JavaScript lalu mengirimkannya ke perangkat.</li>
+      <li>Port bawaan Metro Bundler adalah <strong>8081</strong>.</li>
+    </ol>
+  </details>
+</div>
+
+<h2>Ringkasan bab</h2>
+
+<ol>
+  <li>Node.js adalah runtime JavaScript di luar browser — prasyarat Expo CLI dan Metro Bundler.</li>
+  <li>npm mengelola dependency dan mencatatnya di <code>package.json</code>; <code>npx</code> menjalankan perintah tanpa memasang permanen.</li>
+  <li>Pilih satu pengelola paket dan konsisten; mencampurnya menghasilkan lockfile berbeda antaranggota tim.</li>
+  <li>VS Code dengan ESLint dan Prettier adalah meja kerjanya; hindari ekstensi yang sudah diarsipkan pembuatnya.</li>
+  <li>Expo Go menguji tanpa build dengan harga keterbatasan fitur native; emulator untuk uji lintas versi, perangkat fisik untuk sensor dan pengalaman nyata.</li>
+  <li>iOS Simulator hanya tersedia di macOS; pengguna Windows menguji iOS lewat iPhone fisik ber-Expo Go atau build awan (Bab 15).</li>
+  <li><code>--template blank</code> berarti JavaScript polos, dan <code>npx expo start</code> menjalankan Metro di port 8081; <code>--tunnel</code> mengatasi jaringan yang memblokir komunikasi antarperangkat.</li>
+</ol>
+
+<div class="kotak kotak-tanya">
+  <p class="kotak-judul">Pertanyaan penuntun</p>
+  <p>
+    Tutup dengan satu kalimat deck: “Hari ini kita menghidupkan mesinnya; mulai Bab 3 kita
+    mulai menulis bahasanya.” Simpan folder <code>aplikasi-pertama</code> — ia dipakai lagi di
+    beberapa bab berikutnya, dan Bab 3 sudah menunggumu dengan JavaScript modern: variabel,
+    tipe data, dan fungsi.
+  </p>
+</div>

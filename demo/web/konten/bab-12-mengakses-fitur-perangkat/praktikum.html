@@ -1,0 +1,705 @@
+<h1>Praktikum Bab 12 — Aplikasi Profil Mahasiswa</h1>
+
+<p class="ringkas">
+  Satu project, empat kelompok data, satu layar. Praktikum ini merangkai seluruh materi bab —
+  konfigurasi <code>plugins</code>, permintaan izin, pengambilan foto dan koordinat, pembacaan
+  info perangkat, penyimpanan AsyncStorage, dan notifikasi uji — lalu membuktikannya dengan satu
+  tindakan sederhana: tutup aplikasi, buka lagi, dan periksa bahwa datanya masih ada.
+</p>
+
+<div class="kotak kotak-tiruan">
+  <p class="kotak-judul">Tujuan praktikum</p>
+  <p>Setelah menyelesaikan praktikum ini, kamu mampu:</p>
+  <ol>
+    <li>menuliskan blok <code>plugins</code> di <code>app.json</code> sebagai deklarasi izin saat build;</li>
+    <li>meminta izin kamera, galeri, lokasi, dan notifikasi saat dibutuhkan, lalu menangani penolakannya;</li>
+    <li>mengambil foto lewat antarmuka kamera sistem dan membaca koordinat beserta akurasinya;</li>
+    <li>menyimpan profil ke AsyncStorage dan memulihkannya saat aplikasi dibuka kembali;</li>
+    <li>menjadwalkan notifikasi lokal yang memakai data profil pengguna.</li>
+  </ol>
+</div>
+
+<h2>Kebutuhan</h2>
+
+<ul>
+  <li>Project Expo berbasis template blank (JavaScript) sesuai Bab 2, bernama <code>profil-mahasiswa</code>.</li>
+  <li>Perangkat fisik dengan Expo Go (disarankan) atau emulator Android. GPS bekerja jauh lebih baik di perangkat fisik; emulator hanya memberi koordinat tiruan.</li>
+  <li>Paket Expo yang dipasang: <code>expo-image-picker</code>, <code>expo-location</code>, <code>expo-notifications</code>, <code>expo-file-system</code>, <code>expo-device</code>, dan <code>@react-native-async-storage/async-storage</code>.</li>
+  <li>Koneksi internet untuk memasang paket, lalu hak pengelola lab bila memakai komputer laboratorium kampus.</li>
+</ul>
+
+<h2>Persiapan</h2>
+
+<ol>
+  <li>Buat project baru dengan cara yang sama seperti Bab 2, lalu masuk ke foldernya.</li>
+  <li>Pasang seluruh paket dengan perintah resmi Expo agar versinya cocok dengan SDK project.</li>
+  <li>Periksa berkas <code>app.json</code> dan tambahkan daftar <code>plugins</code> seperti pada bagian kode di bawah. Di Expo Go bagian ini tidak wajib karena Expo Go sudah mendeklarasikan izinnya, tetapi sangat berguna saat kamu membangun APK di Bab 15.</li>
+  <li>Buat folder <code>screens</code>, <code>components</code>, dan <code>utils</code> di dalam folder project sebelum menyalin berkas.</li>
+</ol>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">(terminal)</span>
+    <span class="kode-sumber">buku §Praktikum · Persiapan, verbatim</span>
+  </figcaption>
+  <pre><code class="language-bash">npx create-expo-app profil-mahasiswa --template blank
+cd profil-mahasiswa
+npx expo start</code></pre>
+</figure>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">(terminal · di dalam folder profil-mahasiswa)</span>
+    <span class="kode-sumber">buku §Praktikum · Persiapan, verbatim</span>
+  </figcaption>
+  <pre><code class="language-bash">npx expo install expo-image-picker expo-location expo-notifications expo-file-system expo-device @react-native-async-storage/async-storage</code></pre>
+</figure>
+
+<p>
+  Perhatikan satu hal kecil yang sering menjatuhkan praktikum: perintahnya
+  <code>npx expo install</code>, bukan <code>npm install</code> biasa. Hanya perintah Expo yang
+  memilih versi paket yang cocok dengan SDK project, sehingga fungsi dari paket-paket ini tidak
+  berubah perilaku di tengah jalan.
+</p>
+
+<h2>Langkah kerja</h2>
+
+<ol>
+  <li>Salin isi berkas <code>app.json</code> pada bagian kode ke project, termasuk blok <code>plugins</code>.</li>
+  <li>Ganti isi <code>App.js</code> dengan kode pada bagian kode yang menampilkan layar <code>ProfilMahasiswa</code>.</li>
+  <li>Buat folder <code>screens</code>, <code>components</code>, dan <code>utils</code>, lalu salin masing-masing berkas <code>ProfilMahasiswa.js</code>, <code>InfoBaris.js</code>, dan <code>profilStorage.js</code> ke folder yang sesuai.</li>
+  <li>Mulai ulang bundler dengan membersihkan cache agar plugin dan paket baru terbaca: <code>npx expo start -c</code>.</li>
+  <li>Buka aplikasi di Expo Go, isi nama dan NIM (gunakan datamu sendiri atau contoh: Budi Santoso, 2201001), lalu uji tombol secara berurutan: Ambil Foto (Kamera), Pilih dari Galeri, Dapatkan Lokasi Saat Ini, Simpan Profil, dan Kirim Notifikasi Uji.</li>
+  <li>Tutup aplikasi (geser dari daftar aplikasi terbaru), buka kembali, lalu periksa bahwa seluruh data masih tampil. Inilah bukti persistensi AsyncStorage.</li>
+</ol>
+
+<h2>Kode: app.json</h2>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">app.json</span>
+    <span class="kode-sumber">buku §Praktikum · Kode, verbatim, satu string izin disesuaikan kontrak bahasa (“kamu”)</span>
+  </figcaption>
+  <pre><code class="language-json">{
+  "expo": {
+    "name": "Profil Mahasiswa",
+    "slug": "profil-mahasiswa",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Aplikasi membutuhkan akses galeri untuk memilih foto profil.",
+          "cameraPermission": "Aplikasi membutuhkan akses kamera untuk mengambil foto profil."
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Aplikasi membutuhkan lokasi kamu untuk mengisi data profil."
+        }
+      ],
+      "expo-notifications"
+    ]
+  }
+}</code></pre>
+</figure>
+
+<h2>Kode: App.js</h2>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">App.js</span>
+    <span class="kode-sumber">buku §Praktikum · Kode, verbatim</span>
+  </figcaption>
+  <pre><code class="language-js">import { SafeAreaView, StatusBar, StyleSheet } from 'react-native';
+import ProfilMahasiswa from './screens/ProfilMahasiswa';
+
+export default function App() {
+  return (
+    &lt;SafeAreaView style={styles.kontainer}&gt;
+      &lt;StatusBar style="auto" /&gt;
+      &lt;ProfilMahasiswa /&gt;
+    &lt;/SafeAreaView&gt;
+  );
+}
+
+const styles = StyleSheet.create({
+  kontainer: {
+    flex: 1,
+    backgroundColor: '#f5f5f5',
+  },
+});</code></pre>
+</figure>
+
+<h2>Kode: utils/profilStorage.js</h2>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">utils/profilStorage.js</span>
+    <span class="kode-sumber">buku §Praktikum · Kode, verbatim</span>
+  </figcaption>
+  <pre><code class="language-js">import AsyncStorage from '@react-native-async-storage/async-storage';
+
+// Kunci penyimpanan profil di AsyncStorage (pola serialisasi JSON, lihat Bab 11).
+const KUNCI_PROFIL = 'profil-mahasiswa';
+
+export async function simpanProfil(profil) {
+  const teksJson = JSON.stringify(profil);
+  await AsyncStorage.setItem(KUNCI_PROFIL, teksJson);
+}
+
+export async function muatProfil() {
+  const teksJson = await AsyncStorage.getItem(KUNCI_PROFIL);
+  if (!teksJson) {
+    return null;
+  }
+  return JSON.parse(teksJson);
+}</code></pre>
+</figure>
+
+<h2>Kode: components/InfoBaris.js</h2>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">components/InfoBaris.js</span>
+    <span class="kode-sumber">buku §Praktikum · Kode, verbatim</span>
+  </figcaption>
+  <pre><code class="language-js">import { StyleSheet, Text, View } from 'react-native';
+
+export default function InfoBaris({ label, nilai }) {
+  return (
+    &lt;View style={styles.baris}&gt;
+      &lt;Text style={styles.label}&gt;{label}&lt;/Text&gt;
+      &lt;Text style={styles.nilai}&gt;{nilai}&lt;/Text&gt;
+    &lt;/View&gt;
+  );
+}
+
+const styles = StyleSheet.create({
+  baris: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 6,
+  },
+  label: {
+    color: '#666666',
+    fontSize: 14,
+  },
+  nilai: {
+    color: '#1a1a1a',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+});</code></pre>
+</figure>
+
+<h2>Kode: screens/ProfilMahasiswa.js</h2>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">screens/ProfilMahasiswa.js</span>
+    <span class="kode-sumber">buku §Praktikum · Kode, verbatim, tiga string izin disesuaikan kontrak bahasa (“kamu”)</span>
+  </figcaption>
+  <pre><code class="language-js">import { useEffect, useState } from 'react';
+import {
+  Alert,
+  Image,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
+import * as Device from 'expo-device';
+import * as ImagePicker from 'expo-image-picker';
+import * as Location from 'expo-location';
+import * as Notifications from 'expo-notifications';
+import InfoBaris from '../components/InfoBaris';
+import { muatProfil, simpanProfil } from '../utils/profilStorage';
+
+export default function ProfilMahasiswa() {
+  const [nama, setNama] = useState('');
+  const [nim, setNim] = useState('');
+  const [prodi, setProdi] = useState('');
+  const [email, setEmail] = useState('');
+  const [fotoUri, setFotoUri] = useState(null);
+  const [lokasi, setLokasi] = useState(null);
+  const [perangkat, setPerangkat] = useState({
+    nama: 'Memuat...',
+    model: 'Memuat...',
+    sistem: 'Memuat...',
+  });
+
+  useEffect(() =&gt; {
+    muatDataTersimpan();
+    isiInfoPerangkat();
+    siapkanChannelNotifikasi();
+  }, []);
+
+  async function muatDataTersimpan() {
+    const tersimpan = await muatProfil();
+    if (tersimpan) {
+      setNama(tersimpan.nama || '');
+      setNim(tersimpan.nim || '');
+      setProdi(tersimpan.prodi || '');
+      setEmail(tersimpan.email || '');
+      setFotoUri(tersimpan.fotoUri || null);
+      setLokasi(tersimpan.lokasi || null);
+    }
+  }
+
+  function isiInfoPerangkat() {
+    setPerangkat({
+      nama: Device.deviceName || 'Tidak diketahui',
+      model: Device.modelName || 'Tidak diketahui',
+      sistem: `${Device.osName} ${Device.osVersion}`,
+    });
+  }
+
+  async function siapkanChannelNotifikasi() {
+    await Notifications.setNotificationChannelAsync('default', {
+      name: 'Notifikasi Umum',
+      importance: Notifications.AndroidImportance.DEFAULT,
+    });
+  }
+
+  async function ambilFotoDariKamera() {
+    const izin = await ImagePicker.requestCameraPermissionsAsync();
+    if (!izin.granted) {
+      Alert.alert('Izin Ditolak', 'Aplikasi tidak dapat menggunakan kamera tanpa izin kamu.');
+      return;
+    }
+    const hasil = await ImagePicker.launchCameraAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.6,
+    });
+    if (!hasil.canceled) {
+      setFotoUri(hasil.assets[0].uri);
+    }
+  }
+
+  async function pilihFotoDariGaleri() {
+    const izin = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!izin.granted) {
+      Alert.alert('Izin Ditolak', 'Aplikasi tidak dapat mengakses galeri tanpa izin kamu.');
+      return;
+    }
+    const hasil = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.6,
+    });
+    if (!hasil.canceled) {
+      setFotoUri(hasil.assets[0].uri);
+    }
+  }
+
+  async function ambilLokasi() {
+    const izin = await Location.requestForegroundPermissionsAsync();
+    if (!izin.granted) {
+      Alert.alert('Izin Ditolak', 'Aplikasi tidak dapat membaca lokasi tanpa izin kamu.');
+      return;
+    }
+    const posisi = await Location.getCurrentPositionAsync({
+      accuracy: Location.Accuracy.Balanced,
+    });
+    setLokasi({
+      latitude: posisi.coords.latitude,
+      longitude: posisi.coords.longitude,
+      akurasi: posisi.coords.accuracy,
+    });
+  }
+
+  async function simpan() {
+    if (!nama.trim() || !nim.trim()) {
+      Alert.alert('Data Belum Lengkap', 'Nama dan NIM wajib diisi sebelum disimpan.');
+      return;
+    }
+    const profil = {
+      nama: nama.trim(),
+      nim: nim.trim(),
+      prodi: prodi.trim(),
+      email: email.trim(),
+      fotoUri,
+      lokasi,
+      disimpanPada: new Date().toISOString(),
+    };
+    await simpanProfil(profil);
+    Alert.alert('Tersimpan', 'Profil berhasil disimpan di perangkat kamu.');
+  }
+
+  async function kirimNotifikasi() {
+    const izin = await Notifications.requestPermissionsAsync();
+    if (!izin.granted) {
+      Alert.alert('Izin Ditolak', 'Aktifkan izin notifikasi agar aplikasi dapat mengirim pengingat.');
+      return;
+    }
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: 'Profil Tersimpan',
+        body: `Halo ${nama || 'Mahasiswa'}, profil kamu sudah siap digunakan.`,
+      },
+      trigger: {
+        type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+        seconds: 5,
+        channelId: 'default',
+      },
+    });
+    Alert.alert('Terjadwal', 'Notifikasi akan muncul sekitar 5 detik lagi.');
+  }
+
+  return (
+    &lt;ScrollView style={styles.halaman} contentContainerStyle={styles.isi}&gt;
+      &lt;Text style={styles.judul}&gt;Profil Mahasiswa&lt;/Text&gt;
+
+      &lt;View style={styles.bagianFoto}&gt;
+        {fotoUri ? (
+          &lt;Image source={{ uri: fotoUri }} style={styles.foto} /&gt;
+        ) : (
+          &lt;View style={[styles.foto, styles.fotoKosong]}&gt;
+            &lt;Text style={styles.teksFotoKosong}&gt;Belum ada foto&lt;/Text&gt;
+          &lt;/View&gt;
+        )}
+        &lt;Pressable style={styles.tombolKecil} onPress={ambilFotoDariKamera}&gt;
+          &lt;Text style={styles.teksTombolKecil}&gt;Ambil Foto (Kamera)&lt;/Text&gt;
+        &lt;/Pressable&gt;
+        &lt;Pressable style={styles.tombolKecil} onPress={pilihFotoDariGaleri}&gt;
+          &lt;Text style={styles.teksTombolKecil}&gt;Pilih dari Galeri&lt;/Text&gt;
+        &lt;/Pressable&gt;
+      &lt;/View&gt;
+
+      &lt;Text style={styles.label}&gt;Nama&lt;/Text&gt;
+      &lt;TextInput
+        style={styles.input}
+        value={nama}
+        onChangeText={setNama}
+        placeholder="Nama lengkap"
+      /&gt;
+      &lt;Text style={styles.label}&gt;NIM&lt;/Text&gt;
+      &lt;TextInput
+        style={styles.input}
+        value={nim}
+        onChangeText={setNim}
+        placeholder="Contoh: 2201001"
+        keyboardType="numeric"
+      /&gt;
+      &lt;Text style={styles.label}&gt;Program Studi&lt;/Text&gt;
+      &lt;TextInput
+        style={styles.input}
+        value={prodi}
+        onChangeText={setProdi}
+        placeholder="Contoh: Sistem Informasi"
+      /&gt;
+      &lt;Text style={styles.label}&gt;Email&lt;/Text&gt;
+      &lt;TextInput
+        style={styles.input}
+        value={email}
+        onChangeText={setEmail}
+        placeholder="nama.kecil@students.univ.ac.id"
+        keyboardType="email-address"
+        autoCapitalize="none"
+      /&gt;
+
+      &lt;Pressable style={styles.tombol} onPress={ambilLokasi}&gt;
+        &lt;Text style={styles.teksTombol}&gt;Dapatkan Lokasi Saat Ini&lt;/Text&gt;
+      &lt;/Pressable&gt;
+      {lokasi &amp;&amp; (
+        &lt;View style={styles.kartuInfo}&gt;
+          &lt;InfoBaris label="Latitude" nilai={lokasi.latitude.toFixed(5)} /&gt;
+          &lt;InfoBaris label="Longitude" nilai={lokasi.longitude.toFixed(5)} /&gt;
+          &lt;InfoBaris label="Akurasi" nilai={`+/- ${Math.round(lokasi.akurasi)} meter`} /&gt;
+        &lt;/View&gt;
+      )}
+
+      &lt;Text style={styles.label}&gt;Info Perangkat&lt;/Text&gt;
+      &lt;View style={styles.kartuInfo}&gt;
+        &lt;InfoBaris label="Nama Perangkat" nilai={perangkat.nama} /&gt;
+        &lt;InfoBaris label="Model" nilai={perangkat.model} /&gt;
+        &lt;InfoBaris label="Sistem Operasi" nilai={perangkat.sistem} /&gt;
+      &lt;/View&gt;
+
+      &lt;Pressable style={styles.tombol} onPress={simpan}&gt;
+        &lt;Text style={styles.teksTombol}&gt;Simpan Profil&lt;/Text&gt;
+      &lt;/Pressable&gt;
+      &lt;Pressable style={styles.tombolSekunder} onPress={kirimNotifikasi}&gt;
+        &lt;Text style={styles.teksTombolSekunder}&gt;Kirim Notifikasi Uji&lt;/Text&gt;
+      &lt;/Pressable&gt;
+    &lt;/ScrollView&gt;
+  );
+}
+
+const styles = StyleSheet.create({
+  halaman: {
+    flex: 1,
+  },
+  isi: {
+    padding: 16,
+    paddingBottom: 40,
+  },
+  judul: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 16,
+  },
+  bagianFoto: {
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  foto: {
+    width: 140,
+    height: 140,
+    borderRadius: 70,
+    marginBottom: 12,
+  },
+  fotoKosong: {
+    backgroundColor: '#e0e0e0',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  teksFotoKosong: {
+    color: '#666666',
+  },
+  tombolKecil: {
+    backgroundColor: '#e8f0fe',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    marginTop: 6,
+  },
+  teksTombolKecil: {
+    color: '#1a56db',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  label: {
+    fontSize: 14,
+    color: '#444444',
+    marginTop: 12,
+    marginBottom: 4,
+  },
+  input: {
+    backgroundColor: '#ffffff',
+    borderWidth: 1,
+    borderColor: '#cccccc',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    fontSize: 15,
+  },
+  tombol: {
+    backgroundColor: '#1a56db',
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 16,
+  },
+  teksTombol: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  tombolSekunder: {
+    backgroundColor: '#ffffff',
+    borderWidth: 1,
+    borderColor: '#1a56db',
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  teksTombolSekunder: {
+    color: '#1a56db',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  kartuInfo: {
+    backgroundColor: '#ffffff',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    marginTop: 8,
+  },
+});</code></pre>
+</figure>
+
+<h2>Penjelasan kode</h2>
+
+<p>
+  <strong>State dan pemulihan data.</strong> Tujuh <code>useState</code> menampung seluruh data
+  layar: empat bidang teks, <code>fotoUri</code>, <code>lokasi</code>, dan
+  <code>perangkat</code>. Pada pemuatan awal, <code>useEffect</code> dengan daftar dependensi
+  kosong menjalankan tiga pekerjaan sekali saja: <code>muatDataTersimpan()</code> memulihkan
+  profil dari AsyncStorage, <code>isiInfoPerangkat()</code> membaca data perangkat lewat
+  <code>expo-device</code>, dan <code>siapkanChannelNotifikasi()</code> membuat kanal notifikasi
+  Android. Bila pemulihan dijalankan ulang setiap render, data tersimpan akan terus menimpa
+  isian pengguna.
+</p>
+
+<p>
+  <strong>Pola izin yang seragam.</strong> Setiap tombol mengikuti alur yang sama: minta izin
+  ketika ditekan, gunakan fitur bila disetujui, tampilkan <code>Alert</code> bila ditolak.
+  <code>ambilFotoDariKamera</code> dan <code>pilihFotoDariGaleri</code> hampir identik — pembedanya
+  hanya <code>launchCameraAsync</code> versus <code>launchImageLibraryAsync</code>, dan izin yang
+  diminta (<code>requestCameraPermissionsAsync</code> versus
+  <code>requestMediaLibraryPermissionsAsync</code>). Hasilnya diuji dengan
+  <code>!hasil.canceled</code> sebelum <code>assets</code> diakses, karena pengguna boleh
+  menekan tombol batal.
+</p>
+
+<p>
+  <strong>Lokasi dan akurasi.</strong> <code>ambilLokasi</code> meminta izin foreground, lalu
+  membaca posisi dengan akurasi <code>Balanced</code>. Tiga nilai disimpan: latitude, longitude,
+  dan akurasi dalam meter. Tampilan menambahkan awalan <code>+/-</code> di depan nilai akurasi
+  agar terbaca sebagai radius ketidakpastian, bukan sebagai angka kerapian —
+  koordinat diformat <code>toFixed(5)</code> karena lima angka desimal kira-kira setara presisi
+  satu meter.
+</p>
+
+<p>
+  <strong>Simpan dan notifikasi.</strong> <code>simpan()</code> memvalidasi bidang wajib lebih
+  dulu, membentuk objek profil, lalu memanggil <code>simpanProfil</code>; stempel waktu
+  <code>disimpanPada</code> memakai <code>new Date().toISOString()</code> sehingga tersimpan
+  dalam format standar. <code>kirimNotifikasi</code> meminta izin notifikasi, lalu menjadwalkan
+  notifikasi lima detik kemudian dengan isi yang memuat nama pengguna — contoh nyata penyatuan
+  data profil dengan fitur perangkat.
+</p>
+
+<h2>Hasil yang diharapkan</h2>
+
+<ol>
+  <li>Saat pertama dibuka, layar menampilkan judul “Profil Mahasiswa”, lingkaran foto kosong berteks “Belum ada foto”, empat kolom input, dan tombol-tombol aksi.</li>
+  <li>Menekan “Ambil Foto (Kamera)” memunculkan dialog izin kamera pada pemakaian pertama, lalu antarmuka kamera sistem; setelah memotret dan memotong, lingkaran foto terisi gambar.</li>
+  <li>Menekan “Dapatkan Lokasi Saat Ini” menampilkan kartu berisi Latitude, Longitude, dan Akurasi. Nilai akurasi wajar di area terbuka 5–100 meter, dan bisa jauh lebih besar di dalam gedung.</li>
+  <li>Menekan “Simpan Profil” menampilkan pesan “Profil berhasil disimpan di perangkat kamu.” setelah nama dan NIM terisi.</li>
+  <li>Menekan “Kirim Notifikasi Uji” menampilkan “Terjadwal”, dan sekitar lima detik kemudian notifikasi “Profil Tersimpan” muncul di laci notifikasi.</li>
+  <li>Setelah aplikasi ditutup dan dibuka kembali, seluruh data — foto, koordinat, info perangkat, dan teks — tetap tampil tanpa perlu diisi ulang.</li>
+</ol>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">(contoh isi kartu di layar)</span>
+    <span class="kode-sumber">buku §Praktikum · Hasil yang Diharapkan</span>
+  </figcaption>
+  <pre><code class="language-text">Latitude         -6.90217
+Longitude        107.60488
+Akurasi          +/- 35 meter
+
+Nama Perangkat   Pixel 7
+Model            Pixel 7
+Sistem Operasi   Android 14
+
+(lima detik kemudian, di laci notifikasi)
+Profil Tersimpan — Halo Budi Santoso, profil kamu sudah siap digunakan.</code></pre>
+</figure>
+
+<h2>Troubleshooting</h2>
+
+<div class="tabel-gulir">
+  <table class="tabel">
+    <caption>Empat kegagalan yang paling sering muncul · sumber: buku §Troubleshooting</caption>
+    <thead>
+      <tr><th scope="col">Gejala</th><th scope="col">Penyebab</th><th scope="col">Solusi</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Foto yang baru diambil tidak tampil, atau tampil sekali lalu hilang setelah aplikasi dibuka ulang</td>
+        <td><code>uri</code> dari pemilih gambar menunjuk berkas sementara di cache sistem; berkas itu tidak ikut tersimpan di AsyncStorage yang hanya menyimpan teks JSON</td>
+        <td>Salin berkas ke direktori dokumen aplikasi dengan <code>expo-file-system</code> (pola <code>File</code> dan <code>Paths</code> pada subbab 12.5), lalu simpan <code>uri</code> hasil salinan</td>
+      </tr>
+      <tr>
+        <td>Notifikasi tidak muncul di Android meskipun tombol “Kirim Notifikasi Uji” menampilkan “Terjadwal”</td>
+        <td>Izin notifikasi ditolak di Android 13 ke atas, atau kanal notifikasi belum dibuat sehingga sistem membuang notifikasi tanpa kanal</td>
+        <td>Pastikan <code>setNotificationChannelAsync</code> dipanggil sebelum penjadwalan (kode praktikum melakukannya di <code>siapkanChannelNotifikasi</code>); periksa Pengaturan aplikasi bagian Notifikasi; jalankan ulang dengan <code>npx expo start -c</code></td>
+      </tr>
+      <tr>
+        <td>Tombol “Dapatkan Lokasi Saat Ini” menunggu lama atau berakhir tanpa hasil</td>
+        <td>Sinyal GPS lemah di dalam gedung; <code>getCurrentPositionAsync</code> menunggu fiksasi satelit yang mungkin tidak kunjung datang</td>
+        <td>Gunakan akurasi <code>Balanced</code> atau lebih rendah, terapkan pola fallback <code>getLastKnownPositionAsync</code> (subbab 12.3), coba di dekat jendela, dan aktifkan Wi-Fi karena posisi berbasis jaringan membantu</td>
+      </tr>
+      <tr>
+        <td>Dialog izin tidak muncul lagi meskipun tombol ditekan berulang</td>
+        <td>Pengguna memilih “jangan tanyakan lagi”, sehingga permintaan berikutnya langsung mengembalikan status ditolak tanpa dialog</td>
+        <td>Deteksi <code>canAskAgain === false</code>, tampilkan penjelasan, lalu arahkan pengguna ke Pengaturan aplikasi dengan <code>Linking.openSettings()</code></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="kotak kotak-salah">
+  <p class="kotak-judul">Salah paham</p>
+  <p>
+    Menganggap praktikum selesai ketika tombol berfungsi saat izin diberikan. Deck-nya menutup
+    dengan satu kalimat yang layak dijadikan ukuran: kalau aplikasi berhenti saat izin ditolak,
+    praktikumnya belum selesai. Penolakan adalah keadaan yang harus ditangani, bukan keadaan
+    yang boleh diabaikan.
+  </p>
+</div>
+
+<h2>Yang harus teramati</h2>
+
+<ul>
+  <li><strong>Dialog izin muncul saat fitur dipakai</strong>, bukan saat aplikasi dibuka.</li>
+  <li><strong>Foto tetap tampil</strong> setelah aplikasi ditutup lalu dibuka lagi.</li>
+  <li><strong>Koordinat tampil bersama nilai ketelitiannya</strong>, bukan angkanya saja.</li>
+  <li><strong>Notifikasi pengingat muncul</strong> meski aplikasi sedang tertutup.</li>
+  <li><strong>Menolak izin tidak membuat layar kosong</strong> atau aplikasi berhenti — muncul penjelasan dan jalan keluar.</li>
+</ul>
+
+<blockquote>
+  Laporan yang baik menyebut keadaan yang diuji beserta hasilnya, bukan hanya tulisan “berhasil”:
+  kapan izin diminta, izin mana yang ditolak, dan apa yang terjadi sesudahnya.
+</blockquote>
+
+<h2>Kuis kilat</h2>
+
+<ol>
+  <li>Apa dua lapis penanganan izin di project Expo?</li>
+  <li>Paket mana yang tepat untuk memindai kode QR?</li>
+  <li>Apa arti <code>accuracy: 35</code> pada pembacaan lokasi?</li>
+  <li>Kenapa <code>uri</code> dari pemilih gambar tidak aman untuk penyimpanan jangka panjang?</li>
+  <li>Apa beda notifikasi lokal dengan push notification?</li>
+</ol>
+
+<div class="kotak kotak-jawab">
+  <details>
+    <summary>Kunci kuis kilat</summary>
+    <ol>
+      <li>Deklarasi lewat <code>plugins</code> di <code>app.json</code> (menghasilkan <code>Info.plist</code> iOS dan <code>AndroidManifest.xml</code> saat build), dan permintaan izin saat aplikasi berjalan lewat <code>getPermissionsAsync</code> serta <code>requestPermissionsAsync</code>.</li>
+      <li><code>expo-camera</code> — aplikasi harus menampilkan dan mengolah bidikan langsung, sedangkan pemindai menuntut pratinjau di layar.</li>
+      <li>Perkiraan radius ketidakpastian sekitar 35 meter dari posisi sebenarnya, bukan titik pasti.</li>
+      <li>Berkasnya sementara di cache sistem dan bisa dibersihkan kapan saja, sehingga salinan ke <code>Paths.document</code> yang membuatnya bertahan.</li>
+      <li>Push dikirim server pengirim (Expo Push Service, FCM, atau APNs), sedangkan notifikasi lokal dijadwalkan perangkat itu sendiri.</li>
+    </ol>
+  </details>
+</div>
+
+<h2>Ringkasan bab</h2>
+
+<ol>
+  <li>API perangkat dijembatani paket Expo; sandbox dan izin melindungi pengguna dari akses tanpa sepengetahuan.</li>
+  <li>Izin dikelola dua lapis: deklarasi lewat <code>plugins</code> di <code>app.json</code>, dan permintaan saat aplikasi berjalan.</li>
+  <li>Penolakan adalah keadaan normal: beri penjelasan, dan antar ke Pengaturan bila <code>canAskAgain</code> bernilai <code>false</code>.</li>
+  <li><code>expo-image-picker</code> cukup untuk satu foto profil; <code>expo-camera</code> diperlukan bila bidikan harus tampil dan diolah langsung.</li>
+  <li>Lokasi selalu datang bersama ketelitian; pilih tingkat terendah yang masih memenuhi kebutuhan dan tampilkan akurasinya.</li>
+  <li>Kanal notifikasi wajib di Android; push butuh server pengirim, notifikasi lokal tidak.</li>
+  <li>Salin foto ke <code>Paths.document</code>; AsyncStorage hanya menyimpan teks, bukan berkas.</li>
+  <li>Privasi: izin yang menjelaskan tujuan, tanpa unggahan diam-diam, dan data seminimal mungkin.</li>
+</ol>
+
+<div class="kotak kotak-tanya">
+  <p class="kotak-judul">Pertanyaan penutup</p>
+  <p>
+    Bab ini membuat aplikasi meminjam mata dan telinga ponsel; bab berikutnya membuatnya
+    memastikan siapa yang sedang memakainya. Sebelum menutup, jawab satu pertanyaan ini: izin
+    apa saja yang diminta aplikasi kampusmu, dan mana yang menurutmu tidak benar-benar
+    dibutuhkan? Bawa catatannya ke pertemuan berikutnya — Bab 13, Autentikasi dan Keamanan
+    Aplikasi, dimulai dari sana.
+  </p>
+</div>

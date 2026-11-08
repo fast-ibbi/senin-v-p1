@@ -1,0 +1,719 @@
+<h1>Praktikum Bab 7 — Aplikasi Manajemen Data Mahasiswa</h1>
+
+<p class="ringkas">
+  Satu aplikasi utuh dari nol: pengarah awal, login, beranda dua tab, daftar lima mahasiswa,
+  layar detail berparameter, dan form tambah/edit.
+  Semua jalan pintas disengaja — data statis sebagai pengganti API (Bab 10), validasi ringkas
+  (Bab 8), dan status masuk di memori (Bab 13).
+  Yang dinilai hari ini adalah <strong>kerangka navigasinya</strong>.
+</p>
+
+<div class="kotak kotak-tiruan">
+  <p class="kotak-judul">Tujuan praktikum</p>
+  <p>Setelah menyelesaikan praktikum ini, kamu mampu:</p>
+  <ol>
+    <li>mengonfigurasi Expo Router pada project template blank: instalasi paket, perubahan <code>main</code> pada <code>package.json</code>, penambahan <code>scheme</code>, dan penghapusan <code>App.js</code>;</li>
+    <li>membangun struktur folder <code>app/</code> sesuai peta rute subbab 7.9: pengarah, login, dan grup <code>(app)</code> berisi tabs serta stack bersarang;</li>
+    <li>mengimplementasikan perpindahan deklaratif (<code>&lt;Link&gt;</code>) dan imperatif (<code>router</code>) beserta pengiriman parameter;</li>
+    <li>mengimplementasikan layar terlindungi dengan pola <code>&lt;Redirect /&gt;</code> berbasis status masuk sederhana;</li>
+    <li>menguji seluruh alur: masuk → beranda → daftar → detail → tambah/edit → keluar.</li>
+  </ol>
+</div>
+
+<h2>Kebutuhan</h2>
+
+<ul>
+  <li>Project Expo template blank bernama <code>siakad-mobile</code> (dibuat di Bab 2 dengan <code>npx create-expo-app</code>).</li>
+  <li>Node.js LTS minimal versi 22 dan aplikasi Expo Go pada ponsel, atau emulator Android (Bab 2).</li>
+  <li>Paket navigasi: <code>expo-router</code>, <code>react-native-safe-area-context</code>, <code>react-native-screens</code>, <code>expo-linking</code>, <code>expo-constants</code>, <code>expo-status-bar</code>, ditambah <code>@expo/vector-icons</code> untuk ikon tab.</li>
+  <li>Editor berkas yang dapat membuat folder baru — struktur project membutuhkan beberapa folder bersarang.</li>
+</ul>
+
+<h2>Persiapan</h2>
+
+<ol>
+  <li>Buat project baru berisi template blank. Jangan memakai template default, karena template itu berbasis TypeScript.</li>
+  <li>Pasang paket navigasi sekaligus paket pendukungnya, lalu pasang ikon tab.</li>
+  <li>Ubah nilai <code>"main"</code> pada <code>package.json</code> menjadi <code>"expo-router/entry"</code>, lalu simpan. Nilai ini sensitif versi — periksa dokumentasi resmi untuk SDK yang terpasang.</li>
+  <li>Tambahkan <code>"scheme": "siakad-mobile"</code> di dalam objek <code>"expo"</code> pada <code>app.json</code>, lalu simpan.</li>
+  <li>Hapus berkas <code>App.js</code>. Berkas itu tidak lagi dimuat karena titik masuk sekarang milik Expo Router.</li>
+  <li>Buat struktur folder di bawah ini. Folder baru harus dibuat lewat editor berkas atau perintah terminal, bukan dengan menyalin berkas.</li>
+</ol>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">(terminal) — langkah 1</span>
+    <span class="kode-sumber">buku §Praktikum · Persiapan</span>
+  </figcaption>
+  <pre><code class="language-bash">npx create-expo-app siakad-mobile --template blank
+cd siakad-mobile</code></pre>
+</figure>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">(terminal) — langkah 2</span>
+    <span class="kode-sumber">buku §Praktikum · Persiapan</span>
+  </figcaption>
+  <pre><code class="language-bash">npx expo install expo-router react-native-safe-area-context react-native-screens expo-linking expo-constants expo-status-bar
+npx expo install @expo/vector-icons</code></pre>
+</figure>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">struktur folder project</span>
+    <span class="kode-sumber">buku §Praktikum · Persiapan langkah 6</span>
+  </figcaption>
+  <pre><code class="language-text">app/
+├── _layout.js
+├── index.js
+├── login.js
+├── (app)/
+│   ├── _layout.js
+│   ├── index.js
+│   └── mahasiswa/
+│       ├── _layout.js
+│       ├── index.js
+│       ├── [id].js
+│       └── tambah.js
+data/
+└── mahasiswa.js
+lib/
+└── session.js</code></pre>
+</figure>
+
+<h2>Langkah kerja</h2>
+
+<ol>
+  <li><strong>Siapkan data.</strong> Tulis <code>data/mahasiswa.js</code> berisi lima data mahasiswa baku buku ini dan fungsi pencarian berdasarkan <code>id</code>.</li>
+  <li><strong>Siapkan status masuk.</strong> Tulis <code>lib/session.js</code> berisi status login di memori dengan pola subscribe (daftar pendengar).</li>
+  <li><strong>Tulis layout akar</strong> (<code>app/_layout.js</code>): satu <code>&lt;Stack /&gt;</code> dengan dua layar bernama, yaitu <code>login</code> dan <code>(app)</code>.</li>
+  <li><strong>Tulis pengarah</strong> (<code>app/index.js</code>): sudah masuk dialihkan ke <code>/(app)</code>, belum masuk dialihkan ke <code>/login</code>.</li>
+  <li><strong>Tulis layar login</strong> (<code>app/login.js</code>): dua <code>TextInput</code> dan satu <code>Pressable</code>; saat ditekan, set status masuk lalu <code>router.replace('/(app)')</code>.</li>
+  <li><strong>Tulis layout grup</strong> (<code>app/(app)/_layout.js</code>): periksa status masuk dengan <code>&lt;Redirect /&gt;</code>; bila sudah masuk, tampilkan <code>&lt;Tabs /&gt;</code> berisi dua layar.</li>
+  <li><strong>Tulis Beranda</strong> (<code>app/(app)/index.js</code>): sapaan singkat, dua tautan, dan tombol Keluar.</li>
+  <li><strong>Tulis layout stack Mahasiswa</strong> (<code>app/(app)/mahasiswa/_layout.js</code>): tiga layar dengan judul masing-masing.</li>
+  <li><strong>Tulis Daftar Mahasiswa</strong> (<code>app/(app)/mahasiswa/index.js</code>): <code>FlatList</code> yang setiap kartunya dibungkus <code>&lt;Link asChild&gt;</code>.</li>
+  <li><strong>Tulis Detail Mahasiswa</strong> (<code>app/(app)/mahasiswa/[id].js</code>): baca <code>id</code>, cari data, tampilkan seluruh field, dan sediakan tautan Edit.</li>
+  <li><strong>Tulis Form Tambah/Edit</strong> (<code>app/(app)/mahasiswa/tambah.js</code>): baca parameter <code>edit</code>, isi nilai awal bila ada, ubah judul layar, lalu simpan dengan <code>Alert</code> dan <code>router.back()</code>.</li>
+  <li><strong>Jalankan dan uji.</strong> Jalankan <code>npx expo start</code>, buka aplikasi di Expo Go, lalu telusuri seluruh alur pada bagian "Hasil yang diharapkan".</li>
+</ol>
+
+<h2>Kode: data dan sesi</h2>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">data/mahasiswa.js</span>
+    <span class="kode-sumber">buku §Praktikum · Kode</span>
+  </figcaption>
+  <pre><code class="language-js">export const daftarMahasiswa = [
+  { id: '2201001', nim: '2201001', nama: 'Budi Santoso', prodi: 'Sistem Informasi', angkatan: 2022, ipk: 3.45, email: 'budi.santoso@students.univ.ac.id', telepon: '081234567890' },
+  { id: '2201002', nim: '2201002', nama: 'Siti Aminah', prodi: 'Teknik Informatika', angkatan: 2022, ipk: 3.82, email: 'siti.aminah@students.univ.ac.id', telepon: '081298765432' },
+  { id: '2201003', nim: '2201003', nama: 'Agus Wijaya', prodi: 'Informatika', angkatan: 2023, ipk: 3.20, email: 'agus.wijaya@students.univ.ac.id', telepon: '081345678901' },
+  { id: '2201004', nim: '2201004', nama: 'Dewi Lestari', prodi: 'Rekayasa Perangkat Lunak', angkatan: 2023, ipk: 3.61, email: 'dewi.lestari@students.univ.ac.id', telepon: '081356789012' },
+  { id: '2201005', nim: '2201005', nama: 'Rizky Pratama', prodi: 'Sistem Informasi', angkatan: 2024, ipk: 2.95, email: 'rizky.pratama@students.univ.ac.id', telepon: '081367890123' },
+];
+
+export function cariMahasiswa(id) {
+  return daftarMahasiswa.find((m) =&gt; m.id === id);
+}</code></pre>
+</figure>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">lib/session.js</span>
+    <span class="kode-sumber">buku §Praktikum · Kode</span>
+  </figcaption>
+  <pre><code class="language-js">let statusMasuk = false;
+const pendengar = new Set();
+
+export function isLoggedIn() {
+  return statusMasuk;
+}
+
+export function setLoggedIn(nilai) {
+  statusMasuk = nilai;
+  pendengar.forEach((fn) =&gt; fn(nilai));
+}
+
+export function subscribe(fn) {
+  pendengar.add(fn);
+  return () =&gt; pendengar.delete(fn);
+}</code></pre>
+</figure>
+
+<h2>Kode: layout dan layar utama</h2>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">app/_layout.js</span>
+    <span class="kode-sumber">buku §Praktikum · Kode</span>
+  </figcaption>
+  <pre><code class="language-js">import { Stack } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
+
+export default function LayoutRoot() {
+  return (
+    &lt;&gt;
+      &lt;StatusBar style="light" /&gt;
+      &lt;Stack
+        screenOptions={{
+          headerStyle: { backgroundColor: '#1e3a8a' },
+          headerTintColor: '#ffffff',
+          headerTitleAlign: 'center',
+        }}
+      &gt;
+        &lt;Stack.Screen name="(app)" options={{ headerShown: false }} /&gt;
+        &lt;Stack.Screen name="login" options={{ title: 'Masuk' }} /&gt;
+      &lt;/Stack&gt;
+    &lt;/&gt;
+  );
+}</code></pre>
+</figure>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">app/index.js</span>
+    <span class="kode-sumber">buku §Praktikum · Kode</span>
+  </figcaption>
+  <pre><code class="language-js">import { Redirect } from 'expo-router';
+import { isLoggedIn } from '../lib/session';
+
+export default function Pengarah() {
+  if (isLoggedIn()) {
+    return &lt;Redirect href="/(app)" /&gt;;
+  }
+  return &lt;Redirect href="/login" /&gt;;
+}</code></pre>
+</figure>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">app/login.js</span>
+    <span class="kode-sumber">buku §Praktikum · Kode</span>
+  </figcaption>
+  <pre><code class="language-js">import { useState } from 'react';
+import { View, Text, TextInput, Pressable, StyleSheet } from 'react-native';
+import { router } from 'expo-router';
+import { setLoggedIn } from '../lib/session';
+
+export default function Login() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  function masuk() {
+    setLoggedIn(true);
+    router.replace('/(app)');
+  }
+
+  return (
+    &lt;View style={styles.kontainer}&gt;
+      &lt;Text style={styles.judul}&gt;SIAKAD Mobile&lt;/Text&gt;
+      &lt;TextInput
+        style={styles.input}
+        placeholder="Email"
+        value={email}
+        onChangeText={setEmail}
+        autoCapitalize="none"
+        keyboardType="email-address"
+      /&gt;
+      &lt;TextInput
+        style={styles.input}
+        placeholder="Sandi"
+        value={password}
+        onChangeText={setPassword}
+        secureTextEntry
+      /&gt;
+      &lt;Pressable style={styles.tombol} onPress={masuk}&gt;
+        &lt;Text style={styles.teksTombol}&gt;Masuk&lt;/Text&gt;
+      &lt;/Pressable&gt;
+      &lt;Text style={styles.catatan}&gt;
+        Login demo: sandi tidak diperiksa. Validasi di Bab 8, autentikasi sungguhan di Bab 13.
+      &lt;/Text&gt;
+    &lt;/View&gt;
+  );
+}
+
+const styles = StyleSheet.create({
+  kontainer: { flex: 1, justifyContent: 'center', padding: 24, backgroundColor: '#f8fafc' },
+  judul: { fontSize: 28, fontWeight: 'bold', color: '#1e3a8a', textAlign: 'center', marginBottom: 32 },
+  input: { borderWidth: 1, borderColor: '#cbd5e1', borderRadius: 8, padding: 12, marginBottom: 16, backgroundColor: '#ffffff' },
+  tombol: { backgroundColor: '#1e3a8a', borderRadius: 8, padding: 14, alignItems: 'center' },
+  teksTombol: { color: '#ffffff', fontWeight: 'bold', fontSize: 16 },
+  catatan: { marginTop: 16, color: '#64748b', fontSize: 12, textAlign: 'center' },
+});</code></pre>
+</figure>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">app/(app)/_layout.js</span>
+    <span class="kode-sumber">buku §Praktikum · Kode</span>
+  </figcaption>
+  <pre><code class="language-js">import { useEffect, useState } from 'react';
+import { Redirect, Tabs } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+import { isLoggedIn, subscribe } from '../../lib/session';
+
+export default function LayoutAplikasi() {
+  const [masuk, setMasuk] = useState(isLoggedIn);
+
+  useEffect(() =&gt; subscribe(setMasuk), []);
+
+  if (!masuk) {
+    return &lt;Redirect href="/login" /&gt;;
+  }
+
+  return (
+    &lt;Tabs screenOptions={{ tabBarActiveTintColor: '#1e3a8a', headerShown: false }}&gt;
+      &lt;Tabs.Screen
+        name="index"
+        options={{
+          title: 'Beranda',
+          tabBarIcon: ({ color, size, focused }) =&gt; (
+            &lt;Ionicons name={focused ? 'home' : 'home-outline'} size={size} color={color} /&gt;
+          ),
+        }}
+      /&gt;
+      &lt;Tabs.Screen
+        name="mahasiswa"
+        options={{
+          title: 'Mahasiswa',
+          tabBarIcon: ({ color, size, focused }) =&gt; (
+            &lt;Ionicons name={focused ? 'people' : 'people-outline'} size={size} color={color} /&gt;
+          ),
+        }}
+      /&gt;
+    &lt;/Tabs&gt;
+  );
+}</code></pre>
+</figure>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">app/(app)/index.js</span>
+    <span class="kode-sumber">buku §Praktikum · Kode</span>
+  </figcaption>
+  <pre><code class="language-js">import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { Link, router } from 'expo-router';
+import { setLoggedIn } from '../../lib/session';
+
+export default function Beranda() {
+  function keluar() {
+    setLoggedIn(false);
+    router.replace('/login');
+  }
+
+  return (
+    &lt;View style={styles.kontainer}&gt;
+      &lt;Text style={styles.sapaan}&gt;Halo, Admin 👋&lt;/Text&gt;
+      &lt;Text style={styles.subjudul}&gt;Aplikasi Manajemen Data Mahasiswa&lt;/Text&gt;
+      &lt;Link href="/mahasiswa" asChild&gt;
+        &lt;Pressable style={styles.tautan}&gt;
+          &lt;Text style={styles.teksTautan}&gt;Buka Daftar Mahasiswa&lt;/Text&gt;
+        &lt;/Pressable&gt;
+      &lt;/Link&gt;
+      &lt;Link href="/mahasiswa/tambah" asChild&gt;
+        &lt;Pressable style={styles.tautan}&gt;
+          &lt;Text style={styles.teksTautan}&gt;Tambah Mahasiswa Baru&lt;/Text&gt;
+        &lt;/Pressable&gt;
+      &lt;/Link&gt;
+      &lt;Pressable style={styles.tombol} onPress={keluar}&gt;
+        &lt;Text style={styles.teksTombol}&gt;Keluar&lt;/Text&gt;
+      &lt;/Pressable&gt;
+    &lt;/View&gt;
+  );
+}
+
+const styles = StyleSheet.create({
+  kontainer: { flex: 1, padding: 24, backgroundColor: '#f8fafc' },
+  sapaan: { fontSize: 24, fontWeight: 'bold', color: '#0f172a', marginTop: 16 },
+  subjudul: { fontSize: 14, color: '#64748b', marginBottom: 24 },
+  tautan: { backgroundColor: '#e0e7ff', borderRadius: 8, padding: 14, marginBottom: 12 },
+  teksTautan: { color: '#1e3a8a', fontWeight: 'bold' },
+  tombol: { backgroundColor: '#dc2626', borderRadius: 8, padding: 14, alignItems: 'center', marginTop: 12 },
+  teksTombol: { color: '#ffffff', fontWeight: 'bold' },
+});</code></pre>
+</figure>
+
+<h2>Kode: layar Mahasiswa</h2>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">app/(app)/mahasiswa/_layout.js</span>
+    <span class="kode-sumber">buku §Praktikum · Kode</span>
+  </figcaption>
+  <pre><code class="language-js">import { Stack } from 'expo-router';
+
+export default function LayoutMahasiswa() {
+  return (
+    &lt;Stack&gt;
+      &lt;Stack.Screen name="index" options={{ title: 'Daftar Mahasiswa' }} /&gt;
+      &lt;Stack.Screen name="[id]" options={{ title: 'Detail Mahasiswa' }} /&gt;
+      &lt;Stack.Screen name="tambah" options={{ title: 'Tambah Mahasiswa' }} /&gt;
+    &lt;/Stack&gt;
+  );
+}</code></pre>
+</figure>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">app/(app)/mahasiswa/index.js</span>
+    <span class="kode-sumber">buku §Praktikum · Kode</span>
+  </figcaption>
+  <pre><code class="language-js">import { FlatList, Pressable, Text, StyleSheet } from 'react-native';
+import { Link } from 'expo-router';
+import { daftarMahasiswa } from '../../../data/mahasiswa';
+
+export default function DaftarMahasiswa() {
+  return (
+    &lt;FlatList
+      data={daftarMahasiswa}
+      keyExtractor={(item) =&gt; item.id}
+      contentContainerStyle={styles.daftar}
+      renderItem={({ item }) =&gt; (
+        &lt;Link href={{ pathname: '/mahasiswa/[id]', params: { id: item.id } }} asChild&gt;
+          &lt;Pressable style={styles.kartu}&gt;
+            &lt;Text style={styles.nama}&gt;{item.nama}&lt;/Text&gt;
+            &lt;Text style={styles.info}&gt;
+              {item.nim} • {item.prodi}
+            &lt;/Text&gt;
+          &lt;/Pressable&gt;
+        &lt;/Link&gt;
+      )}
+    /&gt;
+  );
+}
+
+const styles = StyleSheet.create({
+  daftar: { padding: 16, gap: 12 },
+  kartu: { backgroundColor: '#ffffff', borderRadius: 10, padding: 16, borderWidth: 1, borderColor: '#e2e8f0' },
+  nama: { fontSize: 16, fontWeight: 'bold', color: '#0f172a' },
+  info: { fontSize: 13, color: '#64748b', marginTop: 4 },
+});</code></pre>
+</figure>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">app/(app)/mahasiswa/[id].js</span>
+    <span class="kode-sumber">buku §Praktikum · Kode</span>
+  </figcaption>
+  <pre><code class="language-js">import { View, Text, StyleSheet } from 'react-native';
+import { Link, useLocalSearchParams } from 'expo-router';
+import { cariMahasiswa } from '../../../data/mahasiswa';
+
+export default function DetailMahasiswa() {
+  const { id } = useLocalSearchParams();
+  const mhs = cariMahasiswa(String(id));
+
+  if (!mhs) {
+    return (
+      &lt;View style={styles.kontainer}&gt;
+        &lt;Text style={styles.tidakAda}&gt;Data mahasiswa tidak ditemukan.&lt;/Text&gt;
+        &lt;Link href="/mahasiswa" asChild&gt;
+          &lt;Text style={styles.tautan}&gt;Kembali ke Daftar&lt;/Text&gt;
+        &lt;/Link&gt;
+      &lt;/View&gt;
+    );
+  }
+
+  return (
+    &lt;View style={styles.kontainer}&gt;
+      &lt;Text style={styles.nama}&gt;{mhs.nama}&lt;/Text&gt;
+      &lt;Text style={styles.info}&gt;NIM: {mhs.nim}&lt;/Text&gt;
+      &lt;Text style={styles.info}&gt;Program Studi: {mhs.prodi}&lt;/Text&gt;
+      &lt;Text style={styles.info}&gt;Angkatan: {mhs.angkatan}&lt;/Text&gt;
+      &lt;Text style={styles.info}&gt;IPK: {mhs.ipk}&lt;/Text&gt;
+      &lt;Text style={styles.info}&gt;Email: {mhs.email}&lt;/Text&gt;
+      &lt;Text style={styles.info}&gt;Telepon: {mhs.telepon}&lt;/Text&gt;
+      &lt;Link href={{ pathname: '/mahasiswa/tambah', params: { edit: mhs.id } }} asChild&gt;
+        &lt;Text style={styles.tautan}&gt;Edit Data ini&lt;/Text&gt;
+      &lt;/Link&gt;
+    &lt;/View&gt;
+  );
+}
+
+const styles = StyleSheet.create({
+  kontainer: { flex: 1, padding: 24, backgroundColor: '#f8fafc', gap: 8 },
+  nama: { fontSize: 22, fontWeight: 'bold', color: '#0f172a', marginBottom: 8 },
+  info: { fontSize: 15, color: '#334155' },
+  tidakAda: { fontSize: 16, color: '#dc2626', marginBottom: 12 },
+  tautan: { marginTop: 16, color: '#1e3a8a', fontWeight: 'bold', textDecorationLine: 'underline' },
+});</code></pre>
+</figure>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">app/(app)/mahasiswa/tambah.js</span>
+    <span class="kode-sumber">buku §Praktikum · Kode</span>
+  </figcaption>
+  <pre><code class="language-js">import { useEffect, useState } from 'react';
+import { View, Text, TextInput, Pressable, ScrollView, StyleSheet, Alert } from 'react-native';
+import { router, Stack, useLocalSearchParams } from 'expo-router';
+import { cariMahasiswa } from '../../../data/mahasiswa';
+
+export default function FormMahasiswa() {
+  const { edit } = useLocalSearchParams();
+  const [nama, setNama] = useState('');
+  const [prodi, setProdi] = useState('');
+  const [ipk, setIpk] = useState('');
+
+  useEffect(() =&gt; {
+    const data = edit ? cariMahasiswa(String(edit)) : null;
+    setNama(data?.nama ?? '');
+    setProdi(data?.prodi ?? '');
+    setIpk(data ? String(data.ipk) : '');
+  }, [edit]);
+
+  function simpan() {
+    if (!nama.trim() || !prodi.trim() || !ipk.trim()) {
+      Alert.alert('Data belum lengkap', 'Isi nama, prodi, dan IPK terlebih dahulu.');
+      return;
+    }
+    Alert.alert(
+      'Berhasil',
+      edit ? 'Data mahasiswa diperbarui.' : 'Data mahasiswa baru ditambahkan.'
+    );
+    router.back();
+  }
+
+  return (
+    &lt;ScrollView style={styles.halaman} contentContainerStyle={styles.kontainer}&gt;
+      &lt;Stack.Screen options={{ title: edit ? 'Edit Mahasiswa' : 'Tambah Mahasiswa' }} /&gt;
+      &lt;Text style={styles.label}&gt;Nama Lengkap&lt;/Text&gt;
+      &lt;TextInput style={styles.input} value={nama} onChangeText={setNama} placeholder="Nama lengkap mahasiswa" /&gt;
+      &lt;Text style={styles.label}&gt;Program Studi&lt;/Text&gt;
+      &lt;TextInput style={styles.input} value={prodi} onChangeText={setProdi} placeholder="mis. Sistem Informasi" /&gt;
+      &lt;Text style={styles.label}&gt;IPK&lt;/Text&gt;
+      &lt;TextInput style={styles.input} value={ipk} onChangeText={setIpk} placeholder="mis. 3.45" keyboardType="decimal-pad" /&gt;
+      &lt;Pressable style={styles.tombol} onPress={simpan}&gt;
+        &lt;Text style={styles.teksTombol}&gt;{edit ? 'Simpan Perubahan' : 'Tambah Mahasiswa'}&lt;/Text&gt;
+      &lt;/Pressable&gt;
+      {edit ? (
+        &lt;Text style={styles.catatan}&gt;Mode edit untuk NIM {String(edit)}.&lt;/Text&gt;
+      ) : (
+        &lt;Text style={styles.catatan}&gt;Validasi lengkap dan penyimpanan ke API dibahas di Bab 8 dan Bab 10.&lt;/Text&gt;
+      )}
+    &lt;/ScrollView&gt;
+  );
+}
+
+const styles = StyleSheet.create({
+  halaman: { flex: 1, backgroundColor: '#f8fafc' },
+  kontainer: { padding: 24 },
+  label: { fontSize: 14, fontWeight: 'bold', color: '#334155', marginBottom: 6 },
+  input: { borderWidth: 1, borderColor: '#cbd5e1', borderRadius: 8, padding: 12, marginBottom: 16, backgroundColor: '#ffffff' },
+  tombol: { backgroundColor: '#1e3a8a', borderRadius: 8, padding: 14, alignItems: 'center', marginTop: 8 },
+  teksTombol: { color: '#ffffff', fontWeight: 'bold', fontSize: 16 },
+  catatan: { marginTop: 12, color: '#64748b', fontSize: 12, textAlign: 'center' },
+});</code></pre>
+</figure>
+
+<h2>Penjelasan kode</h2>
+
+<p>
+  <strong><code>data/mahasiswa.js</code></strong> memegang lima data baku yang sama persis dengan
+  bab-bab lain. <code>cariMahasiswa</code> memanfaatkan <code>find</code> (Bab 3) untuk mencocokkan
+  <code>id</code>, dan dipakai oleh layar Detail serta Form. Pada Bab 10, isi modul ini diganti
+  oleh hasil <code>fetch</code> dari API — modul terpisah membuat penggantian itu hanya menyentuh
+  satu berkas.
+</p>
+
+<p>
+  <strong><code>lib/session.js</code></strong> menyimpan status masuk di memori dengan tiga fungsi:
+  membaca status (<code>isLoggedIn</code>), mengubahnya (<code>setLoggedIn</code>), dan mendaftarkan
+  pendengar (<code>subscribe</code>). Pola subscribe inilah yang membuat layout <code>(app)</code>
+  ikut ter-render ulang saat status berubah. Modul ini sengaja kecil: ia akan diganti Context di
+  Bab 9 dan token sungguhan di Bab 13.
+</p>
+
+<p>
+  <strong><code>app/_layout.js</code></strong> adalah panggung seluruh aplikasi. Dua layar
+  didaftarkan: grup <code>(app)</code> dengan header disembunyikan, dan <code>login</code> berjudul
+  "Masuk". <code>screenOptions</code> memberi gaya seragam, sedangkan <code>StatusBar</code>
+  mengatur warna bilah status sehingga tidak diulang di tiap layar.
+</p>
+
+<p>
+  <strong><code>app/index.js</code></strong> hanya bertugas mengarahkan: sudah masuk ke grup
+  <code>(app)</code>, belum masuk ke <code>/login</code>. Logika "ke mana pertama kali" yang
+  terpusat di satu berkas membuat aplikasi mudah dipahami dan mudah diuji.
+</p>
+
+<p>
+  <strong><code>app/login.js</code></strong> sengaja disederhanakan: dua <code>TextInput</code> dan
+  satu <code>Pressable</code>. Yang penting adalah alurnya, yaitu <code>setLoggedIn(true)</code>
+  lalu <code>router.replace('/(app)')</code>. Perhatikan <code>replace</code>, bukan
+  <code>push</code>: pengguna yang sudah masuk tidak boleh menekan kembali dan "mundur" ke layar
+  login, karena <code>replace</code> mengganti layar login pada riwayat.
+</p>
+
+<p>
+  <strong><code>app/(app)/_layout.js</code></strong> adalah jantung layar terlindungi. Komponen
+  membaca status masuk lewat <code>useState</code> yang diinisialisasi dari
+  <code>isLoggedIn</code>, lalu berlangganan perubahan lewat
+  <code>useEffect(() => subscribe(setMasuk), [])</code> — nilai balik <code>subscribe</code>
+  berupa fungsi pembatalan, dan React memakainya sebagai pembersih efek. Jika belum masuk, layout
+  mengembalikan <code>&lt;Redirect href="/login" /&gt;</code> sehingga konten tab tidak pernah
+  terlihat. <code>headerShown: false</code> mencegah header ganda dengan stack Mahasiswa.
+</p>
+
+<p>
+  <strong><code>app/(app)/index.js</code></strong> memadukan dua pola dalam satu layar:
+  <code>&lt;Link asChild&gt;</code> untuk tautan yang terlihat, dan
+  <code>router.replace('/login')</code> di dalam fungsi <code>keluar</code> — perpindahan yang
+  digerakkan logika setelah status dikosongkan.
+  Gaya deklaratif dan imperatif memang hidup berdampingan sesuai perannya.
+</p>
+
+<p>
+  <strong><code>app/(app)/mahasiswa/_layout.js</code></strong> adalah stack kedua yang hanya
+  berlaku untuk folder <code>mahasiswa/</code>. Dengan susunan ini tab Mahasiswa memiliki riwayat
+  sendiri — Daftar, Detail, Form — dan tombol kembali perangkat bekerja alami di dalam stack.
+</p>
+
+<p>
+  <strong><code>app/(app)/mahasiswa/index.js</code></strong> memakai <code>FlatList</code> (Bab 5)
+  dan membungkus setiap kartu dengan <code>Link</code> berbentuk objek: <code>pathname</code>
+  menunjuk pola rute dinamis, <code>params</code> mengisi <code>id</code>. <code>asChild</code>
+  memindahkan perilaku tautan ke <code>Pressable</code> sehingga seluruh kartu dapat ditekan, dan
+  alamat layar menjadi <code>/mahasiswa/2201001</code>.
+</p>
+
+<p>
+  <strong><code>app/(app)/mahasiswa/[id].js</code></strong> membaca <code>id</code> lewat
+  <code>useLocalSearchParams</code> dan menormalkannya dengan <code>String(id)</code>. Bila data
+  tidak ditemukan — misalnya alamat diketik manual dengan <code>id</code> yang salah — layar
+  menampilkan pesan dan tautan kembali: pola <em>empty state</em> yang dibahas lebih dalam di
+  Bab 10. Tautan "Edit Data ini" membawa parameter <code>edit</code>.
+</p>
+
+<p>
+  <strong><code>app/(app)/mahasiswa/tambah.js</code></strong> melayani dua mode lewat satu
+  parameter. Tanpa <code>edit</code> ia mode tambah; dengan <code>edit</code> ia mode edit.
+  <code>useEffect</code> dengan dependensi <code>[edit]</code> mengisi nilai awal dari data lama
+  dan meresetnya saat mode berpindah. <code>&lt;Stack.Screen&gt;</code> di dalam komponen mengubah
+  judul layar secara dinamis, lalu tombol simpan memeriksa kelengkapan isian, menampilkan
+  <code>Alert</code>, dan memanggil <code>router.back()</code>.
+</p>
+
+<h2>Hasil yang diharapkan</h2>
+
+<ol>
+  <li><strong>Layar Masuk muncul pertama.</strong> Saat aplikasi dibuka, yang tampil adalah layar Masuk, karena <code>index.js</code> mengarahkan pengguna yang belum masuk ke <code>/login</code>.</li>
+  <li><strong>Masuk menuju Beranda.</strong> Isi email dan sandi apa pun, lalu tekan Masuk: aplikasi berpindah ke Beranda dengan bar dua tab di bawah, yaitu "Beranda" dan "Mahasiswa".</li>
+  <li><strong>Daftar berisi lima kartu.</strong> Tab Mahasiswa menampilkan Budi Santoso, Siti Aminah, Agus Wijaya, Dewi Lestari, dan Rizky Pratama, lengkap dengan NIM serta program studi.</li>
+  <li><strong>Detail terbuka dengan parameter benar.</strong> Menekan satu kartu membuka Detail dengan judul header "Detail Mahasiswa" dan seluruh field data; tombol kembali perangkat mengembalikan ke Daftar.</li>
+  <li><strong>Form mode edit terisi.</strong> Menekan "Edit Data ini" membuka form berjudul "Edit Mahasiswa" dengan isian nama, prodi, dan IPK yang sudah berisi data lama.</li>
+  <li><strong>Form mode tambah kosong.</strong> Dari Beranda, "Tambah Mahasiswa Baru" membuka form berjudul "Tambah Mahasiswa" dengan isian kosong; menekan tombol simpan saat semua kosong memunculkan <code>Alert</code> "Data belum lengkap".</li>
+  <li><strong>Keluar tidak bisa dibatalkan tombol kembali.</strong> Menekan Keluar mengembalikan ke layar Masuk, dan menekan tombol kembali pada saat itu tidak membuka Beranda — akibat pemakaian <code>replace</code>.</li>
+  <li><strong>Riwayat bertahan dalam sesi.</strong> Saat aplikasi dibuka ulang, kamu berada di layar terakhir yang dibuka, bukan di layar pertama.</li>
+</ol>
+
+<h2>Troubleshooting</h2>
+
+<div class="tabel-gulir">
+  <table class="tabel">
+    <caption>Lima gejala yang paling sering muncul di praktikum ini · sumber: buku §Troubleshooting</caption>
+    <thead>
+      <tr><th scope="col">Gejala</th><th scope="col">Penyebab</th><th scope="col">Solusi</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Layar kosong atau pesan bahwa <code>"main"</code> tidak dikenal setelah mengubah <code>package.json</code></td>
+        <td>Nilai <code>"main"</code> salah ketik, atau nilai lama belum diganti sehingga Metro masih mencari <code>App.js</code> yang sudah dihapus</td>
+        <td>Pastikan nilainya persis <code>"expo-router/entry"</code>, lalu mulai ulang bundler dengan <code>npx expo start -c</code> untuk membersihkan cache</td>
+      </tr>
+      <tr>
+        <td>Kartu mahasiswa tidak bereaksi saat ditekan</td>
+        <td><code>Link</code> dipakai tanpa <code>asChild</code> sambil membungkus <code>Pressable</code>, sehingga dua komponen sentuh berebut gestur</td>
+        <td>Pakai pola <code>&lt;Link href={...} asChild&gt;&lt;Pressable&gt;…&lt;/Pressable&gt;&lt;/Link&gt;</code> dan tulis <code>href</code> sebagai objek, bukan string yang disusun manual</td>
+      </tr>
+      <tr>
+        <td>Detail menampilkan "Data mahasiswa tidak ditemukan" padahal datanya ada</td>
+        <td>Parameter dari alamat berupa string, sedangkan <code>id</code> pada data dapat bertipe lain; atau nama segmen rute tidak sama dengan kunci data</td>
+        <td>Normalkan dengan <code>String(id)</code> sebelum pencarian, dan samakan nama berkas dinamis dengan kunci objek data</td>
+      </tr>
+      <tr>
+        <td>Dua batang judul bertumpuk di layar Detail atau Form</td>
+        <td>Tabs dan Stack sama-sama menampilkan header karena <code>headerShown</code> bawaannya bernilai <code>true</code></td>
+        <td>Setel <code>headerShown: false</code> pada <code>screenOptions</code> komponen <code>&lt;Tabs /&gt;</code>, dan biarkan stack terdalam yang menampilkan judul</td>
+      </tr>
+      <tr>
+        <td>Beranda tidak "segar" setelah kembali dari layar lain</td>
+        <td>Layar tab tetap terpasang di memori; <code>useEffect</code> hanya berjalan saat komponen terpasang pertama kali</td>
+        <td>Pindahkan proses penyegaran ke <code>useFocusEffect</code> dengan <code>useCallback</code> yang dependensinya tepat</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="kotak kotak-salah">
+  <p class="kotak-judul">Salah paham</p>
+  <p>
+    Menghapus folder <code>node_modules</code> lalu memasang ulang bukan solusi untuk gejala di
+    atas; itu hanya menghabiskan waktu praktikum.
+    Ketiga gejala pertama berakar pada konfigurasi dan tipe data, bukan pada paket yang rusak.
+    Kebiasaan yang sedang dilatih: baca pesan galat dan periksa berkas konfigurasi sebelum meminta
+    bantuan.
+  </p>
+</div>
+
+<h2>Yang harus teramati</h2>
+
+<p>Catat empat hal berikut di lembar kerja praktikum.</p>
+
+<ul>
+  <li><strong>Alur utuh</strong> — Login → Beranda → Daftar → Detail → Form berjalan tanpa layar kosong.</li>
+  <li><strong>Riwayat tiap tab</strong> — posisi di tab Mahasiswa tidak hilang setelah berpindah ke Beranda.</li>
+  <li><strong>Parameter terbaca</strong> — Detail menampilkan <code>id</code> yang benar, dan formulir terisi data lama saat mode edit.</li>
+  <li><strong>Satu header</strong> — tidak ada dua bilah judul bertumpuk di layar mana pun.</li>
+</ul>
+
+<blockquote>
+  Bukti yang bisa diperiksa lebih kuat daripada kesan: "tombol kembali di Detail membuka Daftar,
+  bukan Login" dapat diuji ulang oleh orang lain; "navigasinya sudah jalan" tidak.
+</blockquote>
+
+<h2>Kuis kilat</h2>
+
+<ol>
+  <li>Alamat apa yang dibuka berkas <code>app/mahasiswa/[id].js</code>?</li>
+  <li>Apa peran nilai <code>"main": "expo-router/entry"</code> pada <code>package.json</code>?</li>
+  <li>Mengapa layar tab membutuhkan <code>useFocusEffect</code>, bukan <code>useEffect</code> biasa?</li>
+  <li>Mengapa layar login diletakkan di luar grup <code>(app)</code>?</li>
+</ol>
+
+<div class="kotak kotak-jawab">
+  <details>
+    <summary>Kunci kuis kilat</summary>
+    <ol>
+      <li><code>/mahasiswa/&lt;nilai&gt;</code> untuk nilai apa pun, misalnya <code>/mahasiswa/2201001</code> — satu berkas melayani semua nilai segmen itu.</li>
+      <li>Titik masuk aplikasi: berkas itu yang membuat navigation container, membaca folder <code>app/</code>, mendaftarkan semua rute, dan menyiapkan deep linking.</li>
+      <li>Karena layar tab tetap terpasang di memori, efek sekali jalan tidak terpicu oleh fokus; <code>useFocusEffect</code> memantau fokus secara khusus.</li>
+      <li>Supaya layar login tidak ikut terlindungi; kalau ikut, pengguna terlempar ke login berulang kali (redirect loop).</li>
+    </ol>
+  </details>
+</div>
+
+<h2>Ringkasan bab</h2>
+
+<ol>
+  <li>Navigasi mobile mengatur perpindahan layar, riwayat, dan data yang dilewatkan; pola utamanya stack (berjenjang), tab (sejajar), dan drawer (laci).</li>
+  <li>Expo Router menerapkan file-based routing: setiap berkas di folder <code>app/</code> menjadi satu rute, dan nama berkas menjadi alamatnya.</li>
+  <li>Setup pada project blank memerlukan instalasi paket, perubahan <code>"main"</code> menjadi <code>"expo-router/entry"</code>, dan penambahan <code>"scheme"</code> pada <code>app.json</code>.</li>
+  <li><code>&lt;Stack /&gt;</code> dan <code>&lt;Tabs /&gt;</code> membangun navigator; bedanya pada hierarki layar, kondisi layar yang tetap terpasang di tab, dan perilaku kembali.</li>
+  <li>Navigasi deklaratif (<code>&lt;Link&gt;</code> dengan <code>asChild</code>) untuk tautan yang terlihat; imperatif (<code>router.push</code>, <code>replace</code>, <code>back</code>) untuk perpindahan yang digerakkan logika.</li>
+  <li>Parameter dikirim lewat dynamic route (<code>[id]</code>) dan query parameter (<code>?edit=...</code>), dibaca dengan <code>useLocalSearchParams</code>, dan selalu bertipe string.</li>
+  <li>Nested navigation diwujudkan dengan layout berlapis; folder <code>(app)</code> adalah grup rute yang tidak ikut dalam alamat.</li>
+  <li><code>useFocusEffect</code> dengan <code>useCallback</code> memicu proses setiap layar mendapat fokus — untuk penyegaran data, bukan pengganti <code>useEffect</code> pada proses sekali jalan.</li>
+  <li>Layar terlindungi dilakukan pada satu titik, yaitu layout grup, dengan pola <code>&lt;Redirect href="/login" /&gt;</code>; layar login harus berada di luar grup itu agar tidak terjadi redirect loop.</li>
+</ol>
+
+<div class="kotak kotak-tanya">
+  <p class="kotak-judul">Pertanyaan penuntun</p>
+  <p>
+    Tutup dengan pertanyaan diskusi deck: keputusan struktur mana yang paling mahal kalau salah
+    sejak awal — dan bagaimana kamu menguji bahwa tombol kembali berperilaku wajar?
+    Bawa jawabanmu ke bab berikutnya: kerangka navigasi yang berdiri hari ini akan menerima data
+    sungguhan di Bab 10 dan layar formulir yang lebih lengkap di Bab 8.
+  </p>
+</div>

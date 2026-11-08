@@ -1,0 +1,317 @@
+<h1>Bagian 2 — Metode HTTP dan Status Code</h1>
+
+<p class="ringkas">
+  Subbab 10.3–10.4. Bagian ini memberi nama pada tindakan: lima metode HTTP, sifat aman dan
+  idempoten, perbedaan PUT dan PATCH, kelompok status code, dan cara membaca satu pertukaran
+  HTTP dari atas ke bawah.
+</p>
+
+<section class="subbab" id="s2-1">
+  <p class="label-subbab">
+    Subbab 10.3 <span class="sumber-slide">· deck: “Metode HTTP Sudah Punya Arti yang Disepakati” · buku §10.3</span>
+  </p>
+  <h2>Metode HTTP Sudah Punya Arti yang Disepakati</h2>
+
+  <p>
+    Empat metode dasar mencakup seluruh operasi pengelolaan data, dikenal sebagai
+    <strong>CRUD</strong> (<em>Create, Read, Update, Delete</em>). Metode bukan hiasan sintaks:
+    ia adalah <strong>kontrak semantik</strong> antara client dan server, sehingga server, sistem
+    cache, atau firewall sudah tahu efek sebuah permintaan hanya dengan membaca metodenya.
+  </p>
+
+  <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Pemetaan metode HTTP ke operasi CRUD · sumber: buku §10.3, Tabel 10.2</caption>
+      <thead>
+        <tr><th scope="col">Metode</th><th scope="col">Makna</th><th scope="col">Operasi</th><th scope="col">Contoh endpoint</th><th scope="col">Idempoten?</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>GET</td><td>Membaca data</td><td>Read</td><td><code>GET /api/mahasiswa</code></td><td>Ya</td></tr>
+        <tr><td>POST</td><td>Membuat data baru</td><td>Create</td><td><code>POST /api/mahasiswa</code></td><td>Tidak</td></tr>
+        <tr><td>PUT</td><td>Mengganti seluruh data</td><td>Update</td><td><code>PUT /api/mahasiswa/1</code></td><td>Ya</td></tr>
+        <tr><td>PATCH</td><td>Mengubah sebagian data</td><td>Update</td><td><code>PATCH /api/mahasiswa/1</code></td><td>Ya</td></tr>
+        <tr><td>DELETE</td><td>Menghapus data</td><td>Delete</td><td><code>DELETE /api/mahasiswa/1</code></td><td>Ya</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    Pemilihan metode yang salah — terutama memaksa semua operasi lewat GET — menghasilkan API
+    yang membingungkan dan berbahaya, karena satu tautan atau satu pratinjau halaman bisa
+    mengeksekusi perubahan data tanpa sengaja.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Semua operasi lewat GET"
+       data-label-benar="Lima metode dengan makna masing-masing"
+       data-petunjuk="Begitu sebuah operasi dipetakan ke GET, siapa pun yang membuka tautannya ikut menjalankannya. Itulah sebabnya makna metode harus dipatuhi.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">semua-lewat-get.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §10.3</span>
+      </figcaption>
+      <pre><code class="language-text">GET /api/mahasiswa           → baca    ✓ aman
+GET /api/mahasiswa/tambah    → tambah  ✗ satu pratinjau tautan = data masuk
+GET /api/mahasiswa/ubah/1    → ubah    ✗ tidak ada body, tidak ada maksud
+GET /api/mahasiswa/hapus/1   → hapus   ✗ data hilang tanpa konfirmasi</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">peta-crud.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §10.3, Tabel 10.2</span>
+      </figcaption>
+      <pre><code class="language-text">GET    /api/mahasiswa      → Read
+POST   /api/mahasiswa      → Create
+PUT    /api/mahasiswa/1    → Update (ganti seluruh data)
+PATCH  /api/mahasiswa/1    → Update (ubah sebagian data)
+DELETE /api/mahasiswa/1    → Delete</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      “Supaya ringkas, hapus saja lewat GET.” Ini kesalahan yang paling berbahaya di bab ini.
+      Permintaan GET dapat dijalankan tanpa sengaja oleh tautan, pratinjau halaman, atau
+      pengambil data otomatis — dan data hilang sebelum ada yang menekan tombol apa pun. Operasi
+      yang mengubah keadaan harus memakai metode yang mengubah keadaan.
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s2-2">
+  <p class="label-subbab">
+    Subbab 10.3 <span class="sumber-slide">· deck: “Apa yang Terjadi Jika…?” · buku §10.3</span>
+  </p>
+  <h2>GET Aman, POST Tidak Idempoten</h2>
+
+  <p>
+    <strong>GET</strong> membaca data tanpa mengubah apa pun, sehingga disebut <strong>aman</strong>
+    (<em>safe</em>) sekaligus <strong>idempoten</strong>: diulang seratus kali pun hasilnya sama.
+    Karena itu GET boleh dijalankan ulang sesuka hati, misalnya saat pengguna menarik layar untuk
+    memuat ulang. Permintaan GET umumnya tidak membawa body; data datang pada body tanggapan.
+  </p>
+
+  <p>
+    <strong>POST</strong> menciptakan resource baru. Client mengirim data pada body, server
+    menyimpannya dan mengembalikan data itu lengkap dengan <code>id</code> baru serta status
+    <code>201 Created</code>. POST <em>tidak</em> idempoten: permintaan yang sama dikirim dua kali
+    akan menciptakan dua data.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">post-diulang-dua-kali.txt</span>
+      <span class="kode-sumber">ilustrasi · buku §10.3</span>
+    </figcaption>
+    <pre><code class="language-text">POST /api/mahasiswa  { "nim": "2201001", "nama": "Budi Santoso", ... }
+POST /api/mahasiswa  { "nim": "2201001", "nama": "Budi Santoso", ... }</code></pre>
+  </figure>
+
+  <p>
+    Implikasinya langsung terasa di antarmuka: tombol Simpan harus dinonaktifkan selama
+    permintaan berjalan, dan teksnya berubah menjadi “Menyimpan…”. Kebiasaan kecil ini mencegah
+    duplikasi data yang mahal diperbaiki di server.
+  </p>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Apa yang terjadi bila tombol Simpan ditekan dua kali sebelum respons datang, bila data
+      dihapus lewat permintaan GET, dan bila POST dikirim tanpa header
+      <code>Content-Type: application/json</code>? (Jawaban berturut-turut: dua data tercipta
+      karena POST tidak idempoten; satu pratinjau tautan bisa menghapus data karena GET seharusnya
+      aman; server menerima body yang tidak dikenali dan umumnya menjawab 400.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s2-3">
+  <p class="label-subbab">
+    Subbab 10.3 <span class="sumber-slide">· deck: “Metode HTTP Sudah Punya Arti yang Disepakati” · buku §10.3</span>
+  </p>
+  <h2>PUT Mengganti Seluruh, PATCH Mengubah Sebagian</h2>
+
+  <p>
+    <strong>PUT</strong> mengganti seluruh resource: client mengirim versi lengkap data
+    mahasiswa, dan server menimpa seluruh isi mahasiswa itu dengan data baru. <strong>PATCH</strong>
+    mengubah sebagian: client hanya mengirim field yang berubah. Karena PUT mengirim keadaan
+    akhir yang utuh, mengirim data yang sama dua kali menghasilkan keadaan yang sama —
+    sifatnya idempoten. PATCH bergantung pada isi operasinya.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">put-seluruh-data.http</span>
+      <span class="kode-sumber">ilustrasi · buku §10.3</span>
+    </figcaption>
+    <pre><code class="language-text">PUT /api/mahasiswa/1
+Content-Type: application/json
+
+{ "id": 1, "nim": "2201001", "nama": "Budi Santoso", "prodi": "Sistem Informasi",
+  "angkatan": 2022, "ipk": 3.50, "email": "budi.santoso@students.univ.ac.id",
+  "telepon": "081234567890" }</code></pre>
+  </figure>
+
+  <p>
+    Server buku memakai PUT agar sederhana. Dalam sistem nyata, PATCH lebih hemat bandwidth saat
+    hanya satu field yang berubah — misalnya ketika mahasiswa hanya perlu memperbaiki IPK-nya.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">patch-sebagian-field.http</span>
+      <span class="kode-sumber">buku §10.3 · PATCH hanya field yang berubah</span>
+    </figcaption>
+    <pre><code class="language-text">PATCH /api/mahasiswa/1
+Content-Type: application/json
+
+{ "ipk": 3.50 }</code></pre>
+  </figure>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Bila satu field berubah dan kamu memakai PUT, apa yang harus dikirim? (Jawaban: seluruh
+      field, karena PUT menimpa keseluruhan resource; kalau ada field yang lupa dikirim, nilainya
+      bisa hilang.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s2-4">
+  <p class="label-subbab">
+    Subbab 10.4 <span class="sumber-slide">· deck: “Angka Pertama Status Code Sudah Menjawab Siapa yang Salah” &amp; “Enam Kode yang Akan Sering Kamu Temui” · buku §10.4</span>
+  </p>
+  <h2>Angka Pertama Status Code Sudah Menjawab Siapa yang Salah</h2>
+
+  <p>
+    <strong>Status code</strong> adalah angka tiga digit pada tanggapan server yang menyatakan
+    hasil permintaan. Cukup baca digit pertamanya: <strong>4</strong> berarti permintaanmu yang
+    bermasalah, <strong>5</strong> berarti servernya yang bermasalah. Pembedaan itulah yang
+    menentukan siapa yang harus memperbaiki.
+  </p>
+
+  <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Kelompok status code · sumber: buku §10.4</caption>
+      <thead>
+        <tr><th scope="col">Kelompok</th><th scope="col">Makna</th><th scope="col">Contoh</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1xx</td><td>Informasional (sedang diproses)</td><td>100 Continue</td></tr>
+        <tr><td>2xx</td><td>Sukses</td><td>200, 201, 204</td></tr>
+        <tr><td>3xx</td><td>Pengalihan (redirect)</td><td>301, 304</td></tr>
+        <tr><td>4xx</td><td>Kesalahan dari sisi client</td><td>400, 401, 404</td></tr>
+        <tr><td>5xx</td><td>Kesalahan dari sisi server</td><td>500, 503</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    Dari ratusan kode yang ada, enam kode berikut menutup hampir seluruh kebutuhan bab ini.
+    Hubungkan tiap baris dengan pengalaman praktikum: 400 muncul saat <em>Content-Type</em>
+    terlupa, 404 muncul saat alamat endpoint salah ketik, dan 204 muncul setelah penghapusan
+    berhasil.
+  </p>
+
+  <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Enam kode yang akan sering kamu temui · sumber: buku §10.4</caption>
+      <thead>
+        <tr><th scope="col">Kode</th><th scope="col">Arti</th><th scope="col">Muncul saat</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>200 OK</td><td>Permintaan berhasil</td><td>GET atau PUT yang sukses</td></tr>
+        <tr><td>201 Created</td><td>Resource baru dibuat</td><td>POST yang sukses</td></tr>
+        <tr><td>204 No Content</td><td>Sukses tanpa isi tanggapan</td><td>DELETE yang sukses</td></tr>
+        <tr><td>400 Bad Request</td><td>Permintaan cacat</td><td>Body bukan JSON sah atau field wajib kosong</td></tr>
+        <tr><td>401 Unauthorized</td><td>Belum terautentikasi</td><td>Token hilang, salah, atau kedaluwarsa</td></tr>
+        <tr><td>404 Not Found</td><td>Resource tidak ditemukan</td><td>Alamat salah ketik, atau id tidak ada</td></tr>
+        <tr><td>500 Internal Server Error</td><td>Server gagal secara internal</td><td>Bug atau kondisi tak terduga di server</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">baris-status.http</span>
+      <span class="kode-sumber">buku §10.4 · baris status pada tanggapan</span>
+    </figcaption>
+    <pre><code class="language-text">HTTP/1.1 200 OK
+HTTP/1.1 201 Created
+HTTP/1.1 204 No Content
+HTTP/1.1 400 Bad Request
+HTTP/1.1 401 Unauthorized
+HTTP/1.1 404 Not Found
+HTTP/1.1 500 Internal Server Error</code></pre>
+  </figure>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      “Setiap respons yang bukan 200 berarti aplikasinya salah.” Angka pertama sudah menjawab
+      siapa yang harus memperbaiki: 4 berarti permintaan yang bermasalah, 5 berarti servernya.
+      Menyalahkan pengguna atas kesalahan server membuat masalah tidak pernah selesai.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Server berjalan normal, tetapi data mahasiswa dengan id 999 memang tidak ada. Kode apa yang
+      seharusnya dijawab server? (Jawaban: 404 Not Found — bukan 500, karena servernya tidak
+      gagal; yang tidak ditemukan adalah resource yang diminta.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s2-5">
+  <p class="label-subbab">
+    Subbab 10.4 <span class="sumber-slide">· deck: “Satu Pertukaran HTTP Dibaca dari Atas ke Bawah” · buku §10.4</span>
+  </p>
+  <h2>Satu Pertukaran HTTP Dibaca dari Atas ke Bawah</h2>
+
+  <p>
+    Konsep-konsep di atas baru terasa ketika dibaca pada satu pertukaran utuh. Bacalah blok
+    berikut seperti membaca kuitansi: baris pembuka menyebut metode dan alamatnya, headers
+    menjelaskan jenis isinya, blok pertama adalah yang dikirim aplikasi, lalu blok kedua adalah
+    jawaban server.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">pertukaran-http.txt</span>
+      <span class="kode-sumber">buku §10.4 · permintaan dan tanggapan</span>
+    </figcaption>
+    <pre><code class="language-text">REQUEST: POST /api/mahasiswa HTTP/1.1
+Host: 10.0.2.2:3000
+Content-Type: application/json
+
+{ "nim": "2201001", "nama": "Budi Santoso", "prodi": "Sistem Informasi",
+  "angkatan": 2022, "ipk": 3.45,
+  "email": "budi.santoso@students.univ.ac.id", "telepon": "081234567890" }
+
+RESPONSE: HTTP/1.1 201 Created
+Content-Type: application/json
+
+{ "id": 1, "nim": "2201001", "nama": "Budi Santoso", "prodi": "Sistem Informasi",
+  "angkatan": 2022, "ipk": 3.45,
+  "email": "budi.santoso@students.univ.ac.id", "telepon": "081234567890" }</code></pre>
+  </figure>
+
+  <p>
+    Perhatikan tiga hal. <strong>Header</strong> menyampaikan metadata — <code>Content-Type</code>
+    memberi tahu penerima bahwa isi pesan berformat JSON. <strong>Body</strong> berisi data nyata;
+    pada contoh ini keduanya nyaris sama, bedanya respons menambahkan <code>id</code> yang baru
+    diterbitkan server. <strong>Status code</strong> menandakan hasil: <code>201 Created</code>
+    berarti proses berhasil dan data sudah tersimpan.
+  </p>
+
+  <p>
+    Di dalam kode, ketiga hal itu dibaca lewat tiga properti: <code>response.ok</code> untuk
+    memutuskan boleh atau tidaknya data dipakai, <code>response.status</code> untuk menyebut
+    angkanya pada pesan galat, dan <code>response.json()</code> untuk mengambil body. Bagian 3
+    memakai ketiganya sekaligus.
+  </p>
+</section>

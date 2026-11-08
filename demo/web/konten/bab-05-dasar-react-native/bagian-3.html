@@ -1,0 +1,599 @@
+<h1>Bagian 3 — StyleSheet dan Gaya Kondisional</h1>
+
+  <p class="ringkas">
+    Empat subbab: gaya sebagai objek JavaScript, warna dan ukuran yang dikumpulkan di satu
+    tempat, array style yang saling menimpa, dan gaya kondisional dengan ternary serta
+    <code>&amp;&amp;</code>. Setiap kode disertai hasil yang diharapkan, dan setiap angka di halaman
+    ini ditelusuri ke <code>slides/bab-05-dasar-react-native.md</code>,
+    <code>buku/bab-05-dasar-react-native.md</code>, atau <code>praktikum/bab-05-*.md</code>.
+  </p>
+
+  <div class="pengantar-pertanyaan">
+    <p><strong>Catatan pembuka deck:</strong> bagian ini yang paling sering membuat mantan pengembang web tersandung, karena tidak ada berkas CSS dan tidak ada <em>cascade</em>.</p>
+    <p>
+      Kalau waktu di kelas menipis, Subbab 3.1 dan 3.2 tetap wajib; gaya kondisional bisa menyusul
+      di pertemuan berikutnya karena dipakai lagi di Bab 8.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tiruan">
+    <p class="kotak-judul">Yang perlu diketahui sebelum membaca</p>
+    <p>
+      Bingkai bertanda <strong>React Native</strong> adalah <strong>tiruan HTML/CSS</strong>, bukan
+      React Native sungguhan. Angka di dalamnya — jarak, warna, ukuran, radius — ditulis inline
+      pada markup tiruan dan diambil apa adanya dari objek gaya pada kode yang ditampilkan di
+      subbab yang sama. Tidak ada angka yang dikarang.
+    </p>
+    <p>
+      Satu hal perlu dijelaskan lebih awal. Slide deck menampilkan potongan JSX yang
+      <em>memakai</em> nama gaya (<code>styles.text</code>, <code>styles.highlight</code>,
+      <code>styles.status</code>, <code>styles.active</code>) tanpa menuliskan nilai gayanya. Karena
+      itu, di Subbab 3.3 dan 3.4, nilai yang dipakai bingkai diambil dari blok gaya pada
+      <strong>Soal 9</strong> (<code>baris</code>, <code>barisAktif</code>, <code>barisTertekan</code>)
+      yang memang menuliskan angka dan warna. Pemetaan namanya disebutkan di tiap subbab, supaya
+      tidak ada bingkai yang lahir dari kode yang tidak ditampilkan.
+    </p>
+  </div>
+
+  <!-- ============================================================ SUBBAB 3.1 -->
+
+  <section class="subbab" id="s3-1" data-subbab="3.1">
+    <p class="label-subbab">
+      Subbab 3.1 <span class="sumber-slide">· deck: “Gaya Ditulis sebagai Objek, Bukan CSS” · buku §5.8</span>
+    </p>
+    <h2>Gaya Ditulis sebagai Objek, Bukan CSS</h2>
+
+    <ul>
+      <li><code>StyleSheet.create()</code> mengenali properti gaya saat aplikasi dimuat.</li>
+      <li>Kode tampilan dipisahkan dari struktur komponen.</li>
+      <li>Nama properti memakai <em>camelCase</em>, misalnya <code>backgroundColor</code>.</li>
+    </ul>
+
+    <p>
+      Di React Native tidak ada berkas CSS. Gaya ditulis sebagai objek JavaScript, dan cara
+      terbaik menyimpannya adalah <code>StyleSheet.create</code> (buku §5.8). Tiga manfaatnya
+      disebut buku dengan urutan yang jelas: properti gaya divalidasi saat aplikasi dimuat
+      sehingga salah ketik langsung terlihat alih-alih gagal diam-diam, pengiriman gaya ke sisi
+      native dioptimalkan, dan definisi gaya dipindahkan keluar dari JSX sehingga komponen mudah
+      dibaca. Objek JavaScript biasa juga sah, tetapi <code>create</code> adalah standar yang
+      dipakai buku ini.
+    </p>
+
+    <p>
+      Yang hilang dibanding CSS ada tiga, dan ketiganya sering ditanyakan di kelas.
+      <strong>Pertama, tidak ada selektor.</strong> Tidak ada <code>.kartu { … }</code> yang
+      menyeleksi elemen mana pun; yang ada hanyalah nama kunci di dalam satu objek, dan komponen
+      menunjuknya lewat <code>style={styles.nama}</code>. Nama <code>container</code> dan
+      <code>title</code> di bawah adalah nama bebas, bukan nama wajib — yang mengikat hanya rujukan
+      <code>styles.nama</code> di JSX. <strong>Kedua, tidak ada pewarisan.</strong> Di web gaya
+      menetes dari induk ke anak seperti air terjun; di React Native setiap komponen menyatakan
+      gayanya sendiri (buku §5.8, dengan satu pengecualian: pewarisan teks pada iOS).
+      <strong>Ketiga, tidak ada satuan.</strong> <code>padding: 20</code> ditulis tanpa
+      <code>px</code>, berbeda dari CSS. <em>(Catatan di luar keempat sumber bab ini: angka itu adalah
+      satuan logis React Native, bukan piksel fisik perangkat; dokumentasi resmi di reactnative.dev
+      menyebutnya density-independent pixel, dan menambahkan <code>px</code> pada nilai angka
+      ditolak.)</em>
+    </p>
+
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">App.js</span>
+        <span class="kode-sumber">deck · slide “Gaya Ditulis sebagai Objek, Bukan CSS”</span>
+      </figcaption>
+      <pre><code class="language-jsx">import { View, Text, StyleSheet } from 'react-native';
+
+export default function App() {
+  return (
+    &lt;View style={styles.container}&gt;
+      &lt;Text style={styles.title}&gt;
+        Belajar React Native
+      &lt;/Text&gt;
+    &lt;/View&gt;
+  );
+}
+</code></pre>
+    </figure>
+
+    <p>
+      Potongan deck di atas hanya memuat struktur komponennya; objek <code>styles</code> yang
+      dirujuknya baru ditulis di slide berikutnya. Keduanya ditampilkan berdampingan di sini supaya
+      bingkai hasil di bawah bisa dipertanggungjawabkan nilai per nilai.
+    </p>
+
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">App.js</span>
+        <span class="kode-sumber">deck · slide “Warna, Ukuran, Jarak, dan Radius di Satu Tempat”</span>
+      </figcaption>
+      <pre><code class="language-jsx">const styles = StyleSheet.create({
+  container: {
+    padding: 20,
+    backgroundColor: '#f5f5f5',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
+});
+</code></pre>
+    </figure>
+
+    <div class="keluaran">
+      <p class="keluaran-kepala"><span>Hasil yang diharapkan</span><span class="keluaran-lebar">390 px</span></p>
+      <div class="bingkai">
+        <div class="bingkai-layar">
+          <div class="rn">
+            <div class="rn-view" style="padding: 20px; background-color: #f5f5f5">
+              <div class="rn-text" style="font-size: 24px; font-weight: 700">Belajar React Native</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="keluaran-catatan">
+        Empat nilai membentuk tampilan ini: <code>padding: 20</code> dan
+        <code>backgroundColor: '#f5f5f5'</code> pada <code>container</code>, serta
+        <code>fontSize: 24</code> dan <code>fontWeight: 'bold'</code> pada <code>title</code>. Tidak
+        ada selektor yang bekerja di sini: <code>&lt;View style={styles.container}&gt;</code> hanya
+        menunjuk satu kunci bernama <code>container</code>. Tidak ada pewarisan: kotak abu-abu tidak
+        mewarnai teks di dalamnya, dan ukuran 24 hanya berlaku pada <code>Text</code> yang menulis
+        <code>styles.title</code>. Tidak ada satuan: angka 20 dan 24 ditulis telanjang. Perhatikan
+        juga <code>'bold'</code> — nilai kata kunci, bukan angka <code>700</code> seperti di CSS;
+        tiruan di atas menampilkannya sebagai bobot 700 karena begitulah <code>bold</code> dirender.
+      </p>
+    </div>
+
+    <div class="kotak kotak-salah">
+      <p class="kotak-judul">Salah paham</p>
+      <p>
+        Menaruh objek gaya di dalam <code>render</code> sehingga objek itu dibuat ulang setiap kali
+        komponen dirender. <code>StyleSheet.create</code> dipanggil sekali di luar komponen, bukan
+        di dalam badan fungsi komponen.
+      </p>
+    </div>
+
+    <div class="kotak kotak-tanya">
+      <p class="kotak-judul">Pertanyaan penuntun</p>
+      <p>“Kenapa <code>font-size</code> akan ditolak?”</p>
+      <details class="kotak-jawab">
+        <summary>Lihat jawaban</summary>
+        <p>
+          Karena React Native memakai <code>fontSize</code>. Nama properti memakai
+          <em>camelCase</em>, bukan tanda hubung; <code>font-size</code> bukan properti yang dikenal
+          dan langsung terlihat sebagai kesalahan saat aplikasi dimuat.
+        </p>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============================================================ SUBBAB 3.2 -->
+
+  <section class="subbab" id="s3-2" data-subbab="3.2">
+    <p class="label-subbab">
+      Subbab 3.2 <span class="sumber-slide">· deck: “Warna, Ukuran, Jarak, dan Radius di Satu Tempat” · buku §5.8</span>
+    </p>
+    <h2>Warna, Ukuran, Jarak, dan Radius di Satu Tempat</h2>
+
+    <ul>
+      <li>Mengatur warna, ukuran teks, margin, padding, border, dan radius.</li>
+      <li>Definisi style yang sama dipakai beberapa komponen sekaligus.</li>
+      <li>Warna dan ukuran disimpan sebagai konstanta agar konsisten.</li>
+    </ul>
+
+    <p>
+      Satu objek gaya memuat semua keputusan visual sebuah komponen: warna latar, radius sudut,
+      jarak dalam, dan jarak luar. Contoh buku §5.8 di bawah menuliskan empat nilai itu sekaligus
+      pada satu kunci bernama <code>kartu</code>. Karena <code>kartu</code> adalah konstanta di
+      tingkat modul, sepuluh pemakaian <code>styles.kartu</code> di seluruh aplikasi menunjuk objek
+      yang sama: mengubah <code>padding: 16</code> menjadi <code>20</code> mengubah semuanya
+      sekaligus, tanpa menyunting satu per satu.
+    </p>
+
+    <p>
+      Inilah jawaban atas kebiasaan yang paling mahal di proyek nyata. Kalau warna yang sama ditulis
+      di sepuluh tempat, satu kali perubahan desain berarti sepuluh kali sunting — dan cepat atau
+      lambat satu di antaranya terlewat. Deck menyebut nilai seperti ini sebaiknya disimpan sebagai
+      konstanta; tempat terbaiknya dibahas pada kotak pertanyaan di bawah.
+    </p>
+
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">App.js</span>
+        <span class="kode-sumber">buku · §5.8 StyleSheet dan Styling</span>
+      </figcaption>
+      <pre><code class="language-jsx">import { StyleSheet, View } from 'react-native';
+
+const styles = StyleSheet.create({
+  kartu: {
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+  },
+});
+</code></pre>
+    </figure>
+
+    <div class="keluaran">
+      <p class="keluaran-kepala"><span>Hasil yang diharapkan</span><span class="keluaran-lebar">390 px</span></p>
+      <div class="bingkai">
+        <div class="bingkai-layar">
+          <div class="rn">
+            <div class="rn-view" style="background-color: #ffffff; border-radius: 12px; padding: 16px; margin-bottom: 12px">
+              <div class="rn-text">Kartu pertama</div>
+            </div>
+            <div class="rn-view" style="background-color: #ffffff; border-radius: 12px; padding: 16px; margin-bottom: 12px">
+              <div class="rn-text">Kartu kedua</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="keluaran-catatan">
+        Dua kartu memakai satu objek yang sama, jadi keduanya bergerak bersama. Dari empat nilai itu,
+        dua yang bisa Anda periksa di bingkai: <code>padding: 16</code> terlihat sebagai teks yang
+        menjorok 16 px dari tepi kartu, dan <code>marginBottom: 12</code> terlihat sebagai jarak 12 px
+        antara kartu pertama dan kartu kedua. Dua sisanya —
+        <code>backgroundColor: '#ffffff'</code> dan <code>borderRadius: 12</code> — tidak terlihat
+        karena layar bingkai juga putih: kartu putih di atas latar putih tidak punya batas. Itu
+        bukan berarti nilainya tidak ada; pada layar berlatar berwarna, kedua nilai itulah yang
+        menentukan bentuk. Justru karena sebagian nilai tidak bisa diperiksa dengan mata, nilainya
+        dikumpulkan di satu tempat.
+      </p>
+    </div>
+
+    <div class="kotak kotak-salah">
+      <p class="kotak-judul">Salah paham</p>
+      <p>
+        Menyalin-tempel seluruh objek gaya ke tiap komponen, lalu nilai yang tadinya sama mulai
+        berbeda tanpa disadari. Satu kartu memakai <code>padding: 16</code>, kartu lain
+        <code>padding: 15</code> karena disalin dari versi lama, dan tidak ada yang menyadarinya
+        sampai desainnya dibandingkan berdampingan.
+      </p>
+    </div>
+
+    <div class="kotak kotak-tanya">
+      <p class="kotak-judul">Pertanyaan penuntun</p>
+      <p>“Di mana konstanta warna sebaiknya diletakkan?”</p>
+      <details class="kotak-jawab">
+        <summary>Lihat jawaban</summary>
+        <p>
+          Di satu berkas tema, atau di luar komponen, lalu diimpor. Yang dihindari adalah menulis
+          nilai warna yang sama berulang kali di dalam komponen yang berbeda-beda.
+        </p>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============================================================ SUBBAB 3.3 -->
+
+  <section class="subbab" id="s3-3" data-subbab="3.3">
+    <p class="label-subbab">
+      Subbab 3.3 <span class="sumber-slide">· deck: “Array Style: yang Ditulis Belakangan Menimpa” · buku §5.8</span>
+    </p>
+    <h2>Array Style: yang Ditulis Belakangan Menimpa</h2>
+
+    <ul>
+      <li>Beberapa objek style digabung dalam satu properti <code>style</code>.</li>
+      <li>Gaya yang ditulis belakangan menimpa properti yang sama.</li>
+      <li>Gaya dasar tetap dipakai bersama, gaya tambahan mengubah sebagian.</li>
+    </ul>
+
+    <p>
+      Satu-satunya aturan yang perlu dihafal: urutan array adalah urutan prioritas. Gaya dasar
+      diletakkan di kiri, pengecualian di kanan. Yang ditimpa hanyalah properti yang namanya sama;
+      properti yang hanya ditulis di sebelah kiri tetap berlaku. Buku §5.8 merumuskannya dengan
+      contoh yang lebih panjang — <code>style={[styles.kartu, styles.kartuBesar]}</code> — dan
+      menambahkan satu hal yang sering terlewat: nilai <code>false</code> dan <code>null</code> di
+      dalam array diabaikan React Native.
+    </p>
+
+    <p>
+      Potongan deck di bawah hanya memuat JSX-nya: <code>styles.text</code> dan
+      <code>styles.highlight</code> tidak pernah dituliskan nilainya di deck. Karena itu blok kedua
+      menampilkan objek gaya dari Soal 9, yang menuliskan angka dan warna sungguhan. Bingkai di
+      bawah memakai dua kunci dari blok itu: <code>baris</code> (padding 12, latar putih) sebagai
+      gaya dasar, dan <code>barisAktif</code> (latar <code>#dbeafe</code>) sebagai gaya tambahan.
+      Perilakunya sama persis dengan <code>[styles.text, styles.highlight]</code> pada deck: hanya
+      properti yang sama yang ditimpa.
+    </p>
+
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">Teks.js</span>
+        <span class="kode-sumber">deck · slide “Array Style: yang Ditulis Belakangan Menimpa”</span>
+      </figcaption>
+      <pre><code class="language-jsx">&lt;Text style={[styles.text, styles.highlight]}&gt;
+  Teks dengan style gabungan
+&lt;/Text&gt;
+</code></pre>
+    </figure>
+
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">Styles.js</span>
+        <span class="kode-sumber">soal · Soal 9 — nilai gaya yang dipakai kedua bingkai</span>
+      </figcaption>
+      <pre><code class="language-jsx">const styles = StyleSheet.create({
+  baris: { padding: 12, backgroundColor: "#ffffff" },
+  barisAktif: { backgroundColor: "#dbeafe" },
+  barisTertekan: { opacity: 0.7 },
+  judul: { fontSize: 18, fontWeight: "bold" },
+  judulJudul: { color: "#1e3a8a" }, // salah ketik nama style
+});
+</code></pre>
+    </figure>
+
+    <div class="padanan">
+      <div class="padanan-sisi">
+        <div class="keluaran">
+          <p class="keluaran-kepala"><span>Hanya styles.baris</span><span class="keluaran-lebar">390 px</span></p>
+          <div class="bingkai">
+            <div class="bingkai-layar">
+              <div class="rn">
+                <div class="rn-text" style="padding: 12px; background-color: #ffffff">Teks dengan style gabungan</div>
+              </div>
+            </div>
+          </div>
+          <p class="keluaran-catatan">
+            Satu objek: jarak dalam 12 px dan latar putih, tidak ada yang menimpa.
+          </p>
+        </div>
+      </div>
+
+      <div class="padanan-sisi">
+        <div class="keluaran">
+          <p class="keluaran-kepala"><span>styles.baris + styles.barisAktif</span><span class="keluaran-lebar">390 px</span></p>
+          <div class="bingkai">
+            <div class="bingkai-layar">
+              <div class="rn">
+                <div class="rn-text" style="padding: 12px; background-color: #dbeafe">Teks dengan style gabungan</div>
+              </div>
+            </div>
+          </div>
+          <p class="keluaran-catatan">
+            Dua objek: latar berganti menjadi <code>#dbeafe</code>, jarak dalam tetap 12 px.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <p class="keluaran-catatan">
+      Bandingkan kedua bingkai di atas. <code>barisAktif</code> hanya mengatur
+      <code>backgroundColor</code>, jadi <code>padding: 12</code> dari <code>baris</code> tetap
+      dipakai — teks di kedua bingkai sama-sama menjorok 12 px. Kalau urutan array dibalik menjadi
+      <code>[styles.barisAktif, styles.baris]</code>, latarnya kembali putih, karena
+      <code>baris</code> yang ditulis terakhir menimpa warna sebelumnya. Properti yang tidak
+      disebut <code>barisAktif</code> sama sekali — <code>padding</code>, misalnya — tidak hilang
+      oleh urutan mana pun, karena hanya nama properti yang sama yang saling menimpa.
+    </p>
+
+    <div class="kotak kotak-salah">
+      <p class="kotak-judul">Salah paham</p>
+      <p>
+        Membalik urutan array lalu menyimpulkan React Native mengabaikan gaya pertama. Yang terjadi
+        bukan pengabaian: gaya pertama tetap dipakai, hanya properti yang namanya sama yang kalah
+        oleh gaya yang ditulis belakangan.
+      </p>
+    </div>
+
+    <div class="kotak kotak-tanya">
+      <p class="kotak-judul">Pertanyaan penuntun</p>
+      <p>“Kalau <code>styles.highlight</code> tidak mengatur <code>fontSize</code>, apakah ukuran dari <code>styles.text</code> hilang?”</p>
+      <details class="kotak-jawab">
+        <summary>Lihat jawaban</summary>
+        <p>Tidak. Hanya properti yang sama yang ditimpa; ukuran dari <code>styles.text</code> tetap berlaku.</p>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============================================================ SUBBAB 3.4 -->
+
+  <section class="subbab" id="s3-4" data-subbab="3.4">
+    <p class="label-subbab">
+      Subbab 3.4 <span class="sumber-slide">· deck: “Gaya Kondisional: Ternary dan Logika <code>&amp;&amp;</code>” · buku §5.8</span>
+    </p>
+    <h2>Gaya Kondisional: Ternary dan Logika <code>&amp;&amp;</code></h2>
+
+    <ul>
+      <li>Operator ternary memilih satu dari dua gaya.</li>
+      <li>Logika <code>&amp;&amp;</code> menambahkan gaya hanya saat kondisinya benar.</li>
+      <li>Warna dan tampilan bisa berubah mengikuti props atau state.</li>
+      <li>Umpan balik visual muncul saat tombol ditekan.</li>
+    </ul>
+
+    <p>
+      Baca array dari kiri ke kanan seperti kalimat: “pakai gaya <code>status</code>, dan kalau
+      aktif tambahkan gaya <code>active</code>”. Dua operator punya peran berbeda dan sering
+      tertukar: <strong>ternary</strong> memilih di antara dua gaya, sedangkan
+      <strong><code>&amp;&amp;</code></strong> menambahkan satu gaya bila perlu. Contoh tombol
+      ditekan memakai bentuk kedua, karena saat tombol tidak ditekan tidak ada gaya pengganti yang
+      perlu dipasang. Buku §5.8 menuliskan keduanya dalam satu baris —
+      <code>[styles.baris, aktif &amp;&amp; styles.barisAktif, pressed ? styles.tertekan : null]</code>
+      — dan menjelaskan alasannya: nilai <code>false</code> dan <code>null</code> pada array gaya
+      diabaikan, sehingga gaya hanya aktif saat kondisinya bernilai benar.
+    </p>
+
+    <p>
+      Kode deck di bawah mengubah dua hal sekaligus: gayanya dan teksnya.
+      <code>{isActive ? 'Aktif' : 'Tidak aktif'}</code> bukan hiasan — ia yang membuat keadaan bisa
+      dibedakan tanpa bergantung pada warna. Blok kedua memperlihatkan bentuk yang sama di dalam
+      komponen nyata dari kunci Soal 9: <code>aktif &amp;&amp; styles.barisAktif</code> bergandengan
+      dengan <code>pressed &amp;&amp; styles.barisTertekan</code>, dan nilai keduanya tertulis di
+      blok ketiga.
+    </p>
+
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">Status.js</span>
+        <span class="kode-sumber">deck · slide “Gaya Kondisional: Ternary dan Logika &amp;&amp;”</span>
+      </figcaption>
+      <pre><code class="language-jsx">&lt;Text
+  style={[
+    styles.status,
+    isActive &amp;&amp; styles.active,
+  ]}
+&gt;
+  {isActive ? 'Aktif' : 'Tidak aktif'}
+&lt;/Text&gt;
+</code></pre>
+    </figure>
+
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">Baris.js</span>
+        <span class="kode-sumber">kunci · Soal 9 — array gaya yang memakai props aktif dan pressed</span>
+      </figcaption>
+      <pre><code class="language-jsx">   &lt;Pressable
+     style={({ pressed }) =&gt; [
+       styles.baris,
+       aktif &amp;&amp; styles.barisAktif,
+       pressed &amp;&amp; styles.barisTertekan,
+     ]}
+   &gt;
+     &lt;Text&gt;{mahasiswa.nama}&lt;/Text&gt;
+   &lt;/Pressable&gt;
+   </code></pre>
+    </figure>
+
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">Styles.js</span>
+        <span class="kode-sumber">soal · Soal 9 — nilai yang dipakai kedua keadaan di bawah</span>
+      </figcaption>
+      <pre><code class="language-jsx">const styles = StyleSheet.create({
+  baris: { padding: 12, backgroundColor: "#ffffff" },
+  barisAktif: { backgroundColor: "#dbeafe" },
+  barisTertekan: { opacity: 0.7 },
+  judul: { fontSize: 18, fontWeight: "bold" },
+  judulJudul: { color: "#1e3a8a" }, // salah ketik nama style
+});
+</code></pre>
+    </figure>
+
+    <div class="padanan">
+      <div class="padanan-sisi">
+        <div class="keluaran">
+          <p class="keluaran-kepala"><span>Keadaan isActive = true</span><span class="keluaran-lebar">390 px</span></p>
+          <div class="bingkai">
+            <div class="bingkai-layar">
+              <div class="rn">
+                <div class="rn-text" style="padding: 12px; background-color: #dbeafe">Aktif</div>
+              </div>
+            </div>
+          </div>
+          <p class="keluaran-catatan">
+            Array berisi dua gaya: <code>status</code> dan <code>active</code>. Latar
+            <code>#dbeafe</code> menimpa putih, jarak dalam tetap 12 px.
+          </p>
+        </div>
+      </div>
+
+      <div class="padanan-sisi">
+        <div class="keluaran">
+          <p class="keluaran-kepala"><span>Keadaan isActive = false</span><span class="keluaran-lebar">390 px</span></p>
+          <div class="bingkai">
+            <div class="bingkai-layar">
+              <div class="rn">
+                <div class="rn-text" style="padding: 12px; background-color: #ffffff">Tidak aktif</div>
+              </div>
+            </div>
+          </div>
+          <p class="keluaran-catatan">
+            Array berisi <code>status</code> dan <code>false</code>. Nilai <code>false</code>
+            diabaikan, jadi hanya gaya dasar yang berlaku.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <p class="keluaran-catatan">
+      Dua bingkai itu sengaja diberi label keadaan, bukan warna: yang berubah adalah nilai
+      <code>isActive</code>, sedangkan gaya yang dipakai tetap dua objek yang sama. Nama
+      <code>styles.status</code> dan <code>styles.active</code> pada deck tidak punya nilai, jadi
+      bingkai memakai <code>baris</code> sebagai <code>styles.status</code> dan
+      <code>barisAktif</code> sebagai <code>styles.active</code>. Perhatikan juga bahwa teksnya
+      ikut berganti — “Aktif” dan “Tidak aktif” — sehingga keadaan terbaca tanpa mengandalkan warna
+      sama sekali. Kalau tombol juga perlu menanggapi tekanan, tambahkan
+      <code>pressed &amp;&amp; styles.barisTertekan</code> seperti pada blok kunci di atas; nilai
+      <code>opacity: 0.7</code>-nya sudah tertulis di blok gaya.
+    </p>
+
+    <div class="kotak kotak-salah">
+      <p class="kotak-judul">Salah paham</p>
+      <p>
+        Menulis <code>isActive ? styles.active</code> tanpa cabang alternatif, sehingga gaya menjadi
+        <code>undefined</code> saat tidak aktif. Tulis <code>isActive ? styles.active : null</code>,
+        atau pakai <code>&amp;&amp;</code> yang memang mengabaikan nilai salah.
+      </p>
+    </div>
+
+    <div class="kotak kotak-tanya">
+      <p class="kotak-judul">Pertanyaan penuntun</p>
+      <p>“Apa isi array saat <code>isActive</code> bernilai <code>false</code>?”</p>
+      <details class="kotak-jawab">
+        <summary>Lihat jawaban</summary>
+        <p><code>false</code> diabaikan, jadi hanya <code>styles.status</code> yang berlaku.</p>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============================================================ PRAKTIKUM 3 -->
+
+  <section class="subbab" id="p3" data-subbab="Praktikum 3"
+           data-tanpa-kode="Kode praktikum ditulis mahasiswa sendiri. Potongan gaya yang relevan sudah ditampilkan di Subbab 3.3 dan 3.4, dan kode soal serta kuncinya ada di halaman Praktikum."
+           data-tanpa-output="Hasil bergantung pada pekerjaan mahasiswa. Sumber tidak memuat kode tombol dengan tiga variasi warna, jadi tidak ada bingkai yang bisa dipertanggungjawabkan nilainya.">
+    <p class="label-subbab">
+      Praktikum 3 <span class="sumber-slide">· deck: “Praktikum 3: Tombol yang Berubah Sesuai Status”</span>
+    </p>
+    <h2>Praktikum 3 — Tombol yang Berubah Sesuai Status</h2>
+
+    <ul>
+      <li>Tiga variasi warna tombol: utama, kedua, dan nonaktif.</li>
+      <li>Status aktif dan nonaktif diatur oleh satu state.</li>
+      <li>Tampilan berbeda muncul berdasarkan kondisi state tersebut.</li>
+    </ul>
+
+    <p>
+      Waktu yang disediakan di lab sekitar 25 menit. Syarat minimumnya satu tombol yang berubah
+      warna saat state berubah, dengan gaya yang tetap terbaca di kedua kondisi. Cara memeriksanya
+      sederhana dan sering dipakai di kelas: lihat hasilnya dengan mata setengah tertutup — kalau
+      kedua kondisi tidak langsung bisa dibedakan, kontrasnya belum cukup.
+    </p>
+
+    <p>
+      Dua jebakan yang paling sering muncul. Pertama, membedakan status lewat warna saja; sebagian
+      pengguna tidak dapat membedakan warna, jadi tambahkan teks atau ikon seperti pada Subbab 3.4.
+      Kedua, menyimpan gaya di dalam state — simpan kondisinya, bukan gayanya, lalu pilih gaya lewat
+      array seperti yang baru saja dilatih. Latihan Soal 9 menutup dua celah sekaligus: array style
+      yang berlapis (<code>baris</code>, <code>barisAktif</code>, <code>barisTertekan</code>) dan
+      perbedaan platform lewat <code>Platform.select</code> di dalam <code>StyleSheet.create</code>.
+    </p>
+
+    <p>
+      Soal lengkap, rubrik, dan kunci ada di
+      <a href="praktikum.html#p3">halaman Praktikum — Praktikum 3</a>, dan latihan gaya yang
+      menyertainya di <a href="praktikum.html#p9">Praktikum — Soal 9</a>.
+    </p>
+
+    <div class="kotak kotak-salah">
+      <p class="kotak-judul">Salah paham</p>
+      <p>
+        Menyimpan gaya di dalam state. Simpan kondisinya, bukan gayanya: state cukup berisi penanda
+        keadaan — contoh penamaan, bukan dari deck: <code>"utama"</code>, <code>"kedua"</code>,
+        <code>"nonaktif"</code> — sedangkan objek gaya tetap berada di
+        <code>StyleSheet.create</code> di luar komponen.
+      </p>
+    </div>
+
+    <div class="kotak kotak-tanya">
+      <p class="kotak-judul">Pertanyaan penuntun</p>
+      <p>“Kenapa status jangan dibedakan lewat warna saja?”</p>
+      <details class="kotak-jawab">
+        <summary>Lihat jawaban</summary>
+        <p>
+          Karena sebagian pengguna tidak dapat membedakan warna. Tambahkan teks atau ikon supaya
+          keadaannya tetap terbaca, seperti <code>{isActive ? 'Aktif' : 'Tidak aktif'}</code> pada
+          Subbab 3.4.
+        </p>
+      </details>
+    </div>
+  </section>

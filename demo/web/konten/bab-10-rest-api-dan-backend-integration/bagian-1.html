@@ -1,0 +1,321 @@
+<h1>Bagian 1 — Client–Server, HTTP, REST, dan JSON</h1>
+
+<p class="ringkas">
+  Subbab 10.1–10.2. Sebelum satu baris <code>fetch</code> ditulis, bagian ini menyiapkan
+  kosakata yang dipakai seluruh bab: siapa meminta, siapa menyimpan, lewat protokol apa
+  permintaan berjalan, dengan gaya arsitektur apa alamat data disusun, dan dalam format apa
+  data berpindah dari satu mesin ke mesin lain.
+</p>
+
+<section class="subbab" id="s1-1">
+  <p class="label-subbab">
+    Subbab 10.1 <span class="sumber-slide">· deck: “Data Statis Tidak Pernah Tahu IPK Sudah Berubah” · buku §10.1</span>
+  </p>
+  <h2>Data Statis Tidak Pernah Tahu IPK Sudah Berubah</h2>
+
+  <p>
+    Di Bab 6–8 seluruh data aplikasi ditulis langsung di dalam kode. Data seperti itu disebut
+    <strong>data statis</strong>: daftar mahasiswa yang kamu ketik di sebuah berkas JavaScript
+    akan sama untuk semua pengguna, di semua waktu, sampai kamu mengubah kodenya lalu
+    membangun ulang aplikasi.
+  </p>
+
+  <p>
+    Aplikasi nyata di dunia Sistem Informasi menuntut data yang <strong>dinamis</strong>:
+    mahasiswa baru ditambahkan, IPK diperbarui, data yang salah dihapus. Pertanyaan yang
+    menentukan arah bab ini bukan “di mana data disimpan”, melainkan “siapa sumber
+    kebenarannya”. Data pada blok berikut bukan lagi konstanta di dalam komponen, melainkan
+    salinan yang datang dari mesin lain setiap kali aplikasi memintanya.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">respons-api.json</span>
+      <span class="kode-sumber">buku §10.2 · bentuk data yang dikirim server</span>
+    </figcaption>
+    <pre><code class="language-json">[
+  {
+    "id": 1,
+    "nim": "2201001",
+    "nama": "Budi Santoso",
+    "prodi": "Sistem Informasi",
+    "angkatan": 2022,
+    "ipk": 3.45,
+    "email": "budi.santoso@students.univ.ac.id",
+    "telepon": "081234567890"
+  }
+]</code></pre>
+  </figure>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Kalau IPK Budi diperbarui di kantor akademik, berapa lama sampai perubahan itu terlihat di
+      aplikasi? (Jawaban: tidak pernah — aplikasi memegang salinannya sendiri, dan salinan itu
+      hanya berubah bila kodenya diubah lalu aplikasi dibangun ulang.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s1-2">
+  <p class="label-subbab">
+    Subbab 10.1 <span class="sumber-slide">· deck: “Dua Program Terpisah: Satu Meminta, Satu Menyimpan” · buku §10.1</span>
+  </p>
+  <h2>Dua Program Terpisah: Satu Meminta, Satu Menyimpan</h2>
+
+  <p>
+    Jawaban atas pertanyaan sumber kebenaran itu adalah arsitektur <strong>client–server</strong>:
+    pemisahan tegas antara pihak yang meminta layanan dan pihak yang menyediakannya. Di
+    aplikasi mobile, <strong>client</strong> adalah aplikasi React Native Expo yang berjalan di
+    ponsel, sedangkan <strong>server</strong> adalah program lain yang menyimpan dan mengelola
+    data — pada buku ini berupa server Express di folder <code>backend/</code> yang berjalan di
+    port 3000.
+  </p>
+
+  <p>
+    Analogi yang paling bertahan adalah restoran. Kamu memesan lewat pelayan, dapur
+    mengerjakannya, dan kamu tidak perlu tahu cara dapur bekerja; pelayan itulah <strong>API</strong>.
+    Yang perlu diingat: client menyusun permintaan dan menampilkan hasilnya, server menyimpan,
+    mengelola, dan menjaga data.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">peta-konsep.txt</span>
+      <span class="kode-sumber">buku §Peta Konsep</span>
+    </figcaption>
+    <pre><code class="language-text">┌─────────────────────┐    request HTTP berisi JSON   ┌─────────────────────┐
+│  APLIKASI MOBILE    │ ─────────────────────────────► │   SERVER API        │
+│  (client)           │ ◄───────────────────────────── │   (Express)         │
+│  React Native Expo  │    respons: data + status code │   backend/, :3000   │
+└──────────┬──────────┘                                └──────────┬──────────┘
+           │                                                      │
+           │ fetch: GET · POST · PUT · DELETE                     │ data mahasiswa
+           ▼                                                      ▼
+┌─────────────────────┐                                ┌─────────────────────┐
+│ 3 keadaan UI:       │                                │  DATA MAHASISWA     │
+│ loading · error ·   │                                │  (5 data baku buku) │
+│ empty               │                                └─────────────────────┘
+└─────────────────────┘</code></pre>
+  </figure>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Mahasiswa sering mengira server adalah “bagian dari aplikasi”, lalu heran ketika data
+      tidak muncul padahal aplikasi berjalan normal. Server adalah program terpisah yang harus
+      dijalankan sendiri, dan bisa mati sendiri. Bila lupa menyalakannya, yang muncul bukan data
+      melainkan pesan kegagalan jaringan.
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s1-3">
+  <p class="label-subbab">
+    Subbab 10.1 <span class="sumber-slide">· deck: “Satu Sumber Kebenaran Ditukar dengan Ketergantungan Jaringan” · buku §10.1</span>
+  </p>
+  <h2>Satu Sumber Kebenaran Ditukar dengan Ketergantungan Jaringan</h2>
+
+  <p>
+    Ada tiga alasan yang saling terkait mengapa data tidak disimpan di aplikasi saja. Pertama,
+    <strong>satu sumber kebenaran</strong>: semua pengguna melihat data yang sama, tidak ada
+    versi berbeda di tiap ponsel. Kedua, <strong>keamanan dan kontrol</strong>: data sensitif
+    tetap berada di server yang dapat dijaga, dicadangkan, dan diatur aksesnya. Ketiga,
+    <strong>pembaruan tanpa instal ulang</strong>: aturan bisnis cukup diubah sekali di server,
+    lalu semua aplikasi langsung mengikuti.
+  </p>
+
+  <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Sisi yang didapat dan harga yang dibayar · sumber: deck “Satu Sumber Kebenaran Ditukar dengan Ketergantungan Jaringan”</caption>
+      <thead>
+        <tr><th scope="col">Sisi</th><th scope="col">Yang didapat</th><th scope="col">Yang dibayar</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Sumber data</td><td>Satu sumber kebenaran bersama</td><td>Server menjadi titik gagal tunggal</td></tr>
+        <tr><td>Keamanan</td><td>Data sensitif tetap di server</td><td>Autentikasi dan kontrol akses wajib</td></tr>
+        <tr><td>Pembaruan</td><td>Aturan bisnis berubah tanpa instal ulang</td><td>Setiap perubahan data lewat API</td></tr>
+        <tr><td>Jaringan</td><td>Data konsisten di tiap perangkat</td><td>Bergantung jaringan, ada latensi</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    Pola pikirnya sama dengan Bab 1: bukan “server lebih baik”, melainkan “server membeli
+    konsistensi dengan jaringan”. Harga itulah yang paling sering muncul lebih dulu di layar —
+    dan pesannya selalu berbentuk sama.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">(console) · pesan galat jaringan</span>
+      <span class="kode-sumber">buku §10.5 · kutipan pesan</span>
+    </figcaption>
+    <pre><code class="language-text">TypeError: Network request failed</code></pre>
+</figure>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Baris mana dari tabel di atas yang akan menjadi masalah di kampus dengan Wi-Fi tidak
+      stabil? (Jawaban: baris jaringan — dan jawaban itulah yang memotivasi Bab 11 tentang
+      penyimpanan lokal.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s1-4">
+  <p class="label-subbab">
+    Subbab 10.2 <span class="sumber-slide">· deck: “HTTP: Satu Permintaan, Satu Tanggapan” · buku §10.2</span>
+  </p>
+  <h2>HTTP: Satu Permintaan, Satu Tanggapan</h2>
+
+  <p>
+    <strong>HTTP</strong> (<em>Hypertext Transfer Protocol</em>) adalah bahasa komunikasi antara
+    client dan server. Polanya <strong>request–response</strong>: client mengirim permintaan,
+    server membalas dengan tanggapan. Permintaan membawa empat hal — <em>method</em> (apa yang
+    ingin dilakukan), <em>URL</em> (alamat yang dituju), <em>headers</em> (keterangan tentang
+    pesan), dan <em>body</em> (isi pesan).
+  </p>
+
+  <p>
+    Tanggapan server membawa <em>status code</em> dan body berisi data. Bayangkan formulir
+    pengajuan: kamu menulis maksud permintaan, melampirkan keterangan dan berkas, lalu biro
+    layanan membalas dengan stempel hasil beserta dokumen yang kamu butuhkan. Pada blok kiri
+    berikut, stempel dan keterangan itu belum lengkap — dan server tidak tahu harus berbuat apa.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Tanpa header Content-Type"
+       data-label-benar="Dengan header Content-Type"
+       data-petunjuk="Header adalah keterangan tentang isi pesan. Tanpa header, server menerima teks yang tidak dikenali dan umumnya menjawab 400 Bad Request.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">permintaan-tanpa-header.http</span>
+        <span class="kode-sumber">ilustrasi · buku §10.2</span>
+      </figcaption>
+      <pre><code class="language-text">POST /api/mahasiswa HTTP/1.1
+Host: 10.0.2.2:3000
+
+{ "nim": "2201001", "nama": "Budi Santoso" }</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">pertukaran-http.http</span>
+        <span class="kode-sumber">deck “Satu Pertukaran HTTP Dibaca dari Atas ke Bawah”</span>
+      </figcaption>
+      <pre><code class="language-text">POST /api/mahasiswa HTTP/1.1
+Host: 10.0.2.2:3000
+Content-Type: application/json
+
+{ "nim": "2201001", "nama": "Budi Santoso", "prodi": "Sistem Informasi",
+  "angkatan": 2022, "ipk": 3.45,
+  "email": "budi.santoso@students.univ.ac.id", "telepon": "081234567890" }
+
+HTTP/1.1 201 Created
+Content-Type: application/json
+
+{ "id": 1, "nim": "2201001", "nama": "Budi Santoso", … }</code></pre>
+    </figure>
+  </div>
+
+  <p>
+    Dari contoh di kanan, tiga hal dibaca berurutan: header membawa metadata, body membawa data,
+    dan status code menyatakan hasil. Perhatikan juga bahwa respons nyaris sama dengan
+    permintaan; tambahan terpentingnya adalah <code>id</code> yang diterbitkan server — bukti
+    data benar-benar tersimpan.
+  </p>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Pada contoh di atas, dari mana kita tahu isi pesannya berformat JSON? (Jawaban: dari header
+      <code>Content-Type: application/json</code>.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s1-5">
+  <p class="label-subbab">
+    Subbab 10.2 <span class="sumber-slide">· deck: “REST Memandang Data sebagai Resource Beralamat” · buku §10.2</span>
+  </p>
+  <h2>REST Memandang Data sebagai Resource Beralamat</h2>
+
+  <p>
+    Di atas HTTP berdiri <strong>REST</strong> (<em>Representational State Transfer</em>), gaya
+    arsitektur API yang paling umum dipakai aplikasi mobile. REST mengajak kita memandang data
+    sebagai <strong>resource</strong> — mahasiswa, mata kuliah, prodi — yang masing-masing punya
+    alamat unik bernama <strong>endpoint</strong>.
+  </p>
+
+  <p>
+    Dua alamat yang mirip sering tertukar, dan pertukarannya menghasilkan 404 yang membingungkan.
+    Selain itu REST bersifat <strong>stateless</strong>: setiap permintaan berdiri sendiri dan
+    membawa semua informasi yang dibutuhkan server, sehingga server mudah ditambah kapasitasnya
+    dan tiap permintaan bisa disimpan sementara.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">dua-alamat.txt</span>
+      <span class="kode-sumber">buku §10.2 · dua alamat yang mirip</span>
+    </figcaption>
+    <pre><code class="language-text">GET /api/mahasiswa      → daftar seluruh mahasiswa (koleksi)
+GET /api/mahasiswa/1    → satu mahasiswa dengan id 1</code></pre>
+  </figure>
+
+  <p>
+    Mengapa REST, bukan yang lain? Sebelum REST populer, integrasi sistem banyak memakai
+    <strong>SOAP</strong> dengan amplop XML yang kaku dan berat. REST lahir sebagai reaksi: cukup
+    HTTP biasa, data dalam format ringan, aturan yang mudah dimengerti. GraphQL menawarkan
+    kebebasan memilih field, tetapi REST tetap paling banyak dipakai industri karena
+    kesederhanaan dan kematangannya.
+  </p>
+</section>
+
+<section class="subbab" id="s1-6">
+  <p class="label-subbab">
+    Subbab 10.2 <span class="sumber-slide">· deck: “JSON: Objek JavaScript yang Dikirim sebagai Teks” · buku §10.2</span>
+  </p>
+  <h2>JSON: Objek JavaScript yang Dikirim sebagai Teks</h2>
+
+  <p>
+    Data yang dipertukarkan REST umumnya berformat <strong>JSON</strong>
+    (<em>JavaScript Object Notation</em>): teks yang strukturnya persis objek JavaScript —
+    pasangan kunci–nilai, array, angka, dan string. Field di dalamnya sama dengan dataset baku
+    buku dari Bab 4 sampai Bab 8, sehingga kamu mengenali datanya sendiri.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">satu-mahasiswa.json</span>
+      <span class="kode-sumber">deck “JSON: Objek JavaScript yang Dikirim sebagai Teks”</span>
+    </figcaption>
+    <pre><code class="language-json">{
+  "id": 1,
+  "nim": "2201001",
+  "nama": "Budi Santoso",
+  "prodi": "Sistem Informasi",
+  "angkatan": 2022,
+  "ipk": 3.45,
+  "email": "budi.santoso@students.univ.ac.id",
+  "telepon": "081234567890"
+}</code></pre>
+  </figure>
+
+  <p>
+    Mengapa JSON dan bukan XML? JSON lebih ringkas, mudah dibaca manusia, dan — keuntungan
+    terbesar bagi pemrogram JavaScript — JSON adalah “bahasa ibu” JavaScript. Objek diubah
+    menjadi teks dengan <code>JSON.stringify</code>, lalu teks itu diurai kembali menjadi objek
+    dengan <code>response.json()</code>. Bab ini memakai keduanya untuk kebutuhan nyata.
+  </p>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Kenapa nilai <code>ipk</code> ditulis tanpa tanda kutip, sedangkan <code>nim</code>
+      bertanda kutip? (Jawaban: <code>ipk</code> bertipe angka, <code>nim</code> bertipe teks;
+      salah tipe seperti ini membuat server menjawab 400.)
+    </p>
+  </div>
+</section>

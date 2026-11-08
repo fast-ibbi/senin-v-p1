@@ -1,0 +1,419 @@
+<h1>Praktikum Bab 3 — Pengolah Nilai Mahasiswa</h1>
+
+<p class="ringkas">
+  Dua berkas JavaScript, satu perintah terminal, dan satu berkas JSON sebagai bukti. Praktikum ini
+  adalah versi kecil dari otomatisasi laporan akademik: satu <em>script</em> yang dapat dijalankan
+  ulang dengan hasil yang konsisten.
+</p>
+
+<div class="kotak kotak-tiruan">
+  <p class="kotak-judul">Tujuan praktikum</p>
+  <p>Setelah menyelesaikan praktikum ini, kamu mampu:</p>
+  <ol>
+    <li>mengimplementasikan deklarasi variabel <code>const</code>/<code>let</code> dan tipe data pada data nyata;</li>
+    <li>membuat modul data lima mahasiswa baku dengan <code>export</code>;</li>
+    <li>mengolah array dengan <code>map</code>, <code>filter</code>, <code>reduce</code>, dan <code>find</code> — daftar ringkas, mahasiswa berprestasi, serta rata-rata IPK per prodi;</li>
+    <li>menyusun program asinkron dengan <code>async</code>/<code>await</code> dan <code>try</code>/<code>catch</code> untuk menyimpan rekap hasil ke berkas JSON;</li>
+    <li>memverifikasi sintaks dengan <code>node --check</code> dan menjalankan program dengan <code>node &lt;berkas&gt;</code>.</li>
+  </ol>
+</div>
+
+<h2>Kebutuhan</h2>
+
+<ul>
+  <li>Node.js LTS versi 22 atau lebih baru (cara memasangnya ada di Bab 2).</li>
+  <li>Terminal: Command Prompt atau PowerShell di Windows, Terminal di macOS dan Linux.</li>
+  <li>Editor teks apa pun; Visual Studio Code disarankan.</li>
+  <li>Tidak ada dependency yang perlu dipasang — praktikum ini murni JavaScript bawaan Node.js.</li>
+</ul>
+
+<h2>Persiapan</h2>
+
+<ol>
+  <li>Buka terminal, lalu pastikan Node.js terpasang dengan <code>node --version</code>. Versi yang tampil harus 22 atau lebih tinggi.</li>
+  <li>Buat folder kerja baru bernama <code>praktik-js</code> dan jadikan folder itu direktori aktif.</li>
+  <li>Buka folder tersebut di Visual Studio Code melalui menu <em>File → Open Folder</em> agar penulisan kode lebih nyaman.</li>
+</ol>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">(terminal)</span>
+    <span class="kode-sumber">buku §Praktikum · Persiapan</span>
+  </figcaption>
+  <pre><code class="language-bash">mkdir praktik-js
+cd praktik-js</code></pre>
+</figure>
+
+<h2>Langkah kerja</h2>
+
+<ol>
+  <li>Buat berkas <code>data-mahasiswa.mjs</code> berisi lima data mahasiswa baku — berkas ini menjadi modul data yang diekspor.</li>
+  <li>Buat berkas <code>pengolah-nilai.mjs</code> berisi program utama: ringkasan dengan <code>map</code>, daftar berprestasi dengan <code>filter</code>, rata-rata per prodi dengan <code>filter</code> lalu <code>reduce</code>, pencarian dengan <code>find</code>, dan penyimpanan hasil dengan <code>async</code>/<code>await</code>.</li>
+  <li>Periksa sintaks kedua berkas dengan <code>node --check data-mahasiswa.mjs</code> dan <code>node --check pengolah-nilai.mjs</code>. Bila tidak ada keluaran apa pun, sintaks dinyatakan benar.</li>
+  <li>Jalankan program dengan <code>node pengolah-nilai.mjs</code> dari dalam folder <code>praktik-js</code>.</li>
+  <li>Buka berkas <code>hasil-rekap.json</code> yang terbentuk di folder yang sama, lalu bandingkan isinya dengan penjelasan di bagian hasil yang diharapkan.</li>
+  <li><em>Opsional:</em> ketik berkas <code>package.json</code> berisi <code>"type": "module"</code>, ganti ekstensi kedua berkas dari <code>.mjs</code> menjadi <code>.js</code>, lalu jalankan kembali — hasilnya harus sama.</li>
+</ol>
+
+<h2>Kode: data-mahasiswa.mjs</h2>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">praktik-js/data-mahasiswa.mjs</span>
+    <span class="kode-sumber">buku §Praktikum · Kode</span>
+  </figcaption>
+  <pre><code class="language-js">// Lima data mahasiswa baku yang dipakai konsisten di seluruh bab buku.
+
+export const daftarMahasiswa = [
+  {
+    id: 1,
+    nim: '2201001',
+    nama: 'Budi Santoso',
+    prodi: 'Sistem Informasi',
+    angkatan: 2022,
+    ipk: 3.45,
+    email: 'budi.santoso@students.univ.ac.id',
+    telepon: '081234567890',
+  },
+  {
+    id: 2,
+    nim: '2201002',
+    nama: 'Siti Aminah',
+    prodi: 'Teknik Informatika',
+    angkatan: 2022,
+    ipk: 3.82,
+    email: 'siti.aminah@students.univ.ac.id',
+    telepon: '081298765432',
+  },
+  {
+    id: 3,
+    nim: '2201003',
+    nama: 'Agus Wijaya',
+    prodi: 'Informatika',
+    angkatan: 2023,
+    ipk: 3.2,
+    email: 'agus.wijaya@students.univ.ac.id',
+    telepon: '081345678901',
+  },
+  {
+    id: 4,
+    nim: '2201004',
+    nama: 'Dewi Lestari',
+    prodi: 'Rekayasa Perangkat Lunak',
+    angkatan: 2023,
+    ipk: 3.61,
+    email: 'dewi.lestari@students.univ.ac.id',
+    telepon: '081356789012',
+  },
+  {
+    id: 5,
+    nim: '2201005',
+    nama: 'Rizky Pratama',
+    prodi: 'Sistem Informasi',
+    angkatan: 2024,
+    ipk: 2.95,
+    email: 'rizky.pratama@students.univ.ac.id',
+    telepon: '081367890123',
+  },
+];</code></pre>
+</figure>
+
+<h2>Kode: pengolah-nilai.mjs</h2>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">praktik-js/pengolah-nilai.mjs</span>
+    <span class="kode-sumber">buku §Praktikum · Kode</span>
+  </figcaption>
+  <pre><code class="language-js">// Program utama: ringkas, saring, hitung rata-rata, cari, dan simpan hasil.
+
+import { daftarMahasiswa } from './data-mahasiswa.mjs';
+import { writeFile } from 'node:fs/promises';
+
+// 1) map: ubah tiap objek mahasiswa menjadi baris ringkas.
+function buatDaftarRingkas() {
+  return daftarMahasiswa.map((m) =&gt; ({
+    nim: m.nim,
+    nama: m.nama,
+    prodi: m.prodi,
+    ipk: m.ipk,
+  }));
+}
+
+// 2) filter: pilih mahasiswa ber-IPK di atas ambang.
+function cariBerprestasi(ambang) {
+  return daftarMahasiswa.filter((m) =&gt; m.ipk &gt;= ambang);
+}
+
+// 3) reduce: jumlahkan seluruh IPK, lalu bagi banyaknya data.
+function hitungRataRata(prodi) {
+  const dataProdi = daftarMahasiswa.filter((m) =&gt; m.prodi === prodi);
+  if (dataProdi.length === 0) {
+    return 0;
+  }
+  const totalIpk = dataProdi.reduce((jumlah, m) =&gt; jumlah + m.ipk, 0);
+  return totalIpk / dataProdi.length;
+}
+
+// 4) find: cari satu mahasiswa berdasarkan NIM.
+function cariMahasiswa(nim) {
+  return daftarMahasiswa.find((m) =&gt; m.nim === nim);
+}
+
+// 5) Set + spread: ambil daftar prodi unik dari seluruh data.
+function daftarProdiUnik() {
+  return [...new Set(daftarMahasiswa.map((m) =&gt; m.prodi))];
+}
+
+// 6) async/await + try/catch: simpan hasil ke file JSON.
+async function simpanHasil(namaFile, data) {
+  try {
+    const isiJson = JSON.stringify(data, null, 2);
+    await writeFile(namaFile, isiJson, 'utf8');
+    console.log(`Hasil tersimpan di ${namaFile}`);
+  } catch (error) {
+    console.error('Gagal menyimpan hasil:', error.message);
+  }
+}
+
+async function main() {
+  console.log('=== DATA MAHASISWA (diringkas dengan map) ===');
+  const daftarRingkas = buatDaftarRingkas();
+  daftarRingkas.forEach((m) =&gt; console.log(`${m.nim} | ${m.nama} | ${m.prodi} | IPK ${m.ipk}`));
+
+  console.log('\n=== MAHASISWA BERPRESTASI, IPK &gt;= 3.5 (filter) ===');
+  const berprestasi = cariBerprestasi(3.5);
+  berprestasi.forEach((m) =&gt; console.log(`${m.nama} (${m.prodi}) - IPK ${m.ipk}`));
+
+  console.log('\n=== RATA-RATA IPK PER PRODI (filter + reduce) ===');
+  const prodiList = daftarProdiUnik();
+  prodiList.forEach((prodi) =&gt; {
+    const rataRata = hitungRataRata(prodi).toFixed(2);
+    console.log(`${prodi}: ${rataRata}`);
+  });
+
+  console.log('\n=== CARI MAHASISWA BERDASARKAN NIM (find) ===');
+  const ditemukan = cariMahasiswa('2201004');
+  if (ditemukan) {
+    console.log(`NIM 2201004: ${ditemukan.nama}, ${ditemukan.prodi}, IPK ${ditemukan.ipk}`);
+  } else {
+    console.log('NIM 2201004: tidak ditemukan');
+  }
+  const tidakAda = cariMahasiswa('9999999');
+  console.log(`NIM 9999999: ${tidakAda ? tidakAda.nama : 'tidak ditemukan'}`);
+
+  console.log('\n=== MENYIMPAN REKAP KE FILE (async/await) ===');
+  const rekap = {
+    jumlahMahasiswa: daftarMahasiswa.length,
+    daftarRingkas: daftarRingkas,
+    berprestasi: berprestasi.map((m) =&gt; `${m.nama} (${m.prodi})`),
+    rataRataIpkPerProdi: prodiList.map((prodi) =&gt; ({
+      prodi: prodi,
+      rataRata: Number(hitungRataRata(prodi).toFixed(2)),
+    })),
+    disimpanPada: new Date().toISOString(),
+  };
+  await simpanHasil('hasil-rekap.json', rekap);
+}
+
+main();</code></pre>
+</figure>
+
+<h2>Kode: package.json (opsional)</h2>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">praktik-js/package.json</span>
+    <span class="kode-sumber">buku §Praktikum · Kode</span>
+  </figcaption>
+  <pre><code class="language-json">{
+  "name": "praktik-javascript-bab3",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Praktikum Bab 3: JavaScript Modern untuk React Native",
+  "type": "module"
+}</code></pre>
+</figure>
+
+<h2>Penjelasan kode</h2>
+
+<p>
+  Berkas <code>data-mahasiswa.mjs</code> adalah modul murni: ia hanya mendeklarasikan dan
+  mengekspor satu nilai bernama <code>daftarMahasiswa</code> — array lima objek mengikuti struktur
+  <code>{ id, nim, nama, prodi, angkatan, ipk, email, telepon }</code> yang sama dengan data baku
+  buku ini. Berkas ini tidak mencetak apa pun; tugasnya hanya menyediakan data. Inilah pembagian
+  kerja sistem modul pada subbab 3.8: berkas data terpisah dari berkas logika, dan keduanya dapat
+  diuji serta diubah secara mandiri.
+</p>
+
+<p>
+  Program utama dibuka dengan dua baris <code>import</code>: baris pertama mengambil data dari modul
+  tetangga, baris kedua mengambil <code>writeFile</code> — fungsi bawaan Node.js untuk menulis
+  berkas secara asinkron — dari namespace <code>node:fs/promises</code>. Enam fungsi berikutnya
+  mewakili satu teknik per fungsi. <code>buatDaftarRingkas</code> memakai <code>map</code> untuk
+  memproyeksikan empat kolom penting; <code>cariBerprestasi</code> memakai <code>filter</code>
+  dengan ambang IPK; <code>hitungRataRata</code> menggabungkan <code>filter</code> dan
+  <code>reduce</code> lalu membaginya dengan banyaknya data — perhatikan penjagaan
+  <code>dataProdi.length === 0</code> agar tidak membagi dengan nol; <code>cariMahasiswa</code>
+  memakai <code>find</code>; dan <code>daftarProdiUnik</code> memanfaatkan <code>Set</code> yang
+  menolak duplikat, lalu disebar kembali menjadi array dengan <em>spread</em>.
+</p>
+
+<p>
+  Fungsi <code>simpanHasil</code> menunjukkan pola asinkron baku: bertanda <code>async</code>,
+  memakai <code>await writeFile(...)</code>, dan membungkus seluruh operasi dalam
+  <code>try</code>/<code>catch</code>. Bila folder tujuan tidak ada atau hak akses ditolak,
+  <code>writeFile</code> melempar error dan <code>catch</code> mencetak
+  <code>error.message</code> tanpa menghentikan program. Fungsi <code>main</code> merangkai semuanya
+  secara berurutan dan, pada bagian akhir, membangun objek <code>rekap</code>; setiap prodi
+  dipetakan menjadi <code>{ prodi, rataRata }</code> lalu disimpan dengan
+  <code>JSON.stringify(data, null, 2)</code> — argumen <code>null, 2</code> membuat JSON ditulis
+  dengan indentasi dua spasi agar mudah dibaca manusia.
+</p>
+
+<h2>Hasil yang diharapkan</h2>
+
+<ol>
+  <li><strong>Tidak ada error</strong> di terminal setelah <code>node pengolah-nilai.mjs</code> dijalankan.</li>
+  <li><strong>Urutan dan angka keluaran</strong> sesuai contoh di bawah — lima baris data, dua mahasiswa berprestasi, empat rata-rata prodi, dan dua baris pencarian NIM.</li>
+  <li><strong>Berkas <code>hasil-rekap.json</code> terbentuk</strong> di folder yang sama dengan berkas program.</li>
+  <li><strong>Isi berkas itu memuat <code>jumlahMahasiswa</code> bernilai 5</strong>, array <code>daftarRingkas</code> lima baris, <code>berprestasi</code> berisi dua nama, dan <code>rataRataIpkPerProdi</code> berisi empat objek.</li>
+</ol>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">(contoh keluaran terminal)</span>
+    <span class="kode-sumber">buku §Praktikum · Hasil yang Diharapkan</span>
+  </figcaption>
+  <pre><code class="language-text">=== DATA MAHASISWA (diringkas dengan map) ===
+2201001 | Budi Santoso | Sistem Informasi | IPK 3.45
+2201002 | Siti Aminah | Teknik Informatika | IPK 3.82
+2201003 | Agus Wijaya | Informatika | IPK 3.2
+2201004 | Dewi Lestari | Rekayasa Perangkat Lunak | IPK 3.61
+2201005 | Rizky Pratama | Sistem Informasi | IPK 2.95
+
+=== MAHASISWA BERPRESTASI, IPK &gt;= 3.5 (filter) ===
+Siti Aminah (Teknik Informatika) - IPK 3.82
+Dewi Lestari (Rekayasa Perangkat Lunak) - IPK 3.61
+
+=== RATA-RATA IPK PER PRODI (filter + reduce) ===
+Sistem Informasi: 3.20
+Teknik Informatika: 3.82
+Informatika: 3.20
+Rekayasa Perangkat Lunak: 3.61
+
+=== CARI MAHASISWA BERDASARKAN NIM (find) ===
+NIM 2201004: Dewi Lestari, Rekayasa Perangkat Lunak, IPK 3.61
+NIM 9999999: tidak ditemukan
+
+=== MENYIMPAN REKAP KE FILE (async/await) ===
+Hasil tersimpan di hasil-rekap.json</code></pre>
+</figure>
+
+<p>
+  Angka di atas berasal dari eksekusi nyata penulis buku, sehingga satu-satunya nilai yang boleh
+  berbeda di komputer kamu adalah <code>disimpanPada</code>, yaitu waktu penyimpanan.
+</p>
+
+<h2>Troubleshooting</h2>
+
+<div class="tabel-gulir">
+  <table class="tabel">
+    <caption>Ketika program praktikum tidak berjalan · sumber: buku §Troubleshooting</caption>
+    <thead>
+      <tr><th scope="col">Gejala</th><th scope="col">Penyebab</th><th scope="col">Solusi</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>'node' is not recognized ...</code> atau <code>node: command not found</code> saat <code>node --version</code></td>
+        <td>Node.js belum terpasang, atau folder pemasangannya belum terdaftar di PATH</td>
+        <td>Pasang Node.js LTS versi 22 atau lebih baru dari nodejs.org, buka terminal baru, lalu ulangi pemeriksaan versi</td>
+      </tr>
+      <tr>
+        <td><code>SyntaxError: Cannot use import statement outside a module</code></td>
+        <td>Berkas disimpan dengan ekstensi <code>.js</code> dan tidak ada <code>package.json</code> berisi <code>"type": "module"</code> di folder yang sama</td>
+        <td>Ganti nama berkas menjadi <code>.mjs</code>, atau buat <code>package.json</code> seperti pada bagian kode, lalu jalankan ulang</td>
+      </tr>
+      <tr>
+        <td><code>ERR_MODULE_NOT_FOUND: Cannot find module ...</code></td>
+        <td>Nama berkas tujuan tidak cocok dengan baris <code>import</code>, atau program dijalankan dari folder lain — path di Node.js peka huruf besar-kecil</td>
+        <td>Samakan nama dan path secara persis, letakkan kedua berkas dalam satu folder, lalu jalankan <code>node pengolah-nilai.mjs</code> dari folder itu</td>
+      </tr>
+      <tr>
+        <td><code>node --check</code> tidak menampilkan apa pun dan disangka gagal</td>
+        <td>Perintah itu memang memeriksa sintaks tanpa menjalankan program; keberhasilan ditandai dengan tidak ada keluaran sama sekali</td>
+        <td>Tidak perlu perbaikan. Periksa kode keluar dengan <code>echo $?</code> atau <code>echo %errorlevel%</code>; angka 0 berarti valid</td>
+      </tr>
+      <tr>
+        <td>Program berjalan tanpa error, tetapi <code>hasil-rekap.json</code> tidak ditemukan</td>
+        <td>Program dijalankan dari folder yang berbeda, sehingga berkas disimpan di direktori aktif saat perintah dieksekusi</td>
+        <td>Cari di folder tempat terminal berada (lihat baris prompt), atau <code>cd</code> ke folder <code>praktik-js</code> lalu jalankan ulang</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="kotak kotak-salah">
+  <p class="kotak-judul">Salah paham</p>
+  <p>
+    Praktikum ini tanpa dependency, jadi kegagalan hampir selalu berasal dari ekstensi berkas atau
+    folder kerja yang salah, bukan dari paket yang belum dipasang. Jangan menjalankan
+    <code>npm install</code> untuk mencari jalan keluar: tidak ada yang perlu dipasang, dan menambah
+    paket hanya menambah hal yang bisa salah.
+  </p>
+</div>
+
+<h2>Yang harus teramati</h2>
+
+<ul>
+  <li><strong>Rata-rata per prodi</strong> — Sistem Informasi 3.20, Teknik Informatika 3.82, Informatika 3.20, Rekayasa Perangkat Lunak 3.61.</li>
+  <li><strong>Mahasiswa berprestasi</strong> dengan IPK minimal 3.5 — Siti Aminah 3.82 dan Dewi Lestari 3.61.</li>
+  <li><strong>Berkas keluaran</strong> — <code>hasil-rekap.json</code> terbentuk dan memuat <code>jumlahMahasiswa</code> bernilai 5.</li>
+  <li><strong>Bukti, bukan kesan</strong> — sertakan tangkapan layar keluaran terminal dan isi berkas JSON, bukan hanya kalimat “sudah berhasil”.</li>
+</ul>
+
+<blockquote>
+  Keberhasilan diukur dari tiga penanda: keluarannya cocok, berkasnya terbentuk, dan isi berkasnya
+  benar — bukan hanya dari tidak adanya pesan error.
+</blockquote>
+
+<h2>Kuis kilat</h2>
+
+<ol>
+  <li>Hasil <code>[5, 8, 3, 9].filter((x) =&gt; x &gt; 4)</code> adalah…</li>
+  <li>Hasil <code>[1, 2, 3, 4].reduce((total, x) =&gt; total + x, 0)</code> adalah…</li>
+  <li>Agar <code>import</code> berjalan di Node.js tanpa konfigurasi tambahan, ekstensi berkasnya…</li>
+  <li>Pernyataan yang benar tentang arrow function adalah…</li>
+</ol>
+
+<div class="kotak kotak-jawab">
+  <details>
+    <summary>Kunci kuis kilat</summary>
+    <ol>
+      <li><code>[5, 8, 9]</code> — <code>filter</code> menyimpan elemen yang memenuhi syarat, dan angka 3 gugur.</li>
+      <li><code>10</code> — <code>reduce</code> menjumlahkan semua elemen dengan nilai awal <code>0</code>.</li>
+      <li><code>.mjs</code> — alternatifnya <code>"type": "module"</code> di <code>package.json</code>.</li>
+      <li>Arrow function tidak punya <code>this</code> sendiri — sebabnya ia mendominasi kode React.</li>
+    </ol>
+  </details>
+</div>
+
+<h2>Ringkasan bab</h2>
+
+<ol>
+  <li><code>const</code> untuk nilai tetap dan <code>let</code> untuk nilai yang berubah; keduanya <em>block scoped</em>, dan <code>const</code> tidak membekukan isi objek.</li>
+  <li>Pakai <code>===</code>, tambah <code>?.</code> dan <code>??</code>; ingat enam nilai <em>falsy</em> saat menulis syarat.</li>
+  <li>Arrow function lebih ringkas dan tanpa <code>this</code> sendiri — dasar kode React.</li>
+  <li><code>map</code>, <code>filter</code>, <code>reduce</code>, <em>destructuring</em>, dan <em>spread</em> mengolah data tanpa mengubah aslinya.</li>
+  <li>Modul memecah kode; <code>async</code>/<code>await</code> dengan <code>try</code>/<code>catch</code> adalah pola baku memanggil data.</li>
+</ol>
+
+<div class="kotak kotak-tanya">
+  <p class="kotak-judul">Pertanyaan penuntun</p>
+  <p>
+    Mengapa rata-rata Sistem Informasi dan Informatika sama-sama 3.20? (Jawaban: tiap prodi hanya
+    punya satu mahasiswa di data statis itu.) Tutup dengan satu kalimat deck: “Hari ini kita belajar
+    berbicara; pertemuan berikutnya kita mulai menggambar di layar.” Bab 4 sudah menunggu —
+    component, JSX, props, dan state.
+  </p>
+</div>

@@ -1,0 +1,614 @@
+<h1>Praktikum Bab 8 — Form Data Mahasiswa</h1>
+
+<p class="ringkas">
+  Empat berkas: pustaka validasi murni, komponen field reusable, layar formulir tujuh field, dan
+  rute tipis yang menyimpan data. Tidak ada dependency baru — seluruhnya memakai komponen inti
+  React Native.
+</p>
+
+<div class="kotak kotak-tiruan">
+  <p class="kotak-judul">Tujuan praktikum</p>
+  <p>Setelah menyelesaikan praktikum ini, kamu mampu:</p>
+  <ol>
+    <li>membuat berkas fungsi validasi murni <code>utils/validators.js</code> dan memakainya pada formulir;</li>
+    <li>merakit komponen reusable <code>FormField</code> bersama pola form state dan <code>handleChange</code>;</li>
+    <li>membangun layar <code>FormMahasiswa</code> lengkap dan menghubungkannya ke rute <code>app/(app)/mahasiswa/tambah.js</code> dari Bab 7;</li>
+    <li>mengamati perilaku validasi saat submit, validasi <em>real-time</em> setelah submit, dan penanganan papan ketik.</li>
+  </ol>
+</div>
+
+<h2>Kebutuhan</h2>
+
+<ul>
+  <li>Project <strong>Aplikasi Manajemen Data Mahasiswa</strong> hasil Bab 7, berbasis template blank Expo SDK 57.</li>
+  <li>Expo Go pada ponsel atau emulator Android, dan Visual Studio Code.</li>
+  <li>Tidak ada dependency baru: seluruh materi bab ini memakai komponen inti React Native.</li>
+</ul>
+
+<h2>Persiapan</h2>
+
+<ol>
+  <li>Buka project di VS Code, jalankan <code>npx expo start</code>, dan pastikan layar Tambah Mahasiswa dari Bab 7 masih dapat diakses — saat ini layar tersebut masih berisi placeholder.</li>
+  <li>Buat folder <code>utils/</code>, <code>components/</code>, dan <code>screens/</code> di root project bila belum ada. Keempat berkas praktikum ini akan diletakkan di folder tersebut.</li>
+  <li>Siapkan data uji baku: Budi Santoso, 2201001, Sistem Informasi, 2022, IPK 3.45, budi.santoso@students.univ.ac.id, 081234567890.</li>
+  <li>Perhatikan hal yang paling sering salah: nama folder dan nama berkas harus sama persis dengan yang dirujuk baris <code>import</code>.</li>
+</ol>
+
+<h2>Langkah kerja</h2>
+
+<ol>
+  <li><strong>Buat <code>utils/validators.js</code></strong> berisi seluruh fungsi validasi, lalu simpan. Salin apa adanya; jangan mengetik ulang sambil menguji.</li>
+  <li><strong>Buat <code>components/FormField.js</code></strong> persis seperti kode di bawah. Komponen ini yang menyeragamkan tampilan field dan pesan galat.</li>
+  <li><strong>Buat <code>screens/FormMahasiswa.js</code></strong> dengan form state objek tunggal, tabel <code>ATURAN_MAHASISWA</code>, chip program studi, dan tombol “Simpan Data”.</li>
+  <li><strong>Ubah isi <code>app/(app)/mahasiswa/tambah.js</code></strong> menjadi rute tipis yang merender <code>FormMahasiswa</code> dan menyimpan data hasil submit ke state lokal.</li>
+  <li><strong>Jalankan kembali <code>npx expo start</code></strong>, buka aplikasi, lalu arahkan ke layar Tambah Mahasiswa melalui navigasi dari Bab 7.</li>
+  <li><strong>Uji keadaan tidak valid:</strong> tekan “Simpan Data” tanpa mengisi apa pun, lalu isi email salah format dan telepon 9 digit.</li>
+  <li><strong>Uji validasi <em>real-time</em>:</strong> perbaiki satu field dan amati galat field itu hilang tanpa menekan tombol lagi.</li>
+  <li><strong>Uji keadaan valid:</strong> isi formulir dengan data Budi Santoso, lalu amati Alert dan kotak info jumlah daftar.</li>
+  <li><strong>Uji papan ketik:</strong> ketik pada field Telepon di posisi terbawah, lalu tekan tombol Simpan saat papan ketik masih terbuka.</li>
+  <li><strong>Uji mode edit (pengayaan):</strong> beri prop <code>dataAwal</code> berisi data Budi Santoso, lalu pastikan seluruh field terisi otomatis dan validasi tetap bekerja.</li>
+</ol>
+
+<h2>Kode: utils/validators.js</h2>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">utils/validators.js</span>
+    <span class="kode-sumber">buku §Praktikum · Kode</span>
+  </figcaption>
+  <pre><code class="language-js">// Kumpulan fungsi validasi murni (pure function).
+// Kontrak: setiap fungsi menerima nilai input dan mengembalikan
+// pesan error (string) atau string kosong '' jika nilai dianggap valid.
+
+export function wajibDiisi(nilai = '') {
+  return nilai.toString().trim() === '' ? 'Field ini wajib diisi' : '';
+}
+
+export function validasiEmail(nilai = '') {
+  const teks = nilai.trim();
+  if (teks === '') return '';
+  const pola = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return pola.test(teks) ? '' : 'Format email tidak valid (contoh: nama@domain.com)';
+}
+
+export function validasiPassword(nilai = '') {
+  if (nilai === '') return '';
+  return nilai.length &gt;= 6 ? '' : 'Kata sandi minimal 6 karakter';
+}
+
+export function validasiKonfirmasiPassword(nilai = '', password = '') {
+  if (nilai === '') return '';
+  return nilai === password ? '' : 'Konfirmasi kata sandi tidak sama';
+}
+
+export function validasiTelepon(nilai = '') {
+  const digit = nilai.replace(/\D/g, '');
+  if (digit === '') return '';
+  return digit.length &gt;= 10 &amp;&amp; digit.length &lt;= 13
+    ? ''
+    : 'Nomor telepon harus 10 sampai 13 digit angka';
+}
+
+export function validasiPanjang(nilai = '', maksimal = 50) {
+  return nilai.length &lt;= maksimal ? '' : `Maksimal ${maksimal} karakter`;
+}
+
+export function validasiNim(nilai = '') {
+  if (nilai === '') return '';
+  if (!/^\d+$/.test(nilai)) return 'NIM hanya boleh berisi angka';
+  return nilai.length &lt;= 10 ? '' : 'NIM maksimal 10 digit';
+}
+
+export function validasiAngkatan(nilai = '') {
+  if (nilai === '') return '';
+  if (!/^\d{4}$/.test(nilai)) return 'Angkatan berupa 4 digit, contoh: 2024';
+  const tahun = Number(nilai);
+  return tahun &gt;= 2000 &amp;&amp; tahun &lt;= 2030 ? '' : 'Angkatan di luar rentang 2000 sampai 2030';
+}
+
+export function validasiIpk(nilai = '') {
+  if (nilai === '') return '';
+  const angka = Number(nilai.replace(',', '.'));
+  if (Number.isNaN(angka)) return 'IPK harus berupa angka desimal, contoh: 3.45';
+  return angka &gt;= 0 &amp;&amp; angka &lt;= 4 ? '' : 'IPK harus antara 0.00 dan 4.00';
+}
+
+// Menjalankan aturan berurutan; pesan error pertama yang muncul dikembalikan.
+// Argumen konteks (opsional) dipakai aturan yang butuh nilai field lain,
+// misalnya perbandingan kata sandi dengan konfirmasinya.
+export function jalankanAturan(aturan, nilai, konteks) {
+  for (const fungsi of aturan) {
+    const pesan = fungsi(nilai, konteks);
+    if (pesan !== '') return pesan;
+  }
+  return '';
+}</code></pre>
+</figure>
+
+<h2>Kode: components/FormField.js</h2>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">components/FormField.js</span>
+    <span class="kode-sumber">buku §8.6</span>
+  </figcaption>
+  <pre><code class="language-jsx">import { StyleSheet, Text, TextInput, View } from 'react-native';
+
+export default function FormField({ label, error, ...propsLain }) {
+  const tampilkanError = error !== undefined &amp;&amp; error !== '';
+
+  return (
+    &lt;View style={styles.wadah}&gt;
+      &lt;Text style={styles.label}&gt;{label}&lt;/Text&gt;
+      &lt;TextInput
+        style={[styles.input, tampilkanError &amp;&amp; styles.inputError]}
+        placeholderTextColor="#9ca3af"
+        {...propsLain}
+      /&gt;
+      {tampilkanError &amp;&amp; &lt;Text style={styles.pesanError}&gt;{error}&lt;/Text&gt;}
+    &lt;/View&gt;
+  );
+}
+
+const styles = StyleSheet.create({
+  wadah: {
+    marginBottom: 16,
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#374151',
+    marginBottom: 6,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#d1d5db',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    fontSize: 16,
+    backgroundColor: '#ffffff',
+  },
+  inputError: {
+    borderColor: '#dc2626',
+  },
+  pesanError: {
+    color: '#dc2626',
+    fontSize: 13,
+    marginTop: 4,
+  },
+});</code></pre>
+</figure>
+
+<h2>Kode: screens/FormMahasiswa.js</h2>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">screens/FormMahasiswa.js</span>
+    <span class="kode-sumber">buku §Praktikum · Kode</span>
+  </figcaption>
+  <pre><code class="language-jsx">import { useState } from 'react';
+import {
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
+import FormField from '../components/FormField';
+import {
+  jalankanAturan,
+  validasiAngkatan,
+  validasiEmail,
+  validasiIpk,
+  validasiNim,
+  validasiPanjang,
+  validasiTelepon,
+  wajibDiisi,
+} from '../utils/validators';
+
+const DAFTAR_PRODI = [
+  'Sistem Informasi',
+  'Teknik Informatika',
+  'Informatika',
+  'Rekayasa Perangkat Lunak',
+];
+
+const ATURAN_MAHASISWA = {
+  nim: [wajibDiisi, validasiNim],
+  nama: [wajibDiisi, (nilai) =&gt; validasiPanjang(nilai, 50)],
+  prodi: [wajibDiisi],
+  angkatan: [wajibDiisi, validasiAngkatan],
+  ipk: [wajibDiisi, validasiIpk],
+  email: [wajibDiisi, validasiEmail],
+  telepon: [wajibDiisi, validasiTelepon],
+};
+
+const FORM_KOSONG = {
+  nim: '',
+  nama: '',
+  prodi: '',
+  angkatan: '',
+  ipk: '',
+  email: '',
+  telepon: '',
+};
+
+// dataAwal dipakai untuk mode edit: field diisi nilai yang sudah ada.
+export default function FormMahasiswa({ dataAwal = {}, onSubmit = () =&gt; {} }) {
+  const [form, setForm] = useState(() =&gt; ({ ...FORM_KOSONG, ...dataAwal }));
+  const [errors, setErrors] = useState({});
+  const [sudahDikirim, setSudahDikirim] = useState(false);
+
+  function validasiSatuField(namaField, nilai) {
+    return jalankanAturan(ATURAN_MAHASISWA[namaField] || [], nilai);
+  }
+
+  function validasiSemuaField() {
+    const hasil = {};
+    for (const namaField of Object.keys(ATURAN_MAHASISWA)) {
+      hasil[namaField] = validasiSatuField(namaField, form[namaField]);
+    }
+    return hasil;
+  }
+
+  function handleChange(namaField, nilai) {
+    setForm((sebelumnya) =&gt; ({ ...sebelumnya, [namaField]: nilai }));
+    if (sudahDikirim) {
+      setErrors((sebelumnya) =&gt; ({
+        ...sebelumnya,
+        [namaField]: validasiSatuField(namaField, nilai),
+      }));
+    }
+  }
+
+  function handleSubmit() {
+    const hasil = validasiSemuaField();
+    setErrors(hasil);
+    setSudahDikirim(true);
+    const formValid = Object.values(hasil).every((pesan) =&gt; pesan === '');
+    if (formValid) {
+      onSubmit(form);
+      setForm({ ...FORM_KOSONG, ...dataAwal });
+      setErrors({});
+      setSudahDikirim(false);
+    }
+  }
+
+  return (
+    &lt;KeyboardAvoidingView
+      style={styles.halaman}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    &gt;
+      &lt;ScrollView contentContainerStyle={styles.konten} keyboardShouldPersistTaps="handled"&gt;
+        &lt;Text style={styles.judul}&gt;Form Data Mahasiswa&lt;/Text&gt;
+
+        &lt;FormField
+          label="NIM"
+          value={form.nim}
+          onChangeText={(teks) =&gt; handleChange('nim', teks)}
+          placeholder="contoh: 2201001"
+          keyboardType="number-pad"
+          maxLength={10}
+          returnKeyType="next"
+          error={errors.nim}
+        /&gt;
+        &lt;FormField
+          label="Nama Lengkap"
+          value={form.nama}
+          onChangeText={(teks) =&gt; handleChange('nama', teks)}
+          placeholder="contoh: Budi Santoso"
+          autoCapitalize="words"
+          returnKeyType="next"
+          error={errors.nama}
+        /&gt;
+
+        &lt;Text style={styles.label}&gt;Program Studi&lt;/Text&gt;
+        &lt;View style={styles.barisProdi}&gt;
+          {DAFTAR_PRODI.map((prodi) =&gt; {
+            const aktif = form.prodi === prodi;
+            return (
+              &lt;Pressable
+                key={prodi}
+                onPress={() =&gt; handleChange('prodi', prodi)}
+                style={[styles.chip, aktif &amp;&amp; styles.chipAktif]}
+              &gt;
+                &lt;Text style={[styles.teksChip, aktif &amp;&amp; styles.teksChipAktif]}&gt;{prodi}&lt;/Text&gt;
+              &lt;/Pressable&gt;
+            );
+          })}
+        &lt;/View&gt;
+        {errors.prodi !== undefined &amp;&amp; errors.prodi !== '' &amp;&amp; (
+          &lt;Text style={styles.error}&gt;{errors.prodi}&lt;/Text&gt;
+        )}
+
+        &lt;FormField
+          label="Angkatan"
+          value={form.angkatan}
+          onChangeText={(teks) =&gt; handleChange('angkatan', teks)}
+          placeholder="contoh: 2024"
+          keyboardType="number-pad"
+          maxLength={4}
+          returnKeyType="next"
+          error={errors.angkatan}
+        /&gt;
+        &lt;FormField
+          label="IPK"
+          value={form.ipk}
+          onChangeText={(teks) =&gt; handleChange('ipk', teks)}
+          placeholder="contoh: 3.45"
+          keyboardType="decimal-pad"
+          maxLength={4}
+          returnKeyType="next"
+          error={errors.ipk}
+        /&gt;
+        &lt;FormField
+          label="Email"
+          value={form.email}
+          onChangeText={(teks) =&gt; handleChange('email', teks)}
+          placeholder="nama.kecil@students.univ.ac.id"
+          keyboardType="email-address"
+          autoCapitalize="none"
+          autoCorrect={false}
+          returnKeyType="next"
+          error={errors.email}
+        /&gt;
+        &lt;FormField
+          label="Telepon"
+          value={form.telepon}
+          onChangeText={(teks) =&gt; handleChange('telepon', teks)}
+          placeholder="contoh: 081234567890"
+          keyboardType="phone-pad"
+          maxLength={13}
+          returnKeyType="done"
+          onSubmitEditing={handleSubmit}
+          error={errors.telepon}
+        /&gt;
+
+        &lt;Pressable
+          style={({ pressed }) =&gt; [styles.tombol, pressed &amp;&amp; styles.tombolTekan]}
+          onPress={handleSubmit}
+        &gt;
+          &lt;Text style={styles.teksTombol}&gt;Simpan Data&lt;/Text&gt;
+        &lt;/Pressable&gt;
+      &lt;/ScrollView&gt;
+    &lt;/KeyboardAvoidingView&gt;
+  );
+}
+
+const styles = StyleSheet.create({
+  halaman: { flex: 1, backgroundColor: '#f9fafb' },
+  konten: { padding: 20 },
+  judul: { fontSize: 24, fontWeight: 'bold', color: '#111827', marginBottom: 20 },
+  label: { fontSize: 14, fontWeight: '600', color: '#374151', marginBottom: 6 },
+  barisProdi: { flexDirection: 'row', flexWrap: 'wrap' },
+  chip: {
+    borderWidth: 1,
+    borderColor: '#d1d5db',
+    borderRadius: 20,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    backgroundColor: '#ffffff',
+    marginRight: 8,
+    marginBottom: 8,
+  },
+  chipAktif: { backgroundColor: '#2563eb', borderColor: '#2563eb' },
+  teksChip: { color: '#374151', fontSize: 13 },
+  teksChipAktif: { color: '#ffffff' },
+  error: { color: '#dc2626', fontSize: 13, marginBottom: 16 },
+  tombol: {
+    backgroundColor: '#2563eb',
+    borderRadius: 8,
+    paddingVertical: 14,
+    alignItems: 'center',
+    marginTop: 8,
+  },
+  tombolTekan: { opacity: 0.8 },
+  teksTombol: { color: '#ffffff', fontSize: 16, fontWeight: '600' },
+});</code></pre>
+</figure>
+
+<h2>Kode: app/(app)/mahasiswa/tambah.js</h2>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">app/(app)/mahasiswa/tambah.js</span>
+    <span class="kode-sumber">buku §Praktikum · Kode</span>
+  </figcaption>
+  <pre><code class="language-jsx">import { useState } from 'react';
+import { Alert, StyleSheet, Text } from 'react-native';
+import FormMahasiswa from '../../screens/FormMahasiswa';
+
+export default function TambahMahasiswa() {
+  const [daftarMahasiswa, setDaftarMahasiswa] = useState([]);
+
+  function simpanMahasiswa(dataForm) {
+    const dataBaru = { id: Date.now(), ...dataForm };
+    setDaftarMahasiswa((lama) =&gt; [...lama, dataBaru]);
+    Alert.alert(
+      'Data Tersimpan',
+      `${dataForm.nama} (${dataForm.nim}) masuk daftar lokal. Total: ${daftarMahasiswa.length + 1}.`
+    );
+  }
+
+  return (
+    &lt;&gt;
+      &lt;Text style={styles.infobox}&gt;
+        Daftar lokal sesi ini: {daftarMahasiswa.length} mahasiswa. Data hilang saat aplikasi
+        ditutup; penyimpanan permanen dibahas di Bab 11 dan API sungguhan di Bab 10.
+      &lt;/Text&gt;
+      &lt;FormMahasiswa onSubmit={simpanMahasiswa} /&gt;
+    &lt;/&gt;
+  );
+}
+
+const styles = StyleSheet.create({
+  infobox: {
+    margin: 16,
+    padding: 12,
+    backgroundColor: '#e0f2fe',
+    borderRadius: 8,
+    color: '#075985',
+  },
+});</code></pre>
+</figure>
+
+<h2>Penjelasan kode</h2>
+
+<p>
+  <strong><code>utils/validators.js</code></strong> adalah satu-satunya tempat aturan validasi
+  hidup. Seluruh fungsi mematuhi kontrak “nilai masuk, pesan galat atau string kosong keluar”.
+  Setiap fungsi dimulai dengan pemeriksaan kosong sehingga aturan yang lebih spesifik tidak
+  menimpa pesan “wajib diisi” — urutan aturan di tabel yang menentukan pesan mana yang tampil.
+  <code>validasiTelepon</code> menghitung digit setelah membuang karakter non-angka,
+  <code>validasiIpk</code> menormalkan koma desimal Indonesia sebelum konversi angka, dan
+  <code>validasiKonfirmasiPassword</code> menerima argumen kedua sebagai konteks.
+</p>
+
+<p>
+  <strong><code>components/FormField.js</code></strong> merangkum pola “label + TextInput +
+  pesan galat” menjadi satu komponen. <code>label</code> dan <code>error</code> sengaja
+  dikonsumsi oleh <code>FormField</code> supaya tidak diteruskan ke <code>TextInput</code>;
+  props lain sampai otomatis lewat <code>...propsLain</code>. Ketika <code>error</code> berisi
+  teks, gaya <code>inputError</code> ditumpukkan pada array gaya sehingga border berubah merah
+  dan pesan muncul di bawah field.
+</p>
+
+<p>
+  <strong><code>screens/FormMahasiswa.js</code></strong> merangkai seluruhnya. Alur saat tombol
+  “Simpan Data” ditekan: <code>handleSubmit</code> menjalankan <code>validasiSemuaField</code> —
+  melingkari <code>ATURAN_MAHASISWA</code> dengan <code>validasiSatuField</code> — lalu hasilnya
+  disimpan ke <code>errors</code>, dan <code>every</code> menentukan kelayakan. Bila valid,
+  <code>onSubmit(form)</code> mengirim data ke rute dan formulir direset; bila tidak, setiap
+  <code>FormField</code> menampilkan pesan galat field-nya. Setelah percobaan pertama,
+  <code>sudahDikirim</code> mengaktifkan validasi <em>real-time</em> di
+  <code>handleChange</code>.
+</p>
+
+<p>
+  <strong><code>app/(app)/mahasiswa/tambah.js</code></strong> adalah rute tipis yang menjadi
+  pemilik data. Ia menambahkan data baru dengan menyebar objek formulir ditambah
+  <code>id</code> dari <code>Date.now()</code>. Dua konsep yang perlu dicermati: galat adalah
+  data — objek <code>errors</code> dirender, bukan <code>alert</code> berurutan — dan pemisahan
+  lapisan membuat tiap lapisan dapat diganti tanpa merusak lapisan lain.
+</p>
+
+<h2>Hasil yang diharapkan</h2>
+
+<ol>
+  <li>Saat formulir kosong dan tombol “Simpan Data” ditekan, ketujuh field menampilkan “Field ini wajib diisi” dengan border merah, dan tidak ada Alert yang muncul.</li>
+  <li>Saat email diisi <code>budi.santoso</code> tanpa domain dan telepon diisi <code>081234567</code>, masing-masing menampilkan pesan “Format email tidak valid (contoh: nama@domain.com)” dan “Nomor telepon harus 10 sampai 13 digit angka”.</li>
+  <li>Saat salah satu galat diperbaiki — misalnya telepon dilengkapi menjadi <code>081234567890</code> — pesan galat field tersebut hilang seketika tanpa menekan tombol.</li>
+  <li>Saat formulir diisi data Budi Santoso dan tombol ditekan, muncul Alert “Data Tersimpan … Total: 1.” dan kotak info di atas formulir menampilkan “Daftar lokal sesi ini: 1 mahasiswa”.</li>
+  <li>Papan ketik tidak menutupi field Telepon dan tombol Simpan; tombol merespons pada ketukan pertama meskipun papan ketik masih terbuka.</li>
+  <li>Pada pengayaan mode edit, <code>dataAwal</code> berisi data Budi Santoso membuat seluruh field terisi otomatis; submit berhasil bila data tidak diubah, dan gagal dengan pesan yang tepat bila satu field dikosongkan.</li>
+</ol>
+
+<h2>Troubleshooting</h2>
+
+<div class="tabel-gulir">
+  <table class="tabel">
+    <caption>Ketika formulir belum berperilaku seperti harapan · sumber: buku §Troubleshooting</caption>
+    <thead>
+      <tr><th scope="col">Gejala</th><th scope="col">Penyebab</th><th scope="col">Solusi</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Layar menampilkan “Unable to resolve module '../utils/validators' from 'screens/FormMahasiswa.js'” dan aplikasi berhenti</td>
+        <td>Path impor salah: berkas tidak berada di folder yang dirujuk, atau nama berkas tidak sama persis (mis. <code>validator.js</code>, atau folder bernama <code>utility</code>)</td>
+        <td>Periksa nama folder dan berkas di VS Code Explorer; impor wajib mengikuti struktur <code>utils/validators.js</code> dari root project, dan penulisan huruf besar/kecil harus identik di kedua tempat</td>
+      </tr>
+      <tr>
+        <td>Saat submit, Alert tidak muncul meskipun semua field terlihat terisi</td>
+        <td>Ada field yang dianggap kosong oleh validasi: program studi belum dipilih (chip tidak menyala), atau salah satu field berisi spasi saja</td>
+        <td>Baca pesan galat di bawah tiap field; field dengan border merah dan pesan galat menandakan penyebabnya, lalu perbaiki dan amati pesan yang hilang</td>
+      </tr>
+      <tr>
+        <td>Papan ketik menutupi field bagian bawah dan tombol “Simpan Data”; tombol kadang baru merespons setelah ditekan dua kali</td>
+        <td><code>KeyboardAvoidingView</code> tidak membungkus konten, <code>behavior</code> tidak disesuaikan platform, atau <code>ScrollView</code> tanpa <code>keyboardShouldPersistTaps="handled"</code></td>
+        <td>Pastikan strukturnya persis: <code>KeyboardAvoidingView</code> di luar, <code>ScrollView</code> di dalam dengan <code>keyboardShouldPersistTaps="handled"</code>, dan <code>behavior</code> menyesuaikan <code>Platform.OS</code>; lalu lakukan reload penuh dengan menekan <code>r</code> di terminal Metro</td>
+      </tr>
+      <tr>
+        <td>Pesan galat tidak pernah hilang setelah field diperbaiki, atau justru muncul saat mengetik sebelum submit pertama</td>
+        <td>Logika <code>sudahDikirim</code> tidak dipakai: galat dihitung di <code>handleChange</code> tanpa syarat, atau state itu tidak pernah diaktifkan di <code>handleSubmit</code></td>
+        <td>Cocokkan dengan pola bab ini: validasi ulang hanya dijalankan <code>if (sudahDikirim)</code>, dan <code>setSudahDikirim(true)</code> dipanggil di awal <code>handleSubmit</code>; setelah diperbaiki, lakukan reload penuh</td>
+      </tr>
+      <tr>
+        <td>Setelah submit sukses, seluruh formulir kosong padahal data yang baru dimasukkan ingin dilihat kembali</td>
+        <td>Perilaku ini memang dirancang: <code>handleSubmit</code> mengembalikan formulir ke kondisi awal setelah data dilaporkan ke rute</td>
+        <td>Tampilkan data yang baru disimpan dari <code>daftarMahasiswa</code> di state rute, bukan dengan menahan isi formulir</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="kotak kotak-salah">
+  <p class="kotak-judul">Salah paham</p>
+  <p>
+    Galat impor bukan galat logika. Waktu praktikum sering habis untuk masalah path, bukan untuk
+    materi. Periksa nama folder dan berkas lebih dulu sebelum menduga-dua soal kode — dan jangan
+    memasang ulang semuanya berkali-kali tanpa membaca pesan galatnya.
+  </p>
+  <p>
+    Kesalahan kedua yang sering muncul: menambah pustaka validasi pihak ketiga. Jangan. Semua
+    yang dibutuhkan sudah ada di React Native inti, dan pustaka tambahan justru menyembunyikan
+    pola yang sedang kita pelajari.
+  </p>
+</div>
+
+<h2>Yang harus teramati</h2>
+
+<ul>
+  <li><strong>Tujuh field menampilkan “Field ini wajib diisi”</strong> saat tombol ditekan tanpa isi.</li>
+  <li><strong>Pesan berbeda per field</strong> — email salah format dan telepon 9 digit memberi pesan yang tidak sama.</li>
+  <li><strong>Galat hilang tanpa menekan tombol</strong> setelah satu field diperbaiki; ini bukti paling penting bahwa <code>sudahDikirim</code> bekerja.</li>
+  <li><strong>Data Budi Santoso yang valid memunculkan Alert</strong> “Data Tersimpan” dan menambah jumlah daftar.</li>
+  <li><strong>Field Telepon tetap terlihat</strong> saat papan ketik terbuka, dan tombol merespons satu ketukan.</li>
+</ul>
+
+<blockquote>
+  Laporan yang baik menyertakan tangkapan layar tiap keadaan, bukan hanya tulisan “berhasil”.
+</blockquote>
+
+<h2>Kuis kilat</h2>
+
+<ol>
+  <li>Dari mana nilai yang ditampilkan <code>TextInput</code> pada controlled component berasal?</li>
+  <li>Kombinasi props apa yang paling tepat untuk field kata sandi?</li>
+  <li>Kenapa <code>validasiTelepon("0812-3456-7890")</code> dinyatakan valid?</li>
+  <li>Kenapa galat sebuah field bisa hilang otomatis setelah submit pertama?</li>
+</ol>
+
+<div class="kotak kotak-jawab">
+  <details>
+    <summary>Kunci kuis kilat</summary>
+    <ol>
+      <li>Dari state React yang disambungkan lewat prop <code>value</code>.</li>
+      <li><code>secureTextEntry</code> dan <code>autoCapitalize="none"</code>.</li>
+      <li>Jumlah digitnya 12 setelah tanda hubung dibuang, masih di rentang 10–13.</li>
+      <li><code>handleChange</code> memvalidasi ulang field yang berubah selama <code>sudahDikirim</code> bernilai benar.</li>
+    </ol>
+  </details>
+</div>
+
+<h2>Ringkasan bab</h2>
+
+<ol>
+  <li><code>TextInput</code> tidak menyimpan nilainya sendiri; state menjadi sumber kebenaran tunggal.</li>
+  <li>Form state satu objek ditambah <code>handleChange</code> generik menyederhanakan reset, validasi, dan pengiriman data.</li>
+  <li>Validasi ditulis sebagai fungsi murni: nilai masuk, pesan galat atau string kosong keluar.</li>
+  <li>Pesan galat harus spesifik, dekat field, memberi dua sinyal, dan tidak menghapus nilai pengguna.</li>
+  <li><code>FormField</code> menyeragamkan field; data formulir berlanjut di Bab 9, Bab 10, dan Bab 11.</li>
+</ol>
+
+<div class="kotak kotak-tanya">
+  <p class="kotak-judul">Pertanyaan penuntun</p>
+  <p>
+    Tutup dengan satu kalimat: “Bab ini membuat data masuk dengan benar; bab berikutnya
+    menentukan siapa yang boleh membacanya.” Sebelum menutup, sebutkan secara lisan hal yang
+    tidak masuk ringkasan tetapi tetap penting: penanganan papan ketik dan rantai
+    <code>returnKeyType</code>.
+  </p>
+</div>

@@ -1,0 +1,420 @@
+<h1>Bagian 3 — Validasi, Pesan Galat, dan UX Formulir</h1>
+
+<p class="ringkas">
+  Subbab 8.4 sampai 8.6. Ini bagian terpanjang dan bagian yang dinilai di praktikum. Kalau
+  pertemuan dipecah dua, bagian inilah yang paling layak mendapat waktu penuh.
+</p>
+
+<section class="subbab" id="s3-1">
+  <p class="label-subbab">
+    Subbab 8.4 <span class="sumber-slide">· deck: “Validasi: Nilai Masuk, Pesan Error Keluar” · buku §8.4</span>
+  </p>
+  <h2>Validasi: Nilai Masuk, Pesan Galat Keluar</h2>
+
+  <p>
+    Pendekatan yang dipakai bab ini adalah <strong>fungsi murni</strong>: fungsi deterministik
+    tanpa efek samping — dengan masukan yang sama selalu menghasilkan keluaran yang sama, dan
+    tidak mengubah apa pun di luar dirinya. Semua fungsi validasi berada di satu file,
+    <code>utils/validators.js</code>.
+  </p>
+
+  <p>
+    Kontraknya sederhana dan satu arah: menerima nilai input, lalu mengembalikan
+    <strong>pesan galat</strong> berupa string bila tidak valid, atau <strong>string
+    kosong</strong> bila valid. Kontrak ini yang membuat fungsi mudah dipakai ulang lintas
+    formulir dan mudah diuji otomatis di Bab 14.
+  </p>
+
+  <p>
+    Kata <em>murni</em> perlu ditegaskan: fungsi tidak mengubah state, tidak memanggil API,
+    tidak menulis apa pun. Ia hanya menjawab satu pertanyaan — apakah nilai ini layak diterima?
+    Menambah aturan baru berarti menambah satu fungsi, bukan menambah logika validasi di dalam
+    layar.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">utils/validators.js</span>
+      <span class="kode-sumber">buku §8.4 · tiga fungsi inti</span>
+    </figcaption>
+    <pre><code class="language-js">// (cuplikan: tiga fungsi inti — versi lengkap pada Praktikum 8)
+export function wajibDiisi(nilai = '') {
+  return nilai.toString().trim() === '' ? 'Field ini wajib diisi' : '';
+}
+
+export function validasiEmail(nilai = '') {
+  const teks = nilai.trim();
+  if (teks === '') return '';
+  const pola = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return pola.test(teks) ? '' : 'Format email tidak valid (contoh: nama@domain.com)';
+}
+
+export function validasiPassword(nilai = '') {
+  if (nilai === '') return '';
+  return nilai.length &gt;= 6 ? '' : 'Kata sandi minimal 6 karakter';
+}</code></pre>
+  </figure>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Kenapa pesan galat dikembalikan sebagai string, bukan boolean? (Jawaban: supaya layar
+      tinggal menampilkan pesannya — tidak perlu tabel penerjemah pesan.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s3-2">
+  <p class="label-subbab">
+    Subbab 8.4 <span class="sumber-slide">· deck: “jalankanAturan: Berhenti di Pesan Pertama” · buku §8.4</span>
+  </p>
+  <h2>jalankanAturan: Berhenti di Pesan Pertama</h2>
+
+  <p>
+    Setiap field bisa punya lebih dari satu aturan — email misalnya wajib diisi
+    <em>dan</em> berformat valid. Bab ini memakai pola “aturan sebagai data”: tabel aturan
+    berisi fungsi, dan satu mesin kecil menjalankannya.
+  </p>
+
+  <p>
+    <code>jalankanAturan</code> menerima daftar fungsi aturan dan menghentikan pemeriksaan
+    pada pesan galat pertama yang ditemukan, sehingga pesan paling relevan tampil lebih dulu.
+    Argumen <code>konteks</code> bersifat opsional dan dipakai aturan yang membutuhkan nilai
+    field lain, misalnya perbandingan kata sandi dengan konfirmasinya.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">utils/validators.js</span>
+      <span class="kode-sumber">buku §8.4</span>
+    </figcaption>
+    <pre><code class="language-js">// (cuplikan: menjalankan beberapa aturan berurutan)
+export function jalankanAturan(aturan, nilai, konteks) {
+  for (const fungsi of aturan) {
+    const pesan = fungsi(nilai, konteks);
+    if (pesan !== '') return pesan;
+  }
+  return '';
+}
+
+// pemakaian di layar form:
+// jalankanAturan([wajibDiisi, validasiEmail], form.email)</code></pre>
+  </figure>
+
+  <p>
+    Tabel aturan per field tinggal ditulis sekali di layar formulir. Urutan aturan menentukan
+    pesan mana yang muncul lebih dulu — “wajib diisi” selalu paling depan.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">screens/FormLogin.js</span>
+      <span class="kode-sumber">buku §8.7 · tabel aturan per field</span>
+    </figcaption>
+    <pre><code class="language-jsx">// Tabel aturan per field: setiap field berisi daftar fungsi validasi
+// yang dijalankan berurutan oleh jalankanAturan.
+const ATURAN_LOGIN = {
+  email: [wajibDiisi, validasiEmail],
+  password: [wajibDiisi, validasiPassword],
+};</code></pre>
+  </figure>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Mahasiswa sering menaruh logika validasi di dalam <code>handleChange</code> layar.
+      Akibatnya aturan tidak bisa diuji ulang dan tidak bisa dipakai ulang oleh formulir lain.
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s3-3">
+  <p class="label-subbab">
+    Subbab 8.4 <span class="sumber-slide">· deck: “Tabel 8.2 — Aturan Validasi (1/2)” &amp; “(2/2)” · buku §8.4</span>
+  </p>
+  <h2>Aturan Validasi: Memeriksa Maksud, Bukan Gaya Ketik</h2>
+
+  <p>
+    Tabel 8.2 merangkum aturan yang disediakan <code>validators.js</code> untuk bab ini. Dua
+    aturan pertama adalah aturan dasar yang hampir selalu ada; sisanya aturan yang lebih
+    khusus. Satu aturan butuh dua argumen: konfirmasi kata sandi, karena ia memerlukan nilai
+    field lain sebagai pembanding.
+  </p>
+
+  <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Fungsi validasi dan pemakaiannya · sumber: buku §8.4, Tabel 8.2</caption>
+      <thead>
+        <tr><th scope="col">Fungsi</th><th scope="col">Aturan</th><th scope="col">Contoh pesan galat</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>wajibDiisi(nilai)</code></td><td>Nilai tidak boleh kosong, spasi diabaikan</td><td>“Field ini wajib diisi”</td></tr>
+        <tr><td><code>validasiEmail(nilai)</code></td><td>Pola email sederhana</td><td>“Format email tidak valid (contoh: nama@domain.com)”</td></tr>
+        <tr><td><code>validasiPassword(nilai)</code></td><td>Minimal 6 karakter</td><td>“Kata sandi minimal 6 karakter”</td></tr>
+        <tr><td><code>validasiKonfirmasiPassword(nilai, password)</code></td><td>Harus sama dengan kata sandi</td><td>“Konfirmasi kata sandi tidak sama”</td></tr>
+        <tr><td><code>validasiTelepon(nilai)</code></td><td>10–13 digit angka, tanpa memperhatikan spasi atau tanda</td><td>“Nomor telepon harus 10 sampai 13 digit angka”</td></tr>
+        <tr><td><code>validasiPanjang(nilai, maksimal)</code></td><td>Tidak melebihi panjang maksimal</td><td>“Maksimal 50 karakter”</td></tr>
+        <tr><td><code>validasiNim(nilai)</code></td><td>Hanya angka, maksimal 10 digit</td><td>“NIM hanya boleh berisi angka”</td></tr>
+        <tr><td><code>validasiAngkatan(nilai)</code></td><td>4 digit, rentang 2000–2030</td><td>“Angkatan berupa 4 digit, contoh: 2024”</td></tr>
+        <tr><td><code>validasiIpk(nilai)</code></td><td>Angka desimal 0.00–4.00</td><td>“IPK harus antara 0.00 dan 4.00”</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    Perhatikan <code>validasiTelepon</code>: alih-alih memaksa satu format, fungsi menghitung
+    jumlah digit setelah membuang semua karakter bukan angka. Pengguna menulis nomor dengan
+    gaya berbeda — <code>081234567890</code>, <code>0812-3456-7890</code>, atau
+    <code>+62 812-3456-7890</code> — dan yang penting bagi sistem hanyalah jumlah digitnya
+    benar. <strong>Memvalidasi maksud data, bukan gaya mengetiknya.</strong>
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">utils/validators.js</span>
+      <span class="kode-sumber">buku §Praktikum · dua aturan yang menormalkan nilai lebih dulu</span>
+    </figcaption>
+    <pre><code class="language-js">export function validasiTelepon(nilai = '') {
+  const digit = nilai.replace(/\D/g, '');
+  if (digit === '') return '';
+  return digit.length &gt;= 10 &amp;&amp; digit.length &lt;= 13
+    ? ''
+    : 'Nomor telepon harus 10 sampai 13 digit angka';
+}
+
+export function validasiIpk(nilai = '') {
+  if (nilai === '') return '';
+  const angka = Number(nilai.replace(',', '.'));
+  if (Number.isNaN(angka)) return 'IPK harus berupa angka desimal, contoh: 3.45';
+  return angka &gt;= 0 &amp;&amp; angka &lt;= 4 ? '' : 'IPK harus antara 0.00 dan 4.00';
+}
+</code></pre>
+  </figure>
+
+  <p>
+    <code>validasiIpk</code> menormalkan koma desimal Indonesia menjadi titik sebelum
+    konversi angka; tanpa itu <code>3,45</code> menjadi <code>NaN</code>.
+  </p>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Kenapa <code>validasiEmail('')</code> mengembalikan string kosong, bukan pesan galat?
+      (Jawaban: supaya pemeriksaan kosong menjadi tugas <code>wajibDiisi</code>, sehingga urutan
+      aturan yang menentukan pesan mana yang muncul.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s3-4">
+  <p class="label-subbab">
+    Subbab 8.4–8.5 <span class="sumber-slide">· deck: “Kapan Validasi Berjalan, dan Pola yang Dipilih” &amp; “Trade-off: Tombol Nonaktif atau Validasi Saat Submit” · buku §8.4 &amp; §8.5</span>
+  </p>
+  <h2>Kapan Validasi Berjalan, dan Pola yang Dipilih</h2>
+
+  <p>
+    Ada tiga momen yang umum untuk menjalankan validasi: saat submit, saat field ditinggalkan
+    (<em>on blur</em>), dan saat mengetik (<em>real-time</em>). Submit menghasilkan daftar galat
+    lengkap tanpa mengganggu ketikan; <em>real-time</em> terasa responsif tetapi bisa
+    menjengkelkan bila pesan muncul saat field baru pertama kali disentuh.
+  </p>
+
+  <p>
+    Pilihan bab ini adalah kombinasi: validasi penuh saat submit, lalu validasi ulang per
+    ketikan <strong>setelah percobaan submit pertama</strong>, ditandai state
+    <code>sudahDikirim</code>. Pengguna melihat semua kesalahan pertama kali, dan setiap
+    perbaikan langsung direspons. Frasa “setelah percobaan submit pertama” itulah yang
+    membedakan formulir yang menolong dari formulir yang mengomeli.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Memvalidasi setiap ketikan sejak awal"
+       data-label-benar="Penuh saat submit, lalu per ketikan"
+       data-petunjuk="Panel kanan adalah pola yang dipakai ketiga formulir bab ini: pemeriksaan penuh sekali, lalu validasi ulang hanya untuk field yang berubah.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">handleChange-tanpa-syarat.jsx</span>
+        <span class="kode-sumber">ilustrasi · buku §8.4</span>
+      </figcaption>
+      <pre><code class="language-jsx">// ✗ pesan "wajib diisi" muncul begitu
+//   pengguna menyentuh field pertama.
+function handleChange(namaField, nilai) {
+  setForm((s) => ({ ...s, [namaField]: nilai }));
+  setErrors((s) => ({
+    ...s,
+    [namaField]: validasiSatuField(namaField, nilai),
+  }));
+}</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">screens/FormLogin.js</span>
+        <span class="kode-sumber">buku §8.7 · fungsi handleSubmit</span>
+      </figcaption>
+      <pre><code class="language-jsx">  function handleSubmit() {
+    const hasil = validasiSemuaField();
+    setErrors(hasil);
+    setSudahDikirim(true);
+    const formValid = Object.values(hasil).every((pesan) =&gt; pesan === '');
+    if (formValid) {
+      onSubmit(form);
+      Alert.alert(
+        'Masuk Berhasil',
+        'Data login valid. Autentikasi terhadap server dibahas di Bab 13.'
+      );
+    }
+  }</code></pre>
+    </figure>
+  </div>
+
+  <p>
+    Dua strategi besar perlu dibandingkan secara jujur. Tombol nonaktif menjamin data yang
+    dikirim selalu lolos validasi klien, tetapi selama tombol kelabu pengguna tidak pernah
+    melihat pesan galat dan harus menebak syarat yang belum terpenuhi.
+  </p>
+
+  <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Trade-off strategi pencegahan submit · sumber: deck “Trade-off: Tombol Nonaktif atau Validasi Saat Submit” &amp; buku §8.5</caption>
+      <thead>
+        <tr><th scope="col">Strategi</th><th scope="col">Kapan unggul</th><th scope="col">Kelemahan</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Tombol submit nonaktif</td><td>Pengiriman mahal, misalnya memanggil API langsung</td><td>Pesan galat tidak pernah muncul saat tombol ditolak</td></tr>
+        <tr><td>Nonaktif + validasi <em>on blur</em></td><td>Umpan balik tanpa menekan tombol</td><td>Dua mekanisme berjalan bersamaan</td></tr>
+        <tr><td>Validasi saat submit</td><td>Syarat formulir transparan lewat pesan per field</td><td>Tombol selalu aktif, data salah tetap dicoba</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Tombol kelabu bukan pilihan yang salah — ia justru unggul pada formulir panjang yang
+      biaya pengirimannya mahal. Bab ini memilih validasi saat submit karena formulirnya
+      berukuran kecil sampai menengah dan tujuannya menguasai pola penanganan galat, bukan
+      mencegah pengiriman.
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s3-5">
+  <p class="label-subbab">
+    Subbab 8.5 <span class="sumber-slide">· deck: “Pesan Error: Spesifik, Dekat, Dua Sinyal” · buku §8.5</span>
+  </p>
+  <h2>Pesan Galat: Spesifik, Dekat, Dua Sinyal</h2>
+
+  <p>
+    Menampilkan galat dengan baik hampir sama pentingnya dengan mendeteksinya. Pesan harus
+    <strong>spesifik dan dekat dengan field</strong>: “Input salah” tidak memberi tahu cara
+    memperbaiki, sedangkan “Format email tidak valid (contoh: nama@domain.com)” memberi contoh
+    yang bisa ditiru. Pesan diletakkan tepat di bawah field bermasalah agar mudah ditemukan.
+  </p>
+
+  <p>
+    Field yang gagal ditandai dengan <strong>dua sinyal sekaligus</strong>: warna border merah
+    <em>dan</em> teks pesan. Warna saja tidak cukup karena sebagian pengguna buta warna dan
+    <em>screen reader</em> tidak membacanya — prinsip aksesibilitas dari Bab 6.
+  </p>
+
+  <p>
+    Dua prinsip terakhir: pesan harus <strong>konsisten dan ringkas</strong>, memakai kalimat
+    pendek tanpa tanda seru berlebihan; dan <strong>nilai tidak dihapus</strong> — field yang
+    gagal validasi tidak direset, sehingga pengguna cukup memperbaiki bagian yang salah.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Pesan generik"
+       data-label-benar="Pesan spesifik dan memberi contoh"
+       data-petunjuk="Pesan kiri memberi tahu bahwa ada yang salah, tetapi tidak memberi tahu apa yang harus diperbaiki.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">pesan-generik.jsx</span>
+        <span class="kode-sumber">ilustrasi · buku §8.5</span>
+      </figcaption>
+      <pre><code class="language-jsx">// ✗ pengguna tidak tahu apa yang salah
+// ✗ hanya warna, tanpa teks pesan
+&lt;Text style={styles.pesanError}&gt;Input salah&lt;/Text&gt;</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">utils/validators.js</span>
+        <span class="kode-sumber">buku §8.4</span>
+      </figcaption>
+      <pre><code class="language-js">}
+</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Border merah sering dianggap cukup sebagai penanda galat. Warna adalah sinyal tambahan;
+      teks pesan adalah sinyal utama. Tanpa teks, pengguna buta warna dan pembaca layar
+      kehilangan seluruh informasinya.
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s3-6">
+  <p class="label-subbab">
+    Subbab 8.6 <span class="sumber-slide">· deck: “Satu Component FormField Melayani Tiga Formulir” &amp; “Placeholder Bukan Pengganti Label” · buku §8.6</span>
+  </p>
+  <h2>Satu Component FormField Melayani Tiga Formulir</h2>
+
+  <p>
+    Tiga formulir pada bab ini berulang-ulang membutuhkan hal yang sama: label,
+    <code>TextInput</code> bergaya konsisten, dan pesan galat di bawahnya. Mengulang kode di
+    tiga layar berarti tiga tempat yang harus diubah bila gaya berubah. Solusinya komponen
+    reusable <code>FormField</code>.
+  </p>
+
+  <p>
+    Kunci reusability-nya adalah <code>...propsLain</code>, operator sisa dari Bab 3 yang
+    menampung semua props lain lalu meneruskannya ke <code>TextInput</code> dengan spread.
+    Pemakaian di luar cukup menulis
+    <code>&lt;FormField label="Email" value={form.email} onChangeText={...} keyboardType="email-address" error={errors.email} /&gt;</code>,
+    dan semua props selain <code>label</code> dan <code>error</code> otomatis sampai.
+  </p>
+
+  <p>
+    Perhatikan pula perbedaan <strong>label</strong> dan <strong>placeholder</strong>. Label
+    (“Email”) menjelaskan nama field dan selalu tampil; placeholder
+    (“nama.kecil@students.univ.ac.id”) memberi contoh nilai lalu menghilang saat pengguna
+    mengetik. Placeholder tidak boleh menggantikan label: begitu pengguna mengetik,
+    petunjuknya lenyap dan field kehilangan nama.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">components/FormField.js</span>
+      <span class="kode-sumber">buku §8.6</span>
+    </figcaption>
+    <pre><code class="language-jsx">import { StyleSheet, Text, TextInput, View } from 'react-native';
+
+export default function FormField({ label, error, ...propsLain }) {
+  const tampilkanError = error !== undefined &amp;&amp; error !== '';
+
+  return (
+    &lt;View style={styles.wadah}&gt;
+      &lt;Text style={styles.label}&gt;{label}&lt;/Text&gt;
+      &lt;TextInput
+        style={[styles.input, tampilkanError &amp;&amp; styles.inputError]}
+        placeholderTextColor="#9ca3af"
+        {...propsLain}
+      /&gt;
+      {tampilkanError &amp;&amp; &lt;Text style={styles.pesanError}&gt;{error}&lt;/Text&gt;}
+    &lt;/View&gt;
+  );
+}</code></pre>
+  </figure>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Apa yang harus diubah kalau warna border galat berubah? (Jawaban: satu tempat,
+      <code>styles.inputError</code> — bukan tiga layar formulir. Satu sumber gaya untuk tiga
+      formulir, konsistensi visual terjamin.)
+    </p>
+  </div>
+</section>

@@ -1,0 +1,300 @@
+<h1>Praktikum Bab 1 — Lingkungan &amp; Observasi</h1>
+
+<p class="ringkas">
+  Tiga pekerjaan: memasang dan memverifikasi lingkungan pengembangan, menjalankan script
+  pemeriksa, lalu menyusun laporan observasi tiga aplikasi mobile. Belum ada kode aplikasi di
+  sini — dan itu disengaja.
+</p>
+
+<div class="kotak kotak-tiruan">
+  <p class="kotak-judul">Tujuan praktikum</p>
+  <p>Setelah menyelesaikan praktikum ini, kamu mampu:</p>
+  <ol>
+    <li>menginstal Node.js LTS dan memverifikasi pemasangannya bersama npm;</li>
+    <li>memasang Visual Studio Code sebagai editor kode;</li>
+    <li>membuat akun Expo sebagai syarat menggunakan layanan pengembangan;</li>
+    <li>menjalankan script pemeriksaan lingkungan dan membaca hasilnya;</li>
+    <li>mengamati tiga aplikasi mobile yang dipakai sehari-hari dan menyusun laporan observasi.</li>
+  </ol>
+</div>
+
+<h2>Kebutuhan</h2>
+
+<ul>
+  <li>Komputer (Windows 10/11, macOS, atau Linux) dengan hak untuk memasang perangkat lunak.</li>
+  <li>Koneksi internet yang stabil (untuk mengunduh penginstal dan mendaftar akun).</li>
+  <li>Alamat email yang aktif (untuk pendaftaran akun Expo).</li>
+  <li>Smartphone dengan minimal tiga aplikasi mobile yang sering kamu gunakan (objek observasi).</li>
+  <li>Editor teks bawaan sudah cukup, tetapi disarankan langsung memasang Visual Studio Code.</li>
+</ul>
+
+<h2>Persiapan</h2>
+
+<ol>
+  <li>Tutup aplikasi berat yang tidak perlu agar proses instalasi berjalan lancar.</li>
+  <li>Catat versi sistem operasi dan arsitektur prosesor (64-bit) — penginstal Node.js tersedia sesuai sistem.</li>
+  <li>Siapkan akses administrator. Jika memakai komputer laboratorium kampus yang terkunci, koordinasikan dengan pengelola lab.</li>
+  <li>Pastikan mengunduh <strong>LTS</strong> (Long Term Support), bukan versi “Current” — LTS adalah pilihan stabil dan sesuai asumsi versi buku (Node.js minimal 22).</li>
+  <li>Siapkan buku catatan untuk mencatat kendala — mencatat masalah adalah bagian dari kebiasaan profesional yang dibangun buku ini.</li>
+</ol>
+
+<h2>Langkah kerja</h2>
+
+<ol>
+  <li><strong>Unduh Node.js LTS</strong> dari nodejs.org. Alur situs unduhan dapat berubah; pastikan memilih label “LTS”, bukan “Current”.</li>
+  <li><strong>Instal Node.js</strong> dengan seluruh opsi bawaan. Proses selesai setelah muncul layar “Completed”.</li>
+  <li><strong>Buka terminal baru.</strong> Tutup terminal yang sudah terbuka sebelumnya — terminal baru diperlukan agar sistem mengenali perintah Node.js yang baru dipasang.</li>
+  <li><strong>Verifikasi instalasi:</strong> jalankan <code>node --version</code> lalu <code>npm --version</code>. Jika keduanya menampilkan nomor versi, instalasi berhasil.</li>
+  <li><strong>Instal Visual Studio Code</strong> dengan opsi bawaan — editor yang dipakai seluruh buku ini karena ringan, mendukung JavaScript dengan baik, dan punya terminal terintegrasi.</li>
+  <li><strong>Buat akun Expo</strong> di expo.dev. Akun ini dipakai mulai Bab 2 untuk menjalankan project dengan Expo.</li>
+  <li><strong>Jalankan script pemeriksaan lingkungan.</strong> Buat folder kerja misalnya <code>latihan-bab1</code>, buat berkas <code>cek-lingkungan.js</code> dengan isi persis seperti di bawah, lalu jalankan dari terminal.</li>
+  <li><strong>Buat laporan observasi.</strong> Pilih tiga aplikasi mobile yang benar-benar kamu gunakan dalam seminggu terakhir; jalankan juga <code>profil-aplikasi.js</code> dengan data pilihanmu, lalu sertakan keluarannya di laporan.</li>
+</ol>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">(terminal)</span>
+    <span class="kode-sumber">buku §Praktikum · langkah 4</span>
+  </figcaption>
+  <pre><code class="language-bash">node --version
+npm --version
+npx --version</code></pre>
+</figure>
+
+<h2>Kode: cek-lingkungan.js</h2>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">kode/bab-01/cek-lingkungan.js</span>
+    <span class="kode-sumber">buku §Praktikum · Kode</span>
+  </figcaption>
+  <pre><code class="language-js">// cek-lingkungan.js
+// Memeriksa versi Node.js, npm, dan npx yang terpasang di komputer.
+
+const { execSync } = require('node:child_process');
+
+function ambilVersi(namaPerintah) {
+  try {
+    return execSync(namaPerintah + ' --version', { encoding: 'utf8' }).trim();
+  } catch (error) {
+    return null;
+  }
+}
+
+const versiNode = ambilVersi('node');
+const versiNpm = ambilVersi('npm');
+const versiNpx = ambilVersi('npx');
+
+console.log('LAPORAN LINGKUNGAN PENGEMBANGAN');
+console.log('===============================');
+console.log('Node.js :', versiNode ?? 'TIDAK TERPASANG');
+console.log('npm     :', versiNpm ?? 'TIDAK TERPASANG');
+console.log('npx     :', versiNpx ?? 'TIDAK TERPASANG');
+
+const nomorUtamaNode = Number(versiNode ? versiNode.match(/^v(\d+)/)?.[1] : 0);
+if (nomorUtamaNode &gt;= 22) {
+  console.log('\nHasil: lingkungan siap. Versi Node.js memenuhi syarat (minimal 22).');
+} else if (versiNode) {
+  console.log('\nHasil: Node.js terpasang, tetapi versinya lebih lama dari 22.');
+  console.log('       Instal ulang Node.js LTS terbaru dari situs resminya.');
+} else {
+  console.log('\nHasil: Node.js belum terpasang. Instal dahulu Node.js LTS.');
+}</code></pre>
+</figure>
+
+<h2>Kode: profil-aplikasi.js</h2>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">kode/bab-01/profil-aplikasi.js</span>
+    <span class="kode-sumber">buku §Contoh 3</span>
+  </figcaption>
+  <pre><code class="language-js">// profil-aplikasi.js
+// Menyimpan profil tiga aplikasi yang diamati dan menampilkannya
+// dalam bentuk laporan singkat.
+
+const aplikasiYangDiamati = [
+  {
+    nama: 'Aplikasi Transportasi Daring',
+    kategori: 'Transportasi',
+    platform: ['Android', 'iOS'],
+    perkiraanJenis: 'native',
+    fiturPerangkat: ['GPS', 'notifikasi', 'kamera'],
+    penilaian: 'Sangat mudah dipakai, tetapi pemakaian data cukup besar.',
+  },
+  {
+    nama: 'Aplikasi Dompet Digital',
+    kategori: 'Pembayaran',
+    platform: ['Android', 'iOS'],
+    perkiraanJenis: 'native',
+    fiturPerangkat: ['kamera', 'sidik jari', 'notifikasi'],
+    penilaian: 'Cepat untuk transaksi kecil, menu cukup padat.',
+  },
+  {
+    nama: 'Situs Toko Buku (versi mobile)',
+    kategori: 'Belanja',
+    platform: ['Android', 'iOS', 'web'],
+    perkiraanJenis: 'web mobile',
+    fiturPerangkat: ['notifikasi (terbatas)', 'penyimpanan (terbatas)'],
+    penilaian: 'Mudah dibuka tanpa instalasi, tetapi tidak ada notifikasi promo.',
+  },
+];
+
+console.log('LAPORAN OBSERVASI APLIKASI MOBILE');
+console.log('=================================');
+
+for (const aplikasi of aplikasiYangDiamati) {
+  console.log('Nama        :', aplikasi.nama);
+  console.log('Kategori    :', aplikasi.kategori);
+  console.log('Platform    :', aplikasi.platform.join(', '));
+  console.log('Perkiraan   :', aplikasi.perkiraanJenis);
+  console.log('Fitur       :', aplikasi.fiturPerangkat.join(', '));
+  console.log('Penilaian   :', aplikasi.penilaian);
+  console.log('---------------------------------');
+}</code></pre>
+</figure>
+
+<h2>Penjelasan kode</h2>
+
+<p>
+  <strong><code>cek-lingkungan.js</code></strong> adalah program Node.js paling sederhana yang
+  berguna sungguhan. <code>require('node:child_process')</code> mengimpor modul bawaan Node.js
+  yang mampu menjalankan perintah sistem; <code>const {'{'} execSync {'}'} = …</code> mengambil
+  satu fungsi dari modul itu — “Sync” berarti pemanggilan berjalan sinkron (menunggu perintah
+  selesai sebelum melanjutkan). Fungsi <code>ambilVersi</code> dibungkus
+  <code>try/catch</code> sehingga kegagalan (perintah tidak dikenal) tidak menghentikan
+  program, melainkan mengembalikan <code>null</code>; inilah pola penanganan kesalahan yang
+  akan dipelajari lebih dalam di Bab 3.
+</p>
+
+<p>
+  Operator <code>??</code> memastikan nilai <code>null</code> ditampilkan sebagai “TIDAK
+  TERPASANG” — cara ringkas menulis nilai cadangan. Bagian penilaian memakai
+  <code>versiNode.match(/^v(\d+)/)</code> untuk menangkap angka utama versi (misalnya 22 dari
+  <code>v22.14.0</code>), lalu membandingkannya dengan ambang 22. Tiga cabang
+  <code>if/else</code> mencetak kesimpulan sesuai kondisi. Logika “periksa → bandingkan →
+  simpulkan” ini adalah cermin mini cara kerja aplikasi yang lebih besar.
+</p>
+
+<p>
+  <strong><code>profil-aplikasi.js</code></strong> mendefinisikan satu array berisi tiga objek;
+  setiap objek mewakili satu aplikasi dengan atribut nama, kategori, platform, perkiraan jenis,
+  fitur perangkat, dan penilaian. Perulangan <code>for...of</code> menelusuri array dan
+  mencetak setiap atribut, dengan <code>join</code> menggabungkan array teks menjadi satu
+  kalimat dipisah koma. Isi data di sini hanyalah contoh — tugasmu adalah mengganti ketiganya
+  dengan aplikasi yang benar-benar kamu gunakan.
+</p>
+
+<h2>Hasil yang diharapkan</h2>
+
+<ol>
+  <li><strong>Terminal:</strong> <code>node --version</code> menampilkan nomor versi LTS (diawali <code>v</code>, misalnya <code>v22.x.x</code>) dan <code>npm --version</code> menampilkan nomor versi npm — bukan pesan kesalahan.</li>
+  <li><strong>Keluaran script</strong> menyerupai contoh di bawah (angka versi di komputer kamu dapat berbeda).</li>
+  <li><strong>Akun Expo:</strong> pendaftaran berhasil ditandai dengan email konfirmasi dan kamu dapat masuk ke situs Expo.</li>
+  <li><strong>Laporan observasi:</strong> satu berkas berisi tiga aplikasi yang diamati lengkap dengan kategori, perkiraan jenis, fitur perangkat, penilaian, beserta kesimpulan.</li>
+</ol>
+
+<figure class="kode">
+  <figcaption class="kode-kepala">
+    <span class="kode-berkas">(contoh keluaran terminal)</span>
+    <span class="kode-sumber">buku §Praktikum · Hasil yang Diharapkan</span>
+  </figcaption>
+  <pre><code class="language-text">LAPORAN LINGKUNGAN PENGEMBANGAN
+===============================
+Node.js : v22.14.0
+npm     : 10.9.2
+npx     : 10.9.2
+
+Hasil: lingkungan siap. Versi Node.js memenuhi syarat (minimal 22).</code></pre>
+</figure>
+
+<h2>Troubleshooting</h2>
+
+<div class="tabel-gulir">
+  <table class="tabel">
+    <caption>Ketika lingkungan belum siap · sumber: buku §Troubleshooting</caption>
+    <thead>
+      <tr><th scope="col">Gejala</th><th scope="col">Penyebab</th><th scope="col">Solusi</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>node --version</code> menampilkan “node is not recognized…” / “command not found”</td>
+        <td>Folder pemasangan belum tercatat di PATH, atau terminal masih sesi lama yang dibuka sebelum instalasi</td>
+        <td>Tutup semua terminal, buka terminal baru. Jika tetap gagal, jalankan ulang penginstal dengan opsi bawaan aktif; pada Windows periksa PATH memuat <code>C:\Program Files\nodejs</code></td>
+      </tr>
+      <tr>
+        <td><code>node --version</code> menampilkan versi lama (mis. v16) padahal baru memasang LTS</td>
+        <td>Ada dua pemasangan Node.js; yang dipakai adalah yang lebih dulu ada di PATH</td>
+        <td>Hapus pemasangan lama lewat pengelola aplikasi, lalu buka terminal baru dan periksa ulang</td>
+      </tr>
+      <tr>
+        <td>Script berhenti dengan pesan tentang <code>require</code></td>
+        <td>Berkas dijalankan di lingkungan yang tidak menyediakan modul Node.js (mis. peramban)</td>
+        <td>Jalankan lewat terminal dengan <code>node cek-lingkungan.js</code>, bukan dari konsol peramban</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="kotak kotak-salah">
+  <p class="kotak-judul">Salah paham</p>
+  <p>
+    Kegagalan lingkungan bukan kegagalan logika. Dua jam pertama praktikum sering habis untuk
+    masalah PATH, bukan untuk materi. Selesaikan dulu Troubleshooting sebelum menduga-duga soal
+    kode — dan jangan memasang ulang semuanya berkali-kali tanpa membaca pesan errornya.
+  </p>
+</div>
+
+<h2>Yang harus teramati</h2>
+
+<ul>
+  <li><strong>Versi yang tepat</strong> — Node.js LTS minimal 22, bukan versi “Current”.</li>
+  <li><strong>Bukti, bukan kesan</strong> — sertakan tangkapan layar keluaran <code>cek-lingkungan.js</code> dan <code>profil-aplikasi.js</code>.</li>
+  <li><strong>Alasan di laporan</strong> — setiap aplikasi diberi <em>perkiraan jenis</em> beserta alasan yang bisa diperiksa (dipasang dari toko aplikasi? memakai kamera/GPS? notifikasi bekerja?).</li>
+</ul>
+
+<blockquote>
+  Laporan yang baik menjawab “mengapa kamu menyimpulkan aplikasi itu native”, bukan hanya
+  “aplikasi itu native”.
+</blockquote>
+
+<h2>Kuis kilat</h2>
+
+<ol>
+  <li>Sebutkan tiga dari tujuh karakteristik aplikasi mobile dan satu keputusan desain yang lahir darinya.</li>
+  <li>Apa perbedaan mendasar hybrid dan cross-platform modern?</li>
+  <li>Apa peran Expo Go pada praktikum Bab 2 nanti?</li>
+  <li>Sebutkan tiga lapisan arsitektur klien dan satu bab tempat masing-masing dilatih.</li>
+</ol>
+
+<div class="kotak kotak-jawab">
+  <details>
+    <summary>Kunci kuis kilat</summary>
+    <ol>
+      <li>Contoh: mobilitas → sesi pendek dan penyimpanan keadaan; sentuhan → target sentuh besar; sensor → kamera/GPS sebagai nilai utama; sumber daya terbatas → kode hemat.</li>
+      <li>Hybrid merender halaman web di dalam WebView; cross-platform modern merender komponen UI native milik sistem operasi.</li>
+      <li>Menjalankan project Expo langsung di ponsel lewat pemindaian kode QR, tanpa membangun aplikasi native atau memasang Android Studio/Xcode.</li>
+      <li>Presentasi (Bab 5–7), bisnis (Bab 8–9, 14), data (Bab 10–11, 13).</li>
+    </ol>
+  </details>
+</div>
+
+<h2>Ringkasan bab</h2>
+
+<ol>
+  <li>Aplikasi mobile berbeda dari website bukan karena layarnya kecil, melainkan karena konteks, sentuhan, sensor, konektivitas, distribusi, sumber daya, dan siklus hidupnya.</li>
+  <li>Ada empat pendekatan: native, web mobile, hybrid, dan cross-platform; masing-masing adalah pertukaran biaya, performa, dan pengalaman pengguna.</li>
+  <li>Android menang pada jangkauan dan keterbukaan dengan harga fragmentasi; iOS menang pada konsistensi dengan harga ketertutupan dan biaya.</li>
+  <li>Setiap era teknologi mobile lahir sebagai jawaban atas keterbatasan era sebelumnya; React Native adalah jawaban atas mahalnya dua codebase native.</li>
+  <li>React Native menulis sekali dengan JavaScript dan menggambar dengan komponen native; Expo merapikan pekerjaan konfigurasi di atasnya.</li>
+  <li>Arsitektur klien–server dengan tiga lapisan (presentasi, bisnis, data) adalah kerangka seluruh buku ini.</li>
+</ol>
+
+<div class="kotak kotak-tanya">
+  <p class="kotak-judul">Pertanyaan penuntun</p>
+  <p>
+    Tutup dengan satu kalimat deck: “Hari ini kita belajar memasak bahannya; bab-bab
+    selanjutnya mengajarkan cara menatanya di piring.” Bab 2 sudah menunggumu — di sana
+    lingkungan yang baru kamu periksa akan dipakai untuk menjalankan aplikasi pertama.
+  </p>
+</div>

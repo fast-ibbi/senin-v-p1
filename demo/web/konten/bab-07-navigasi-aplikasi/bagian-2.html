@@ -1,0 +1,429 @@
+<h1>Bagian 2 — Expo Router: Rute dari Folder</h1>
+
+<p class="ringkas">
+  Subbab 7.2 · 7.6 · 7.9. Bagian paling teknis dari bab ini: tiga penyesuaian konfigurasi yang
+  harus selesai sebelum satu berkas pun dibuat di folder <code>app/</code>. Kesalahan di sini
+  muncul sebagai layar kosong saat aplikasi dijalankan, bukan sebagai pesan yang jelas —
+  karena itu kerjakan ketiganya berurutan, lalu periksa satu per satu.
+</p>
+
+<!-- ============================================================ SUBBAB 7.2 -->
+
+<section class="subbab" id="s2-1">
+  <p class="label-subbab">
+    Subbab 7.2 <span class="sumber-slide">· deck: “Folder Menjadi Alamat, File Menjadi Layar” · buku §7.2</span>
+  </p>
+  <h2>Folder Menjadi Alamat, File Menjadi Layar</h2>
+
+  <p>
+    Expo Router adalah pustaka navigasi resmi ekosistem Expo yang menerapkan
+    <strong>file-based routing</strong>: setiap berkas di dalam folder <code>app/</code>
+    otomatis menjadi satu layar, dan nama berkas menjadi alamat layar tersebut.
+    Menambah layar berarti menambah berkas, bukan menambah baris pendaftaran.
+  </p>
+
+  <p>
+    Akibat praktisnya terasa saat dua orang bekerja bersamaan: keduanya tidak lagi berebut satu
+    berkas rute, karena setiap layar memiliki berkasnya sendiri.
+    Struktur aplikasi juga <em>terlihat</em> dari pohon folder, sehingga pembaca baru dapat
+    menebak alur aplikasi sebelum membuka satu baris kode.
+    Alamatnya mengikuti nama berkas dan nama folder, bukan ditulis ulang di tempat lain.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Cara lama: layar didaftarkan di dalam kode"
+       data-label-benar="Expo Router: folder menjadi daftar rute"
+       data-petunjuk="Tiga layar di panel kiri menjadi tiga baris pendaftaran; di panel kanan menjadi tiga berkas. Yang berubah bukan jumlah layarnya, melainkan tempat rute dideklarasikan.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">pendaftaran-rute.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §7.2</span>
+      </figcaption>
+      <pre><code class="language-text">// Cara lama: satu layar = satu baris pendaftaran di dalam kode.
+&lt;Stack.Screen name="Daftar" component={Daftar} /&gt;
+&lt;Stack.Screen name="Detail" component={Detail} /&gt;
+&lt;Stack.Screen name="Tambah" component={Tambah} /&gt;
+
+// Menambah layar berarti menyunting berkas rute; dua pengembang bisa berebut berkas ini.</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">struktur folder project</span>
+        <span class="kode-sumber">buku §7.2</span>
+      </figcaption>
+      <pre><code class="language-text">project/
+├── app/
+│   ├── _layout.js      ← layout root: Stack
+│   ├── index.js        ← layar pertama
+│   └── login.js        ← layar masuk
+├── assets/
+├── app.json
+└── package.json</code></pre>
+    </figure>
+  </div>
+
+  <p>
+    Setiap berkas di <code>app/</code> adalah satu rute: <code>app/index.js</code> beralamat
+    <code>/</code>, <code>app/login.js</code> beralamat <code>/login</code>.
+    Folder menjadi segmen alamat, sehingga <code>app/mahasiswa/index.js</code> beralamat
+    <code>/mahasiswa</code>.
+    Konvensi inilah yang akan menjadi bahasa kerja kita di seluruh bab.
+  </p>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Mengganti nama atau memindahkan berkas di folder <code>app/</code> bukan perubahan
+      kosmetik: alamatnya ikut berubah, dan setiap tautan yang menunjuk alamat lama menjadi
+      tautan mati.
+      Perlakuan struktur folder sebagai bagian dari rancangan rute, bukan sebagai kerapian
+      penyimpanan berkas.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Kalau folder <code>mahasiswa/</code> dipindah, berapa tempat yang harus diubah? (Satu, yaitu struktur folder; alamat setiap layar mengikuti secara otomatis.)</p>
+  </div>
+</section>
+
+<!-- ============================================================ SUBBAB 7.2 -->
+
+<section class="subbab" id="s2-2">
+  <p class="label-subbab">
+    Subbab 7.2 <span class="sumber-slide">· deck: “Tiga Penyesuaian Sebelum Folder app/ Dipakai” · buku §7.2</span>
+  </p>
+  <h2>Tiga Penyesuaian Sebelum Folder <code>app/</code> Dipakai</h2>
+
+  <p>
+    Project template blank dari Bab 2 belum mengenal folder <code>app/</code>: titik masuknya
+    masih <code>App.js</code> dan navigasinya belum terpasang.
+    Sebelum membuat berkas layar pertama, selesaikan tiga penyesuaian berikut pada project
+    <code>siakad-mobile</code>.
+  </p>
+
+  <ol>
+    <li>Pasang paket navigasi dengan <code>npx expo install</code> pada project template blank.</li>
+    <li>Ubah properti <code>"main"</code> di <code>package.json</code> menjadi <code>"expo-router/entry"</code>.</li>
+    <li>Tambahkan properti <code>"scheme"</code> di <code>app.json</code> untuk mendukung deep linking.</li>
+  </ol>
+
+  <p>
+    <strong>Deep linking</strong> adalah tautan langsung yang membuka layar tertentu dari luar
+    aplikasi, misalnya dari notifikasi atau dari pesan (Bab 12).
+    Setelah ketiga langkah selesai, <code>App.js</code> tidak lagi dimuat dan boleh dihapus.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">(terminal)</span>
+      <span class="kode-sumber">deck, slide “Paket dan Titik Masuk: Dua Perubahan Pertama” · buku §7.2</span>
+    </figcaption>
+    <pre><code class="language-bash">npx expo install expo-router react-native-safe-area-context react-native-screens expo-linking expo-constants expo-status-bar</code></pre>
+  </figure>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Langkah kedua bukan formalitas. Kalau <code>"main"</code> terlewat, Metro masih mencari
+      <code>App.js</code> yang sudah kamu hapus, dan aplikasi menampilkan layar kosong tanpa
+      menyebut penyebabnya.
+      Inilah butir troubleshooting pertama bab ini: perbaiki konfigurasi lebih dahulu sebelum
+      menduga ada kesalahan di kode layar.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Mengapa urutan ketiga langkah ini penting? (Karena <code>App.js</code> hanya boleh dihapus setelah <code>"main"</code> menunjuk <code>expo-router/entry</code>; kalau dibalik, Metro kehilangan titik masuk aplikasi.)</p>
+  </div>
+</section>
+
+<!-- ============================================================ SUBBAB 7.2 -->
+
+<section class="subbab" id="s2-3">
+  <p class="label-subbab">
+    Subbab 7.2 <span class="sumber-slide">· deck: “Paket dan Titik Masuk: Dua Perubahan Pertama” · buku §7.2</span>
+  </p>
+  <h2>Paket dan Titik Masuk: Dua Perubahan Pertama</h2>
+
+  <p>
+    Enam paket pada perintah pertama bukan tambahan bebas: masing-masing menutup satu kebutuhan
+    navigasi.
+    <code>react-native-screens</code> menggantikan render layar dengan komponen native untuk
+    performa, <code>react-native-safe-area-context</code> menangani area aman layar
+    (notch dan kamera), sedangkan <code>expo-linking</code> dan <code>expo-constants</code>
+    dipakai Expo Router untuk mendukung deep linking dan konfigurasi.
+  </p>
+
+  <p>
+    Properti <code>main</code> memberi tahu Metro (bundler) berkas mana yang menjadi
+    <strong>titik masuk</strong> aplikasi.
+    Template blank memakai <code>node_modules/expo/AppEntry.js</code> yang memuat
+    <code>App.js</code>; nilai <code>expo-router/entry</code> menggantikannya dengan bootstrap
+    Expo Router — berkas yang membuat navigation container, membaca folder <code>app/</code>,
+    mendaftarkan semua rute, dan menyiapkan deep linking.
+    Sejak titik masuk berganti, <code>App.js</code> tidak lagi dimuat.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">package.json (potongan)</span>
+      <span class="kode-sumber">deck, slide “Paket dan Titik Masuk: Dua Perubahan Pertama” · buku §7.2 — sensitif versi</span>
+    </figcaption>
+    <pre><code class="language-json">{
+  "main": "expo-router/entry"
+}</code></pre>
+  </figure>
+
+  <p>
+    Dokumentasi versi lama menuliskan <code>"main": "node_modules/expo-router/entry"</code>,
+    sedangkan dokumentasi terbaru menuliskan <code>"expo-router/entry"</code>.
+    Salin bentuk yang berlaku untuk SDK yang terpasang, bukan dari tutorial lama.
+  </p>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Yang berubah hanya satu properti. Menyalin seluruh isi <code>package.json</code> dari
+      internet akan membawa dependensi asing dan versi yang tidak cocok dengan project-mu.
+      Sunting satu baris, lalu simpan.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Apa yang terjadi kalau nilai <code>"main"</code> salah ketik? (Metro tetap mencari <code>node_modules/expo/AppEntry.js</code> yang memuat <code>App.js</code>; karena berkas itu sudah dihapus, aplikasi tampil kosong.)</p>
+  </div>
+</section>
+
+<!-- ============================================================ SUBBAB 7.2 -->
+
+<section class="subbab" id="s2-4">
+  <p class="label-subbab">
+    Subbab 7.2 <span class="sumber-slide">· deck: “Satu Properti Lagi: scheme untuk Deep Linking” · buku §7.2</span>
+  </p>
+  <h2>Satu Properti Lagi: <code>scheme</code> untuk Deep Linking</h2>
+
+  <p>
+    Properti <code>scheme</code> adalah identitas "alamat" aplikasi untuk deep linking,
+    misalnya <code>siakad-mobile://mahasiswa/2201001</code>.
+    Nilainya bebas ditentukan, tetapi harus konsisten di seluruh project dan sebaiknya
+    didokumentasikan bersama struktur rute.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">app.json (potongan)</span>
+      <span class="kode-sumber">deck, slide “Satu Properti Lagi: scheme untuk Deep Linking” · buku §7.2 — sensitif versi</span>
+    </figcaption>
+    <pre><code class="language-json">{
+  "expo": {
+    "name": "siakad-mobile",
+    "slug": "siakad-mobile",
+    "version": "1.0.0",
+    "scheme": "siakad-mobile"
+  }
+}</code></pre>
+  </figure>
+
+  <p>
+    Perhatikan bahwa <code>slug</code> dan <code>scheme</code> di sini kebetulan sama, yaitu nama
+    project Aplikasi Manajemen Data Mahasiswa yang dibangun sepanjang buku ini.
+    Kesamaan itu bukan aturan: yang menentukan adalah konsistensi, bukan pilihan katanya.
+  </p>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Menyalin <code>app.json</code> dari tutorial membuat project-mu membawa nama, slug, dan
+      scheme milik orang lain.
+      Yang penting bukan nilainya, melainkan bahwa satu nilai dipakai konsisten di seluruh
+      project — termasuk saat tautan notifikasi dibuat di Bab 12.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Mengapa nilai <code>scheme</code> harus konsisten di seluruh project? (Supaya tautan dari luar aplikasi, misalnya dari notifikasi, selalu diarahkan ke aplikasi yang benar dan bukan ke aplikasi lain atau ke alamat yang tidak ada.)</p>
+  </div>
+</section>
+
+<!-- ============================================================ SUBBAB 7.6 -->
+
+<section class="subbab" id="s2-5">
+  <p class="label-subbab">
+    Subbab 7.6 <span class="sumber-slide">· deck: “Tanda Kurung Mengelompokkan, Bukan Menambah Alamat” · buku §7.6</span>
+  </p>
+  <h2>Tanda Kurung Mengelompokkan, Bukan Menambah Alamat</h2>
+
+  <p>
+    Folder yang namanya diberi tanda kurung — <code>(app)</code> — adalah <strong>route
+    group</strong> (grup rute): folder ini <strong>tidak ikut menjadi bagian alamat</strong>.
+    Berkas <code>app/(app)/mahasiswa/index.js</code> tetap beralamat <code>/mahasiswa</code>,
+    bukan <code>/(app)/mahasiswa</code>.
+  </p>
+
+  <p>
+    Grup dipakai untuk mengelompokkan layar yang berbagi satu layout tanpa mengubah alamat
+    mereka.
+    Kegunaan yang sangat praktis muncul di bab ini: layar Login (<code>app/login.js</code>) dan
+    seluruh layar "di dalam aplikasi" (<code>app/(app)/</code>) diletakkan pada tingkatan yang
+    sama, sehingga layout pelindung cukup membungkus grup <code>(app)</code> saja.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Dugaan keliru: tanda kurung dihitung sebagai segmen"
+       data-label-benar="Kenyataannya: grup rute tidak menambah segmen"
+       data-petunjuk="Tanda kurung justru menghapus satu segmen dari alamat. Karena itulah alamat deep linking tidak pernah memuat (app).">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">alamat-keliru.txt</span>
+        <span class="kode-sumber">ilustrasi · deck, slide “Tanda Kurung Mengelompokkan, Bukan Menambah Alamat”</span>
+      </figcaption>
+      <pre><code class="language-text">// Dugaan keliru: tanda kurung dianggap bagian alamat.
+app/(app)/index.js              →  /(app)
+app/(app)/mahasiswa/index.js    →  /(app)/mahasiswa
+app/(app)/mahasiswa/[id].js     →  /(app)/mahasiswa/:id</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">alamat-sebenarnya.txt</span>
+        <span class="kode-sumber">ilustrasi · deck, slide “Tanda Kurung Mengelompokkan, Bukan Menambah Alamat”</span>
+      </figcaption>
+      <pre><code class="language-text">// Kenyataannya: grup rute tidak menambah segmen alamat.
+app/index.js                    →  /
+app/login.js                    →  /login
+app/(app)/mahasiswa/index.js    →  /mahasiswa
+app/(app)/mahasiswa/[id].js     →  /mahasiswa/:id   (dinamis)</code></pre>
+    </figure>
+  </div>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">struktur folder project praktikum</span>
+      <span class="kode-sumber">buku §Praktikum · Persiapan langkah 6</span>
+    </figcaption>
+    <pre><code class="language-text">app/
+├── _layout.js
+├── index.js
+├── login.js
+├── (app)/
+│   ├── _layout.js
+│   ├── index.js
+│   └── mahasiswa/
+│       ├── _layout.js
+│       ├── index.js
+│       ├── [id].js
+│       └── tambah.js
+data/
+└── mahasiswa.js
+lib/
+└── session.js</code></pre>
+  </figure>
+
+  <p>
+    Pada struktur di atas, grup <code>(app)</code> membungkus Beranda dan seluruh layar Mahasiswa,
+    sedangkan <code>login.js</code> berada di luar grup itu.
+    Dua folder pendukung di luar <code>app/</code> menjaga pembagian tugas: <code>data/</code>
+    memegang data statis pengganti API (Bab 10) dan <code>lib/</code> memegang status sesi
+    sederhana (diganti Context di Bab 9 dan token di Bab 13).
+    Folder yang tidak berada di dalam <code>app/</code> tidak pernah menjadi rute.
+  </p>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Kesalahan yang paling sering muncul: mengira alamatnya menjadi <code>/(app)/mahasiswa</code>.
+      Tanda kurung justru menghapus segmen itu dari alamat; kalau tanda kurung ditulis pada
+      tautan, tautan tersebut tidak menemukan rute apa pun.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Alamat mana yang muncul pada deep linking? (Alamat tanpa tanda kurung, karena grup tidak menambah segmen — misalnya <code>siakad-mobile://mahasiswa/2201001</code>.)</p>
+  </div>
+</section>
+
+<!-- ============================================================ SUBBAB 7.9 -->
+
+<section class="subbab" id="s2-6">
+  <p class="label-subbab">
+    Subbab 7.9 <span class="sumber-slide">· deck: “Enam File Cukup untuk Aplikasi Manajemen Data Mahasiswa” · buku §7.9</span>
+  </p>
+  <h2>Enam Berkas Cukup untuk Aplikasi Manajemen Data Mahasiswa</h2>
+
+  <p>
+    Subbab 7.9 memetakan kebutuhan fungsional Aplikasi Manajemen Data Mahasiswa — aplikasi yang
+    dibangun bertahap sejak Bab 6 — menjadi struktur rute.
+    Tabel berikut adalah peta kerja Praktikum bab ini sekaligus kontrak yang harus dipenuhi
+    sebelum praktikum dimulai: tandai berkas mana yang sudah kamu buat dan mana yang belum.
+  </p>
+
+  <div class="tabel-gulir">
+  <table class="tabel">
+    <caption>Peta rute Aplikasi Manajemen Data Mahasiswa · sumber: deck, slide “Enam File Cukup untuk Aplikasi Manajemen Data Mahasiswa” · buku §7.9</caption>
+    <thead>
+      <tr><th scope="col">Alur</th><th scope="col">Berkas di folder <code>app/</code></th><th scope="col">Alamat</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Pengarah awal</td><td><code>index.js</code></td><td><code>/</code></td></tr>
+      <tr><td>Login</td><td><code>login.js</code></td><td><code>/login</code></td></tr>
+      <tr><td>Beranda</td><td><code>(app)/index.js</code></td><td><code>/</code> di dalam grup</td></tr>
+      <tr><td>Daftar mahasiswa</td><td><code>(app)/mahasiswa/index.js</code></td><td><code>/mahasiswa</code></td></tr>
+      <tr><td>Detail mahasiswa</td><td><code>(app)/mahasiswa/[id].js</code></td><td><code>/mahasiswa/:id</code></td></tr>
+      <tr><td>Form tambah/edit</td><td><code>(app)/mahasiswa/tambah.js</code></td><td><code>/mahasiswa/tambah?edit=...</code></td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p>
+    Ada dua keputusan desain di balik tabel itu.
+    <strong>Pertama</strong>, Detail dan Form tidak dijadikan tab, melainkan layar stack di dalam
+    tab Mahasiswa: keduanya <em>bergantung</em> pada layar Daftar dan harus bisa kembali ke sana.
+    <strong>Kedua</strong>, layar Login berada di luar grup <code>(app)</code> agar tidak ikut
+    terlindungi.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">app/index.js — pengarah awal</span>
+      <span class="kode-sumber">buku §Praktikum · Kode</span>
+    </figcaption>
+    <pre><code class="language-js">import { Redirect } from 'expo-router';
+import { isLoggedIn } from '../lib/session';
+
+export default function Pengarah() {
+  if (isLoggedIn()) {
+    return &lt;Redirect href="/(app)" /&gt;;
+  }
+  return &lt;Redirect href="/login" /&gt;;
+}</code></pre>
+  </figure>
+
+  <p>
+    Berkas pengarah itu memperlihatkan dua hal sekaligus: rute tujuan ditulis sebagai alamat
+    (<code>/(app)</code> dan <code>/login</code>), dan keputusan "ke mana pertama kali"
+    dipusatkan di satu tempat.
+    Nama rute pada tautan harus sama dengan nama berkas atau nama grup yang benar-benar ada di
+    folder <code>app/</code>.
+  </p>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Perhatikan baris terakhir tabel: <code>login.js</code> diletakkan di luar grup
+      <code>(app)</code>.
+      Kalau berkas itu dipindah ke dalam grup, alur login akan berputar tanpa henti — pengguna
+      yang belum masuk dilempar ke layar login, dan layar login itu sendiri ikut diperiksa
+      statusnya.
+      Pola lengkapnya dibahas di <a href="bagian-3.html#s3-7">bagian 3, subbab 7.8</a>.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Mengapa Detail dan Form tidak dijadikan tab? (Keduanya bertingkat dan harus bisa kembali ke Daftar; tab tidak dirancang untuk hubungan bertingkat, sehingga langkah kembali menjadi tidak wajar.)</p>
+  </div>
+</section>

@@ -1,0 +1,400 @@
+<h1>Bagian 1 — Pola Navigasi Mobile</h1>
+
+<p class="ringkas">
+  Subbab 7.1 Konsep · 7.2 Stack · 7.3 Tab · 7.4 Drawer. Bagian paling konseptual dari bab
+  ini: subbab 7.1 jangan dilewati karena seluruh bab bergantung padanya, dan mahasiswa yang
+  melewatkan bagian ini biasanya tersesat di bagian 3, saat layout bersarang harus
+  dijelaskan. Kalau waktu menipis, subbab 7.4 (drawer) boleh dipadatkan.
+</p>
+
+<!-- ============================================================ SUBBAB 7.1 -->
+
+<section class="subbab" id="s1-1">
+  <p class="label-subbab">
+    Subbab 7.1 <span class="sumber-slide">· deck: “Navigasi Mengatur Layar, Riwayat, dan Data” · buku §7.1</span>
+  </p>
+  <h2>Navigasi Mengatur Layar, Riwayat, dan Data</h2>
+
+  <p>
+    Aplikasi mobile nyata hampir selalu punya lebih dari satu layar: login, beranda,
+    daftar data, detail, dan formulir. Pertanyaan mendasarnya: bagaimana pengguna
+    berpindah antar layar, dan bagaimana kita mengelola perpindahannya?
+    <strong>Navigasi</strong> adalah sistem yang mengatur tumpukan layar yang sedang
+    aktif, riwayat kunjungan, dan cara sebuah layar menerima data dari layar lain.
+  </p>
+
+  <p>
+    Analogi paling dekat adalah <strong>browser</strong>: setiap halaman punya alamat
+    (URL), tombol maju/mundur menjaga riwayat, dan halaman saling melempar data lewat
+    query string (misalnya <code>?id=2201001</code>). Aplikasi mobile modern mengadopsi
+    pola yang sama, hanya saja alamatnya berupa <strong>rute</strong> internal dan
+    riwayatnya dijaga oleh navigator.
+  </p>
+
+  <p>
+    Yang menempel pada sistem operasi: di Android, tombol atau gestur "kembali" milik
+    perangkat; di iOS, gestur geser dari tepi kiri layar. Inilah sebabnya navigasi yang
+    salah terasa sangat mengganggu — tombol kembali yang salah sasaran adalah salah satu
+    keluhan paling umum pengguna.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Analogi: browser web"
+       data-label-benar="Di aplikasi mobile"
+       data-petunjuk="Konsepnya sama persis: alamat, riwayat, dan data yang menempel pada alamat — yang berbeda hanya pemilik riwayatnya.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">analogi-browser.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §7.1</span>
+      </figcaption>
+      <pre><code class="language-text">// Browser web: alamat, riwayat, dan data menempel pada alamat.
+https://kampus.ac.id/mahasiswa?id=2201001   ← alamat + data (query string)
+[←] [→]                                      ← riwayat maju/mundur</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">rute-mobile.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §7.1</span>
+      </figcaption>
+      <pre><code class="language-text">// Mobile: rute internal, riwayat dijaga oleh navigator.
+/mahasiswa/2201001                           ← rute + parameter
+tombol/gestur kembali perangkat              ← riwayat dijaga navigator</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Apa padanan tombol kembali browser di HP Android? (Jawaban: tombol atau gestur kembali milik perangkat — dan itulah sebabnya navigasi yang salah terasa sangat mengganggu.)</p>
+  </div>
+</section>
+
+<!-- ============================================================ SUBBAB 7.1 -->
+
+<section class="subbab" id="s1-2">
+  <p class="label-subbab">
+    Subbab 7.1 <span class="sumber-slide">· deck: “Salah Memilih Navigasi Terasa Langsung oleh Pengguna” · buku §7.1</span>
+  </p>
+  <h2>Salah Memilih Navigasi Terasa Langsung oleh Pengguna</h2>
+
+  <p>
+    Hampir semua fitur bergantung pada navigasi, dan kesalahan di sini langsung terasa
+    oleh pengguna. Sebelum ada library navigasi yang matang, pengembang React Native
+    membangun perpindahan layar secara manual: menyimpan nama layar aktif di dalam
+    state, merender satu layar secara kondisional, dan menulis sendiri logika tombol
+    kembali. Pendekatan itu cepat kacau saat aplikasi tumbuh: state layar bercampur
+    dengan data, riwayat tidak akurat, dan transisi antar layar tidak konsisten.
+  </p>
+
+  <p>
+    Library navigasi lahir justru untuk menyeragamkan pekerjaan yang selalu berulang
+    ini: manajemen riwayat, gestur kembali, transisi, dan pengiriman parameter. Dengan
+    Expo Router, hasilnya alur aplikasi terbaca dari pohon folder, bukan dari kode
+    pendaftaran. Trade-off-nya: membuat layar langsung dari kode menjadi lebih terbatas,
+    karena setiap layar harus ada sebagai file — untuk aplikasi bisnis dan Project
+    Akhir, keterbatasan itu justru menjadi keuntungan.
+  </p>
+
+  <div class="banding"
+       data-label-lama="State render manual — riwayat ditulis tangan"
+       data-label-benar="Navigator — riwayat dijaga library"
+       data-petunjuk="Makin besar aplikasi, makin banyak state yang harus dirawat sendiri; satu yang terlewat berarti tombol kembali tak terduga.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">tanpa-navigator.js</span>
+        <span class="kode-sumber">ilustrasi · buku §7.1</span>
+      </figcaption>
+      <pre><code class="language-jsx">// Layar aktif disimpan di state; tombol kembali ditulis tangan.
+const [layarAktif, setLayarAktif] = useState('daftar');
+const [riwayat, setRiwayat] = useState(['daftar']);
+
+function bukaDetail() {
+  setLayarAktif('detail');
+  setRiwayat([...riwayat, 'detail']);   // ✗ riwayat dirawat sendiri
+}
+
+// Satu langkah terlewat → riwayat tidak akurat, kembali salah sasaran.</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">dengan-navigator.js</span>
+        <span class="kode-sumber">ilustrasi · buku §7.1</span>
+      </figcaption>
+      <pre><code class="language-jsx">// Navigator menjaga tumpukan dan riwayat; kita hanya menyebut tujuan.
+router.push('/mahasiswa/2201001');   // ✓ layar ditumpuk
+router.back();                       // ✓ kembali ke layar sebelumnya
+
+// Riwayat, gestur kembali, dan transisi seragam di seluruh aplikasi.</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Expo Router bukan sekadar library. Ia menambah satu tingkat abstraksi: rute
+      didefinisikan lewat folder, bukan lewat kode pendaftaran.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Apa yang terjadi kalau riwayat dibangun sendiri dengan state? (Aplikasi makin besar, state bercampur, tombol kembali jadi tak terduga, dan pengguna mengeluh.)</p>
+  </div>
+</section>
+
+<!-- ============================================================ SUBBAB 7.1–7.3 -->
+
+<section class="subbab" id="s1-3">
+  <p class="label-subbab">
+    Subbab 7.1–7.3 <span class="sumber-slide">· deck: “Tiga Pola, Tiga Cara Berpindah” · buku §7.1, §7.3</span>
+  </p>
+  <h2>Tiga Pola, Tiga Cara Berpindah</h2>
+
+  <p>
+    Ada tiga pola navigasi utama, dan masing-masing menjawab kebutuhan yang berbeda.
+    Perhatikan kolom contoh pemakaian: pola dipilih dari bentuk hubungan antar
+    layarnya, bukan dari tren.
+  </p>
+
+  <div class="tabel-gulir">
+  <table class="tabel">
+    <caption>Tiga pola navigasi dan cirinya · sumber: deck, slide “Tiga Pola, Tiga Cara Berpindah” · buku §7.1</caption>
+    <thead>
+      <tr><th scope="col">Pola</th><th scope="col">Ciri</th><th scope="col">Contoh pemakaian</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>Stack</strong></td><td>Layar baru menutupi layar lama; tombol kembali membuka layar sebelumnya</td><td>Daftar → Detail → Form</td></tr>
+      <tr><td><strong>Tab</strong></td><td>Layar sejajar tanpa hierarki; layar tetap hidup saat berpindah</td><td>Beranda, Daftar, Profil</td></tr>
+      <tr><td><strong>Drawer</strong></td><td>Menu tersembunyi di sisi layar; hemat ruang</td><td>Pengaturan, menu admin</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p>
+    Ketiganya tidak saling meniadakan: aplikasi profesional memakai tab sebagai
+    kerangka, stack di dalam tiap tab, dan drawer untuk menu sekunder. Di Expo Router,
+    tab dibangun dengan komponen <code>&lt;Tabs /&gt;</code> yang diimpor langsung dari
+    <code>expo-router</code> — bentuk paling sederhananya terlihat seperti ini.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">app/(app)/_layout.js</span>
+      <span class="kode-sumber">buku §7.3 — contoh bentuk umum</span>
+    </figcaption>
+    <pre><code class="language-jsx">import { Tabs } from 'expo-router';
+
+export default function LayoutTab() {
+  return (
+    &lt;Tabs&gt;
+      &lt;Tabs.Screen name="index" options={{ title: 'Beranda' }} /&gt;
+      &lt;Tabs.Screen name="profil" options={{ title: 'Profil' }} /&gt;
+    &lt;/Tabs&gt;
+  );
+}</code></pre>
+  </figure>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Tab bukan versi sederhana dari stack. Keduanya menjawab masalah yang berbeda:
+      layar sejajar versus layar bertingkat.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Sebut satu aplikasi di HP-mu untuk tiap baris tabel di atas — pengalaman konkret lebih menempel daripada definisi.</p>
+  </div>
+</section>
+
+<!-- ============================================================ SUBBAB 7.2–7.3 -->
+
+<section class="subbab" id="s1-4">
+  <p class="label-subbab">
+    Subbab 7.2–7.3 <span class="sumber-slide">· deck: “Stack dan Tab: Tiga Perbedaan” · buku §7.3</span>
+  </p>
+  <h2>Stack dan Tab: Tiga Perbedaan</h2>
+
+  <p>
+    Stack dan tab paling sering tertukar karena keduanya sama-sama "memindahkan" layar.
+    Bedakan lewat tiga aspek ini — baris kedua adalah akar masalah "daftar basi" yang
+    dibahas di bagian 3 (subbab 7.7).
+  </p>
+
+  <div class="tabel-gulir">
+  <table class="tabel">
+    <caption>Stack versus tab · sumber: deck, slide “Stack dan Tab: Tiga Perbedaan” · buku §7.3</caption>
+    <thead>
+      <tr><th scope="col">Aspek</th><th scope="col">Stack</th><th scope="col">Tab</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Hierarki</td><td>Induk dan anak: layar baru menutupi layar lama</td><td>Sejajar: tidak ada layar yang menutupi</td></tr>
+      <tr><td>Kondisi layar</td><td>Layar tertutup bisa dilepas dari memori</td><td>Setiap layar tetap ter-<em>mount</em>, hanya kehilangan fokus</td></tr>
+      <tr><td>Cara berpindah</td><td>Push dan pop dengan transisi bertumpuk</td><td>Perpindahan seketika antar layar sejajar</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p>
+    Aturan praktis industri: tab untuk dua sampai lima fungsi utama yang selalu
+    dibutuhkan cepat; stack untuk alur detail yang bertingkat dan sementara. Terlalu
+    banyak tab membuat layar sempit; memaksa alur detail menjadi tab membuat riwayat
+    kembali tidak natural. Di Expo Router, navigator stack direpresentasikan komponen
+    <code>&lt;Stack /&gt;</code> yang biasanya ditempatkan di <code>app/_layout.js</code>.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">app/_layout.js</span>
+      <span class="kode-sumber">buku §Contoh 7.1 — contoh singkat; versi akhir ada di praktikum</span>
+    </figcaption>
+    <pre><code class="language-jsx">import { Stack } from 'expo-router';
+
+export default function LayoutRoot() {
+  return (
+    &lt;Stack screenOptions={{ headerTitleAlign: 'center' }}&gt;
+      &lt;Stack.Screen name="index" options={{ title: 'Beranda' }} /&gt;
+      &lt;Stack.Screen name="profil" options={{ title: 'Profil Saya' }} /&gt;
+    &lt;/Stack&gt;
+  );
+}</code></pre>
+  </figure>
+
+  <p>
+    Daftar <code>&lt;Stack.Screen&gt;</code> bersifat opsional: layar yang tidak disebut
+    tetap menjadi bagian stack dengan pengaturan default. Kita cukup mendaftarkan layar
+    yang butuh penyesuaian judul atau header.
+  </p>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Kenapa alur detail tidak cocok dijadikan tab? (Langkah kembali menjadi tidak wajar; tab tidak menyimpan hierarki langkah — stack punya langkah yang bisa dikembalikan, tab hanya punya posisi.)</p>
+  </div>
+</section>
+
+<!-- ============================================================ SUBBAB 7.4 -->
+
+<section class="subbab" id="s1-5">
+  <p class="label-subbab">
+    Subbab 7.4 <span class="sumber-slide">· deck: “Drawer Menyembunyikan Menu demi Menghemat Ruang” · buku §7.4</span>
+  </p>
+  <h2>Drawer Menyembunyikan Menu demi Menghemat Ruang</h2>
+
+  <p>
+    Pola <strong>drawer</strong> (laci) menyembunyikan menu di sisi kiri layar:
+    pengguna menggeser dari tepi kiri atau menekan ikon hamburger untuk membuka panel
+    menu. Keunggulannya: tidak memakan ruang bar di bawah atau atas layar, sehingga kuat
+    untuk banyak menu sekunder seperti pengaturan, bantuan, dan laporan. Kelemahannya:
+    menu tidak langsung terlihat, sehingga kurang cocok untuk fungsi harian.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">app/_layout.js</span>
+      <span class="kode-sumber">deck, slide “Drawer Menyembunyikan Menu demi Menghemat Ruang” · buku §7.4 — variasi drawer, hanya pengenalan</span>
+    </figcaption>
+    <pre><code class="language-jsx">import { Drawer } from 'expo-router/drawer';
+
+export default function LayoutDrawer() {
+  return (
+    &lt;Drawer screenOptions={{ drawerPosition: 'left' }}&gt;
+      &lt;Drawer.Screen name="index" options={{ title: 'Beranda' }} /&gt;
+      &lt;Drawer.Screen name="pengaturan" options={{ title: 'Pengaturan' }} /&gt;
+    &lt;/Drawer&gt;
+  );
+}</code></pre>
+  </figure>
+
+  <p>
+    Bab ini hanya memperkenalkan drawer tanpa dipraktikkan: praktikum memakai stack dan
+    tab karena keduanya mencakup sebagian besar kebutuhan aplikasi bisnis. Kalau kamu
+    ingin mendalaminya, jadikan tugas pengembangan mandiri lewat subbab Tantangan di
+    buku.
+  </p>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham — sensitif versi</p>
+    <p>
+      Drawer bergantung pada paket <code>@react-navigation/drawer</code>. Nama impor dan
+      langkah pemasangannya bergantung pada versi, jadi periksa docs.expo.dev/router
+      untuk versi SDK yang kamu pakai — jangan menyalin dari tutorial lama.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Kapan drawer lebih unggul daripada tab? (Ketika menunya banyak tetapi jarang dibuka — menu sekunder, bukan fungsi harian.)</p>
+  </div>
+</section>
+
+<!-- ============================================================ LATIHAN BAGIAN 1 -->
+
+<section class="subbab" id="s1-6">
+  <p class="label-subbab">
+    Subbab 7.1–7.4 <span class="sumber-slide">· deck: “Latihan: Pilih Polanya” &amp; “Jawaban: Pola dan Alasannya” · buku §Latihan</span>
+  </p>
+  <h2>Latihan dan Jawaban: Pilih Polanya</h2>
+
+  <p>
+    Tentukan pola untuk tiap kebutuhan berikut, lalu sebutkan alasannya. Yang dinilai
+    adalah alasannya, bukan pilihan polanya — jawaban "stack karena modern" belum
+    menjawab.
+  </p>
+
+  <ul>
+    <li><strong>A.</strong> Cari pasien → lihat detail janji → batalkan janji</li>
+    <li><strong>B.</strong> Beranda, Janji, dan Profil yang dibuka puluhan kali sehari</li>
+    <li><strong>C.</strong> Menu Pengaturan, Bantuan, dan Laporan yang jarang dibuka</li>
+  </ul>
+
+  <div class="tabel-gulir">
+  <table class="tabel">
+    <caption>Jawaban dan alasannya · sumber: deck, slide “Jawaban: Pola dan Alasannya”</caption>
+    <thead>
+      <tr><th scope="col">Kebutuhan</th><th scope="col">Pola</th><th scope="col">Alasan</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>A. Cari pasien → detail → batalkan</td><td>Stack</td><td>Bertingkat; kembali harus ke langkah sebelumnya</td></tr>
+      <tr><td>B. Beranda, Janji, Profil</td><td>Tab</td><td>Fungsi utama, diakses cepat, tidak saling menutupi</td></tr>
+      <tr><td>C. Pengaturan, Bantuan, Laporan</td><td>Drawer</td><td>Menu sekunder; hemat ruang layar</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p>
+    Pola yang sama dipakai aplikasi praktikum bab ini: tab Beranda dan tab Mahasiswa,
+    dengan stack di dalam tab Mahasiswa. Perhatikan apa yang terjadi kalau alur
+    bertingkat justru dijadikan tab.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Alur bertingkat dijadikan tab — kembali tidak wajar"
+       data-label-benar="Satu alur, satu stack — setiap langkah bisa dikembalikan"
+       data-petunjuk="Tab tidak menyimpan hierarki langkah; stack menyimpannya. Menaruh Detail, Pembayaran, dan Pengiriman sebagai tiga tab adalah kekeliruan yang dibahas di soal analisis bab ini.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">alur-sebagai-tab.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §Latihan</span>
+      </figcaption>
+      <pre><code class="language-text">// Tiga tab untuk satu alur berjenjang: langkah kembali menjadi tidak wajar.
+Tab "Detail Janji"   →  Tab "Batalkan Janji"   →  Tab "Bukti"
+
+// Pengguna tidak bisa "mundur satu langkah" — tab hanya berpindah posisi.</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">alur-sebagai-stack.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §Latihan</span>
+      </figcaption>
+      <pre><code class="language-text">// Satu alur, satu stack: tombol kembali membuka langkah sebelumnya.
+Daftar Janji  →  Detail Janji  →  Batalkan Janji   (stack)
+
+// Kembali dari Batalkan = Detail; kembali dari Detail = Daftar.</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Mana yang bertingkat dan mana yang sejajar dari kebutuhan A, B, dan C? (A bertingkat — stack; B dan C sejajar — tab untuk fungsi utama, drawer untuk menu sekunder.)</p>
+  </div>
+</section>

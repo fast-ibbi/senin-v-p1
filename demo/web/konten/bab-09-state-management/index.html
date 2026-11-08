@@ -1,0 +1,63 @@
+<h1>Bab 9 — State Management</h1>
+
+<p class="ringkas">
+  State lokal dan global, Context API, custom hook · Pertemuan 9 · Sub-CPMK 4.2. Bab ini
+  menjawab satu pertanyaan lanjutan dari Bab 4: kalau data harus dipakai bersama oleh banyak
+  layar, di mana ia disimpan supaya semua pembacanya melihat nilai yang sama?
+</p>
+
+<div class="pengantar-pertanyaan">
+  <p><strong>Pembuka deck:</strong> “Bab 4 mengajari satu komponen mengingat datanya sendiri; hari ini data itu harus dipakai bersama oleh banyak layar.”</p>
+  <p>Pertanyaan pemicunya: “Kalau dua layar masing-masing menyimpan salinan keranjang, layar mana yang benar?” Tampung jawaban tanpa dikoreksi dulu — halaman bagian 1 yang menjawabnya.</p>
+</div>
+
+<h2>Tujuan pembelajaran</h2>
+
+<ul>
+  <li>Menjelaskan perbedaan state lokal dan state global beserta trade-off-nya</li>
+  <li>Mengidentifikasi kondisi yang membutuhkan lifting state up atau Context API</li>
+  <li>Mengevaluasi kapan data tetap lokal dan kapan layak menjadi global</li>
+  <li>Mengimplementasikan Context API dengan JavaScript polos</li>
+  <li>Merancang custom hook <code>useCart</code> serta mengevaluasi Zustand dan Redux Toolkit</li>
+</ul>
+
+<h2>Peta halaman</h2>
+
+<ul>
+  <li><strong>Bagian 1 — Dari State Lokal ke State Global</strong> (subbab 9.1–9.2): cakupan state, latihan lokal-atau-global, lifting state up, prop drilling, Contoh 1 pemesanan minuman, dan studi kasus keranjang KRS.</li>
+  <li><strong>Bagian 2 — Context API &amp; Custom Hook</strong> (subbab 9.3–9.6): tiga bagian Context API, pola wadah-provider, kapan context dipakai dan dihindari, custom hook, <code>useCart</code>, tiga pertanyaan penyaring data global, tangga keputusan, serta pengantar Zustand dan Redux Toolkit.</li>
+  <li><strong>Bagian 3 — Merancang State dan Membangun Keranjang</strong> (subbab 9.7): lima pertanyaan perancangan state, sumber kebenaran tunggal <code>CartContext</code>, provider di layout akar, dua layar satu sumber data, rantai ketukan “Tambah”, dan studi kasus Primadona.</li>
+  <li><strong>Praktikum</strong>: aplikasi TokoKu lengkap (badge keranjang, kendali qty, total harga turunan), troubleshooting, dan kuis kilat.</li>
+</ul>
+
+<div class="kotak kotak-tiruan">
+  <p class="kotak-judul">Yang perlu diketahui sebelum membaca</p>
+  <p>
+    Bab ini bertumpu pada dua bab sebelumnya: <code>useState</code> dan props dari Bab 4, serta
+    struktur rute Expo Router dari Bab 7. Kode contoh memakai komponen React Native
+    (<code>View</code>, <code>Text</code>, <code>Pressable</code>) karena project kuliah
+    berjalan di Expo; konsepnya sama persis di web.
+  </p>
+  <p>
+    Pada project mata kuliah ini keranjang belanja adalah pilihan KRS, sehingga deck menyebut
+    context-nya <code>KrsContext</code> dan hook-nya <code>useKrs</code>; pola dan kodenya sama
+    persis dengan <code>CartContext</code> dan <code>useCart</code> di praktikum TokoKu, hanya
+    nama domainnya yang berbeda.
+  </p>
+  <p class="kotak-jawab">
+    Setiap kode di halaman-halaman berikut disalin verbatim dari
+    <code>buku/bab-09-state-management.md</code> atau deck
+    <code>slides/bab-09-state-management.md</code>, dengan label sumbernya di kepala blok kode.
+    Perbandingan <strong>sebelum/sesudah</strong> menampilkan cara lama yang salah atau naif di
+    samping cara yang benar; kode ilustrasi diberi label <em>ilustrasi</em> pada sumbernya.
+  </p>
+</div>
+
+<div class="kotak kotak-tanya">
+  <p class="kotak-judul">Pertanyaan penuntun</p>
+  <p>
+    Konsep mana di bab ini yang paling sering diuji? Hampir semua soal menuntut kamu
+    memilih tingkat state yang tepat (lokal, diangkat, atau global) — perhatikan latihan
+    A–D di bagian 1 dan tiga pertanyaan penyaring di bagian 2.
+  </p>
+</div>

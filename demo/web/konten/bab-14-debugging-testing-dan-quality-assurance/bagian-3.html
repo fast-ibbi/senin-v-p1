@@ -1,0 +1,561 @@
+<h1>Bagian 3 — Testing dan Quality Assurance</h1>
+
+<p class="ringkas">
+  Bagian ini menjawab bantahan yang paling sering muncul: “kenapa diuji, kodenya sudah jalan di
+  emulatorku?”. Dimulai dari fungsi murni sebagai kandidat termudah, lalu <code>node:test</code>
+  tanpa dependency, piramida testing, pengujian manual dan usability, dan ditutup checklist
+  pengujian sebagai produk bab ini.
+</p>
+
+<section class="subbab" id="s3-1">
+  <p class="label-subbab">
+    Subbab 14.4 <span class="sumber-slide">· deck: “Unit Testing Menembak Fungsi Terkecil, Berulang Kali” &amp; “Fungsi Murni dari Bab 8 adalah Kandidat Terbaik” · buku §14.4</span>
+  </p>
+  <h2>Fungsi murni: kandidat terbaik untuk unit test</h2>
+  <p>
+    <strong>Unit testing</strong> adalah pengujian satu unit kode — biasanya satu fungsi —
+    secara terisolasi, dengan masukan tertentu, lalu membandingkan hasilnya dengan harapan yang
+    sudah ditulis. Mengapa perlu? Karena uji manual tidak dapat diulang dengan konsisten:
+    manusia lupa langkah, terburu-buru, dan cenderung menguji alur yang “berhasil” saja. Unit
+    test yang ditulis sekali dapat dijalankan ribuan kali dengan kecepatan tinggi, sehingga
+    setiap perubahan kode dapat segera diperiksa — inilah senjata utama melawan regression.
+    Trade-off-nya jujur: menulis unit test memakan waktu di awal, dan test yang buruk menjadi
+    beban perawatan.
+  </p>
+  <p>
+    Karena itu target termudah dan paling bernilai adalah <strong>pure function</strong> (fungsi
+    murni): fungsi yang hasilnya hanya ditentukan oleh argumennya dan tidak menyentuh hal di
+    luar dirinya — tidak membaca berkas, tidak memanggil API. Fungsi murni bersifat
+    deterministik: masukan sama, keluaran pasti sama. Sifat itulah yang membuat test mudah
+    ditulis dan tidak pernah “kadang lulus, kadang gagal”.
+  </p>
+  <p>
+    Contoh nyatanya ada di projectmu sendiri: <code>utils/validators.js</code> yang dibangun di
+    Bab 8 untuk validasi formulir. Berkas itu tidak menyentuh state, penyimpanan, atau jaringan
+    — hanya masukan menjadi keluaran — sehingga dapat diuji bahkan tanpa menjalankan aplikasi.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Menguji setelah semuanya selesai"
+       data-label-benar="Menguji setiap perubahan, berulang"
+       data-petunjuk="Panel kanan bukan soal rajin, melainkan soal biaya: test yang murah dijalankan akan benar-benar dijalankan, sedangkan uji manual yang mahal akan dilewati saat tenggat mendekat."
+    >
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">uji-di-akhir.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §14.4</span>
+      </figcaption>
+      <pre><code class="language-text">✗ semua fitur ditulis dulu, diuji sekali di akhir
+✗ urutan langkah uji dihafal, bukan dicatat
+✗ yang dicoba hanya alur yang berhasil
+✗ kesalahan baru ketahuan setelah fitur bertumpuk
+✗ regression tidak terdeteksi sampai pengguna melapor</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">uji-berulang.txt</span>
+        <span class="kode-sumber">buku §14.4</span>
+      </figcaption>
+      <pre><code class="language-text">✓ satu unit diuji terpisah, dengan masukan tertentu
+✓ ditulis sekali, dijalankan ribuan kali
+✓ cepat: seluruh berkas test selesai dalam hitungan detik
+✓ perubahan kode segera diperiksa tanpa emulator
+✓ gagal menunjuk aturan yang dilanggar, bukan tebakan</code></pre>
+    </figure>
+  </div>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">utils/validators.js</span>
+      <span class="kode-sumber">buku §14.4 · sama persis dengan Bab 8</span>
+    </figcaption>
+    <pre><code class="language-js">// Fungsi validasi form — JavaScript polos, tanpa dependensi.
+// Dibangun di Bab 8, diuji di Bab 14.
+
+function required(value) {
+  const teks = value === null || value === undefined ? '' : String(value).trim();
+  return teks === '' ? 'Wajib diisi' : '';
+}
+
+function validateNim(nim) {
+  const pesanWajib = required(nim);
+  if (pesanWajib) return pesanWajib;
+  return /^\d{7}$/.test(String(nim).trim()) ? '' : 'NIM harus terdiri dari tepat 7 digit angka';
+}
+
+function validateNama(nama) {
+  const pesanWajib = required(nama);
+  if (pesanWajib) return pesanWajib;
+  return String(nama).trim().length &gt;= 3 ? '' : 'Nama minimal 3 karakter';
+}
+
+function validateEmail(email) {
+  const pesanWajib = required(email);
+  if (pesanWajib) return pesanWajib;
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email).trim()) ? '' : 'Format email tidak valid';
+}
+
+function validateTelepon(telepon) {
+  const pesanWajib = required(telepon);
+  if (pesanWajib) return pesanWajib;
+  return /^08\d{8,11}$/.test(String(telepon).trim()) ? '' : 'Telepon harus diawali 08 dan terdiri dari 10-13 digit';
+}
+
+function validatePassword(password) {
+  const pesanWajib = required(password);
+  if (pesanWajib) return pesanWajib;
+  return /^(?=.*[A-Za-z])(?=.*\d).{6,}$/.test(String(password)) ? '' : 'Password minimal 6 karakter, mengandung huruf dan angka';
+}
+
+function validateFormMahasiswa({ nim, nama, email, telepon } = {}) {
+  const errors = {};
+  const pesanNim = validateNim(nim);
+  if (pesanNim) errors.nim = pesanNim;
+  const pesanNama = validateNama(nama);
+  if (pesanNama) errors.nama = pesanNama;
+  const pesanEmail = validateEmail(email);
+  if (pesanEmail) errors.email = pesanEmail;
+  const pesanTelepon = validateTelepon(telepon);
+  if (pesanTelepon) errors.telepon = pesanTelepon;
+  return { valid: Object.keys(errors).length === 0, errors };
+}
+
+module.exports = {
+  required,
+  validateNim,
+  validateNama,
+  validateEmail,
+  validateTelepon,
+  validatePassword,
+  validateFormMahasiswa,
+};</code></pre>
+  </figure>
+
+  <p>
+    Setiap fungsi validasi mengikuti pola yang sama: mengembalikan string pesan error jika data
+    tidak sah, atau string kosong <code>''</code> jika sah. Konvensi “string kosong berarti
+    valid” membuat hasil mudah diperiksa dalam test.
+    <code>validateFormMahasiswa</code> tidak menyalin aturan validasi: ia memanggil
+    <code>validateNim</code>, <code>validateNama</code>, dan seterusnya, lalu mengumpulkan
+    semua pesan ke dalam objek <code>errors</code>. Analoginya seperti petugas loket yang
+    memeriksa empat dokumen satu per satu dan menempelkan catatan di setiap dokumen yang kurang
+    — pemeriksaannya tidak berhenti di dokumen pertama.
+  </p>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Mengapa fungsi murni tidak pernah “kadang lulus, kadang gagal”? (Jawaban: karena hasilnya hanya ditentukan argumennya, sehingga masukan yang sama selalu memberi keluaran yang sama.)</p>
+  </div>
+</section>
+
+<section class="subbab" id="s3-2">
+  <p class="label-subbab">
+    Subbab 14.4 <span class="sumber-slide">· deck: “Uji Pertama: Satu Test, Satu Perilaku” · buku §14.4</span>
+  </p>
+  <h2><code>node:test</code>: satu test, satu perilaku</h2>
+  <p>
+    Framework unit testing paling populer di ekosistem JavaScript adalah Jest, dan untuk project
+    Expo ada preset resmi bernama <code>jest-expo</code>. Namun untuk fungsi murni seperti
+    <code>validators.js</code>, kamu tidak memerlukan framework sama sekali: Node.js
+    menyediakan <code>node:test</code> — modul pengujian bawaan yang stabil sejak Node.js 20 —
+    dengan sintaks yang mirip Jest tetapi tanpa satu pun dependency tambahan.
+  </p>
+  <p>
+    Baris pertama berkas test mengambil <code>test</code> dari modul bawaan <code>node:test</code>
+    dan <code>assert</code> versi ketat dari <code>node:assert/strict</code>; keduanya tersedia
+    tanpa instalasi apa pun. Setiap <code>test('deskripsi', () =&gt; { … })</code> adalah
+    satu kasus uji, dan deskripsi dalam bahasa Indonesia yang jelas membuat laporan kegagalan
+    mudah dibaca.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">__tests__/validators.test.js</span>
+      <span class="kode-sumber">buku §14.4</span>
+    </figcaption>
+    <pre><code class="language-js">// Unit test untuk utils/validators.js menggunakan node:test bawaan Node.js.
+// Menjalankan:
+//   node --test                          (deteksi otomatis dari root project)
+//   node __tests__/validators.test.js    (menjalankan file ini langsung)
+
+const { test } = require('node:test');
+const assert = require('node:assert/strict');
+const {
+  validateNim,
+  validateNama,
+  validateEmail,
+  validateTelepon,
+  validatePassword,
+  validateFormMahasiswa,
+} = require('../utils/validators.js');
+
+test('validateNim menerima NIM 7 digit', () =&gt; {
+  assert.strictEqual(validateNim('2201001'), '');
+});
+
+test('validateNim menolak NIM bukan 7 digit', () =&gt; {
+  assert.notStrictEqual(validateNim('22010'), '');
+});
+
+test('validateNim menolak NIM kosong', () =&gt; {
+  assert.notStrictEqual(validateNim(''), '');
+});
+
+test('validateNama menerima nama minimal 3 karakter', () =&gt; {
+  assert.strictEqual(validateNama('Budi Santoso'), '');
+});
+
+test('validateNama menolak nama terlalu pendek', () =&gt; {
+  assert.notStrictEqual(validateNama('Bu'), '');
+});
+
+test('validateEmail menerima alamat yang valid', () =&gt; {
+  assert.strictEqual(validateEmail('budi.santoso@students.univ.ac.id'), '');
+});
+
+test('validateEmail menolak alamat tanpa @', () =&gt; {
+  assert.notStrictEqual(validateEmail('budi.santoso'), '');
+});
+
+test('validateTelepon menerima nomor 08 berdigit 10-13', () =&gt; {
+  assert.strictEqual(validateTelepon('081234567890'), '');
+});
+
+test('validateTelepon menolak nomor tidak diawali 08', () =&gt; {
+  assert.notStrictEqual(validateTelepon('123456789012'), '');
+});
+
+test('validatePassword menerima kombinasi huruf dan angka', () =&gt; {
+  assert.strictEqual(validatePassword('rahasia123'), '');
+});
+
+test('validatePassword menolak tanpa angka', () =&gt; {
+  assert.notStrictEqual(validatePassword('rahasia'), '');
+});
+
+test('validateFormMahasiswa mengembalikan valid saat semua benar', () =&gt; {
+  const hasil = validateFormMahasiswa({
+    nim: '2201001',
+    nama: 'Budi Santoso',
+    email: 'budi.santoso@students.univ.ac.id',
+    telepon: '081234567890',
+  });
+  assert.strictEqual(hasil.valid, true);
+  assert.deepStrictEqual(hasil.errors, {});
+});
+
+test('validateFormMahasiswa mengumpulkan semua error sekaligus', () =&gt; {
+  const hasil = validateFormMahasiswa({
+    nim: 'abc',
+    nama: '',
+    email: 'budi',
+    telepon: '081',
+  });
+  assert.strictEqual(hasil.valid, false);
+  assert.deepStrictEqual(Object.keys(hasil.errors).sort(), ['email', 'nama', 'nim', 'telepon']);
+});</code></pre>
+  </figure>
+
+  <p>
+    <code>assert.strictEqual(nilaiAktual, nilaiHarapan)</code> memeriksa kesetaraan nilai,
+    sedangkan <code>assert.notStrictEqual</code> memeriksa ketidaksamaan. Perhatikan pola “satu
+    test, satu perilaku”: kita tidak mencampur banyak pemeriksaan dalam satu test agar kegagalan
+    langsung menunjuk ke aturan yang dilanggar. Dua test terakhir memakai
+    <code>assert.deepStrictEqual</code> untuk membandingkan struktur objek secara menyeluruh.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Test rapuh yang menguji tampilan dan kalimat"
+       data-label-benar="Test tahan perubahan yang menguji perilaku"
+       data-petunjuk="Panel kiri gagal setiap kali kalimat pesan atau tata letak berubah, padahal aturannya tidak berubah. Panel kanan memeriksa perilaku: sah atau tidak sah, dan struktur pesan apa yang dikumpulkan."
+    >
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">test-rapuh.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §14.4</span>
+      </figcaption>
+      <pre><code class="language-text">✗ membandingkan kalimat pesan persis:
+  'NIM harus terdiri dari tepat 7 digit angka'
+✗ test bergantung pada teks tampilan yang mudah berubah
+✗ satu test memeriksa lima hal sekaligus
+✗ gagal menunjuk ke banyak kemungkinan penyebab
+✗ perubahan kosmetik membuat test gagal palsu</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">test-tahan-perubahan.txt</span>
+        <span class="kode-sumber">buku §14.4</span>
+      </figcaption>
+      <pre><code class="language-text">✓ satu test, satu perilaku
+✓ strictEqual untuk menerima: hasilnya '' (sah)
+✓ notStrictEqual untuk menolak: hasilnya bukan ''
+✓ deepStrictEqual untuk struktur: { valid, errors }
+✓ urutan kunci diuji setelah di-sort()
+✓ deskripsi test menunjuk aturan yang dilanggar</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Test yang gagal tidak selalu berarti fungsinya salah. Putuskan lebih dulu mana yang salah
+      — fungsinya atau testnya — karena itu bagian dari keterampilan debugging. Menghapus test
+      yang gagal supaya laporan terlihat hijau adalah kebalikan dari pekerjaan ini.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Kenapa test yang menguji implementasi, bukan perilaku, dianggap buruk? (Jawaban: perubahan implementasi yang tidak mengubah perilaku membuat test gagal palsu, sehingga biaya perawatannya lebih besar daripada manfaatnya.)</p>
+  </div>
+</section>
+
+<section class="subbab" id="s3-3">
+  <p class="label-subbab">
+    Subbab 14.4 <span class="sumber-slide">· deck: “Praktikum: Yang Dibangun Pertemuan Ini” &amp; “Yang Harus Teramati” · buku §14.4 · §Praktikum</span>
+  </p>
+  <h2>Menjalankan test dan membaca laporannya</h2>
+  <p>
+    Dari folder project, <code>node --test</code> akan mencari otomatis semua berkas bernama
+    <code>*.test.js</code> di bawah folder saat ini dan melaporkan hasilnya; atau jalankan
+    berkas tertentu dengan <code>node __tests__/validators.test.js</code>. Kedua perintah
+    memakai Node.js saja, tanpa <code>npm install</code>.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">(terminal · dari folder praktikum14)</span>
+      <span class="kode-sumber">buku §14.4</span>
+    </figcaption>
+    <pre><code class="language-bash">node --test
+node __tests__/validators.test.js</code></pre>
+  </figure>
+
+  <p>
+    Hasil yang benar adalah seluruh test lulus dengan ringkasan <code>pass 13</code> dan
+    <code>fail 0</code>. Bila sebuah test gagal, pesan kesalahan memuat deskripsi test, nilai
+    aktual, dan nilai harapan — gunakan itu untuk memperbaiki fungsi atau testnya.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">(keluaran terminal · format TAP)</span>
+      <span class="kode-sumber">buku §Praktikum · Hasil yang Diharapkan</span>
+    </figcaption>
+    <pre><code class="language-text">✔ validateNim menerima NIM 7 digit
+✔ validateNim menolak NIM bukan 7 digit
+...
+ℹ tests 13
+ℹ pass 13
+ℹ fail 0</code></pre>
+  </figure>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Kenapa ringkasan <code>pass 13</code> dan <code>fail 0</code> lebih penting daripada tangkapan layar aplikasi yang tampak normal? (Jawaban: ringkasan itu bukti terukur bahwa seluruh kasus uji pernah dijalankan, sedangkan tangkapan layar hanya menunjukkan satu keadaan.)</p>
+  </div>
+</section>
+
+<section class="subbab" id="s3-4">
+  <p class="label-subbab">
+    Subbab 14.5 <span class="sumber-slide">· deck: “Unit Menguji Fungsi, Integration Menguji Sambungan” &amp; “Piramida Testing: Banyak di Bawah, Sedikit di Atas” · buku §14.5</span>
+  </p>
+  <h2>Unit menguji fungsi, integration menguji sambungan</h2>
+  <p>
+    <strong>Integration testing</strong> memeriksa kerja sama antarbagian, bukan satu fungsi
+    dalam isolasi. Perbedaan keduanya terletak pada tingkat cakupan: unit test memisahkan satu
+    unit dari sekelilingnya — persis alasan fungsi murni mudah diuji — sedangkan integration
+    test menghubungkan unit-unit itu dengan state, <code>fetch</code>, dan tampilan untuk
+    memverifikasi bahwa kontrak antarmuka terpenuhi.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">(dua pertanyaan yang berbeda)</span>
+      <span class="kode-sumber">buku §14.5 · kutipan verbatim</span>
+    </figcaption>
+    <pre><code class="language-text">unit         : "apakah validateFormMahasiswa menolak NIM salah?"
+integration  : "apakah menekan tombol Simpan pada form benar-benar
+                mengirim data ke API dan menampilkan daftar yang
+                diperbarui?"</code></pre>
+  </figure>
+
+  <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Unit testing dan integration testing · sumber: deck “Unit Menguji Fungsi, Integration Menguji Sambungan” &amp; buku §14.5</caption>
+      <thead>
+        <tr><th scope="col">Aspek</th><th scope="col">Unit testing</th><th scope="col">Integration testing</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Yang diperiksa</td><td>Satu fungsi secara terpisah</td><td>Kerja sama antarbagian</td></tr>
+        <tr><td>Pertanyaan khas</td><td>Apakah <code>validateNim</code> menolak NIM salah?</td><td>Apakah tombol Simpan benar-benar mengirim data ke API?</td></tr>
+        <tr><td>Cakupan dan biaya</td><td>Cepat, murah, mudah disiapkan</td><td>Lebih lambat, rapuh, sulit disiapkan</td></tr>
+        <tr><td>Kesalahan yang tertangkap</td><td>Aturan logika yang keliru</td><td>Kontrak antarmuka yang tidak cocok</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    Keduanya dibutuhkan karena unit test yang semuanya lulus tidak menjamin aplikasi berfungsi:
+    kesalahan justru sering muncul pada sambungan — format data yang dikirim formulir tidak sama
+    dengan yang dibaca daftar, atau token autentikasi (Bab 13) tidak ikut terkirim pada
+    permintaan berikutnya. Inilah sebabnya praktik industri mengikuti bentuk
+    <strong>testing pyramid</strong> (piramida pengujian): banyak unit test di dasar, lebih
+    sedikit integration test di tengah, dan paling sedikit pengujian ujung-ke-ujung di puncak.
+    Jumlahnya bukan soal gaya: test yang lambat dan rapuh akan ditinggalkan tim bila terlalu
+    banyak.
+  </p>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Integration test React Native umumnya memakai pustaka seperti React Native Testing Library
+      yang merender komponen nyata sambil memalsukan jaringan. Pustaka dan konfigurasinya
+      berkembang cepat, jadi ikuti dokumentasi resmi untuk SDK 57 — dan bab ini sengaja tidak
+      menerapkannya secara mendalam.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Kenapa end-to-end test tidak dijadikan andalan? (Jawaban: paling mahal, paling rapuh, dan kegagalannya sulit ditunjuk ke satu penyebab.)</p>
+  </div>
+</section>
+
+<section class="subbab" id="s3-5">
+  <p class="label-subbab">
+    Subbab 14.6 <span class="sumber-slide">· deck: “Manual Testing: Tiga Kategori Kasus” &amp; “Usability Testing Cukup dengan Sekitar 5 Pengguna” · buku §14.6</span>
+  </p>
+  <h2>Manual testing dan usability testing</h2>
+  <p>
+    Kendati otomatis berharga, pengujian manual tetap tak tergantikan — dan hampir semua tim
+    melakukannya. Kekuatannya: menangkap masalah yang tidak terpikirkan oleh test otomatis,
+    seperti animasi yang tersendat, teks terpotong di layar kecil, atau tombol yang sulit
+    ditekan. Kelemahannya: butuh waktu dan bergantung pada ketelitian manusia, sehingga manual
+    testing harus dipandu <strong>checklist</strong> agar tidak melompat-lompat tanpa rencana.
+  </p>
+
+  <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Tiga kategori kasus uji manual · sumber: deck “Manual Testing: Tiga Kategori Kasus” &amp; buku §14.6</caption>
+      <thead>
+        <tr><th scope="col">Kategori</th><th scope="col">Isi</th><th scope="col">Contoh di aplikasi buku ini</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Fungsional</strong></td><td>Alur utama yang dirancang</td><td>Login berhasil, daftar mahasiswa muncul, formulir menyimpan data</td></tr>
+        <tr><td><strong>Edge case</strong></td><td>Masukan yang tidak biasa</td><td>Formulir kosong, email tanpa <code>@</code>, NIM berisi huruf, API kosong, koneksi mati</td></tr>
+        <tr><td><strong>Platform</strong></td><td>Perilaku yang berbeda antarperangkat</td><td>Tombol back Android, layar kecil, rotasi, izin perangkat ditolak</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    Terpisah dari manual testing ada <strong>usability testing</strong>: mengamati pengguna
+    nyata saat menggunakan aplikasi untuk menilai seberapa mudah aplikasi dipakai, bukan
+    seberapa benar fungsinya. Keduanya sering tertukar: manual testing bertanya “apakah fiturnya
+    bekerja?”, usability testing bertanya “apakah pengguna bisa menemukan dan memakai fiturnya
+    dengan mudah?” — aplikasi yang benar secara teknis bisa saja membingungkan secara kegunaan.
+    Prinsip klasik yang dianjurkan: uji dengan sekitar <strong>5 pengguna</strong>, karena pada
+    jumlah itu mayoritas masalah kegunaan sudah terungkap dan menambah pengguna lagi hanya
+    sedikit menambah temuan.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">(contoh tugas usability testing)</span>
+      <span class="kode-sumber">buku §14.6 · kutipan verbatim</span>
+    </figcaption>
+    <pre><code class="language-text">"daftarkan mahasiswa baru bernama Dewi Lestari tanpa melihat manual apa pun"</code></pre>
+  </figure>
+
+  <p>
+    Satu sesi usability testing sederhana terdiri dari tiga bagian: siapkan 3–5 tugas nyata,
+    minta pengguna mengerjakan sambil <em>berpikir keras</em> (mengungkapkan apa yang
+    dipikirkannya), lalu <em>observasi</em> — catat keberhasilan tugas, waktu pengerjaan, tempat
+    pengguna ragu, dan kesalahan yang dibuat, tanpa membantu kecuali pengguna benar-benar macet.
+    Bantuan yang kamu berikan justru dicatat sebagai temuan.
+  </p>
+  <p>
+    Pengujian sebaiknya dilakukan pada minimal satu emulator dan satu perangkat fisik, karena
+    emulator tidak selalu mereproduksi perilaku perangkat sungguhan — memori, jaringan, dan
+    sensor. Pelajaran dari studi kasus bab ini: emulator Android tidak mereproduksi papan ketik
+    layar iOS, sehingga tombol simpan yang tertutup papan ketik hanya terlihat di perangkat
+    nyata.
+  </p>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Kasus mana yang paling sering dilupakan mahasiswa? (Jawaban: edge case — terutama mematikan koneksi di tengah permintaan.)</p>
+  </div>
+</section>
+
+<section class="subbab" id="s3-6">
+  <p class="label-subbab">
+    Subbab 14.7 <span class="sumber-slide">· deck: “Checklist: Enam Kasus Uji Paling Mewakili” &amp; “Checklist yang Hidup Menjadi Penjaga Regresi” · buku §14.7</span>
+  </p>
+  <h2>Checklist: dari coba-coba menjadi kegiatan tercatat</h2>
+  <p>
+    Produk bab ini adalah sebuah <strong>checklist testing</strong>: dokumen kerja yang memuat
+    daftar kasus uji, kolom untuk mencatat hasil aktual, dan kolom status. Checklist mengubah
+    pengujian dari kegiatan “coba-coba” menjadi kegiatan tercatat — tidak ada fitur yang
+    terlupakan, hasil dapat dipertanggungjawabkan kepada tim, dan pada rilis berikutnya
+    checklist yang sama dijalankan ulang untuk mendeteksi regression (Bab 15).
+  </p>
+
+  <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Checklist pengujian Aplikasi Manajemen Data Mahasiswa · sumber: buku §14.7, tabel lengkap sepuluh kasus</caption>
+      <thead>
+        <tr><th scope="col">Area</th><th scope="col">Kasus uji</th><th scope="col">Hasil aktual</th><th scope="col">Status</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Login</td><td>Email terdaftar + password benar → masuk ke Beranda</td><td>—</td><td>☐ Lulus ☐ Gagal</td></tr>
+        <tr><td>Login</td><td>Password salah → muncul pesan error, tidak redirect</td><td>—</td><td>☐ Lulus ☐ Gagal</td></tr>
+        <tr><td>Daftar Mahasiswa</td><td>Data dari API tampil lengkap (NIM, nama, prodi, IPK)</td><td>—</td><td>☐ Lulus ☐ Gagal</td></tr>
+        <tr><td>Daftar Mahasiswa</td><td>API dimatikan → muncul pesan error, aplikasi tidak crash</td><td>—</td><td>☐ Lulus ☐ Gagal</td></tr>
+        <tr><td>Form Mahasiswa</td><td>Simpan data valid → data muncul di daftar</td><td>—</td><td>☐ Lulus ☐ Gagal</td></tr>
+        <tr><td>Form Mahasiswa</td><td>NIM 6 digit → ditolak dengan pesan validasi</td><td>—</td><td>☐ Lulus ☐ Gagal</td></tr>
+        <tr><td>Form Mahasiswa</td><td>Telepon tidak diawali 08 → ditolak dengan pesan validasi</td><td>—</td><td>☐ Lulus ☐ Gagal</td></tr>
+        <tr><td>Navigasi</td><td>Tombol kembali Android keluar dari form tanpa menyimpan</td><td>—</td><td>☐ Lulus ☐ Gagal</td></tr>
+        <tr><td>Perangkat</td><td>Tampilan masih rapi di layar kecil (mis. 360 dp lebar)</td><td>—</td><td>☐ Lulus ☐ Gagal</td></tr>
+        <tr><td>Jaringan</td><td>Aplikasi menampilkan loading state saat respons lambat</td><td>—</td><td>☐ Lulus ☐ Gagal</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">(aturan pengisian checklist)</span>
+      <span class="kode-sumber">buku §14.7 · diringkas dari prosedur</span>
+    </figcaption>
+    <pre><code class="language-text">✓ "Hasil aktual" diisi yang benar-benar teramati,
+  mis. "muncul pesan 'NIM harus terdiri dari tepat 7 digit angka'"
+✓ "Status" ditandai setelah hasil diverifikasi
+✓ kasus uji yang gagal tidak dihapus: dicatat,
+  diperbaiki, lalu diuji ulang
+✓ bug yang lolos berarti ada kasus uji yang seharusnya ada
+✓ setiap bug yang diperbaiki menjadi kasus uji permanen
+  (test case regression)</code></pre>
+  </figure>
+
+  <p>
+    Gabungan keduanya — checklist manual untuk perilaku aplikasi, unit test untuk logika murni —
+    adalah bentuk QA paling realistis untuk project skala mahasiswa dan tim kecil: otomatis di
+    tempat yang murah, manual di tempat yang sulit diotomatisasi. Checklist yang baik adalah
+    milik tim yang hidup: ia berkembang setiap kali ditemukan bug baru.
+  </p>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Mengisi kolom “Hasil aktual” dengan apa yang kamu harapkan membatalkan seluruh gunanya
+      checklist. Checklist yang selalu berisi “berhasil” tanpa bukti tidak lebih baik daripada
+      tidak ada checklist — dan studi kasus KRS Online di bab ini lahir persis dari kebiasaan itu.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Kalau tim hanya punya satu hari untuk menguji, urutan QA mana yang paling murah? (Jawaban: unit test untuk validasi lebih dulu karena paling murah dan paling cepat dijalankan, lalu checklist manual fungsional, lalu usability testing.)</p>
+  </div>
+</section>

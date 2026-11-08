@@ -1,0 +1,405 @@
+<h1>Bagian 3 — Distribusi dan Tiga Lingkungan</h1>
+
+<p class="ringkas">
+  Subbab 15.8–15.10 plus studi kasus bab. Bagian ini menutup fase terakhir: bagaimana berkas
+  yang sudah ditandatangani sampai ke pengguna lewat saluran resmi, apa yang membedakan Google
+  Play dan App Store, mengapa tiga lingkungan memakai kode yang sama, dan apa yang terjadi
+  ketika seluruh proses itu tidak disiapkan.
+</p>
+
+<section class="subbab" id="s3-1">
+  <p class="label-subbab">
+    Subbab 15.8 <span class="sumber-slide">· deck: “Empat Kanal Rilis Google Play” &amp; “Setiap Kebutuhan Rilis Punya Kanal Sendiri” · buku §15.8</span>
+  </p>
+  <h2>Empat Jalur Rilis Google Play</h2>
+
+  <p>
+    <strong>Deployment</strong> adalah proses menghadirkan build ke pengguna melalui saluran
+    resmi. Untuk Android, saluran resminya Google Play melalui <strong>Play Console</strong>,
+    portal pengelola aplikasi untuk developer Google. Pendaftaran akun developer dikenakan biaya
+    sekali; nominal biaya dan proses verifikasi identitas ditandai <em>sensitif versi</em> dan
+    harus dicek di situs resmi Play Console.
+  </p>
+
+  <p>
+    Inti distribusi Play adalah <strong>tracks</strong> — jalur rilis, diurutkan dari yang paling
+    privat. Bacalah tabel berikut sebagai tangga: tiap langkah ke bawah menambah penguji dan
+    mengurangi kecepatan.
+  </p>
+
+  <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Empat jalur rilis Google Play · sumber: deck Bab 15, buku §15.8</caption>
+      <thead>
+        <tr>
+          <th scope="col">Track</th>
+          <th scope="col">Siapa yang menerima</th>
+          <th scope="col">Catatan</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>internal testing</code></td>
+          <td>Paling banyak 100 penguji</td>
+          <td>Rilis cepat tanpa peninjauan</td>
+        </tr>
+        <tr>
+          <td><code>closed testing</code></td>
+          <td>Penguji yang diundang lewat tautan</td>
+          <td>Wajib untuk akun pengembang personal baru</td>
+        </tr>
+        <tr>
+          <td><code>open testing</code></td>
+          <td>Siapa pun yang mendaftar</td>
+          <td>Tampil sebagai <em>early access</em></td>
+        </tr>
+        <tr>
+          <td><code>production</code></td>
+          <td>Semua pengguna</td>
+          <td>Melewati peninjauan Google</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">(terminal)</span>
+      <span class="kode-sumber">buku §15.8 · kutipan perintah verbatim</span>
+    </figcaption>
+    <pre><code class="language-bash">eas build --platform android --profile production</code></pre>
+  </figure>
+
+  <p>
+    Perintah di atas menghasilkan AAB yang siap diunggah ke salah satu track tersebut. Untuk
+    akun pengembang personal yang baru, Google mewajibkan aplikasi diuji pada closed testing
+    dengan jumlah penguji dan durasi tertentu sebelum rilis production diizinkan — kebijakan ini
+    <em>sensitif versi</em> dan berubah-ubah, jadi cek persyaratan terbaru di Play Console.
+  </p>
+
+  <p>
+    Kanal di luar keempat track itu juga ada, dan bukan sekadar kurang rapi: APK yang dibagikan
+    lewat grup chat memang murah dan cepat, tetapi versi yang beredar tidak terkendali dan tidak
+    ada jalur pembaruan terpusat.
+  </p>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Tentukan kanal untuk (a) uji harian tim, (b) beta untuk 20 teman, (c) rilis resmi kampus.
+      (Jawaban: (a) internal testing, karena rilis tanpa peninjauan dan cocok untuk uji harian;
+      (b) closed testing, karena penguji diundang lewat tautan; (c) production, karena menyasar
+      semua pengguna dan melewati peninjauan.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s3-2">
+  <p class="label-subbab">
+    Subbab 15.8 <span class="sumber-slide">· deck: “Unggah ke Play Console Bukan Sekadar Kirim File” · buku §15.8</span>
+  </p>
+  <h2>Unggah ke Play Console Bukan Sekadar Kirim File</h2>
+
+  <p>
+    Langkah pertama bukan mengunggah, melainkan menyiapkan <strong>kehadiran aplikasi</strong>:
+    nama, deskripsi pendek dan panjang, kategori, ikon toko 512×512, gambar unggulan, tangkapan
+    layar, kuesioner peringkat konten, deklarasi data, target audiens, dan tautan kebijakan
+    privasi bila aplikasi mengumpulkan data. Informasi inilah yang dilihat calon pengguna, dan
+    kualitasnya sama pentingnya dengan kualitas kode.
+  </p>
+
+  <ol>
+    <li>Build AAB: <code>eas build --platform android --profile production</code>.</li>
+    <li>Lengkapi kehadiran aplikasi: deskripsi, ikon toko, dan tangkapan layar.</li>
+    <li>Pilih track, unggah AAB, dan pastikan <code>versionCode</code> sudah naik.</li>
+    <li>Tulis catatan rilis, lalu tekan tombol rilis.</li>
+    <li>Pantau statistik, laporan crash, dan ulasan di dasbor Play.</li>
+  </ol>
+
+  <div class="banding"
+       data-label-lama="Menerbitkan tanpa uji dan tanpa daftar periksa"
+       data-label-benar="Menerbitkan dengan daftar periksa rilis"
+       data-petunjuk="Bedanya bukan keberanian, melainkan bukti: tiap baris daftar periksa menghasilkan sesuatu yang bisa diperiksa ulang orang lain.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">ilustrasi-rilis-buru-buru.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §15.8 &amp; §Studi Kasus</span>
+      </figcaption>
+      <pre><code class="language-text">build → unggah → tekan rilis
+✗ kehadiran aplikasi belum lengkap
+✗ versionCode tidak diperiksa
+✗ belum diuji di perangkat penguji
+→ ditolak, atau rilis dengan versi tak terkendali</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">ilustrasi-daftar-periksa.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §15.8 &amp; §Praktikum</span>
+      </figcaption>
+      <pre><code class="language-text">1. APK preview diuji penguji internal
+2. versionCode naik dibanding unggahan lalu
+3. kehadiran aplikasi lengkap
+4. catatan rilis ditulis
+5. rilis, lalu pantau dasbor
+✓ tiap langkah punya bukti</code></pre>
+    </figure>
+  </div>
+
+  <p>
+    Play mendukung <strong>rollout bertahap</strong>: rilis production dapat dibatasi ke
+    persentase pengguna tertentu untuk memantau kestabilan sebelum digeber ke semua — praktik
+    standar tim profesional. Dasbor Play pun menampilkan statistik, laporan kerusakan, dan
+    ulasan; keluhan di sana adalah umpan balik produk yang berharga, bukan gangguan.
+  </p>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Mengira pesan “version code sudah dipakai” berarti berkas AAB-nya rusak. Yang perlu
+      diperbaiki hanya nomor versi mesin: naikkan <code>android.versionCode</code>, atau aktifkan
+      <code>autoIncrement: true</code> pada profil production sejak awal.
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s3-3">
+  <p class="label-subbab">
+    Subbab 15.9 <span class="sumber-slide">· deck: “App Store: Satu Pintu, Tanpa Jalan Pintas” · buku §15.9 · konseptual</span>
+  </p>
+  <h2>App Store: Satu Pintu, Tanpa Jalan Pintas</h2>
+
+  <p>
+    Saluran resmi iOS adalah App Store, dikelola melalui <strong>App Store Connect</strong>,
+    portal developer Apple yang sejajar dengan Play Console. Syarat pertamanya keanggotaan
+    <strong>Apple Developer Program</strong> yang berbayar tahunan; tanpa keanggotaan itu tidak
+    ada build iOS yang sah pada perangkat nyata. Biaya keanggotaan ditandai
+    <em>sensitif versi</em> dan harus dicek di situs resmi Apple Developer.
+  </p>
+
+  <p>
+    Alur konseptualnya: daftarkan aplikasi di App Store Connect sehingga diperoleh identifier,
+    bangun dengan EAS, unggah hasil build ke App Store Connect, distribusikan ke penguji lewat
+    <strong>TestFlight</strong>, ajukan ke App Review, lalu rilis atau jadwalkan rilisnya.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">(terminal)</span>
+      <span class="kode-sumber">buku §15.9 · kutipan perintah verbatim</span>
+    </figcaption>
+    <pre><code class="language-bash">eas build --platform ios</code></pre>
+  </figure>
+
+  <p>
+    EAS mengelola sertifikat dan provisioning profile saat perintah itu dijalankan, lalu
+    menyediakan fasilitas submit otomatis ke App Store Connect. Perbedaan strategis dengan Play:
+    biaya tahunan, peninjauan yang lebih ketat, dan tidak adanya jalur publik di luar App Store.
+    Di iOS tidak ada pemasangan dari sumber tidak dikenal; distribusi internal bergantung pada
+    TestFlight atau development build ke perangkat terdaftar.
+  </p>
+
+  <p>
+    Kuota penguji TestFlight dan durasi peninjauan juga <em>sensitif versi</em> — pahami polanya,
+    jangan hafal angkanya. Bagi kita yang belum memiliki akun berbayar, memahami alur ini sudah
+    cukup; saat berkarier di tim produk, prosesnya sama persis.
+  </p>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Kalau EAS yang mengurus sertifikat dan unggahan, apa yang masih menjadi tanggung jawab kita?
+      (Jawaban: menyiapkan keanggotaan, informasi aplikasi, dan keputusan rilis.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s3-4">
+  <p class="label-subbab">
+    Subbab 15.10 <span class="sumber-slide">· deck: “Satu Kode, Tiga Lingkungan Build” · buku §15.10</span>
+  </p>
+  <h2>Satu Kode, Tiga Lingkungan Build</h2>
+
+  <p>
+    Ketiga profil build EAS sebenarnya mencerminkan tiga <strong>lingkungan</strong> yang lazim
+    dalam organisasi perangkat lunak — konsep yang sama dengan dunia web: development, staging,
+    dan production. Development mengejar eksperimen harian; preview/testing menguji kandidat
+    rilis sebelum publik; production adalah rilis resmi ke semua pengguna.
+  </p>
+
+  <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Tiga lingkungan build · sumber: buku §15.10, Tabel 15.6</caption>
+      <thead>
+        <tr>
+          <th scope="col">Lingkungan</th>
+          <th scope="col">Bentuk build</th>
+          <th scope="col">Distribusi</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Development</td>
+          <td>Expo Go atau development build</td>
+          <td>Metro lokal, tidak dibagikan</td>
+        </tr>
+        <tr>
+          <td>Preview/Pengujian</td>
+          <td>APK <code>distribution: internal</code></td>
+          <td>Track internal atau closed Play, TestFlight</td>
+        </tr>
+        <tr>
+          <td>Production</td>
+          <td>AAB atau berkas toko, bertanda tangan</td>
+          <td>Peninjauan Play atau Apple, publik</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    Prinsip yang mengikat ketiganya: <em>kode yang sama, konfigurasi berbeda</em>. Satu basis kode
+    dijalankan di tiga lingkungan dengan <code>app.json</code>, environment variable, versi, dan
+    tanda tangan yang berbeda-beda. Inilah obat penyakit klasik “berjalan di mesin saya”:
+    production build diuji pada lingkungan preview yang sepersis mungkin dengan produksi.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Satu alamat untuk semua lingkungan"
+       data-label-benar="Alamat berbeda per lingkungan, kode tetap"
+       data-petunjuk="Yang berubah antarlingkungan adalah konfigurasi, versi, dan tanda tangan; yang tidak berubah adalah kode aplikasinya.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">ilustrasi-satu-alamat.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §15.10</span>
+      </figcaption>
+      <pre><code class="language-text">satu alamat untuk semua build
+→ emulator, perangkat penguji, dan produksi
+  memanggil server yang sama
+✗ data uji bercampur data nyata
+✗ build toko bisa menunjuk server uji</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">.env.production</span>
+        <span class="kode-sumber">ilustrasi · nilai verbatim dari buku §Contoh 3</span>
+      </figcaption>
+      <pre><code class="language-text">EXPO_PUBLIC_API_URL=https://api.univ.ac.id
+
+// .env untuk emulator (Bab 10):
+// EXPO_PUBLIC_API_URL=http://10.0.2.2:3000
+✓ kode tidak diubah sama sekali</code></pre>
+    </figure>
+  </div>
+
+  <p>
+    Evolusi berikutnya dari model ini adalah pembaruan tanpa build ulang lewat mekanisme EAS
+    Update — <em>sensitif versi</em> — yang memungkinkan tim mengirim perbaikan kecil langsung ke
+    aplikasi terpasang. Konsepnya akan kita temui lagi di dunia kerja, tetapi fondasinya tetap
+    tiga lingkungan di atas.
+  </p>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Apa yang berubah antarlingkungan dan apa yang tidak? (Jawaban: yang berubah adalah
+      konfigurasi, versi, dan tanda tangan; yang tidak berubah adalah kode aplikasinya.)
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s3-5">
+  <p class="label-subbab">
+    Subbab 15.8–15.10 <span class="sumber-slide">· deck: “Studi Kasus: Insiden SIAKAD Mobile Versi 1.0” &amp; “Setiap Gejala Punya Satu Subbab” · buku §Studi Kasus</span>
+  </p>
+  <h2>Studi Kasus: Setiap Gejala Punya Satu Subbab</h2>
+
+  <p>
+    Sebuah perguruan tinggi swasta mengembangkan aplikasi mobile SIAKAD dengan pola yang sama
+    persis dengan Aplikasi Manajemen Data Mahasiswa buku ini: login, daftar, form, dan API dari
+    Bab 7–13. Tim kecilnya — dua mahasiswa magang dan satu dosen pembimbing — menemukan jalan
+    pintas yang tampak efisien: APK versi 1.0 dibangun seadanya lalu disebar lewat grup WhatsApp
+    angkatan. Lima mahasiswa pertama yang menguji, Budi, Siti, Agus, Dewi, dan Rizky, berhasil
+    memakainya, dan tim merasa selesai.
+  </p>
+
+  <p>
+    Masalahnya bukan pada kode: aplikasinya jalan, pengguna bisa masuk, dan fiturnya bekerja. Yang
+    gagal adalah proses pengemasan dan distribusinya. Versi 1.0.1 dirilis untuk memperbaiki bug
+    penyimpanan email, tetapi karena tidak ada saluran rilis resmi, sebagian mahasiswa tetap
+    memakai 1.0 dan sebagian memakai 1.0.1 sehingga data yang dikirim keduanya bentrok di backend
+    Bab 10. Lalu mesin laptop pengembang rusak dan keystore lokalnya ikut hilang, sehingga
+    aplikasi terpasang menolak pembaruan. Puncaknya, build yang diunggah ke Play masih
+    mengarahkan alamat API ke IP laptop karena alamat ditulis keras di dalam kode.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Rilis tanpa saluran dan tanpa kunci terkelola"
+       data-label-benar="Rilis lewat track, kunci, dan konfigurasi terpisah"
+       data-petunjuk="Setiap gejala insiden berbanding lurus dengan satu subbab di bab ini; bab ini bukan teori tambahan, melainkan daftar pencegahan.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">ilustrasi-insiden.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §Studi Kasus</span>
+      </figcaption>
+      <pre><code class="language-text">APK 1.0 disebar lewat grup WhatsApp kelas
+→ dua versi beredar, data bentrok di backend
+laptop rusak → keystore hilang
+→ pembaruan ditolak sistem
+alamat API ditulis keras → http://192.168.1.10:3000
+✗ biaya perbaikan: tiga minggu kerja ulang</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">ilustrasi-pencegahan.txt</span>
+        <span class="kode-sumber">ilustrasi · buku §Studi Kasus</span>
+      </figcaption>
+      <pre><code class="language-text">track internal/closed Play (15.8)
+→ satu sumber pembaruan, versi terpantau
+EAS + Play App Signing (15.2, 15.7)
+→ kunci tidak ikut rusak bersama laptop
+EXPO_PUBLIC_ dan .env (15.6)
+→ alamat server terpisah dari kode
+✓ tiga minggu itu lebih mahal dari satu pertemuan</code></pre>
+    </figure>
+  </div>
+
+  <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Gejala, akar masalah, dan perbaikannya · sumber: deck Bab 15, buku §Studi Kasus</caption>
+      <thead>
+        <tr>
+          <th scope="col">Gejala</th>
+          <th scope="col">Akar masalah</th>
+          <th scope="col">Perbaikan (subbab)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Dua versi beredar di grup chat</td>
+          <td>Tidak ada kanal rilis resmi</td>
+          <td>Track internal atau closed Play (15.8)</td>
+        </tr>
+        <tr>
+          <td>Keystore hilang bersama laptop</td>
+          <td>Signing dikelola lokal</td>
+          <td>EAS dan Play App Signing (15.2, 15.7)</td>
+        </tr>
+        <tr>
+          <td>Alamat API ditulis di dalam kode</td>
+          <td>Konfigurasi menyatu dengan kode</td>
+          <td><code>EXPO_PUBLIC_</code> dan <code>.env</code> (15.6)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>
+      Kalau kamu menjadi ketua tim ini, keputusan mana yang paling awal kamu ubah? Mana yang
+      paling mahal diperbaiki? (Jawaban: keystore yang hilang, karena aplikasi terpasang
+      kehilangan jalur pembaruan sepenuhnya.) Pesan analis sistem yang menutup bab:
+      keputusan rilis dibuat sebelum rilis pertama, bukan sesudah pengguna mengeluh.
+    </p>
+  </div>
+</section>

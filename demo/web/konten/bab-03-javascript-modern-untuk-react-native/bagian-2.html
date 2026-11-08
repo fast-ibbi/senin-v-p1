@@ -1,0 +1,404 @@
+<h1>Bagian 2 — Array, Objek &amp; Pengolahan Data</h1>
+
+<p class="ringkas">
+  Subbab 3.5–3.7. Bagian ini yang paling sering dipakai bab-bab berikutnya: hampir semua data
+  aplikasi berbentuk array berisi objek, dan hampir semua tampilan daftar lahir dari
+  <code>map</code>. Pola di sini ikut sampai Project Akhir, jadi jangan hanya dihafalkan.
+</p>
+
+<section class="subbab" id="s2-1">
+  <p class="label-subbab">
+    Subbab 3.5 <span class="sumber-slide">· deck: “Array dan Objek Disalin lewat Alamat, Bukan Isi” &amp; “Lima Data Mahasiswa yang Dipakai Sampai Project Akhir” · buku §3.5</span>
+  </p>
+  <h2>Array dan Object adalah Tipe Rujukan</h2>
+
+  <p>
+    <strong>Array</strong> menyimpan sekumpulan nilai berurutan, sedangkan <strong>object</strong>
+    menyimpan pasangan nama–nilai yang disebut properti. Keduanya adalah tipe <em>rujukan</em>:
+    variabel menyimpan alamat data, bukan salinan nilainya. Konsekuensi yang sering menjerat
+    pemula: <code>const a = [1, 2]; const b = a; b.push(3);</code> mengubah <code>a</code> juga,
+    karena keduanya menunjuk array yang sama.
+  </p>
+
+  <p>
+    Analoginya: menyalin rujukan seperti memberi nama panggilan kedua pada orang yang sama —
+    mengubah nama panggilan tidak memunculkan orang kedua. Pola inilah yang wajib dipahami karena
+    React menekankan pembaruan data secara <em>immutable</em>: data lama tidak diubah, melainkan
+    diganti dengan data baru.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">praktik-js/07-array-object.js</span>
+      <span class="kode-sumber">buku §3.5</span>
+    </figcaption>
+    <pre><code class="language-js">const daftarNama = ['Budi', 'Siti', 'Agus'];
+daftarNama.push('Dewi');
+console.log(daftarNama.length);        // 4
+console.log(daftarNama.includes('Siti')); // true
+console.log(daftarNama.slice(1, 3));   // [ 'Siti', 'Agus' ]
+
+const namaProdi = 'Sistem Informasi';
+const mahasiswa = {
+  id: 1,
+  nim: '2201001',
+  nama: 'Budi Santoso',
+  prodi: namaProdi,   // singkatan: sama dengan { prodi: namaProdi }
+  ipk: 3.45,
+};
+console.log(mahasiswa.nama);   // Budi Santoso
+const kunciYangDicari = 'ipk';
+console.log(mahasiswa[kunciYangDicari]); // 3.45
+
+const salinan = mahasiswa;        // SALAH jika ingin data terpisah
+salinan.ipk = 4.0;
+console.log(mahasiswa.ipk);       // 4.0 — objek asli ikut berubah!</code></pre>
+  </figure>
+
+  <p>
+    Bagian array memperlihatkan tiga operasi dasar: menambah elemen di belakang dengan
+    <code>push</code>, memeriksa keberadaan dengan <code>includes</code>, dan memotong salinan
+    dengan <code>slice</code> — <code>slice(1, 3)</code> mengambil indeks 1 sampai sebelum 3,
+    sehingga hasilnya dua elemen. Tiga baris terakhir adalah peringatan terpenting subbab ini:
+    menyalin objek dengan tanda sama dengan hanya menyalin rujukannya.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Mutasi langsung: objek lama ikut berubah"
+       data-label-benar="Spread: salin dulu, baru perbarui"
+       data-petunjuk="Bedanya satu tanda kurung kurawal, dan akibatnya seluruh isi data lama. Pola kanan inilah yang dipakai React untuk memperbarui state di Bab 4 dan Bab 9.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">mutasi-langsung.js</span>
+        <span class="kode-sumber">ilustrasi pola aliasing · buku §3.5</span>
+      </figcaption>
+      <pre><code class="language-js">// Mengubah objek lama secara langsung: data lama rusak.
+const dataLama = { nim: '2201003', nama: 'Agus Wijaya', ipk: 3.2 };
+const salinan = dataLama;
+salinan.ipk = 3.35;
+
+console.log(dataLama.ipk); // 3.35 — data lama tidak bisa dipercaya lagi</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">praktik-js/08-destructuring.js</span>
+        <span class="kode-sumber">kutipan · buku §3.6</span>
+      </figcaption>
+      <pre><code class="language-js">// Spread: salinan terpisah + pembaruan tanpa mengubah asli
+const dataLama = { nim: '2201003', nama: 'Agus Wijaya', ipk: 3.2 };
+const dataBaru = { ...dataLama, ipk: 3.35 };
+console.log(dataLama.ipk); // 3.2 (tidak berubah)
+console.log(dataBaru.ipk); // 3.35 (objek baru)</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      <em>Aliasing</em> jarang muncul di latihan kecil, tetapi sangat sering terjadi saat
+      mengubah state React. Kebiasaan baiknya: perlakukan data sebagai sesuatu yang “dipinjam”,
+      dan ketika perlu versi baru, salin dulu dengan <em>spread</em> seperti pada subbab 2.2.
+    </p>
+  </div>
+</section>
+
+<section class="subbab" id="s2-2">
+  <p class="label-subbab">
+    Subbab 3.6 <span class="sumber-slide">· deck: “Destructuring Mengambil Nilai dalam Satu Baris” &amp; “<code>...</code> Menyalin Dulu, Baru Memperbarui” · buku §3.6</span>
+  </p>
+  <h2>Destructuring dan Spread Operator</h2>
+
+  <p>
+    <strong>Destructuring</strong> adalah cara mengambil nilai dari objek atau array langsung ke
+    dalam variabel, dalam satu baris. Sebelum ES6, cara lama menulis satu baris per properti —
+    banyak baris, banyak pengulangan, banyak tempat untuk salah ketik. Destructuring array juga
+    menjadi dasar pemakaian hook <code>useState</code> di React: fungsi itu mengembalikan array dua
+    elemen <code>[nilai, fungsiPengubah]</code> yang langsung diberi nama dalam satu baris.
+  </p>
+
+  <p>
+    <strong>Spread operator</strong> ditulis dengan tiga titik <code>...</code> dan menyebarkan isi
+    array atau properti objek ke tempat tujuan. Ia dipakai untuk menyalin, menggabungkan, dan
+    membuat objek baru dari objek lama dengan beberapa properti diperbarui. Perhatikan
+    kemiripan penulisannya dengan <em>rest parameter</em> di subbab 1.6: keduanya memakai
+    <code>...</code>, tetapi rest mengumpulkan sisa nilai, sedangkan spread menyebarkan isi wadah.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">praktik-js/08-destructuring.js</span>
+      <span class="kode-sumber">buku §3.6</span>
+    </figcaption>
+    <pre><code class="language-js">const mahasiswa = { nim: '2201002', nama: 'Siti Aminah', ipk: 3.82 };
+
+// Destructuring objek + nama lain + nilai bawaan
+const { nama, nim: nomorInduk, prodi = 'Belum diketahui' } = mahasiswa;
+console.log(nama, nomorInduk, prodi);
+// Siti Aminah 2201002 Belum diketahui
+
+// Destructuring array: dua elemen pertama + sisa
+const nilaiUjian = [80, 90, 75, 88];
+const [pertama, kedua, ...sisaNilai] = nilaiUjian;
+console.log(pertama, kedua, sisaNilai); // 80 90 [ 75, 88 ]
+
+// Spread: salinan terpisah + pembaruan tanpa mengubah asli
+const dataLama = { nim: '2201003', nama: 'Agus Wijaya', ipk: 3.2 };
+const dataBaru = { ...dataLama, ipk: 3.35 };
+console.log(dataLama.ipk); // 3.2 (tidak berubah)
+console.log(dataBaru.ipk); // 3.35 (objek baru)</code></pre>
+  </figure>
+
+  <p>
+    Sintaks <code>nim: nomorInduk</code> memberi nama variabel baru, dan
+    <code>prodi = 'Belum diketahui'</code> menyediakan nilai bawaan karena properti itu tidak ada
+    di objek. Destructuring array bekerja berdasarkan urutan: <code>pertama</code> dan
+    <code>kedua</code> mengambil indeks 0 dan 1, sedangkan <code>...sisaNilai</code> mengumpulkan
+    sisanya menjadi array <code>[75, 88]</code> — pola yang identik dengan cara kerja
+    <code>useState</code> di Bab 4.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Satu baris per properti"
+       data-label-benar="Satu baris untuk semuanya"
+       data-petunjuk="Bentuk kanan bukan hanya lebih pendek: nama boleh diganti dan nilai bawaan boleh ditulis di tempat yang sama, sehingga tidak ada kesempatan salah ketik di antara baris.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">cara-lama.js</span>
+        <span class="kode-sumber">ilustrasi · deck: “Destructuring Mengambil Nilai dalam Satu Baris” · buku §3.6</span>
+      </figcaption>
+      <pre><code class="language-js">// Cara lama: satu baris per properti, rawan salah ketik.
+const nama = mahasiswa.nama;
+const nomorInduk = mahasiswa.nim;
+const ipk = mahasiswa.ipk;
+const prodi = mahasiswa.prodi ?? 'Belum diketahui';</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">destructuring.js</span>
+        <span class="kode-sumber">buku §3.6</span>
+      </figcaption>
+      <pre><code class="language-js">// Destructuring objek + nama lain + nilai bawaan
+const { nama, nim: nomorInduk, prodi = 'Belum diketahui' } = mahasiswa;
+console.log(nama, nomorInduk, prodi);
+// Siti Aminah 2201002 Belum diketahui</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Kenapa React lebih suka membuat objek baru daripada mengubah yang lama? (Jawaban: agar perubahan data terdeteksi dan tidak ada component yang membaca data keliru.)</p>
+  </div>
+</section>
+
+<section class="subbab" id="s2-3">
+  <p class="label-subbab">
+    Subbab 3.7 <span class="sumber-slide">· deck: “<code>map</code>, <code>filter</code>, <code>reduce</code>: Tiga Cara Mengolah Array” · buku §3.7</span>
+  </p>
+  <h2><code>map</code>, <code>filter</code>, <code>reduce</code>, dan <code>find</code></h2>
+
+  <p>
+    Ketiga metode ini adalah jalan utama pengolahan data di JavaScript modern: alih-alih menulis
+    perulangan manual yang memberitahu komputer <em>bagaimana</em> memproses, kita menyatakan
+    <em>apa</em> yang diinginkan. <code>map</code> mengubah setiap elemen dan mengembalikan array
+    baru berukuran sama; <code>filter</code> memilih elemen yang memenuhi kondisi dan
+    mengembalikan array baru yang sama panjang atau lebih pendek; <code>reduce</code>
+    menggabungkan seluruh elemen menjadi satu nilai.
+  </p>
+
+  <p>
+    Selain ketiganya, kenali <code>find</code> yang mengembalikan elemen pertama yang cocok,
+    <code>some</code> yang menguji minimal satu elemen, dan <code>every</code> yang menguji semua
+    elemen. <code>find</code> untuk pencarian satu data, <code>some</code> untuk pemeriksaan cepat,
+    dan <code>every</code> untuk penjaminan.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">praktik-js/09-map-filter-reduce.js</span>
+      <span class="kode-sumber">buku §3.7</span>
+    </figcaption>
+    <pre><code class="language-js">const daftarMahasiswa = [
+  { nim: '2201001', nama: 'Budi Santoso', prodi: 'Sistem Informasi', ipk: 3.45 },
+  { nim: '2201002', nama: 'Siti Aminah', prodi: 'Teknik Informatika', ipk: 3.82 },
+  { nim: '2201003', nama: 'Agus Wijaya', prodi: 'Informatika', ipk: 3.2 },
+  { nim: '2201004', nama: 'Dewi Lestari', prodi: 'Rekayasa Perangkat Lunak', ipk: 3.61 },
+  { nim: '2201005', nama: 'Rizky Pratama', prodi: 'Sistem Informasi', ipk: 2.95 },
+];
+
+// map: proyeksi sederhana
+const daftarNama = daftarMahasiswa.map((m) =&gt; m.nama);
+console.log(daftarNama);
+// [ 'Budi Santoso', 'Siti Aminah', 'Agus Wijaya', 'Dewi Lestari', 'Rizky Pratama' ]
+
+// filter: hanya mahasiswa berprestasi
+const berprestasi = daftarMahasiswa.filter((m) =&gt; m.ipk &gt;= 3.5);
+console.log(berprestasi.map((m) =&gt; `${m.nama} (${m.ipk})`));
+// [ 'Siti Aminah (3.82)', 'Dewi Lestari (3.61)' ]
+
+// reduce: total IPK seluruh mahasiswa, lalu rata-rata
+const totalIpk = daftarMahasiswa.reduce((total, m) =&gt; total + m.ipk, 0);
+const rataRata = totalIpk / daftarMahasiswa.length;
+console.log(`Rata-rata IPK: ${rataRata.toFixed(2)}`); // Rata-rata IPK: 3.41
+
+// rantai: filter dulu, lalu map
+const namaBerprestasi = daftarMahasiswa
+  .filter((m) =&gt; m.ipk &gt;= 3.5)
+  .map((m) =&gt; m.nama);
+console.log(namaBerprestasi); // [ 'Siti Aminah', 'Dewi Lestari' ]
+
+// find: pencarian satu data
+const budi = daftarMahasiswa.find((m) =&gt; m.nim === '2201001');
+console.log(budi?.nama); // Budi Santoso</code></pre>
+  </figure>
+
+  <p>
+    Argumen tiap metode adalah sebuah <em>callback</em> yang menerima elemen array sebagai
+    parameter pertama — di sini dinamai <code>m</code>, singkatan dari mahasiswa.
+    <code>reduce</code> menerima akumulator <code>total</code> dan elemen <code>m</code> dengan
+    nilai awal <code>0</code>; tanpa nilai awal, <code>reduce</code> menjadikan elemen pertama
+    sebagai akumulator dan gagal pada array kosong. Perhatikan pula bahwa <code>find</code>
+    mengembalikan objek, bukan array, sehingga <code>budi?.nama</code> dari subbab 1.3 dipakai
+    agar aman bila NIM tidak ditemukan.
+  </p>
+
+  <div class="banding"
+       data-label-lama="forEach: berkeliling untuk efek samping"
+       data-label-benar="map: mengembalikan array baru"
+       data-petunjuk="Keduanya mencetak hasil yang sama persis. Yang berbeda adalah nilai yang dikembalikan, dan itulah yang dipakai React untuk menggambar daftar.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">forEach-mengisi-array.js</span>
+        <span class="kode-sumber">ilustrasi · deck: “map, filter, reduce” · buku §3.7</span>
+      </figcaption>
+      <pre><code class="language-js">// forEach: tidak mengembalikan apa pun, jadi array harus disiapkan dulu.
+const daftarNama = [];
+daftarMahasiswa.forEach((m) =&gt; {
+  daftarNama.push(m.nama);
+});
+
+console.log(daftarNama);
+// [ 'Budi Santoso', 'Siti Aminah', 'Agus Wijaya', 'Dewi Lestari', 'Rizky Pratama' ]</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">map-mengembalikan-array.js</span>
+        <span class="kode-sumber">buku §3.7</span>
+      </figcaption>
+      <pre><code class="language-js">// map: proyeksi sederhana
+const daftarNama = daftarMahasiswa.map((m) =&gt; m.nama);
+console.log(daftarNama);
+// [ 'Budi Santoso', 'Siti Aminah', 'Agus Wijaya', 'Dewi Lestari', 'Rizky Pratama' ]</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-salah">
+    <p class="kotak-judul">Salah paham</p>
+    <p>
+      Pemula sering memakai <code>filter</code> untuk pekerjaan yang sebenarnya mencari satu data.
+      <code>filter</code> mengembalikan array, <code>find</code> mengembalikan satu elemen. Salah
+      pilih alat di sini berarti kode pemanggil harus menulis <code>[0]</code> dan menangani array
+      kosong yang tidak pernah dibutuhkan.
+    </p>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Sebutkan nama metode untuk tiga pekerjaan ini: “ambil semua nama mahasiswa”, “ambil IPK di atas 3.5”, “hitung total IPK”. (Jawaban: <code>map</code>, <code>filter</code>, <code>reduce</code>.)</p>
+  </div>
+</section>
+
+<section class="subbab" id="s2-4">
+  <p class="label-subbab">
+    Subbab 3.7 <span class="sumber-slide">· deck: “Filter Dulu, Map Kemudian” &amp; “Studi Kasus: Laporan yang Dulu Dikerjakan Manual” · buku §Contoh 1</span>
+  </p>
+  <h2>Rantai <code>filter</code> lalu <code>map</code>: Laporan yang Dulu Manual</h2>
+
+  <p>
+    Rantai <code>filter(...).map(...)</code> terbaca wajar dari kiri ke kanan: saring dulu, ubah
+    sesudahnya. Perulangan manual memberi tahu komputer <em>bagaimana</em>, sedangkan rantai ini
+    menyatakan <em>apa</em> yang diinginkan; hasilnya tidak mungkin salah indeks. Contoh berikut
+    merangkai ketiga metode pada satu array.
+  </p>
+
+  <figure class="kode">
+    <figcaption class="kode-kepala">
+      <span class="kode-berkas">praktik-js/contoh-rekap.js</span>
+      <span class="kode-sumber">buku §Contoh 1</span>
+    </figcaption>
+    <pre><code class="language-js">// Contoh 1: rantai filter → map → reduce untuk rekap sederhana.
+const ipkMahasiswa = [3.45, 3.82, 3.2, 3.61, 2.95];
+
+const berprestasi = ipkMahasiswa.filter((ipk) =&gt; ipk &gt;= 3.5);
+const daftarBerprestasi = berprestasi.map((ipk) =&gt; `IPK ${ipk.toFixed(2)}`);
+const rataRataBerprestasi =
+  berprestasi.reduce((total, ipk) =&gt; total + ipk, 0) / berprestasi.length;
+
+console.log(daftarBerprestasi);
+// [ 'IPK 3.82', 'IPK 3.61' ]
+console.log(`Rata-rata IPK mahasiswa berprestasi: ${rataRataBerprestasi.toFixed(2)}`);
+// Rata-rata IPK mahasiswa berprestasi: 3.72</code></pre>
+  </figure>
+
+  <p>
+    <code>filter</code> menyisakan dua nilai di atas ambang, <code>map</code> mengubahnya menjadi
+    teks yang siap ditampilkan, dan <code>reduce</code> menjumlahkan keduanya sebelum dibagi
+    banyaknya data. Perhatikan bahwa <code>berprestasi</code> dipakai ulang untuk dua keperluan
+    berbeda — inilah keuntungan memisahkan setiap langkah ke variabel: mudah dibaca dan mudah
+    diuji.
+  </p>
+
+  <div class="tabel-gulir">
+    <table class="tabel">
+      <caption>Permintaan bagian akademik dan teknik yang menjawabnya · sumber: deck “Studi Kasus” &amp; buku §Studi Kasus</caption>
+      <thead>
+        <tr><th scope="col">Permintaan bagian akademik</th><th scope="col">Teknik yang dipakai</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Rata-rata IPK per prodi</td><td><code>filter</code> lalu <code>reduce</code> per prodi</td></tr>
+        <tr><td>Penerima beasiswa, IPK minimal 3.5</td><td><code>filter</code> dengan ambang nilai</td></tr>
+        <tr><td>Data mahasiswa dengan NIM tertentu</td><td><code>find</code></td></tr>
+        <tr><td>Laporan yang bisa diulang konsisten</td><td><em>script</em> JavaScript dengan keluaran JSON</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    Kasus di atas bukan masalah data, melainkan masalah pengolahan manual yang tidak dapat diulang:
+    dua staf yang mengerjakan permintaan sama dapat menghasilkan angka berbeda. Laporan inilah yang
+    kelak menjadi salah satu layar <strong>Aplikasi Manajemen Data Mahasiswa</strong> — daftar
+    mahasiswa diambil dari server, disaring, dihitung, lalu ditampilkan dengan teknik yang sama
+    seperti hari ini.
+  </p>
+
+  <div class="banding"
+       data-label-lama="Imperatif: memberi tahu bagaimana caranya"
+       data-label-benar="Deklaratif: menyatakan apa yang diinginkan"
+       data-petunjuk="Hasil keduanya sama. Yang berbeda adalah jumlah hal yang harus dijaga manusia: penghitung, batas, dan array penampung.">
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">imperatif.js</span>
+        <span class="kode-sumber">ilustrasi · buku §3.7</span>
+      </figcaption>
+      <pre><code class="language-js">// Imperatif: array penampung, perulangan, dan syarat dijaga sendiri.
+const berprestasi = [];
+for (const ipk of ipkMahasiswa) {
+  if (ipk &gt;= 3.5) {
+    berprestasi.push(ipk);
+  }
+}</code></pre>
+    </figure>
+    <figure class="kode">
+      <figcaption class="kode-kepala">
+        <span class="kode-berkas">deklaratif.js</span>
+        <span class="kode-sumber">ilustrasi · buku §3.7</span>
+      </figcaption>
+      <pre><code class="language-js">// Deklaratif: satu baris, tanpa penghitung dan tanpa array penampung.
+const berprestasi = ipkMahasiswa.filter((ipk) =&gt; ipk &gt;= 3.5);</code></pre>
+    </figure>
+  </div>
+
+  <div class="kotak kotak-tanya">
+    <p class="kotak-judul">Pertanyaan penuntun</p>
+    <p>Apa risiko terbesar bila dua staf mengerjakan permintaan yang sama dengan tangan? (Jawaban: dua laporan berbeda dari data yang sama.)</p>
+  </div>
+</section>
